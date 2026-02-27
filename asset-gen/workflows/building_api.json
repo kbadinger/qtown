@@ -1,0 +1,86 @@
+{
+  "client_id": "qwen-town",
+  "prompt": {
+    "1": {
+      "inputs": { "ckpt_name": "sd_xl_base_1.0.safetensors" },
+      "class_type": "CheckpointLoaderSimple",
+      "_meta": { "title": "Load Checkpoint" }
+    },
+    "2": {
+      "inputs": {
+        "lora_name": "zavy-ctsmtrc-sdxl.safetensors",
+        "strength_model": 0.8,
+        "strength_clip": 0.8,
+        "model": ["1", 0],
+        "clip": ["1", 1]
+      },
+      "class_type": "LoraLoader",
+      "_meta": { "title": "Load LoRA" }
+    },
+    "3": {
+      "inputs": {
+        "text": "zavy-ctsmtrc, isometric, cute isometric bakery building",
+        "clip": ["2", 1]
+      },
+      "class_type": "CLIPTextEncode",
+      "_meta": { "title": "CLIP Text Encode (Prompt)" }
+    },
+    "4": {
+      "inputs": {
+        "text": "realistic, photo, 3d, text, watermark, logo, nsfw, low quality, blurry",
+        "clip": ["2", 1]
+      },
+      "class_type": "CLIPTextEncode",
+      "_meta": { "title": "CLIP Text Encode (Prompt)" }
+    },
+    "6": {
+      "inputs": {
+        "samples": ["8", 0],
+        "vae": ["1", 2]
+      },
+      "class_type": "VAEDecode",
+      "_meta": { "title": "VAE Decode" }
+    },
+    "7": {
+      "inputs": {
+        "filename_prefix": "building_",
+        "images": ["6", 0]
+      },
+      "class_type": "SaveImage",
+      "_meta": { "title": "Save Image" }
+    },
+    "8": {
+      "inputs": {
+        "add_noise": "enable",
+        "noise_seed": 75249976666109,
+        "steps": 20,
+        "cfg": 4,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "start_at_step": 0,
+        "end_at_step": 10000,
+        "return_with_leftover_noise": "disable",
+        "model": ["2", 0],
+        "positive": ["3", 0],
+        "negative": ["4", 0],
+        "latent_image": ["9", 0]
+      },
+      "class_type": "KSamplerAdvanced",
+      "_meta": { "title": "KSampler (Advanced)" }
+    },
+    "9": {
+      "inputs": {
+        "width": 512,
+        "height": 512,
+        "batch_size": 1
+      },
+      "class_type": "EmptyLatentImage",
+      "_meta": { "title": "Empty Latent Image" }
+    }
+  },
+  "extra_data": {
+    "extra_pnginfo": {
+      "workflow": {}
+    }
+  }
+}

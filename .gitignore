@@ -1,0 +1,24 @@
+# Claude Code files
+.claude/
+claude.md
+.mcp.json
+
+# Project specific
+spec.md
+tasks/
+
+# Secrets and environment files
+.env
+.env.*
+*.env
+secrets/
+credentials/
+*.key
+*.pem
+
+# Common ignores
+node_modules/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
