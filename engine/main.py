@@ -60,7 +60,12 @@ app.add_middleware(
 if IS_PROD:
     app.add_middleware(
         TrustedHostMiddleware,
-        allowed_hosts=["qtown.ai", "www.qtown.ai", "*.up.railway.app"],
+        allowed_hosts=[
+            "qtown.ai",
+            "www.qtown.ai",
+            "*.up.railway.app",
+            "*.railway.internal",  # Railway internal healthchecks
+        ],
     )
 
 # ---------------------------------------------------------------------------
