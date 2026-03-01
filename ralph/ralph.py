@@ -39,7 +39,7 @@ PRD_FILE = Path("prd.json")
 HUMAN_MD = Path("HUMAN.md")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen3.5:35b")
-MAX_ATTEMPTS = 8
+MAX_ATTEMPTS = 12
 
 # ---------------------------------------------------------------------------
 # Graceful shutdown
@@ -283,6 +283,9 @@ def run_story(story: dict) -> bool:
             return False
 
         print(f"\n  [Attempt {attempt}/{MAX_ATTEMPTS}]")
+
+        if attempt == 5:
+            warn("story_fail", f"Story {story_id} struggling — attempt 5/{MAX_ATTEMPTS}\n{story['title']}")
 
         # 1. Run tests (expect failure on first attempt)
         passed, test_output = run_tests(test_file)
