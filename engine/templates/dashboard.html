@@ -42,10 +42,10 @@ function renderDashboard(d) {
     // Cost data
     const cost = d.cost || {};
     const qwenCost = (cost.total_electricity_cost || 0).toFixed(2);
-    const opusCost = (cost.equivalent_opus_cost || 1277).toFixed(2);
-    const opus46Cost = (cost.equivalent_opus46_cost || 1277).toFixed(2);
-    const gpt4oCost = (cost.equivalent_gpt4o_cost || 638).toFixed(2);
-    const sonnetCost = (cost.equivalent_sonnet_cost || 319).toFixed(2);
+    const opusCost = (cost.equivalent_opus_cost || 0).toFixed(2);
+    const opus46Cost = (cost.equivalent_opus46_cost || 0).toFixed(2);
+    const gpt4oCost = (cost.equivalent_gpt4o_cost || 0).toFixed(2);
+    const sonnetCost = (cost.equivalent_sonnet_cost || 0).toFixed(2);
     const savings = opusCost > 0 ? Math.round((1 - qwenCost / opusCost) * 100) : 0;
 
     // Snapshot
