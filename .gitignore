@@ -35,6 +35,10 @@ __pycache__/
 # Auto-generated (human reviews before import)
 proposed_stories.json
 
+# Ralph runtime state
+.ralph-paused
+ralph.log
+
 # Common ignores
 node_modules/
 .DS_Store

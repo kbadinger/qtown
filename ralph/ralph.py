@@ -400,6 +400,19 @@ def main():
     print(f"[Ralph] Press Ctrl+C for graceful shutdown")
     print()
 
+    # Auto-resume: if HUMAN.md says pause but no .ralph-paused marker exists,
+    # this was a crash/reboot, not a human pause — clear it and continue.
+    pause_marker = Path(".ralph-paused")
+    intervention = read_intervention()
+    if intervention.get("action") == "pause":
+        if pause_marker.exists():
+            print("[Ralph] Human-requested pause is active — exiting.")
+            print("[Ralph] To resume: set HUMAN.md action to 'none' and run ralph-start.bat")
+            return
+        else:
+            print("[Ralph] Stale pause detected (crash/reboot) — auto-resuming")
+            clear_oneshot_action()
+
     # Startup preflight checks
     if not preflight():
         print("\n[Ralph] Preflight checks failed — exiting.")
@@ -419,8 +432,10 @@ def main():
                 print("[Ralph] Paused via HUMAN.md — set action to 'resume' to continue")
                 msg = intervention.get("message") or "No reason given"
                 log_human_intervention("pause", f"Human paused Ralph: {msg}")
+                pause_marker.touch()  # Mark as intentional pause
             else:
                 print("[Ralph] Shutdown requested — exiting cleanly")
+                pause_marker.unlink(missing_ok=True)
             break
 
         # Check for intervention actions
@@ -501,6 +516,7 @@ def main():
                     "Check HUMAN.md and recent test output",
                 )
                 print("[Ralph] 3 consecutive failures — auto-pausing")
+                pause_marker.touch()  # Don't auto-resume after intentional pause
                 break
 
         if action == "retry":
