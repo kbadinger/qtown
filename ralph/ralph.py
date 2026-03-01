@@ -17,7 +17,7 @@ from pathlib import Path
 import requests
 import yaml
 
-from ralph.alerter import send_alert
+from ralph.alerter import notify, warn, alert
 from ralph.changelog import log_human_intervention
 from ralph.cost_tracker import log_cost
 from ralph.deployer import push_and_wait
@@ -134,11 +134,11 @@ def call_qwen(prompt: str) -> tuple[str, int, int, float]:
 
         return response_text, tokens_in, tokens_out, duration
     except requests.RequestException as e:
-        send_alert("Ollama unreachable", f"Request failed: {e} — retrying in 60s")
+        alert("warning", f"Ollama unreachable: {e} — retrying in 60s")
         time.sleep(60)
         return "", 0, 0, 0.0
     except (json.JSONDecodeError, KeyError, ValueError) as e:
-        send_alert("Ollama bad response", f"Could not parse response: {e}")
+        warn("warning", f"Ollama bad response: {e}")
         return "", 0, 0, 0.0
 
 
@@ -268,9 +268,14 @@ def run_story(story: dict) -> bool:
             f"Story {story_id}: \"{intervention_msg}\"",
         )
 
+    notify("story_start", f"Story {story_id}: {story['title']}")
+
     print(f"\n{'='*60}")
     print(f"[Ralph] Story {story_id}: {story['title']}")
     print(f"{'='*60}")
+
+    # Loop detection — track recent error signatures
+    recent_errors: list[str] = []
 
     for attempt in range(1, MAX_ATTEMPTS + 1):
         if should_stop():
@@ -287,6 +292,18 @@ def run_story(story: dict) -> bool:
 
         if passed:
             break
+
+        # Loop detection — extract error signature (first failure line)
+        error_sig = ""
+        for line in test_output.split("\n"):
+            if "Error" in line or "FAILED" in line or "assert" in line.lower():
+                error_sig = line.strip()[:120]
+                break
+        if error_sig:
+            recent_errors.append(error_sig)
+            # Same error 3 times in a row = loop
+            if len(recent_errors) >= 3 and len(set(recent_errors[-3:])) == 1:
+                alert("loop", f"Story {story_id}: same error 3x in a row\n`{error_sig}`")
 
         # 2. Build prompt
         prompt = build_prompt(
@@ -330,6 +347,7 @@ def run_story(story: dict) -> bool:
             print(f"  FAILED — will retry")
     else:
         print(f"  Story {story_id} FAILED after {MAX_ATTEMPTS} attempts")
+        warn("story_fail", f"Story {story_id} failed after {MAX_ATTEMPTS} attempts: {story['title']}")
         return False
 
     # Story passed — mark complete cost
@@ -356,6 +374,7 @@ def run_story(story: dict) -> bool:
 
     if deploy_ok:
         print(f"  Deploy healthy: {deploy_msg}")
+        notify("deploy_ok", f"Story {story_id} deployed: {deploy_msg}")
         # 10. Take snapshots
         snapshot_files = take_all_snapshots(story_id)
         if snapshot_files:
@@ -364,6 +383,7 @@ def run_story(story: dict) -> bool:
             subprocess.run(["git", "push", "origin", "main"], capture_output=True)
     else:
         print(f"  Deploy FAILED: {deploy_msg}")
+        warn("deploy_fail", f"Story {story_id} deploy failed — starting fix cycle")
         # Feed deploy error back to Qwen as a fix cycle
         print(f"  Starting deploy-fix cycle...")
         fix_prompt = build_prompt(story, "", deploy_error=deploy_msg)
@@ -379,16 +399,18 @@ def run_story(story: dict) -> bool:
                 pass
             deploy_ok2, deploy_msg2 = push_and_wait()
             if deploy_ok2:
+                notify("deploy_ok", f"Story {story_id} deploy fixed on retry")
                 snapshot_files = take_all_snapshots(story_id)
                 if snapshot_files:
                     git_commit_snapshots(story_id)
                     subprocess.run(["git", "push", "origin", "main"], capture_output=True)
             else:
-                send_alert(
-                    "Deploy broken — Ralph pausing",
-                    f"Story {story_id} deploy failed twice: {deploy_msg2[:200]}",
+                alert(
+                    "deploy_fail",
+                    f"Story {story_id} deploy failed twice — Ralph pausing\n{deploy_msg2[:200]}",
                 )
 
+    notify("story_done", f"Story {story_id} complete: {story['title']}")
     return True
 
 
@@ -415,9 +437,14 @@ def main():
 
     # Startup preflight checks
     if not preflight():
-        print("\n[Ralph] Preflight checks failed — exiting.")
+        alert("critical", "Preflight checks failed — Ralph cannot start")
         sys.exit(1)
     print()
+
+    prd = load_prd()
+    done = sum(1 for s in prd["stories"] if s["status"] == "done")
+    total = len(prd["stories"])
+    notify("start", f"Ralph online — {done}/{total} stories complete")
 
     consecutive_failures = 0
 
@@ -482,6 +509,7 @@ def main():
         story = get_next_story(prd)
 
         if not story:
+            notify("stop", "All stories complete!")
             print("[Ralph] No pending stories — all done!")
             break
 
@@ -506,23 +534,23 @@ def main():
             consecutive_failures = 0
         else:
             consecutive_failures += 1
-            send_alert(
-                f"Story {story['id']} FAILED",
-                f"'{story['title']}' failed after {MAX_ATTEMPTS} attempts",
-            )
             if consecutive_failures >= 3:
-                send_alert(
-                    "3 consecutive failures — Ralph paused",
-                    "Check HUMAN.md and recent test output",
+                alert(
+                    "critical",
+                    f"3 consecutive failures — Ralph auto-pausing\nLast: Story {story['id']}: {story['title']}",
                 )
                 print("[Ralph] 3 consecutive failures — auto-pausing")
-                pause_marker.touch()  # Don't auto-resume after intentional pause
+                pause_marker.touch()
                 break
 
         if action == "retry":
             log_human_intervention("retry", f"Human requested retry of story {story['id']}")
             clear_oneshot_action()
 
+    prd = load_prd()
+    done = sum(1 for s in prd["stories"] if s["status"] == "done")
+    total = len(prd["stories"])
+    notify("stop", f"Ralph offline — {done}/{total} stories complete")
     print("[Ralph] Goodbye.")
 
 
