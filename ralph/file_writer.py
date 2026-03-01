@@ -12,6 +12,8 @@ BLOCKLIST = [
     "engine/main.py",
     "engine/db.py",
     "engine/templates/dashboard.html",
+    "engine/templates/timeline.html",
+    "engine/templates/base.html",
     "docs/",
     "HUMAN.md",
     "AGENTS.md",

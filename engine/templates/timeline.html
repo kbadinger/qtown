@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Timeline — Qwen Town{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8" id="timeline-root"
+     hx-get="/api/timeline-data" hx-trigger="load, every 60s"
+     hx-target="#timeline-content" hx-swap="innerHTML">
+    <h1 class="text-2xl font-bold text-amber-400 mb-2">Evolution Timeline</h1>
+    <p class="text-gray-500 text-sm mb-6">Every screenshot is proof — watch Qwen build a town from nothing.</p>
+    <div id="timeline-content">
+        <p class="text-gray-400">Loading...</p>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("htmx:beforeSwap", function(evt) {
+    if (evt.detail.target.id !== "timeline-content") return;
+    try {
+        const data = JSON.parse(evt.detail.serverResponse);
+        evt.detail.serverResponse = renderTimeline(data);
+    } catch (e) {}
+});
+
+function renderTimeline(d) {
+    const snaps = d.snapshots || [];
+
+    if (!snaps.length) {
+        return `
+        <div class="text-center py-16">
+            <div class="text-6xl mb-4">📷</div>
+            <p class="text-gray-400 text-lg">No snapshots yet</p>
+            <p class="text-gray-500 text-sm mt-2">Screenshots appear here as Qwen completes stories</p>
+        </div>`;
+    }
+
+    // Reverse so newest is first
+    const reversed = [...snaps].reverse();
+
+    let html = `<div class="text-sm text-gray-400 mb-6">${snaps.length} snapshots captured</div>`;
+
+    html += `<div class="space-y-8">`;
+
+    reversed.forEach((s, i) => {
+        const num = snaps.length - i;
+        html += `
+        <div class="group">
+            <div class="flex items-baseline gap-3 mb-3">
+                <span class="text-amber-400 font-mono font-bold text-lg">#${escapeHtml(s.story_id)}</span>
+                <span class="text-gray-200 font-medium">${escapeHtml(s.title)}</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <p class="text-xs text-gray-500 mb-1">Browser Screenshot</p>
+                    <a href="${s.live_url}" target="_blank">
+                        <img src="${s.live_url}" alt="Story ${escapeHtml(s.story_id)} live"
+                             class="rounded-lg border border-gray-700 hover:border-amber-500/50 transition-colors w-full cursor-zoom-in"
+                             loading="lazy">
+                    </a>
+                </div>
+                ${s.grid_url ? `
+                <div>
+                    <p class="text-xs text-gray-500 mb-1">Grid Render</p>
+                    <a href="${s.grid_url}" target="_blank">
+                        <img src="${s.grid_url}" alt="Story ${escapeHtml(s.story_id)} grid"
+                             class="rounded-lg border border-gray-700 hover:border-amber-500/50 transition-colors w-full cursor-zoom-in"
+                             loading="lazy">
+                    </a>
+                </div>` : ''}
+            </div>
+            ${i < reversed.length - 1 ? '<div class="border-t border-gray-800 mt-8"></div>' : ''}
+        </div>`;
+    });
+
+    html += `</div>`;
+    return html;
+}
+
+function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+}
+</script>
+{% endblock %}

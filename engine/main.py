@@ -260,6 +260,55 @@ def dashboard_data():
 
 
 # ---------------------------------------------------------------------------
+# Timeline — visual snapshot history
+# ---------------------------------------------------------------------------
+
+
+@app.get("/timeline", response_class=HTMLResponse)
+def timeline(request: Request):
+    return templates.TemplateResponse("timeline.html", {"request": request})
+
+
+@app.get("/api/timeline-data")
+def timeline_data():
+    """Return snapshot history with story metadata."""
+    snapshots_dir = Path("snapshots")
+    prd_path = Path("prd.json")
+
+    # Load story titles from prd.json
+    story_titles = {}
+    if prd_path.exists():
+        try:
+            prd = json.loads(prd_path.read_text(encoding="utf-8"))
+            for s in prd.get("stories", []):
+                story_titles[s["id"]] = s.get("title", "")
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    # Scan snapshots directory for _live.png files (browser screenshots)
+    entries = []
+    if snapshots_dir.is_dir():
+        for f in sorted(snapshots_dir.glob("*_live.png")):
+            story_id = f.stem.replace("_live", "")
+            entry = {
+                "story_id": story_id,
+                "title": story_titles.get(story_id, ""),
+                "live_url": f"/static/snapshots/{f.name}",
+            }
+            # Check for grid render
+            grid = snapshots_dir / f"{story_id}_grid.png"
+            if grid.exists():
+                entry["grid_url"] = f"/static/snapshots/{grid.name}"
+            # Check for state JSON
+            state = snapshots_dir / f"{story_id}_state.json"
+            if state.exists():
+                entry["state_url"] = f"/static/snapshots/{state.name}"
+            entries.append(entry)
+
+    return {"snapshots": entries}
+
+
+# ---------------------------------------------------------------------------
 # Health check
 # ---------------------------------------------------------------------------
 
