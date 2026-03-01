@@ -18,6 +18,7 @@ import requests
 import yaml
 
 from ralph.alerter import send_alert
+from ralph.changelog import log_human_intervention
 from ralph.cost_tracker import log_cost
 from ralph.deployer import push_and_wait
 from ralph.file_writer import apply_files
@@ -262,6 +263,10 @@ def run_story(story: dict) -> bool:
     intervention_msg = None
     if intervention.get("action") == "instruction":
         intervention_msg = intervention.get("message")
+        log_human_intervention(
+            "instruction",
+            f"Story {story_id}: \"{intervention_msg}\"",
+        )
 
     print(f"\n{'='*60}")
     print(f"[Ralph] Story {story_id}: {story['title']}")
@@ -409,8 +414,11 @@ def main():
             action = intervention.get("action", "none")
             if action == "review_stories":
                 print("[Ralph] Paused for story review — edit proposed_stories.json, then set HUMAN.md action to approve_stories")
+                log_human_intervention("review_stories", "Ralph paused for human story review")
             elif action == "pause":
                 print("[Ralph] Paused via HUMAN.md — set action to 'resume' to continue")
+                msg = intervention.get("message") or "No reason given"
+                log_human_intervention("pause", f"Human paused Ralph: {msg}")
             else:
                 print("[Ralph] Shutdown requested — exiting cleanly")
             break
@@ -421,6 +429,7 @@ def main():
 
         if action == "approve_stories":
             print("[Ralph] Importing approved stories...")
+            log_human_intervention("approve_stories", "Human reviewed and approved proposed stories")
             import_approved()
             clear_oneshot_action()
             continue
@@ -430,6 +439,7 @@ def main():
             story = get_next_story(prd)
             if story:
                 print(f"[Ralph] Skipping story {story['id']}")
+                log_human_intervention("skip", f"Skipped story {story['id']}: {story['title']}")
                 story["status"] = "skipped"
                 save_prd(prd)
             clear_oneshot_action()
@@ -494,6 +504,7 @@ def main():
                 break
 
         if action == "retry":
+            log_human_intervention("retry", f"Human requested retry of story {story['id']}")
             clear_oneshot_action()
 
     print("[Ralph] Goodbye.")
