@@ -10,15 +10,40 @@ tasks/
 # Secrets and environment files
 .env
 .env.*
+!.env.example
 *.env
 secrets/
 credentials/
 *.key
 *.pem
 
-# Common ignores
-node_modules/
+# Databases
+town.db
+town.db-wal
+town.db-shm
+test_town.db
+test_town.db-wal
+test_town.db-shm
+
+# Python
 __pycache__/
 *.pyc
+*.pyo
+.pytest_cache/
+*.egg-info/
+
+# Auto-generated (human reviews before import)
+proposed_stories.json
+
+# Common ignores
+node_modules/
 .DS_Store
 Thumbs.db
+.venv/
+venv/
+
+# DO commit these (proof of progress):
+# - metrics.jsonl
+# - cost_tracking.json
+# - snapshots/
+# - COST_METHODOLOGY.md

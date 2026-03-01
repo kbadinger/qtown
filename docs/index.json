@@ -1,0 +1,6 @@
+{
+  "docs": [
+    { "path": "docs/fastapi-patterns.md", "tags": ["api", "router", "security", "template", "htmx"] },
+    { "path": "docs/simulation-guide.md", "tags": ["simulation", "npc", "economy", "tick", "building"] }
+  ]
+}

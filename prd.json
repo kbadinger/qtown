@@ -1,0 +1,3791 @@
+{
+  "stories": [
+    {
+      "id": "001",
+      "title": "Initialize 50x50 grid",
+      "description": "Create init_grid(db) in engine/simulation.py that creates 2500 Tile rows with x=0..49, y=0..49, terrain='grass'. Must be idempotent — calling twice should not duplicate rows. Uses the Tile model from engine/models.py.",
+      "acceptance": "Test creates a fresh DB, calls init_grid twice, asserts exactly 2500 Tile rows exist. Asserts tile at (0,0) and (49,49) both have terrain='grass'.",
+      "test_file": "tests/test_grid.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 1,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "002",
+      "title": "Add Building model",
+      "description": "Add Building model to engine/models.py with fields: id (Integer PK), name (String), building_type (String), x (Integer), y (Integer), capacity (Integer default 10), created_at (DateTime). Add proper __tablename__ = 'buildings'.",
+      "acceptance": "Test imports Building from engine.models, creates one, asserts all fields exist and defaults work. capacity defaults to 10.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "simulation",
+        "building"
+      ],
+      "priority": 2,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "003",
+      "title": "Add NPC model",
+      "description": "Add NPC model to engine/models.py with fields: id (Integer PK), name (String), role (String), x (Integer), y (Integer), gold (Integer default 0), hunger (Integer default 0), energy (Integer default 100), home_building_id (Integer FK nullable), work_building_id (Integer FK nullable), target_x (Integer nullable), target_y (Integer nullable), created_at (DateTime).",
+      "acceptance": "Test imports NPC from engine.models, creates one, asserts all fields exist. gold defaults to 0, hunger to 0, energy to 100.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 3,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "004",
+      "title": "Seed starter buildings",
+      "description": "Create seed_buildings(db) in engine/simulation.py that creates at least 3 buildings: Town Hall (building_type='civic', x=25, y=25), Farm (building_type='food', x=10, y=10), House (building_type='residential', x=30, y=30). Must be idempotent.",
+      "acceptance": "Test calls seed_buildings twice, asserts exactly 3 buildings exist. Asserts Town Hall is at (25,25) with type 'civic'.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building"
+      ],
+      "priority": 4,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "005",
+      "title": "Seed starter NPCs",
+      "description": "Create seed_npcs(db) in engine/simulation.py that creates at least 5 NPCs with names and roles (farmer, baker, guard, merchant, priest) at valid grid positions (0-49). Must be idempotent.",
+      "acceptance": "Test calls seed_npcs twice, asserts exactly 5 NPCs exist. Asserts all NPCs have x,y in range 0-49 and non-empty names and roles.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 5,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "006",
+      "title": "GET /api/world endpoint",
+      "description": "Create engine/routers/world.py with a GET /api/world endpoint. Returns JSON object with keys: tiles (list of all Tile rows), buildings (list of all Building rows), npcs (list of all NPC rows). Register router in engine/main.py.",
+      "acceptance": "Test GET /api/world returns 200 with JSON containing 'tiles', 'buildings', 'npcs' keys, each as lists.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 6,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "007",
+      "title": "POST /api/tick endpoint",
+      "description": "Add POST /api/tick to engine/routers/world.py. Requires admin auth. Calls process_tick(db) from simulation.py. Returns {tick: N, status: 'ok'}. Create stub process_tick(db) in engine/simulation.py that increments WorldState.tick by 1.",
+      "acceptance": "Test POST /api/tick with admin credentials returns 200 with tick number. Test without admin returns 401/403.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "api",
+        "simulation"
+      ],
+      "priority": 7,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "008",
+      "title": "GET /api/buildings",
+      "description": "Create engine/routers/buildings.py with GET /api/buildings returning all buildings as a JSON list. Each building serialized with id, name, building_type, x, y, capacity, created_at. Register router in engine/main.py.",
+      "acceptance": "Test GET /api/buildings returns 200 with a JSON list. After seeding, list length >= 3.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "building"
+      ],
+      "priority": 8,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "009",
+      "title": "POST /api/buildings (admin)",
+      "description": "Add POST /api/buildings to engine/routers/buildings.py. Requires admin auth. Creates a building from JSON body {name, building_type, x, y}. Returns the created building as JSON with 201 status.",
+      "acceptance": "Test POST with admin creates building and returns it. Test POST without admin returns 401/403. Test missing fields returns 422.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "building"
+      ],
+      "priority": 9,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "010",
+      "title": "GET /api/npcs",
+      "description": "Create engine/routers/npcs.py with GET /api/npcs returning all NPCs as a JSON list. Each NPC serialized with all fields. Register router in engine/main.py.",
+      "acceptance": "Test GET /api/npcs returns 200 with a JSON list. After seeding, list length >= 5.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "npc"
+      ],
+      "priority": 10,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "011",
+      "title": "POST /api/npcs (admin)",
+      "description": "Add POST /api/npcs to engine/routers/npcs.py. Requires admin auth. Creates NPC from JSON body {name, role, x, y}. Returns the created NPC as JSON with 201 status.",
+      "acceptance": "Test POST with admin creates NPC and returns it. Test POST without admin returns 401/403. Test missing fields returns 422.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "npc"
+      ],
+      "priority": 11,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "012",
+      "title": "Add gold field to NPC",
+      "description": "Ensure NPC model in engine/models.py has gold Integer field with default 0. Verify the field is properly typed and accessible. Write a focused test for gold operations.",
+      "acceptance": "Test creates an NPC with gold=100, asserts npc.gold == 100. Test creates NPC with default, asserts gold == 0.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "economy",
+        "npc"
+      ],
+      "priority": 12,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "013",
+      "title": "Transfer gold function",
+      "description": "Create transfer_gold(db, sender_id, receiver_id, amount) in engine/simulation.py. Deducts amount from sender's gold, adds to receiver's gold. Returns True on success, False if sender has insufficient funds. Also creates a Transaction record.",
+      "acceptance": "Test transfer with sufficient funds succeeds and balances update. Test transfer with insufficient funds returns False and no changes. Test negative amount returns False.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 13,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "014",
+      "title": "Transaction model and endpoint",
+      "description": "Add Transaction model to engine/models.py: id (PK), sender_id (FK to npcs), receiver_id (FK to npcs), amount (Integer), reason (String nullable), created_at (DateTime). Create engine/routers/transactions.py with GET /api/transactions returning transaction history.",
+      "acceptance": "Test creates a transaction, GET /api/transactions returns it. Test transaction has sender_id, receiver_id, amount fields.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "economy"
+      ],
+      "priority": 14,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "015",
+      "title": "Add hunger field to NPC",
+      "description": "Ensure NPC model in engine/models.py has hunger Integer field with default 0, representing range 0-100. Higher values mean hungrier. Write focused test for hunger field.",
+      "acceptance": "Test creates NPC with default hunger=0. Test creates NPC with hunger=50 and asserts value. Test hunger field exists on model.",
+      "test_file": "tests/test_needs.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 15,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "016",
+      "title": "Add energy field to NPC",
+      "description": "Ensure NPC model in engine/models.py has energy Integer field with default 100, representing range 0-100. Higher values mean more rested. Write focused test for energy field.",
+      "acceptance": "Test creates NPC with default energy=100. Test creates NPC with energy=30 and asserts value. Test energy field exists on model.",
+      "test_file": "tests/test_needs.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 16,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "017",
+      "title": "Tick decay for hunger and energy",
+      "description": "In process_tick(db) in engine/simulation.py, increase all NPC hunger by 5 and decrease energy by 3 per tick. Clamp hunger to max 100 and energy to min 0. Apply to every NPC in the database.",
+      "acceptance": "Test runs process_tick once: NPC hunger goes from 0 to 5, energy from 100 to 97. Test clamping: NPC with hunger=98 becomes 100 (not 103). NPC with energy=1 becomes 0 (not -2).",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc",
+        "tick"
+      ],
+      "priority": 17,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "018",
+      "title": "Assign homes to NPCs",
+      "description": "Create assign_homes(db) in engine/simulation.py. For each NPC without a home_building_id, find a residential building with capacity > current occupants and assign it. Skip NPCs that already have homes.",
+      "acceptance": "Test: create residential building with capacity=2, create 3 NPCs without homes. After assign_homes, 2 NPCs have home_building_id set, 1 does not.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc",
+        "building"
+      ],
+      "priority": 18,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "019",
+      "title": "Assign work to NPCs",
+      "description": "Create assign_work(db) in engine/simulation.py. For each NPC without a work_building_id, find a non-residential building matching their role and assign it. Farmers go to food buildings, guards to guard buildings, etc.",
+      "acceptance": "Test: create Farm building, create NPC with role='farmer' and no work. After assign_work, NPC has work_building_id pointing to farm. NPC with unmatched role stays unassigned.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc",
+        "building"
+      ],
+      "priority": 19,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "020",
+      "title": "Eating behavior",
+      "description": "Create eat(db, npc_id) in engine/simulation.py. Reduces the NPC's hunger by 30 (minimum 0). Costs 5 gold. If NPC has less than 5 gold, do nothing and return False. Returns True on success.",
+      "acceptance": "Test: NPC with hunger=50 and gold=10, after eat() hunger=20 and gold=5. Test: NPC with gold=3 cannot eat, returns False, hunger unchanged.",
+      "test_file": "tests/test_needs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 20,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "021",
+      "title": "Auto-eat in tick",
+      "description": "In process_tick(db) in engine/simulation.py, after hunger/energy decay, NPCs with hunger > 70 and gold >= 5 automatically call eat(). Process all qualifying NPCs.",
+      "acceptance": "Test: NPC starts with hunger=75, gold=10. After process_tick, hunger is reduced by 30 (after +5 decay, so 75+5-30=50). NPC with hunger=75, gold=2 does not eat.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc",
+        "tick"
+      ],
+      "priority": 21,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "022",
+      "title": "Sleeping behavior",
+      "description": "Create sleep_npc(db, npc_id) in engine/simulation.py. Restores the NPC's energy by 40, capped at 100. Always succeeds. Returns True.",
+      "acceptance": "Test: NPC with energy=30, after sleep_npc() energy=70. Test: NPC with energy=80, after sleep_npc() energy=100 (capped).",
+      "test_file": "tests/test_needs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 22,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "023",
+      "title": "Auto-sleep in tick",
+      "description": "In process_tick(db) in engine/simulation.py, NPCs with energy < 20 automatically call sleep_npc(). Process after hunger/energy decay and eating.",
+      "acceptance": "Test: NPC starts with energy=15. After process_tick (energy decreases by 3 to 12, then sleep restores +40 to 52). NPC with energy=50 does not sleep.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc",
+        "tick"
+      ],
+      "priority": 23,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "024",
+      "title": "WorldState model",
+      "description": "Add WorldState model to engine/models.py: id (PK), tick (Integer default 0), day (Integer default 1), time_of_day (String default 'morning'), weather (String nullable). Only one row should exist. Create init_world_state(db) in simulation.py that creates it idempotently.",
+      "acceptance": "Test: init_world_state creates exactly 1 WorldState row. Second call does not create another. tick defaults to 0, day to 1.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 24,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "025",
+      "title": "NPC movement",
+      "description": "In process_tick(db) in engine/simulation.py, NPCs with target_x/target_y set move 1 step closer per tick. If x < target_x, x += 1. If x > target_x, x -= 1. Same for y. Clamp to 0-49. Clear target when reached.",
+      "acceptance": "Test: NPC at (5,5) with target (8,7), after 1 tick at (6,6). After 2 more ticks at (8,7) and target cleared. Test clamping at grid edges.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc",
+        "tick"
+      ],
+      "priority": 25,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "026",
+      "title": "Earn gold at work",
+      "description": "Create process_work(db) in engine/simulation.py. For each NPC that has a work_building_id and is at the same (x,y) as their work building, add 10 gold. Call this from process_tick.",
+      "acceptance": "Test: NPC at work building location earns 10 gold per tick. NPC not at work building earns nothing. NPC without work_building_id earns nothing.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 26,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "027",
+      "title": "Resource model",
+      "description": "Add Resource model to engine/models.py: id (PK), name (String), quantity (Integer default 0), building_id (Integer FK to buildings), created_at (DateTime). __tablename__ = 'resources'.",
+      "acceptance": "Test imports Resource, creates one with name='Food', quantity=50, building_id set. Asserts all fields stored correctly.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 27,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "028",
+      "title": "Food production",
+      "description": "Create produce_resources(db) in engine/simulation.py. For each building with building_type='food', find or create a Resource named 'Food' linked to that building and increase quantity by 10. Call from process_tick.",
+      "acceptance": "Test: Farm building exists. After produce_resources, Food resource linked to farm has quantity increased by 10. Two calls = +20.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation",
+        "building"
+      ],
+      "priority": 28,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "029",
+      "title": "Buy food",
+      "description": "Create buy_food(db, npc_id) in engine/simulation.py. NPC spends 5 gold, hunger decreases by 30 (min 0). Requires a Food resource with quantity >= 1 at any building. Decrements food quantity by 1. Returns False if no food or insufficient gold.",
+      "acceptance": "Test: NPC with gold=10, hunger=50, food available. After buy_food: gold=5, hunger=20, food quantity decremented. Test with no food returns False.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation",
+        "npc"
+      ],
+      "priority": 29,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "030",
+      "title": "Treasury and taxes",
+      "description": "Create collect_taxes(db) in engine/simulation.py. Takes 10% (floor) of each NPC's gold and adds it to a Treasury building's gold_stored field. If no Treasury exists, create a Resource named 'Treasury' on Town Hall. Call from process_tick every 10 ticks.",
+      "acceptance": "Test: NPC with 100 gold, after collect_taxes has 90 gold. Treasury resource increased by 10. NPC with 5 gold loses 0 (floor of 0.5).",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 30,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "031",
+      "title": "Build building via simulation",
+      "description": "Create build_building(db, name, building_type, x, y) in engine/simulation.py. Validates x,y are in 0-49 range. Creates a Building row. Returns the new Building object. Raises ValueError if coordinates out of range or occupied.",
+      "acceptance": "Test: build_building creates building at valid coordinates. Test: out-of-range coordinates raise ValueError. Test: occupied tile raises ValueError.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building"
+      ],
+      "priority": 31,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "032",
+      "title": "Population growth",
+      "description": "Create check_population_growth(db) in engine/simulation.py. If average NPC happiness > 60 and total NPC count < 100, spawn a new NPC with random name and role at a random valid position. Call from process_tick every 20 ticks.",
+      "acceptance": "Test: 5 NPCs all with happiness=80, population < 100. After check_population_growth, 6 NPCs exist. Test: happiness=40 does not spawn. Test: population=100 does not spawn.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 32,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "033",
+      "title": "Event model",
+      "description": "Add Event model to engine/models.py: id (PK), event_type (String), description (String), tick (Integer), severity (String default 'info'), affected_npc_id (Integer FK nullable), affected_building_id (Integer FK nullable), created_at (DateTime).",
+      "acceptance": "Test imports Event, creates one with event_type='test', description='something happened', tick=1. Asserts severity defaults to 'info'.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 33,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "034",
+      "title": "Auto-log events in tick",
+      "description": "In process_tick(db) in engine/simulation.py, log notable events as Event rows: NPC ate (event_type='npc_ate'), NPC slept (event_type='npc_slept'), gold transferred (event_type='gold_transfer'). Include NPC name in description.",
+      "acceptance": "Test: after process_tick where an NPC eats, an Event with event_type='npc_ate' exists. Test: after tick where NPC sleeps, event_type='npc_slept' exists.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "tick"
+      ],
+      "priority": 34,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "035",
+      "title": "Weather system",
+      "description": "Create update_weather(db) in engine/simulation.py. Randomly sets WorldState.weather to one of: 'clear', 'rain', 'storm', 'snow', 'fog'. Weighted: clear 40%, rain 25%, storm 10%, snow 10%, fog 15%. Call from process_tick.",
+      "acceptance": "Test: after update_weather, WorldState.weather is one of the 5 valid values. Test: run 100 times, all values appear at least once.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 35,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "036",
+      "title": "Weather effects",
+      "description": "Create apply_weather_effects(db) in engine/simulation.py. Rain: farms produce +20% (12 instead of 10). Storm: random building takes damage (create damage Event). Snow: NPC movement halved (move every other tick). Call from process_tick after weather update.",
+      "acceptance": "Test: weather='rain', farm produces 12 food instead of 10. Test: weather='storm', a damage Event is created. Test: weather='snow', NPC moves 0 steps on odd ticks.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 36,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "037",
+      "title": "GET /api/events",
+      "description": "Create engine/routers/events.py with GET /api/events returning recent events as JSON list. Support ?limit=N query param (default 50). Order by created_at descending. Register in main.py.",
+      "acceptance": "Test: create 3 events, GET /api/events returns all 3. Test ?limit=1 returns only 1. Test events are ordered newest first.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 37,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "038",
+      "title": "GET /api/stats",
+      "description": "Create engine/routers/stats.py with GET /api/stats returning JSON: {population, total_gold, avg_hunger, avg_energy, avg_happiness, total_buildings, current_tick, current_day}. All computed from DB. Register in main.py.",
+      "acceptance": "Test: seed data, GET /api/stats returns 200 with all 8 keys. population matches NPC count. total_gold matches sum of NPC gold.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 38,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "039",
+      "title": "NPC happiness field",
+      "description": "Add happiness Integer field (default 50, range 0-100) to NPC model in engine/models.py. Create calculate_happiness(db, npc_id) in simulation.py: happiness = 100 - hunger + (energy/2) + min(gold, 50)/2, clamped 0-100. Call from process_tick.",
+      "acceptance": "Test: NPC with hunger=0, energy=100, gold=50 has happiness near 100. Test: NPC with hunger=100, energy=0, gold=0 has happiness=0. Test clamping.",
+      "test_file": "tests/test_needs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 39,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "040",
+      "title": "Personality traits",
+      "description": "Add personality String field to NPC model in engine/models.py (stores JSON string like '{\"hardworking\": true, \"lazy\": false}'). In seed_npcs, assign random personality traits from: hardworking, lazy, social, greedy, brave, cautious.",
+      "acceptance": "Test: seeded NPCs have non-empty personality field. Test: personality is valid JSON with at least one trait key.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 40,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "041",
+      "title": "Utility-based decisions",
+      "description": "Create get_npc_decision(db, npc) in engine/simulation.py. Returns dict {action: 'eat'|'sleep'|'work'|'wander'} based on needs: hunger>70 -> eat, energy<20 -> sleep, has work -> work, else wander. Personality modifies thresholds (lazy NPCs sleep at energy<40).",
+      "acceptance": "Test: NPC with hunger=80 decides 'eat'. Test: NPC with energy=10 decides 'sleep'. Test: lazy NPC with energy=35 decides 'sleep'. Test: NPC with work building decides 'work'.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 41,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "042",
+      "title": "Feature submit and list",
+      "description": "Create engine/routers/features.py with POST /api/features (body: {title, description}) creating a Feature row, and GET /api/features listing all features. Add Feature model to models.py: id, title, description, vote_count (default 0), status (default 'pending'), created_at. Register router.",
+      "acceptance": "Test: POST creates feature with title. GET returns list including it. Test: empty title returns 422. Test: vote_count defaults to 0.",
+      "test_file": "tests/test_features.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 42,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "043",
+      "title": "Voting with IP dedup",
+      "description": "Add POST /api/features/{id}/vote to features router. Records voter IP from request. Add Vote model: id, feature_id (FK), voter_ip (String), created_at. Unique constraint on (feature_id, voter_ip). Increments Feature.vote_count. Returns 409 on duplicate.",
+      "acceptance": "Test: first vote succeeds, vote_count=1. Second vote from same IP returns 409, vote_count still 1. Different IP succeeds, vote_count=2.",
+      "test_file": "tests/test_features.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 43,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "044",
+      "title": "Admin approval",
+      "description": "Add POST /api/features/{id}/approve to features router. Requires admin auth. Changes feature status from 'pending' to 'approved'. Returns updated feature. Non-admin gets 401/403.",
+      "acceptance": "Test: admin approves pending feature, status='approved'. Test: non-admin gets 401/403. Test: approving non-existent feature returns 404.",
+      "test_file": "tests/test_features.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "security"
+      ],
+      "priority": 44,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "045",
+      "title": "PRD conversion",
+      "description": "Add POST /api/features/{id}/to-prd to features router. Requires admin auth. Sets prd_title, prd_description, prd_priority fields on Feature model. Changes status to 'published'. Returns updated feature.",
+      "acceptance": "Test: admin converts approved feature to PRD, status='published', prd_title is set. Test: converting pending feature returns 400. Test: non-admin returns 401/403.",
+      "test_file": "tests/test_features.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "security"
+      ],
+      "priority": 45,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "046",
+      "title": "Add bakery building type",
+      "description": "Add 'bakery' to BUILDING_TYPES list in engine/simulation.py. Create seed_bakery(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Bakery converts wheat into bread. Produces 5 Bread per tick if Wheat resource available. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'bakery' is in BUILDING_TYPES. Test: seed_bakery creates exactly one bakery building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 46,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "047",
+      "title": "Add blacksmith building type",
+      "description": "Add 'blacksmith' to BUILDING_TYPES list in engine/simulation.py. Create seed_blacksmith(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Blacksmith converts ore into tools. Produces 3 Tools per tick if Ore resource available. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'blacksmith' is in BUILDING_TYPES. Test: seed_blacksmith creates exactly one blacksmith building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 47,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "048",
+      "title": "Add farm building type",
+      "description": "Add 'farm' to BUILDING_TYPES list in engine/simulation.py. Create seed_farm(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Farm produces wheat and food. Produces 10 Wheat and 10 Food per tick. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'farm' is in BUILDING_TYPES. Test: seed_farm creates exactly one farm building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 48,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "049",
+      "title": "Add church building type",
+      "description": "Add 'church' to BUILDING_TYPES list in engine/simulation.py. Create seed_church(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Church increases happiness of nearby NPCs by 5 per tick within radius 10. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'church' is in BUILDING_TYPES. Test: seed_church creates exactly one church building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 49,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "050",
+      "title": "Add school building type",
+      "description": "Add 'school' to BUILDING_TYPES list in engine/simulation.py. Create seed_school(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. School increases NPC skill level. NPCs assigned to school gain +1 skill per 5 ticks. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'school' is in BUILDING_TYPES. Test: seed_school creates exactly one school building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 50,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "051",
+      "title": "Add hospital building type",
+      "description": "Add 'hospital' to BUILDING_TYPES list in engine/simulation.py. Create seed_hospital(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Hospital heals sick NPCs. Reduces illness severity by 20 per tick for assigned NPCs. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'hospital' is in BUILDING_TYPES. Test: seed_hospital creates exactly one hospital building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 51,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "052",
+      "title": "Add tavern building type",
+      "description": "Add 'tavern' to BUILDING_TYPES list in engine/simulation.py. Create seed_tavern(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Tavern restores energy and happiness. NPCs spending gold here gain +20 energy and +10 happiness. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'tavern' is in BUILDING_TYPES. Test: seed_tavern creates exactly one tavern building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 52,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "053",
+      "title": "Add library building type",
+      "description": "Add 'library' to BUILDING_TYPES list in engine/simulation.py. Create seed_library(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Library produces Books resource. Produces 2 Books per tick. Nearby NPCs gain +5 happiness. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'library' is in BUILDING_TYPES. Test: seed_library creates exactly one library building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 53,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "054",
+      "title": "Add mine building type",
+      "description": "Add 'mine' to BUILDING_TYPES list in engine/simulation.py. Create seed_mine(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Mine produces Ore resource. Produces 8 Ore per tick when miners are assigned. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'mine' is in BUILDING_TYPES. Test: seed_mine creates exactly one mine building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 54,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "055",
+      "title": "Add lumber_mill building type",
+      "description": "Add 'lumber_mill' to BUILDING_TYPES list in engine/simulation.py. Create seed_lumber_mill(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Lumber mill produces Wood resource. Produces 8 Wood per tick when lumberjacks are assigned. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'lumber_mill' is in BUILDING_TYPES. Test: seed_lumber_mill creates exactly one lumber_mill building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 55,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "056",
+      "title": "Add fishing_dock building type",
+      "description": "Add 'fishing_dock' to BUILDING_TYPES list in engine/simulation.py. Create seed_fishing_dock(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Fishing dock produces Fish resource. Produces 6 Fish per tick when fishermen are assigned. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'fishing_dock' is in BUILDING_TYPES. Test: seed_fishing_dock creates exactly one fishing_dock building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 56,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "057",
+      "title": "Add guard_tower building type",
+      "description": "Add 'guard_tower' to BUILDING_TYPES list in engine/simulation.py. Create seed_guard_tower(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Guard tower provides security. Reduces crime rate in radius 15. Guards assigned here have +20 effectiveness. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'guard_tower' is in BUILDING_TYPES. Test: seed_guard_tower creates exactly one guard_tower building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 57,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "058",
+      "title": "Add wall building type",
+      "description": "Add 'wall' to BUILDING_TYPES list in engine/simulation.py. Create seed_wall(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Wall segment provides town defense. Increases overall defense score by 5 per wall segment. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'wall' is in BUILDING_TYPES. Test: seed_wall creates exactly one wall building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 58,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "059",
+      "title": "Add gate building type",
+      "description": "Add 'gate' to BUILDING_TYPES list in engine/simulation.py. Create seed_gate(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Gate allows controlled entry. Must be adjacent to wall segments. Can be opened/closed. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'gate' is in BUILDING_TYPES. Test: seed_gate creates exactly one gate building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 59,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "060",
+      "title": "Add fountain building type",
+      "description": "Add 'fountain' to BUILDING_TYPES list in engine/simulation.py. Create seed_fountain(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Fountain increases happiness of all NPCs within radius 8 by 3 per tick. Decorative building. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'fountain' is in BUILDING_TYPES. Test: seed_fountain creates exactly one fountain building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 60,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "061",
+      "title": "Add well building type",
+      "description": "Add 'well' to BUILDING_TYPES list in engine/simulation.py. Create seed_well(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Well provides water resource. Produces 20 Water per tick. Required for farms and hospitals. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'well' is in BUILDING_TYPES. Test: seed_well creates exactly one well building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 61,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "062",
+      "title": "Add warehouse building type",
+      "description": "Add 'warehouse' to BUILDING_TYPES list in engine/simulation.py. Create seed_warehouse(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Warehouse stores excess resources. Capacity of 500 units. Resources here don't decay. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'warehouse' is in BUILDING_TYPES. Test: seed_warehouse creates exactly one warehouse building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 62,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "063",
+      "title": "Add bank building type",
+      "description": "Add 'bank' to BUILDING_TYPES list in engine/simulation.py. Create seed_bank(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Bank stores NPC gold safely. NPCs can deposit/withdraw. Deposits earn 2% interest per 50 ticks. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'bank' is in BUILDING_TYPES. Test: seed_bank creates exactly one bank building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 63,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "064",
+      "title": "Add theater building type",
+      "description": "Add 'theater' to BUILDING_TYPES list in engine/simulation.py. Create seed_theater(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Theater produces Art resource. Produces 2 Art per tick. Shows increase happiness by 15 for attendees. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'theater' is in BUILDING_TYPES. Test: seed_theater creates exactly one theater building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 64,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "065",
+      "title": "Add arena building type",
+      "description": "Add 'arena' to BUILDING_TYPES list in engine/simulation.py. Create seed_arena(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Arena hosts competitions. NPCs can compete for gold prizes. Winner gets 50 gold, generates events. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'arena' is in BUILDING_TYPES. Test: seed_arena creates exactly one arena building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 65,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "066",
+      "title": "Add prison building type",
+      "description": "Add 'prison' to BUILDING_TYPES list in engine/simulation.py. Create seed_prison(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Prison holds criminal NPCs. Reduces crime. Imprisoned NPCs cannot work but hunger still increases. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'prison' is in BUILDING_TYPES. Test: seed_prison creates exactly one prison building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 66,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "067",
+      "title": "Add graveyard building type",
+      "description": "Add 'graveyard' to BUILDING_TYPES list in engine/simulation.py. Create seed_graveyard(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Graveyard stores deceased NPCs. Tracks death records. Nearby NPCs get -5 happiness. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'graveyard' is in BUILDING_TYPES. Test: seed_graveyard creates exactly one graveyard building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 67,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "068",
+      "title": "Add garden building type",
+      "description": "Add 'garden' to BUILDING_TYPES list in engine/simulation.py. Create seed_garden(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Garden produces Herbs resource. Produces 4 Herbs per tick. Nearby NPCs get +3 happiness. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'garden' is in BUILDING_TYPES. Test: seed_garden creates exactly one garden building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 68,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "069",
+      "title": "Add windmill building type",
+      "description": "Add 'windmill' to BUILDING_TYPES list in engine/simulation.py. Create seed_windmill(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Windmill converts Wheat to Flour. Produces 8 Flour per tick if Wheat available. Weather affects output. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'windmill' is in BUILDING_TYPES. Test: seed_windmill creates exactly one windmill building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 69,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "070",
+      "title": "Add watchtower building type",
+      "description": "Add 'watchtower' to BUILDING_TYPES list in engine/simulation.py. Create seed_watchtower(db) that places one at appropriate coordinates. Add production/interaction rules in process_tick. Watchtower extends vision range. Detects approaching events (bandits, storms) 5 ticks early. Requires guard. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "Test: 'watchtower' is in BUILDING_TYPES. Test: seed_watchtower creates exactly one watchtower building. Test: production rules apply correctly in process_tick.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "asset"
+      ],
+      "priority": 70,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "071",
+      "title": "Add farmer role behavior",
+      "description": "In process_work(db) in engine/simulation.py, when NPC role is 'farmer', apply specific work behavior: harvests crops at Farm buildings, producing 10 Food per tick. Only activates when NPC is at their work building location.",
+      "acceptance": "Test: NPC with role='farmer' at work building produces expected output after process_work. Test: NPC not at work building produces nothing.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 71,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "072",
+      "title": "Add baker role behavior",
+      "description": "In process_work(db) in engine/simulation.py, when NPC role is 'baker', apply specific work behavior: converts Wheat into Bread at Bakery buildings, producing 5 Bread per tick. Only activates when NPC is at their work building location.",
+      "acceptance": "Test: NPC with role='baker' at work building produces expected output after process_work. Test: NPC not at work building produces nothing.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 72,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "073",
+      "title": "Add blacksmith role behavior",
+      "description": "In process_work(db) in engine/simulation.py, when NPC role is 'blacksmith', apply specific work behavior: converts Ore into Tools at Blacksmith buildings, producing 3 Tools per tick. Only activates when NPC is at their work building location.",
+      "acceptance": "Test: NPC with role='blacksmith' at work building produces expected output after process_work. Test: NPC not at work building produces nothing.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 73,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "074",
+      "title": "Add guard role behavior",
+      "description": "In process_work(db) in engine/simulation.py, when NPC role is 'guard', apply specific work behavior: patrols between guard_tower and gate buildings, reducing crime rate by 10%. Only activates when NPC is at their work building location.",
+      "acceptance": "Test: NPC with role='guard' at work building produces expected output after process_work. Test: NPC not at work building produces nothing.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 74,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "075",
+      "title": "Add priest role behavior",
+      "description": "In process_work(db) in engine/simulation.py, when NPC role is 'priest', apply specific work behavior: works at Church, increasing happiness of all NPCs within radius 10 by 5. Only activates when NPC is at their work building location.",
+      "acceptance": "Test: NPC with role='priest' at work building produces expected output after process_work. Test: NPC not at work building produces nothing.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 75,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "076",
+      "title": "Add teacher role behavior",
+      "description": "In process_work(db) in engine/simulation.py, when NPC role is 'teacher', apply specific work behavior: works at School, increasing skill of student NPCs by 1 per 5 ticks. Only activates when NPC is at their work building location.",
+      "acceptance": "Test: NPC with role='teacher' at work building produces expected output after process_work. Test: NPC not at work building produces nothing.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 76,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "077",
+      "title": "Add doctor role behavior",
+      "description": "In process_work(db) in engine/simulation.py, when NPC role is 'doctor', apply specific work behavior: works at Hospital, healing sick NPCs by reducing illness severity by 20 per tick. Only activates when NPC is at their work building location.",
+      "acceptance": "Test: NPC with role='doctor' at work building produces expected output after process_work. Test: NPC not at work building produces nothing.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 77,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "078",
+      "title": "Add tavern_keeper role behavior",
+      "description": "In process_work(db) in engine/simulation.py, when NPC role is 'tavern_keeper', apply specific work behavior: works at Tavern, serves NPCs who spend 3 gold for +20 energy and +10 happiness. Only activates when NPC is at their work building location.",
+      "acceptance": "Test: NPC with role='tavern_keeper' at work building produces expected output after process_work. Test: NPC not at work building produces nothing.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 78,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "079",
+      "title": "Add miner role behavior",
+      "description": "In process_work(db) in engine/simulation.py, when NPC role is 'miner', apply specific work behavior: works at Mine, producing 8 Ore per tick. Only activates when NPC is at their work building location.",
+      "acceptance": "Test: NPC with role='miner' at work building produces expected output after process_work. Test: NPC not at work building produces nothing.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 79,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "080",
+      "title": "Add lumberjack role behavior",
+      "description": "In process_work(db) in engine/simulation.py, when NPC role is 'lumberjack', apply specific work behavior: works at Lumber Mill, producing 8 Wood per tick. Only activates when NPC is at their work building location.",
+      "acceptance": "Test: NPC with role='lumberjack' at work building produces expected output after process_work. Test: NPC not at work building produces nothing.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 80,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "081",
+      "title": "Add fisherman role behavior",
+      "description": "In process_work(db) in engine/simulation.py, when NPC role is 'fisherman', apply specific work behavior: works at Fishing Dock, producing 6 Fish per tick. Only activates when NPC is at their work building location.",
+      "acceptance": "Test: NPC with role='fisherman' at work building produces expected output after process_work. Test: NPC not at work building produces nothing.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 81,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "082",
+      "title": "Add artist role behavior",
+      "description": "In process_work(db) in engine/simulation.py, when NPC role is 'artist', apply specific work behavior: works at Theater, producing 2 Art per tick and boosting nearby happiness by 5. Only activates when NPC is at their work building location.",
+      "acceptance": "Test: NPC with role='artist' at work building produces expected output after process_work. Test: NPC not at work building produces nothing.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 82,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "083",
+      "title": "Add bard role behavior",
+      "description": "In process_work(db) in engine/simulation.py, when NPC role is 'bard', apply specific work behavior: wanders between Tavern and Theater, boosting happiness of nearby NPCs by 8 per tick. Only activates when NPC is at their work building location.",
+      "acceptance": "Test: NPC with role='bard' at work building produces expected output after process_work. Test: NPC not at work building produces nothing.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 83,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "084",
+      "title": "Add politician role behavior",
+      "description": "In process_work(db) in engine/simulation.py, when NPC role is 'politician', apply specific work behavior: works at Town Hall, influences tax rates and policy decisions. Only activates when NPC is at their work building location.",
+      "acceptance": "Test: NPC with role='politician' at work building produces expected output after process_work. Test: NPC not at work building produces nothing.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 84,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "085",
+      "title": "Add thief role behavior",
+      "description": "In process_work(db) in engine/simulation.py, when NPC role is 'thief', apply specific work behavior: steals gold from random NPCs at night (time_of_day='night'). Takes 5-15 gold per tick. Can be caught by guards. Only activates when NPC is at their work building location.",
+      "acceptance": "Test: NPC with role='thief' at work building produces expected output after process_work. Test: NPC not at work building produces nothing.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 85,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "086",
+      "title": "Relationship model",
+      "description": "Add Relationship model to engine/models.py: id (PK), npc_id_a (FK), npc_id_b (FK), relationship_type (String: 'friend', 'rival', 'spouse', 'parent'), strength (Integer 0-100, default 50), created_at. Unique constraint on (npc_id_a, npc_id_b).",
+      "acceptance": "Test: create relationship between two NPCs. Test unique constraint prevents duplicate. Test relationship_type values.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 86,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "087",
+      "title": "Friendship and rivalry",
+      "description": "Create update_relationships(db) in engine/simulation.py. NPCs at the same building gain +5 friendship strength. NPCs competing for same resource gain +5 rivalry. Call from process_tick. Create relationships if they don't exist.",
+      "acceptance": "Test: two NPCs at same building for 3 ticks have friendship strength >= 65. Test: two NPCs at competing buildings develop rivalry.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 87,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "088",
+      "title": "Marriage system",
+      "description": "Create check_marriage(db) in engine/simulation.py. Two NPCs with friendship strength > 80 and no existing spouse may marry (relationship_type='spouse'). They move to the same home. Call from process_tick every 50 ticks.",
+      "acceptance": "Test: two NPCs with friendship=85 get married. Test: NPC already married cannot marry again. Test: friendship=70 does not trigger marriage.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 88,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "089",
+      "title": "Aging and death",
+      "description": "Add age (Integer default 20) and max_age (Integer default 80) fields to NPC model. Create age_npcs(db) in simulation.py: increment age every 100 ticks. NPCs reaching max_age die (set status='dead'). Add status field to NPC (default 'alive').",
+      "acceptance": "Test: NPC ages by 1 after 100 ticks. Test: NPC at max_age is marked dead. Test: dead NPCs excluded from process_tick.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 89,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "090",
+      "title": "Inheritance",
+      "description": "Create process_inheritance(db) in engine/simulation.py. When an NPC dies, their gold is split among their children (parent relationships). If no children, gold goes to spouse. If neither, gold goes to Treasury.",
+      "acceptance": "Test: NPC with 100 gold dies, 2 children each get 50. Test: no children, spouse gets 100. Test: no family, Treasury gets 100.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 90,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "091",
+      "title": "Wheat to bread supply chain",
+      "description": "Create supply chain: Farm produces Wheat -> Bakery converts Wheat to Bread -> Market sells Bread. In produce_resources, bakeries consume 2 Wheat to produce 1 Bread. Add conversion logic in engine/simulation.py.",
+      "acceptance": "Test: Farm produces Wheat. Bakery with Wheat available produces Bread. Bakery without Wheat produces nothing. Wheat quantity decreases by 2 per Bread.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 91,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "092",
+      "title": "Ore to tools supply chain",
+      "description": "Create supply chain: Mine produces Ore -> Blacksmith converts Ore to Tools. In produce_resources, blacksmiths consume 3 Ore to produce 1 Tool. Tools required for building construction.",
+      "acceptance": "Test: Mine produces Ore. Blacksmith with Ore produces Tools. Ore decremented by 3 per Tool. No Ore means no Tools.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 92,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "093",
+      "title": "Wood to lumber supply chain",
+      "description": "Create supply chain: Forest area produces Wood -> Lumber Mill converts Wood to Lumber. In produce_resources, lumber mills consume 2 Wood to produce 1 Lumber. Lumber required for building construction.",
+      "acceptance": "Test: Lumber Mill with Wood produces Lumber. Wood decremented by 2 per Lumber. No Wood means no Lumber production.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 93,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "094",
+      "title": "Fish to market supply chain",
+      "description": "Create supply chain: Fishing Dock produces Fish -> Fish sold at market. In produce_resources, fishing docks produce Fish. Fish can be bought by NPCs to reduce hunger by 25 for 3 gold.",
+      "acceptance": "Test: Fishing dock produces Fish. NPC can buy fish, hunger reduces by 25, gold reduces by 3. No fish means cannot buy.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 94,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "095",
+      "title": "Herbs to medicine supply chain",
+      "description": "Create supply chain: Garden produces Herbs -> Hospital converts Herbs to Medicine. In produce_resources, hospitals consume 3 Herbs to produce 1 Medicine. Medicine cures illness.",
+      "acceptance": "Test: Garden produces Herbs. Hospital with Herbs produces Medicine. Herbs decremented by 3 per Medicine. No Herbs means no Medicine.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 95,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "096",
+      "title": "Supply and demand pricing",
+      "description": "Create calculate_price(db, resource_name) in engine/simulation.py. Base price modified by supply/demand: price = base_price * (demand / max(supply, 1)). Track demand as number of buy attempts per tick. Store in PriceHistory model.",
+      "acceptance": "Test: abundant resource has low price. Scarce resource with high demand has high price. Price never goes below 1.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 96,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "097",
+      "title": "Price history model",
+      "description": "Add PriceHistory model to engine/models.py: id, resource_name (String), price (Float), supply (Integer), demand (Integer), tick (Integer), created_at. Record price each tick in produce_resources.",
+      "acceptance": "Test: after produce_resources, PriceHistory has entry for each resource. Test: price history accumulates over multiple ticks.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 97,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "098",
+      "title": "Trade between buildings",
+      "description": "Create process_trade(db) in engine/simulation.py. Buildings with excess resources trade with buildings that need them. Warehouse acts as intermediary. Resources move between buildings based on need.",
+      "acceptance": "Test: Farm with 50 Food, Bakery needing Wheat. After process_trade, resources transferred. Test: Warehouse receives overflow.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 98,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "099",
+      "title": "Merchant NPC routes",
+      "description": "In process_work for merchant role, NPC travels between buildings carrying resources. Create get_merchant_route(db, npc) in simulation.py returning list of building stops. Merchant picks up from producers, delivers to consumers.",
+      "acceptance": "Test: merchant NPC with route visits buildings in order. Test: merchant picks up resources at producer. Test: merchant delivers resources at consumer.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 99,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "100",
+      "title": "Market saturation",
+      "description": "Create check_market_saturation(db) in engine/simulation.py. If total resource quantity exceeds 2x demand for 10 consecutive ticks, price drops to minimum. Producers slow output by 50%. Add is_saturated flag to Resource model.",
+      "acceptance": "Test: resource oversupplied for 10 ticks becomes saturated. Test: saturated resource has minimum price. Test: production halved when saturated.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 100,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "101",
+      "title": "Configurable tax rates",
+      "description": "Add tax_rate (Float default 0.1) field to WorldState model. Modify collect_taxes to use WorldState.tax_rate instead of hardcoded 10%. Create POST /api/admin/tax-rate endpoint to change it (admin only).",
+      "acceptance": "Test: default tax rate is 10%. Test: changing tax rate to 20% collects 20%. Test: non-admin cannot change tax rate.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 101,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "102",
+      "title": "Wage adjustments",
+      "description": "Add base_wage (Integer default 10) field to WorldState model. Modify process_work to use WorldState.base_wage. Create POST /api/admin/wage endpoint to change it. Wages auto-adjust based on inflation every 100 ticks.",
+      "acceptance": "Test: default wage is 10. Test: changing wage to 15 pays 15 per tick. Test: wage auto-adjusts with inflation.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 102,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "103",
+      "title": "Inflation tracking",
+      "description": "Create track_inflation(db) in engine/simulation.py. Compare current average prices to prices 100 ticks ago. Store inflation_rate in WorldState. Call from process_tick every 10 ticks.",
+      "acceptance": "Test: stable prices = 0% inflation. Test: prices doubled = 100% inflation. Test: inflation_rate stored in WorldState.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 103,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "104",
+      "title": "Recession detection",
+      "description": "Create detect_recession(db) in engine/simulation.py. Recession if: average NPC gold decreasing for 50+ ticks AND unemployment > 20%. Set WorldState.economic_status to 'recession'. Log Event.",
+      "acceptance": "Test: declining gold and high unemployment triggers recession. Test: healthy economy is not recession. Test: Event logged on recession start.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 104,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "105",
+      "title": "Economic stimulus",
+      "description": "Create apply_stimulus(db) in engine/simulation.py. During recession: reduce tax rate by 50%, give each NPC 20 gold from Treasury, increase production by 25%. Auto-triggers when recession detected. Ends when economy recovers.",
+      "acceptance": "Test: recession triggers stimulus. Test: NPCs receive gold. Test: tax rate reduced. Test: stimulus ends when recession ends.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 105,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "106",
+      "title": "Art luxury goods",
+      "description": "Theater produces Art resource (2 per tick). NPCs can buy Art for 15 gold, gaining +20 happiness. Art is a luxury: only bought when hunger < 30 and energy > 60. Add luxury buying logic to process_tick.",
+      "acceptance": "Test: Theater produces Art. NPC buys Art when needs are met, happiness increases. NPC with high hunger does not buy Art.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 106,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "107",
+      "title": "Books luxury goods",
+      "description": "Library produces Books resource (2 per tick). NPCs can buy Books for 10 gold, gaining +15 happiness and +5 skill. Books only bought when hunger < 30 and energy > 60. Add to luxury buying logic.",
+      "acceptance": "Test: Library produces Books. NPC buys Books when needs met. Happiness and skill increase. NPC with high hunger skips Books.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 107,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "108",
+      "title": "Medicine goods",
+      "description": "Hospital produces Medicine from Herbs (3 Herbs -> 1 Medicine). Sick NPCs automatically buy Medicine for 8 gold. Medicine cures illness (set illness_severity to 0). Add illness_severity field to NPC (default 0).",
+      "acceptance": "Test: Hospital produces Medicine. Sick NPC buys Medicine, illness cured. Healthy NPC does not buy Medicine. No Medicine available, NPC stays sick.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 108,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "109",
+      "title": "Add drought event type",
+      "description": "Create trigger_drought(db) in engine/simulation.py. Drought event reduces farm output by 75% for 10 ticks. Water resource depleted. Triggers when weather is 'clear' for 20+ consecutive ticks. Log Event with event_type='drought' and appropriate severity. Check trigger conditions in process_tick.",
+      "acceptance": "Test: drought triggers under correct conditions. Test: effects apply correctly. Test: Event row created with type='drought'. Test: event ends after duration.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 109,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "110",
+      "title": "Add flood event type",
+      "description": "Create trigger_flood(db) in engine/simulation.py. Flood event damages buildings near water (y < 10). Destroys 50% of stored food. Triggers during heavy rain lasting 10+ ticks. Log Event with event_type='flood' and appropriate severity. Check trigger conditions in process_tick.",
+      "acceptance": "Test: flood triggers under correct conditions. Test: effects apply correctly. Test: Event row created with type='flood'. Test: event ends after duration.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 110,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "111",
+      "title": "Add fire event type",
+      "description": "Create trigger_fire(db) in engine/simulation.py. Fire event destroys a random building. Nearby buildings have 30% chance of catching fire. Guards and wells can fight fire. Creates rebuilding opportunity. Log Event with event_type='fire' and appropriate severity. Check trigger conditions in process_tick.",
+      "acceptance": "Test: fire triggers under correct conditions. Test: effects apply correctly. Test: Event row created with type='fire'. Test: event ends after duration.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 111,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "112",
+      "title": "Add plague event type",
+      "description": "Create trigger_plague(db) in engine/simulation.py. Plague increases illness_severity of all NPCs by 20 per tick for 15 ticks. Hospital and Medicine reduce severity. Dead NPCs if severity reaches 100. Log Event with event_type='plague' and appropriate severity. Check trigger conditions in process_tick.",
+      "acceptance": "Test: plague triggers under correct conditions. Test: effects apply correctly. Test: Event row created with type='plague'. Test: event ends after duration.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 112,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "113",
+      "title": "Add harvest_festival event type",
+      "description": "Create trigger_harvest_festival(db) in engine/simulation.py. Harvest festival occurs when food surplus > 200. All NPCs gain +30 happiness, -20 hunger. Consumes 100 food. Lasts 3 ticks. Log Event with event_type='harvest_festival' and appropriate severity. Check trigger conditions in process_tick.",
+      "acceptance": "Test: harvest_festival triggers under correct conditions. Test: effects apply correctly. Test: Event row created with type='harvest_festival'. Test: event ends after duration.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 113,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "114",
+      "title": "Add bandit_raid event type",
+      "description": "Create trigger_bandit_raid(db) in engine/simulation.py. Bandit raid steals 20% of Treasury gold and 10% of random NPC gold. Guards reduce theft by 5% per guard. Creates Event log entries. Log Event with event_type='bandit_raid' and appropriate severity. Check trigger conditions in process_tick.",
+      "acceptance": "Test: bandit_raid triggers under correct conditions. Test: effects apply correctly. Test: Event row created with type='bandit_raid'. Test: event ends after duration.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 114,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "115",
+      "title": "Add earthquake event type",
+      "description": "Create trigger_earthquake(db) in engine/simulation.py. Earthquake damages all buildings by random amount (10-50% capacity reduction). Stone buildings take less damage. Triggers randomly with 1% chance per tick. Log Event with event_type='earthquake' and appropriate severity. Check trigger conditions in process_tick.",
+      "acceptance": "Test: earthquake triggers under correct conditions. Test: effects apply correctly. Test: Event row created with type='earthquake'. Test: event ends after duration.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 115,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "116",
+      "title": "Add market_crash event type",
+      "description": "Create trigger_market_crash(db) in engine/simulation.py. Market crash reduces all resource prices by 60% for 20 ticks. NPCs lose confidence. Gold hoarding increases. Triggers when inflation > 50%. Log Event with event_type='market_crash' and appropriate severity. Check trigger conditions in process_tick.",
+      "acceptance": "Test: market_crash triggers under correct conditions. Test: effects apply correctly. Test: Event row created with type='market_crash'. Test: event ends after duration.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 116,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "117",
+      "title": "Add baby_boom event type",
+      "description": "Create trigger_baby_boom(db) in engine/simulation.py. Baby boom spawns 5-10 new NPCs when average happiness > 80 for 50+ ticks. New NPCs are young (age=0) with random roles. Log Event with event_type='baby_boom' and appropriate severity. Check trigger conditions in process_tick.",
+      "acceptance": "Test: baby_boom triggers under correct conditions. Test: effects apply correctly. Test: Event row created with type='baby_boom'. Test: event ends after duration.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 117,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "118",
+      "title": "Add gold_rush event type",
+      "description": "Create trigger_gold_rush(db) in engine/simulation.py. Gold rush: mine output triples for 20 ticks. All NPCs get +10 gold per tick. Prices increase 50%. Triggers randomly with 2% chance per tick. Log Event with event_type='gold_rush' and appropriate severity. Check trigger conditions in process_tick.",
+      "acceptance": "Test: gold_rush triggers under correct conditions. Test: effects apply correctly. Test: Event row created with type='gold_rush'. Test: event ends after duration.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 118,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "119",
+      "title": "Cascading: drought to famine",
+      "description": "Create cascading effect: drought lasting 15+ ticks triggers famine. Famine: all NPC hunger increases by 15 per tick instead of 5. NPCs with hunger=100 for 5 ticks die. Log famine Event. Implement in engine/simulation.py as part of process_tick event chain. Check for trigger conditions each tick.",
+      "acceptance": "Test: cascading effect triggers after initial event. Test: downstream effects apply. Test: Event chain logged correctly.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 119,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "120",
+      "title": "Cascading: fire to rebuilding boom",
+      "description": "Create cascading effect: after fire destroys buildings, trigger construction_boom. Lumber and Tools demand doubles. Builder NPCs earn 2x wages. New buildings constructed automatically if resources available. Implement in engine/simulation.py as part of process_tick event chain. Check for trigger conditions each tick.",
+      "acceptance": "Test: cascading effect triggers after initial event. Test: downstream effects apply. Test: Event chain logged correctly.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 120,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "121",
+      "title": "Cascading: plague to hospital overwhelmed",
+      "description": "Create cascading effect: plague with 50%+ NPCs sick overwhelms hospital. Hospital healing reduced by 75%. Priest NPCs pray at Church, giving +5 healing to nearby NPCs. Log 'hospital_overwhelmed' Event. Implement in engine/simulation.py as part of process_tick event chain. Check for trigger conditions each tick.",
+      "acceptance": "Test: cascading effect triggers after initial event. Test: downstream effects apply. Test: Event chain logged correctly.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 121,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "122",
+      "title": "Cascading: flood to price spike",
+      "description": "Create cascading effect: flood destroys crops, Food price triples for 30 ticks. NPCs hoard food. Merchants prioritize food delivery. Hunger increases faster. Log 'price_spike' Event. Implement in engine/simulation.py as part of process_tick event chain. Check for trigger conditions each tick.",
+      "acceptance": "Test: cascading effect triggers after initial event. Test: downstream effects apply. Test: Event chain logged correctly.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 122,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "123",
+      "title": "Cascading: bandit raid to justice",
+      "description": "Create cascading effect: after bandit_raid, guards pursue bandits for 10 ticks. If guards > 3, bandits caught and imprisoned. Stolen gold partially recovered. If guards < 3, bandits escape and raid again in 50 ticks. Implement in engine/simulation.py as part of process_tick event chain. Check for trigger conditions each tick.",
+      "acceptance": "Test: cascading effect triggers after initial event. Test: downstream effects apply. Test: Event chain logged correctly.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 123,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "124",
+      "title": "Base HTML template",
+      "description": "Add base.html template with Tailwind, HTMX, and navigation skeleton. All other templates extend this.",
+      "acceptance": "Test: GET / returns 200 with HTML containing 'html', 'head', 'body' tags. Test: response includes htmx script src.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 124,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "125",
+      "title": "Navigation bar",
+      "description": "Add navigation bar partial with links to town view (/), buildings list, NPC list, events, dashboard, and voting.",
+      "acceptance": "Test: GET / returns HTML with nav element containing links to all pages. Test: each link href is correct.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 125,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "126",
+      "title": "Footer component",
+      "description": "Add footer partial with town stats (population, gold, current day) that auto-updates via HTMX polling.",
+      "acceptance": "Test: GET / returns HTML with footer element containing 'Qwen Town'. Test: footer includes tick display area.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 126,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "127",
+      "title": "Responsive grid layout",
+      "description": "Add responsive layout CSS classes and mobile-friendly viewport settings to base.html.",
+      "acceptance": "Test: GET / returns HTML with grid container classes. Test: responsive breakpoint classes present (md:grid-cols-2, lg:grid-cols-3).",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 127,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "128",
+      "title": "Buildings list page",
+      "description": "Add /buildings page template listing all buildings with type, location, capacity. Uses HTMX for filtering. Links to building detail pages.",
+      "acceptance": "Test: GET /grid returns 200 with grid container. Test: grid has representation of tiles. Test: buildings are displayed.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 128,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "129",
+      "title": "Building detail page",
+      "description": "Add /buildings/{id} detail page showing building info, assigned NPCs, resources, production stats.",
+      "acceptance": "Test: GET /buildings/1 returns 200 with building name. Test: assigned NPCs listed. Test: non-existent building returns 404.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 129,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "130",
+      "title": "NPC list page",
+      "description": "Add /npcs page template listing all NPCs with name, role, hunger, energy, gold. HTMX filtering by role.",
+      "acceptance": "Test: GET /npcs/1 returns 200 with NPC name. Test: stats displayed. Test: non-existent NPC returns 404.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 130,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "131",
+      "title": "NPC detail page",
+      "description": "Add /npcs/{id} detail page showing NPC stats, personality, current activity, home/work buildings.",
+      "acceptance": "Test: GET /npcs (Accept: text/html) returns HTML table. Test: all seeded NPCs appear. Test: table has sortable headers.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 131,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "132",
+      "title": "Building grid page",
+      "description": "Add /buildings/grid page showing buildings organized in a grid layout with sprite thumbnails from /static/assets/buildings/.",
+      "acceptance": "Test: GET /buildings (Accept: text/html) returns HTML table. Test: all seeded buildings appear. Test: occupancy column shows count.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 132,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "133",
+      "title": "Economy dashboard",
+      "description": "Add /dashboard page with economy overview: total gold, average gold per NPC, gold distribution chart data (JSON endpoint for chart).",
+      "acceptance": "Test: GET /economy returns 200 with economy data displayed. Test: total gold shown. Test: HTMX polling attributes present.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 133,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "134",
+      "title": "Population charts",
+      "description": "Add population chart endpoint /api/charts/population returning historical population data as JSON. Add chart template using simple HTML/CSS bar chart.",
+      "acceptance": "Test: GET /population returns 200 with population data. Test: role distribution displayed. Test: age distribution displayed.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 134,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "135",
+      "title": "Event timeline",
+      "description": "Add /events page with scrollable event timeline, filterable by event type. Uses HTMX infinite scroll.",
+      "acceptance": "Test: GET /events returns HTML with event list. Test: events ordered by tick descending. Test: severity has color indicator.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 135,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "136",
+      "title": "Weather display",
+      "description": "Add weather display component showing current weather with icon and effects description. Include in base.html nav.",
+      "acceptance": "Test: GET / returns HTML with weather display element. Test: weather value shown. Test: HTMX poll attribute present.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 136,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "137",
+      "title": "Happiness metrics display",
+      "description": "Add /dashboard/happiness page showing happiness metrics per NPC, average trends, factors breakdown.",
+      "acceptance": "Test: GET /happiness returns 200 with happiness data. Test: average happiness displayed. Test: NPC happiness list shown.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 137,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "138",
+      "title": "Feature submit form",
+      "description": "Create engine/templates/features.html extending base.html. Add GET /features route (HTML). Includes form with title and description inputs. HTMX POST to /api/features on submit, appends new feature to list.",
+      "acceptance": "Test: GET /features returns HTML with form element. Test: form has title and description inputs. Test: form action targets /api/features.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 138,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "139",
+      "title": "Feature list with vote buttons",
+      "description": "Update engine/templates/features.html to show list of all features with title, description, vote count, status. Each feature has a vote button that HTMX POSTs to /api/features/{id}/vote.",
+      "acceptance": "Test: GET /features shows feature list. Test: each feature has vote button. Test: vote count displayed.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 139,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "140",
+      "title": "Admin panel",
+      "description": "Create engine/templates/admin.html extending base.html. Add GET /admin route (requires admin). Shows simulation controls, tick counter, speed slider, reset button, export/import buttons.",
+      "acceptance": "Test: GET /admin with admin auth returns 200 with admin panel. Test: without admin returns 401/403. Test: tick controls present.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 140,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "141",
+      "title": "Approval workflow page",
+      "description": "Create engine/templates/admin_features.html extending base.html. Add GET /admin/features route (admin). Shows pending features with approve/reject/to-prd buttons. HTMX for inline status updates.",
+      "acceptance": "Test: GET /admin/features with admin shows pending features. Test: approve button present. Test: to-prd button present.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 141,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "142",
+      "title": "Cost dashboard page",
+      "description": "Add /costs page displaying cost tracking data from /api/costs. Shows Qwen electricity cost vs cloud API equivalents with comparison table.",
+      "acceptance": "Test: GET /costs returns 200 with cost data display. Test: table has model and cost columns. Test: running total shown.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 142,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "143",
+      "title": "About page",
+      "description": "Add /about page explaining Qwen Town — what it is, how it works, the tech stack, link to GitHub.",
+      "acceptance": "Test: GET /about returns 200 with project description. Test: page contains 'Qwen Town'. Test: technologies mentioned.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 143,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "144",
+      "title": "API docs page",
+      "description": "Add /api-docs page with human-readable API documentation listing all endpoints, parameters, and example responses.",
+      "acceptance": "Test: GET /api-docs returns 200 with endpoint list. Test: /api/world endpoint documented. Test: auth requirements shown.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 144,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "145",
+      "title": "Changelog page",
+      "description": "Add /changelog page that reads git log and displays recent Ralph commits with story titles.",
+      "acceptance": "Test: GET /changelog returns 200. Test: completed stories shown. Test: stories grouped by phase.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 145,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "146",
+      "title": "Simulation speed control",
+      "description": "Add simulation_speed (Float default 1.0) to WorldState model. Create POST /api/admin/speed endpoint (admin) to set speed. process_tick uses speed to scale tick effects. Speed range 0.1 to 10.0.",
+      "acceptance": "Test: default speed is 1.0. Test: admin can set speed to 2.0. Test: speed=2.0 doubles hunger/energy decay. Test: non-admin returns 403.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 146,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "147",
+      "title": "Manual tick trigger UI",
+      "description": "Add tick trigger button to admin panel at /admin. Button HTMX POSTs to /api/tick. Shows tick result inline. Add auto-tick toggle that ticks every N seconds based on simulation_speed.",
+      "acceptance": "Test: admin panel has tick button. Test: clicking triggers POST /api/tick. Test: auto-tick toggle present.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 147,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "148",
+      "title": "Reset world endpoint",
+      "description": "Create POST /api/admin/reset endpoint (admin only). Deletes all NPCs, buildings, resources, events, transactions. Re-runs init_grid, seed_buildings, seed_npcs, init_world_state. Returns {status: 'reset'}.",
+      "acceptance": "Test: after reset, world state is fresh. Test: tick is 0, NPCs are seeded, buildings are seeded. Test: non-admin returns 403.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 148,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "149",
+      "title": "Export data endpoint",
+      "description": "Create GET /api/admin/export endpoint (admin). Returns entire world state as JSON: {world_state, buildings, npcs, resources, events, transactions, relationships}. Suitable for backup/restore.",
+      "acceptance": "Test: export returns all data sections. Test: NPC count matches. Test: building count matches. Test: non-admin returns 403.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 149,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "150",
+      "title": "Import data endpoint",
+      "description": "Create POST /api/admin/import endpoint (admin). Accepts JSON from export endpoint. Clears existing data and imports all records. Validates data structure before import. Returns {status: 'imported', counts: {...}}.",
+      "acceptance": "Test: export then import restores same state. Test: invalid JSON returns 422. Test: NPC count matches after import. Test: non-admin returns 403.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 150,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "151",
+      "title": "Pagination on all list endpoints",
+      "description": "Add ?page=N&per_page=M query params to all list endpoints: /api/npcs, /api/buildings, /api/events, /api/transactions, /api/features. Default per_page=20. Return {items: [...], total, page, per_page, pages}.",
+      "acceptance": "Test: ?page=1&per_page=5 returns 5 items. Test: total reflects actual count. Test: pages calculated correctly. Test: page beyond range returns empty items.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 151,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "152",
+      "title": "Filtering support",
+      "description": "Add query param filtering to list endpoints. /api/npcs?role=farmer filters by role. /api/buildings?type=food filters by building_type. /api/events?type=fire filters by event_type. Apply before pagination.",
+      "acceptance": "Test: /api/npcs?role=farmer returns only farmers. Test: /api/buildings?type=food returns only food buildings. Test: invalid filter returns all.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 152,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "153",
+      "title": "Sorting support",
+      "description": "Add ?sort=field&order=asc|desc query params to list endpoints. /api/npcs?sort=gold&order=desc sorts by gold descending. Support sorting by any numeric field. Default sort by id asc.",
+      "acceptance": "Test: /api/npcs?sort=gold&order=desc returns richest first. Test: default sort is by id asc. Test: invalid sort field uses default.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 153,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "154",
+      "title": "Search support",
+      "description": "Add ?q=text query param to /api/npcs and /api/buildings. Searches name field with case-insensitive LIKE match. /api/npcs?q=farm returns NPCs with 'farm' in name or role.",
+      "acceptance": "Test: /api/npcs?q=farm returns farmer NPCs. Test: case-insensitive search works. Test: no match returns empty list.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 154,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "155",
+      "title": "Bulk operations",
+      "description": "Create POST /api/admin/bulk endpoint (admin). Accepts {action: 'feed_all'|'heal_all'|'pay_all', amount: N}. feed_all reduces all NPC hunger. heal_all restores energy. pay_all gives gold.",
+      "acceptance": "Test: feed_all with amount=20 reduces all NPC hunger by 20. Test: pay_all gives N gold to each NPC. Test: non-admin returns 403.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 155,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "156",
+      "title": "Input validation on all endpoints",
+      "description": "Add Pydantic model validation to all POST endpoints. Validate: building x,y in 0-49 range, NPC name non-empty, gold non-negative, role from allowed list. Return 422 with descriptive error messages.",
+      "acceptance": "Test: POST /api/buildings with x=100 returns 422. Test: POST /api/npcs with empty name returns 422. Test: error response has detail message.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 156,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "157",
+      "title": "Error message improvements",
+      "description": "Create custom exception handlers in engine/main.py for 400, 404, 422, 500 errors. Return consistent JSON format: {error: string, detail: string, status_code: int}. Log 500 errors.",
+      "acceptance": "Test: 404 returns JSON with error key. Test: 422 returns descriptive detail. Test: all error responses have consistent format.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 157,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "158",
+      "title": "Custom 404 page",
+      "description": "Create engine/templates/404.html extending base.html. Configure FastAPI to serve this template for 404 errors on HTML requests. JSON API requests still get JSON 404. Show helpful navigation links.",
+      "acceptance": "Test: GET /nonexistent with Accept:text/html returns HTML 404 page. Test: GET /api/nonexistent returns JSON 404. Test: 404 page has nav links.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 158,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "159",
+      "title": "Rate limit feedback page",
+      "description": "Create engine/templates/429.html extending base.html. When rate limit hit, serve this page for HTML requests showing wait time and retry-after header. JSON requests get JSON 429.",
+      "acceptance": "Test: rate-limited HTML request returns 429 HTML page. Test: retry-after header present. Test: JSON request gets JSON 429.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 159,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "160",
+      "title": "CORS preflight handling",
+      "description": "Configure CORS middleware in engine/main.py. Allow origins: ['*'] for development. Allow methods: GET, POST, PUT, DELETE. Allow headers: Authorization, Content-Type. Handle OPTIONS preflight.",
+      "acceptance": "Test: OPTIONS request returns CORS headers. Test: Access-Control-Allow-Origin present. Test: Access-Control-Allow-Methods includes POST.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 160,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "161",
+      "title": "DB indexes on hot queries",
+      "description": "Add database indexes to engine/models.py: NPC(x,y), NPC(role), Building(building_type), Building(x,y), Event(tick), Event(event_type), Transaction(sender_id), Transaction(created_at). Use Index() in SQLAlchemy.",
+      "acceptance": "Test: indexes exist in database schema. Test: query plan uses index for NPC role lookup. Test: event query by tick uses index.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 161,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "162",
+      "title": "Query optimization for /api/world",
+      "description": "Optimize GET /api/world query in engine/routers/world.py. Use eager loading for NPC relationships. Limit tile response to changed tiles only (add ?full=true for all). Add ETag header for caching.",
+      "acceptance": "Test: /api/world returns in under 200ms with 2500 tiles. Test: ?full=true returns all tiles. Test: ETag header present.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 162,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "163",
+      "title": "Response caching",
+      "description": "Add in-memory cache to GET endpoints that rarely change: /api/stats (5s TTL), /api/world (1s TTL), /api/buildings (10s TTL). Invalidate on POST/tick. Use Cache-Control headers.",
+      "acceptance": "Test: second GET /api/stats within 5s returns same data. Test: POST /api/tick invalidates cache. Test: Cache-Control header present.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 163,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "164",
+      "title": "Gzip compression",
+      "description": "Add GZipMiddleware to engine/main.py with minimum_size=1000 bytes. Compresses JSON and HTML responses. Verify Content-Encoding: gzip header on large responses.",
+      "acceptance": "Test: large response has Content-Encoding: gzip. Test: small response is not compressed. Test: compressed response decompresses correctly.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 164,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "165",
+      "title": "Detailed health check",
+      "description": "Enhance GET /api/health endpoint to return {status: 'healthy', db: 'connected', uptime_seconds: N, version: '1.0', tick: N, npc_count: N, building_count: N}. Return 503 if DB unreachable.",
+      "acceptance": "Test: /api/health returns 200 with all fields. Test: db shows 'connected'. Test: npc_count matches actual count. Test: uptime is positive.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 165,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "166",
+      "title": "GET /api/costs endpoint",
+      "description": "Create engine/routers/costs.py with GET /api/costs. Reads cost_tracking.json from project root and returns it as JSON. If file not found, return empty object. Register router in main.py.",
+      "acceptance": "Test: GET /api/costs returns 200 with JSON. Test: response contains cost data or empty object. Test: content-type is application/json.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "template"
+      ],
+      "priority": 166,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "167",
+      "title": "Cost comparison table component",
+      "description": "Create cost comparison table in engine/templates/index.html showing per-story cost data. Columns: story_id, model, tokens_in, tokens_out, cost, duration. Load via HTMX from /api/costs.",
+      "acceptance": "Test: GET / returns HTML with cost table container. Test: HTMX attributes reference /api/costs. Test: table header columns present.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "template"
+      ],
+      "priority": 167,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "168",
+      "title": "Live stories completed counter",
+      "description": "Add stories completed counter to engine/templates/index.html. Reads prd.json, counts stories with status='completed'. Display as 'N/200 stories completed' with progress bar. HTMX auto-refresh.",
+      "acceptance": "Test: GET / returns HTML with progress counter. Test: counter shows X/200 format. Test: progress bar element present.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "template"
+      ],
+      "priority": 168,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "169",
+      "title": "Build progress timeline chart",
+      "description": "Add timeline chart to engine/templates/index.html showing story completion over time. X-axis: story ID. Y-axis: completion timestamp. Render as simple HTML/CSS bar chart. Data from prd.json.",
+      "acceptance": "Test: GET / returns HTML with timeline chart container. Test: chart has data attributes. Test: axis labels present.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "template"
+      ],
+      "priority": 169,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "170",
+      "title": "GET /api/metrics endpoint",
+      "description": "Create GET /api/metrics in engine/routers/costs.py. Reads metrics.jsonl from project root, parses each line as JSON, returns as JSON array. If file not found, return empty array.",
+      "acceptance": "Test: GET /api/metrics returns 200 with JSON array. Test: each element has expected fields. Test: missing file returns empty array.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "template"
+      ],
+      "priority": 170,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "171",
+      "title": "Propose stories endpoint",
+      "description": "Create POST /api/admin/propose-story in engine/routers/costs.py (admin). Accepts {title, description, phase}. Generates next story ID. Appends to prd.json stories array. Returns new story.",
+      "acceptance": "Test: POST creates new story with correct next ID. Test: story appears in prd.json. Test: non-admin returns 403.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "template"
+      ],
+      "priority": 171,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "172",
+      "title": "Story review UI",
+      "description": "Create engine/templates/story_review.html extending base.html. Add GET /admin/stories route (admin). Shows all stories from prd.json in filterable table. Filter by status, phase, tags.",
+      "acceptance": "Test: GET /admin/stories returns HTML table of stories. Test: filter controls present. Test: status column shows pending/completed.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "template"
+      ],
+      "priority": 172,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "173",
+      "title": "Story approve workflow",
+      "description": "Add POST /api/admin/stories/{id}/approve endpoint (admin). Changes story status in prd.json from 'pending' to 'approved'. Returns updated story. Used before handing to Qwen for implementation.",
+      "acceptance": "Test: approve changes status to 'approved'. Test: non-existent story returns 404. Test: non-admin returns 403.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "template"
+      ],
+      "priority": 173,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "174",
+      "title": "Test file generation",
+      "description": "Create POST /api/admin/stories/{id}/generate-test endpoint (admin). Reads story from prd.json, creates skeleton test file at the story's test_file path with test function stubs matching acceptance criteria.",
+      "acceptance": "Test: generate-test creates test file. Test: test file contains function stubs. Test: test file is valid Python syntax.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "template"
+      ],
+      "priority": 174,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "175",
+      "title": "Backlog status display",
+      "description": "Add backlog summary to engine/templates/index.html. Shows: pending count, in_progress count, completed count, failed count. Grouped by phase. Color-coded status badges.",
+      "acceptance": "Test: GET / returns HTML with backlog summary. Test: status counts displayed. Test: phase grouping present.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "template"
+      ],
+      "priority": 175,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "176",
+      "title": "NPC memory - recent events",
+      "description": "Add memory_events (Text, JSON string) field to NPC model in engine/models.py. Create remember_event(db, npc_id, event) in simulation.py. Stores last 10 events experienced by NPC. Used for decision-making.",
+      "acceptance": "Test: NPC remembers event after remember_event call. Test: max 10 events stored (oldest dropped). Test: memory is valid JSON.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 176,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "177",
+      "title": "NPC memory - favorite buildings",
+      "description": "Add favorite_buildings (Text, JSON string) field to NPC model. Track which buildings NPC visits most. Create update_favorites(db, npc_id) in simulation.py. Top 3 most-visited buildings stored.",
+      "acceptance": "Test: NPC visiting same building 5 times has it as favorite. Test: max 3 favorites stored. Test: favorites sorted by visit count.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 177,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "178",
+      "title": "NPC memory - avoid dangerous areas",
+      "description": "Add avoided_areas (Text, JSON string) field to NPC model. When NPC experiences negative event (fire, bandit, plague) at location, add to avoided areas. Movement pathfinding avoids these tiles.",
+      "acceptance": "Test: NPC at fire location adds it to avoided_areas. Test: NPC pathfinding avoids avoided tiles. Test: avoided areas expire after 50 ticks.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 178,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "179",
+      "title": "NPC memory - remember friends",
+      "description": "Create get_friends(db, npc_id) in simulation.py returning list of NPC IDs with friendship strength > 60. NPCs prefer to visit buildings where friends are. Influence work and home choices.",
+      "acceptance": "Test: NPC with friendship>60 returned as friend. Test: NPC prefers building with friends. Test: NPC with no friends returns empty list.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 179,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "180",
+      "title": "NPC learning from experience",
+      "description": "Add experience (Text, JSON string) field to NPC model. Create learn(db, npc_id, lesson) in simulation.py. NPCs that earned gold at location X remember it. NPCs that got sick avoid location. Influences future decisions.",
+      "acceptance": "Test: NPC learns gold-earning location. Test: learned location influences get_npc_decision. Test: negative experience changes behavior.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 180,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "181",
+      "title": "Auto-suggest building placement",
+      "description": "Create suggest_building_placement(db, building_type) in engine/simulation.py. Analyzes grid for optimal placement: farms near water (y<10), residential near civic, guard towers at edges. Returns (x,y) suggestion.",
+      "acceptance": "Test: farm suggestion has y<15. Test: residential suggestion near Town Hall. Test: guard tower at grid edge. Test: no overlap with existing buildings.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 181,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "182",
+      "title": "Detect resource gaps",
+      "description": "Create detect_resource_gaps(db) in engine/simulation.py. Identifies missing resources: no food production if no farm, no healing if no hospital, no defense if no guard tower. Returns list of {gap, severity, suggestion}.",
+      "acceptance": "Test: town without farm shows food gap. Test: town without hospital shows healing gap. Test: complete town shows no gaps.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 182,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "183",
+      "title": "Recommend construction",
+      "description": "Create recommend_construction(db) in engine/simulation.py. Based on resource gaps and population, recommend next building to construct. Returns {building_type, reason, priority, suggested_x, suggested_y}.",
+      "acceptance": "Test: town needing food recommends farm. Test: growing population recommends residential. Test: recommendation includes valid coordinates.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 183,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "184",
+      "title": "Zoning system",
+      "description": "Create zone_grid(db) in engine/simulation.py. Divides 50x50 grid into zones: residential (NW), commercial (NE), industrial (SW), civic (SE), agricultural (edges). Store zone in Tile model (add zone String field).",
+      "acceptance": "Test: tile at (5,5) is residential zone. Test: tile at (40,5) is commercial zone. Test: tile at (5,40) is industrial zone. Test: new buildings respect zoning.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 184,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "185",
+      "title": "Infrastructure scoring",
+      "description": "Create calculate_infrastructure_score(db) in engine/simulation.py. Score 0-100 based on: building diversity (25pts), resource coverage (25pts), NPC housing rate (25pts), defense coverage (25pts). Store in WorldState.",
+      "acceptance": "Test: empty town scores 0. Test: fully developed town scores near 100. Test: missing categories reduce score proportionally.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 185,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "186",
+      "title": "Merchant NPCs set prices",
+      "description": "In process_work for merchants, create set_merchant_prices(db, npc_id) in simulation.py. Merchant NPCs analyze supply/demand and set prices at their building. Greedy merchants charge 20% more. Social merchants charge 10% less.",
+      "acceptance": "Test: merchant sets price based on supply/demand. Test: greedy merchant charges more. Test: social merchant charges less.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 186,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "187",
+      "title": "Banker NPCs offer loans",
+      "description": "Create Loan model in engine/models.py: id, lender_npc_id, borrower_npc_id, amount, interest_rate, ticks_remaining, status. Banker NPCs offer loans to NPCs with gold<10. Create process_loans(db) in simulation.py.",
+      "acceptance": "Test: banker offers loan to poor NPC. Test: loan repayment deducts from borrower each tick. Test: defaulted loan creates Event.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 187,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "188",
+      "title": "Tax collector routes",
+      "description": "Create politician NPC work behavior: tax collector. Politician NPCs visit each building, collect taxes into Treasury. Create get_tax_route(db, npc_id) returning building visit order. Prioritize buildings with most gold.",
+      "acceptance": "Test: politician visits buildings in order. Test: taxes collected at each stop. Test: Treasury increases. Test: route prioritizes wealthy buildings.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 188,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "189",
+      "title": "Trade negotiations",
+      "description": "Create negotiate_trade(db, npc_a_id, npc_b_id, resource, quantity) in simulation.py. Two merchant NPCs negotiate price. Final price = average of their offers. Greedy NPCs start higher. Social NPCs compromise faster.",
+      "acceptance": "Test: two merchants negotiate and agree on price. Test: greedy merchant gets higher price. Test: negotiation creates Transaction.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 189,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "190",
+      "title": "Bankruptcy handling",
+      "description": "Create check_bankruptcy(db) in simulation.py. NPCs with gold < -50 (from loans) go bankrupt. Bankrupt NPCs: lose home, lose work, happiness drops to 0, status set to 'bankrupt'. Recovery possible if gold > 0.",
+      "acceptance": "Test: NPC with gold=-60 goes bankrupt. Test: bankrupt NPC loses home/work. Test: NPC recovering gold exits bankruptcy.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 190,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "191",
+      "title": "Mayor election",
+      "description": "Create Election model: id, candidate_npc_ids (Text JSON), votes (Text JSON), winner_npc_id, tick_held. Create hold_election(db) in simulation.py. Every 500 ticks, NPCs vote for mayor. Highest vote count wins.",
+      "acceptance": "Test: election held at tick 500. Test: NPCs vote for candidates. Test: highest votes wins. Test: winner becomes mayor role.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 191,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "192",
+      "title": "Policy votes",
+      "description": "Create Policy model: id, name, description, effect (Text JSON), proposed_by_npc_id, vote_for (Int), vote_against (Int), status, enacted_tick. Mayor can propose policies. NPCs vote. Majority wins.",
+      "acceptance": "Test: mayor proposes policy. Test: NPCs vote for/against. Test: majority passes policy. Test: enacted policy applies effects.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 192,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "193",
+      "title": "Law enforcement",
+      "description": "Create enforce_laws(db) in simulation.py. Guard NPCs patrol and detect crimes (theft events). Guards at guard_tower have detection radius of 15 tiles. Caught criminals sent to prison. Create Crime model: id, criminal_npc_id, type, tick, resolved.",
+      "acceptance": "Test: thief caught by guard creates Crime record. Test: criminal sent to prison. Test: no guard means crime goes undetected.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 193,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "194",
+      "title": "Crime and punishment",
+      "description": "Create process_punishment(db) in simulation.py. Imprisoned NPCs serve sentence (10-50 ticks based on crime severity). After sentence, released with role changed to prior role. Repeat offenders get longer sentences.",
+      "acceptance": "Test: imprisoned NPC released after sentence. Test: repeat offender gets longer sentence. Test: released NPC resumes normal behavior.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 194,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "195",
+      "title": "Political parties",
+      "description": "Create Party model: id, name, platform (Text JSON), leader_npc_id, member_count. Create form_parties(db) in simulation.py. NPCs with similar personalities join same party. Parties influence elections and policies.",
+      "acceptance": "Test: NPCs with similar traits join same party. Test: party leader is most popular member. Test: parties influence election outcomes.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 195,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "196",
+      "title": "Town newspaper NPC",
+      "description": "Create newspaper NPC role. In process_work, newspaper NPC generates summary of recent events as text. Create Newspaper model: id, headline, body, author_npc_id, tick, created_at. Published every 10 ticks.",
+      "acceptance": "Test: newspaper NPC creates Newspaper entry every 10 ticks. Test: headline references actual events. Test: GET /api/newspapers returns list.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 196,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "197",
+      "title": "Historian NPC",
+      "description": "Create historian NPC role. In process_work, historian tracks milestones: first building, 10th NPC, first death, etc. Create Milestone model: id, name, description, tick_achieved. Stored in library building.",
+      "acceptance": "Test: historian records first building milestone. Test: milestones stored correctly. Test: GET /api/milestones returns list.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 197,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "198",
+      "title": "Town achievements system",
+      "description": "Create Achievement model: id, name, description, condition (Text JSON), achieved (Boolean), tick_achieved. Create check_achievements(db) in simulation.py. Achievements: 'First 10 NPCs', 'Gold Rush' (total gold>1000), 'Full Town' (all building types).",
+      "acceptance": "Test: achievement unlocked when condition met. Test: achievement not re-triggered. Test: GET /api/achievements returns list with status.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 198,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "199",
+      "title": "Visitor log NPC",
+      "description": "Create visitor_log NPC role working at gate building. Tracks all new NPCs entering town (from population growth or immigration). Create VisitorLog model: id, npc_id, arrival_tick, greeted_by_npc_id. Logs each arrival.",
+      "acceptance": "Test: new NPC spawned creates VisitorLog entry. Test: visitor_log NPC is greeter. Test: GET /api/visitor-log returns list.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 199,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "200",
+      "title": "Town anthem generator",
+      "description": "Create anthem NPC role working at theater. Create TownAnthem model: id, lyrics (Text), composed_by_npc_id, tick_composed. In process_work, bard composes anthem using town stats (population, buildings, events). One anthem per 1000 ticks.",
+      "acceptance": "Test: bard composes anthem at tick 1000. Test: anthem references town name. Test: GET /api/anthem returns latest anthem. Test: only one anthem per 1000 ticks.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc"
+      ],
+      "priority": 200,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "201",
+      "title": "Implement A* pathfinding for NPC movement",
+      "description": "Create `find_path(db, start_x, start_y, end_x, end_y)` in engine/simulation.py using A* algorithm. NPCs should pathfind around buildings and water tiles instead of walking through them. Update process_tick to use pathfinding for NPC movement. Store computed path as JSON in NPC.current_path field.",
+      "acceptance": "Test: find_path returns valid path avoiding obstacles. Test: path does not cross building or water tiles. Test: NPC follows computed path in process_tick. Test: current_path field stores JSON path array.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc",
+        "ai"
+      ],
+      "priority": 201,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "202",
+      "title": "Implement dynamic supply/demand pricing engine",
+      "description": "Create `calculate_price(db, resource_name)` in engine/simulation.py. Price = base_price * (demand / supply). Track price_history in a new PriceHistory model (resource_name, price, tick). When supply is low, prices rise. When supply is high, prices fall. Merchants adjust buy/sell based on current prices.",
+      "acceptance": "Test: calculate_price returns higher price when supply is low. Test: calculate_price returns lower price when supply is high. Test: PriceHistory records are created each tick. Test: merchant NPCs adjust trade behavior based on prices.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation",
+        "ai"
+      ],
+      "priority": 202,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "203",
+      "title": "Implement NPC memory and learning system",
+      "description": "Add `memory` JSON field to NPC model. NPCs remember: last 10 events they witnessed, buildings they visited, NPCs they interacted with. Create `update_memory(db, npc_id, event)` and `recall_memory(db, npc_id, memory_type)` in engine/simulation.py. NPCs use memories to make better decisions in get_npc_decision().",
+      "acceptance": "Test: update_memory stores event in NPC memory JSON. Test: recall_memory retrieves correct memories by type. Test: memory is capped at 10 events. Test: get_npc_decision uses memory to influence choices.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc",
+        "ai"
+      ],
+      "priority": 203,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "204",
+      "title": "Implement town newspaper that writes event summaries",
+      "description": "Create `generate_newspaper(db)` in engine/simulation.py. Every 24 ticks (one day), compile the day's events into a newspaper entry. Use template strings to create natural language summaries like 'The bakery produced 50 loaves of bread today' and 'Guard Bob arrested thief Alice near the bank'. Store in a Newspaper model (id, day, headline, body, created_at). Expose via GET /api/newspaper.",
+      "acceptance": "Test: generate_newspaper creates entry every 24 ticks. Test: newspaper headline references major event. Test: newspaper body contains natural language summaries. Test: GET /api/newspaper returns latest newspaper entry.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "ai",
+        "api"
+      ],
+      "priority": 204,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "205",
+      "title": "Implement town achievement system",
+      "description": "Create Achievement model (id, name, description, condition_type, condition_value, unlocked_at). Define 20 achievements: first_building, population_10, population_50, first_trade, gold_1000, etc. Create `check_achievements(db)` in engine/simulation.py that runs each tick and unlocks achievements when conditions are met. Log achievement unlocks as events. Expose via GET /api/achievements.",
+      "acceptance": "Test: Achievement model has correct fields. Test: check_achievements unlocks first_building when building exists. Test: achievement unlock creates event. Test: GET /api/achievements returns all achievements with unlock status.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "api"
+      ],
+      "priority": 205,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "206",
+      "title": "Add NPC dialogue system",
+      "description": "Create a Dialogue model (id, speaker_npc_id FK, listener_npc_id FK, message, tick, created_at) in engine/models.py. Create generate_dialogue(db, npc1_id, npc2_id) in engine/simulation.py that produces context-aware dialogue strings using template patterns. NPCs greet each other based on relationship, comment on weather ('Terrible storm today!'), complain about hunger ('I can barely afford bread anymore'), or share news ('Did you hear about the fire at the mill?'). Dialogues trigger when two NPCs occupy the same tile. Store in DB and expose via GET /api/dialogues?limit=N.",
+      "acceptance": "Dialogue model exists. generate_dialogue returns a non-empty string. Dialogues reference current weather, NPC needs, and recent events. GET /api/dialogues returns dialogue history.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc",
+        "ai"
+      ],
+      "priority": 206,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "207",
+      "title": "Add NPC dialogue to tick processing",
+      "description": "In process_tick(db) in engine/simulation.py, after NPC movement, check for NPCs sharing the same tile. For each pair, call generate_dialogue(db, npc1.id, npc2.id) with 30% probability. Log the dialogue as an Event with event_type='dialogue'. Limit to max 5 dialogues per tick to avoid spam.",
+      "acceptance": "After running multiple ticks with NPCs on same tiles, Dialogue entries exist in DB. Events with type 'dialogue' are logged. No more than 5 dialogues per tick.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "npc",
+        "tick"
+      ],
+      "priority": 207,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "208",
+      "title": "Add dialogue feed to town view",
+      "description": "Create engine/routers/dialogues.py with GET /api/dialogues returning the 20 most recent dialogues with speaker name, listener name, message, and tick. Create engine/templates/partials/dialogue_feed.html showing dialogues as chat bubbles. Add an HTMX-powered dialogue feed panel to the index page that auto-updates every 3 seconds via hx-get='/partials/dialogue-feed'.",
+      "acceptance": "GET /api/dialogues returns JSON list. The dialogue feed partial renders chat-style bubbles with NPC names. Feed auto-updates via HTMX.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "template",
+        "htmx"
+      ],
+      "priority": 208,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "209",
+      "title": "Add building level and upgrade system",
+      "description": "Add 'level' Integer field (default 1, max 5) and 'upgrade_cost' Integer field to Building model in engine/models.py. Create upgrade_building(db, building_id) in engine/simulation.py that increases level by 1 if treasury has enough gold. Each level increases capacity by 50% and production by 25%. Create POST /api/buildings/{id}/upgrade (admin only) endpoint.",
+      "acceptance": "Building.level field exists. upgrade_building increases level and deducts cost. Higher level buildings produce more. POST upgrade endpoint works with admin auth.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "simulation",
+        "building",
+        "economy"
+      ],
+      "priority": 209,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "210",
+      "title": "Generate upgraded building sprites via ComfyUI",
+      "description": "Extend ralph/asset_gen.py with generate_upgraded_sprite(building_type, level) that generates a distinct sprite for each building level. Prompt pattern: 'zavy-ctsmtrc, isometric, cute isometric {building_type} building, level {level}, {'small and simple' if level==1 else 'large and ornate' if level>=4 else 'medium sized'}, white background, game asset'. Save to assets/buildings/{building_type}_lvl{level}.png. Update the PixiJS renderer to load level-specific sprites when available. Ralph will auto-generate an isometric sprite via ComfyUI after tests pass.",
+      "acceptance": "generate_upgraded_sprite creates level-variant sprites. PixiJS renderer checks for {type}_lvl{level}.png before falling back to {type}.png. At least level 1 and level 3 variants look visually different.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/models.py",
+        "ralph/asset_gen.py"
+      ],
+      "tags": [
+        "building",
+        "asset",
+        "template"
+      ],
+      "priority": 210,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "211",
+      "title": "Add real-time visitor counter with WebSocket",
+      "description": "Create engine/routers/ws.py with a WebSocket endpoint at /ws/visitors. Track connected clients in a global set. On connect, increment count and broadcast new count to all clients. On disconnect, decrement and broadcast. Create GET /api/visitors returning {count: N}. Add visitor count display to the HUD overlay in the PixiJS renderer.",
+      "acceptance": "WebSocket endpoint accepts connections. Visitor count increments on connect, decrements on disconnect. GET /api/visitors returns current count. Multiple simultaneous connections show correct count.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "api",
+        "template"
+      ],
+      "priority": 211,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "212",
+      "title": "Add visitor event triggers",
+      "description": "Create engine/routers/triggers.py with POST /api/trigger/{event_type} endpoint (public, rate-limited to 1 per IP per minute). Supported event types: thunderstorm, festival, gold_rush, baby_boom. Each trigger creates the corresponding Event and applies immediate effects via apply_triggered_event(db, event_type) in engine/simulation.py. Thunderstorm: set weather to storm for 5 ticks. Festival: boost all NPC happiness by 20. Gold rush: give all miners +50 gold. Baby boom: spawn 3 new NPCs.",
+      "acceptance": "POST /api/trigger/thunderstorm changes weather. POST /api/trigger/festival boosts happiness. Rate limited to 1/min per IP. Invalid event types return 404. Effects are visible in /api/world.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/models.py",
+        "engine/simulation.py"
+      ],
+      "tags": [
+        "api",
+        "simulation"
+      ],
+      "priority": 212,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "213",
+      "title": "Add event trigger buttons to town view",
+      "description": "Create engine/templates/partials/trigger_panel.html with styled buttons for each triggerable event (thunderstorm, festival, gold rush, baby boom). Each button uses hx-post='/api/trigger/{type}' with hx-swap='none'. Show a toast notification on success ('You triggered a thunderstorm!') and rate-limit feedback on 429 ('Wait a minute before triggering again'). Add the trigger panel to the index page as a floating panel in the bottom-right corner.",
+      "acceptance": "Trigger buttons appear on the town page. Clicking triggers the event via HTMX. Success shows a toast. Rate limit shows feedback. Events are visible in the simulation.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/models.py"
+      ],
+      "tags": [
+        "template",
+        "htmx"
+      ],
+      "priority": 213,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "214",
+      "title": "Add NPC speech bubbles to PixiJS renderer",
+      "description": "Update engine/static/js/town.js to show speech bubbles above NPCs when they have recent dialogues. Poll GET /api/dialogues?limit=5&since_tick={current_tick-3} to get recent dialogues. Display the message text in a small white rounded rectangle above the speaking NPC sprite for 3 seconds, then fade out. Style: white background, dark text, small tail pointing down to the NPC.",
+      "acceptance": "When NPCs generate dialogue, speech bubbles appear above them on the isometric grid. Bubbles fade out after 3 seconds. Only recent dialogues (last 3 ticks) are shown. No more than 5 bubbles visible at once.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/static/js/town.js"
+      ],
+      "tags": [
+        "template"
+      ],
+      "priority": 214,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "215",
+      "title": "Add day/night cycle to PixiJS renderer",
+      "description": "Update engine/static/js/town.js to render a day/night cycle based on WorldState.time_of_day from /api/world. Morning: warm golden tint overlay (alpha 0.1). Afternoon: no tint. Evening: orange-purple tint (alpha 0.15). Night: dark blue tint (alpha 0.4) with reduced brightness. Transition smoothly between states. Add small star particles during night. Add a sun/moon icon to the HUD showing current time.",
+      "acceptance": "The isometric grid changes color tint based on time of day. Night is visibly darker with star particles. Morning has a warm glow. HUD shows sun or moon icon. Transitions are smooth, not instant.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/static/js/town.js"
+      ],
+      "tags": [
+        "template"
+      ],
+      "priority": 215,
+      "status": "pending",
+      "attempts": 0
+    }
+  ]
+}

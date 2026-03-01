@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — Qwen Town{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-8" id="dashboard-root"
+     hx-get="/api/dashboard-data" hx-trigger="load, every 30s"
+     hx-target="#dashboard-content" hx-swap="innerHTML">
+    <h1 class="text-2xl font-bold text-amber-400 mb-6">Project Dashboard</h1>
+    <div id="dashboard-content">
+        <p class="text-gray-400">Loading...</p>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("htmx:beforeSwap", function(evt) {
+    if (evt.detail.target.id !== "dashboard-content") return;
+    // Parse JSON from /api/dashboard-data and render HTML
+    try {
+        const data = JSON.parse(evt.detail.serverResponse);
+        evt.detail.serverResponse = renderDashboard(data);
+    } catch (e) {
+        // If it's already HTML, let it through
+    }
+});
+
+function renderDashboard(d) {
+    const s = d.stories || {};
+    const total = s.total || 0;
+    const done = s.done || 0;
+    const failed = s.failed || 0;
+    const pending = s.pending || 0;
+    const inProgress = s.in_progress || 0;
+
+    const donePct = total ? Math.round((done / total) * 100) : 0;
+    const failedPct = total ? Math.round((failed / total) * 100) : 0;
+    const pendingPct = total ? 100 - donePct - failedPct : 100;
+
+    // Cost data
+    const cost = d.cost || {};
+    const qwenCost = (cost.total_electricity_cost || 0).toFixed(2);
+    const opusCost = (cost.equivalent_opus_cost || 1277).toFixed(2);
+    const opus46Cost = (cost.equivalent_opus46_cost || 1277).toFixed(2);
+    const gpt4oCost = (cost.equivalent_gpt4o_cost || 638).toFixed(2);
+    const sonnetCost = (cost.equivalent_sonnet_cost || 319).toFixed(2);
+    const savings = opusCost > 0 ? Math.round((1 - qwenCost / opusCost) * 100) : 0;
+
+    // Snapshot
+    const snapHtml = d.snapshot_url
+        ? `<img src="${d.snapshot_url}" alt="Latest snapshot" class="rounded-lg border border-gray-700 max-w-full">`
+        : `<div class="text-gray-500 italic py-8 text-center border border-dashed border-gray-700 rounded-lg">No snapshots yet — Qwen hasn't completed a story</div>`;
+
+    // Learnings
+    const learnings = (d.learnings || []);
+    const learnHtml = learnings.length
+        ? learnings.map(l => `<div class="text-sm text-gray-300 py-1.5 border-b border-gray-800 last:border-0">${escapeHtml(l)}</div>`).join("")
+        : `<div class="text-gray-500 italic">No learnings yet</div>`;
+
+    // Alerts
+    const alerts = (d.alerts || []);
+    const alertHtml = alerts.length
+        ? alerts.map(a => `<div class="text-sm font-mono py-1 ${a.includes('FAILED') || a.includes('broken') ? 'text-red-400' : 'text-gray-400'}">${escapeHtml(a)}</div>`).join("")
+        : `<div class="text-gray-500 italic">No alerts</div>`;
+
+    return `
+    <!-- Story Progress -->
+    <section class="mb-8">
+        <h2 class="text-lg font-semibold text-gray-200 mb-3">Story Progress</h2>
+        <div class="flex items-center gap-4 mb-2">
+            <span class="text-3xl font-bold text-amber-400">${done}</span>
+            <span class="text-gray-400 text-lg">/ ${total} stories</span>
+            ${inProgress ? `<span class="text-blue-400 text-sm">(${inProgress} in progress)</span>` : ''}
+        </div>
+        <div class="w-full h-6 bg-gray-800 rounded-full overflow-hidden flex">
+            <div class="bg-green-600 h-full transition-all" style="width:${donePct}%" title="${done} done"></div>
+            <div class="bg-red-600 h-full transition-all" style="width:${failedPct}%" title="${failed} failed"></div>
+            <div class="bg-gray-600 h-full transition-all" style="width:${pendingPct}%" title="${pending} pending"></div>
+        </div>
+        <div class="flex gap-4 mt-2 text-xs text-gray-400">
+            <span><span class="inline-block w-3 h-3 bg-green-600 rounded mr-1"></span>Done (${done})</span>
+            <span><span class="inline-block w-3 h-3 bg-red-600 rounded mr-1"></span>Failed (${failed})</span>
+            <span><span class="inline-block w-3 h-3 bg-gray-600 rounded mr-1"></span>Pending (${pending})</span>
+        </div>
+    </section>
+
+    <!-- Cost Tracker -->
+    <section class="mb-8">
+        <h2 class="text-lg font-semibold text-gray-200 mb-3">Cost Tracker</h2>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-gray-700 text-gray-400">
+                        <th class="text-left py-2 pr-4">Provider</th>
+                        <th class="text-right py-2 px-4">Est. Cost</th>
+                        <th class="text-right py-2 pl-4">Savings</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-gray-800">
+                        <td class="py-2 pr-4 text-amber-400 font-medium">Qwen 3.5 (local)</td>
+                        <td class="text-right py-2 px-4 text-amber-300 font-mono">$${qwenCost}</td>
+                        <td class="text-right py-2 pl-4 text-green-400">baseline</td>
+                    </tr>
+                    <tr class="border-b border-gray-800">
+                        <td class="py-2 pr-4 text-gray-300">Claude Opus 4</td>
+                        <td class="text-right py-2 px-4 text-gray-300 font-mono">$${opusCost}</td>
+                        <td class="text-right py-2 pl-4 text-green-400">${savings}%</td>
+                    </tr>
+                    <tr class="border-b border-gray-800">
+                        <td class="py-2 pr-4 text-gray-300">Claude Opus 4.6</td>
+                        <td class="text-right py-2 px-4 text-gray-300 font-mono">$${opus46Cost}</td>
+                        <td class="text-right py-2 pl-4 text-green-400">${opus46Cost > 0 ? Math.round((1 - qwenCost / opus46Cost) * 100) : 0}%</td>
+                    </tr>
+                    <tr class="border-b border-gray-800">
+                        <td class="py-2 pr-4 text-gray-300">GPT-4o</td>
+                        <td class="text-right py-2 px-4 text-gray-300 font-mono">$${gpt4oCost}</td>
+                        <td class="text-right py-2 pl-4 text-green-400">${gpt4oCost > 0 ? Math.round((1 - qwenCost / gpt4oCost) * 100) : 0}%</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 pr-4 text-gray-300">Claude Sonnet</td>
+                        <td class="text-right py-2 px-4 text-gray-300 font-mono">$${sonnetCost}</td>
+                        <td class="text-right py-2 pl-4 text-green-400">${sonnetCost > 0 ? Math.round((1 - qwenCost / sonnetCost) * 100) : 0}%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Latest Snapshot -->
+    <section class="mb-8">
+        <h2 class="text-lg font-semibold text-gray-200 mb-3">Latest Snapshot</h2>
+        ${snapHtml}
+    </section>
+
+    <!-- Recent Learnings -->
+    <section class="mb-8">
+        <h2 class="text-lg font-semibold text-gray-200 mb-3">Recent Learnings</h2>
+        <div class="bg-gray-800/50 rounded-lg p-4">
+            ${learnHtml}
+        </div>
+    </section>
+
+    <!-- Alerts -->
+    <section class="mb-8">
+        <h2 class="text-lg font-semibold text-gray-200 mb-3">Alerts</h2>
+        <div class="bg-gray-800/50 rounded-lg p-4 max-h-64 overflow-y-auto">
+            ${alertHtml}
+        </div>
+    </section>
+    `;
+}
+
+function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+}
+</script>
+{% endblock %}
