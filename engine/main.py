@@ -9,9 +9,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from starlette.datastructures import URL
+from starlette.middleware.trustedhost import TrustedHostMiddleware as _TrustedHostMiddleware
+from starlette.responses import PlainTextResponse
+from starlette.types import ASGIApp, Receive, Scope, Send
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -57,14 +61,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class HealthBypassTrustedHost:
+    """TrustedHostMiddleware that exempts /health for Railway probes."""
+
+    def __init__(self, app: ASGIApp, allowed_hosts: list[str]):
+        self.app = app
+        self.inner = _TrustedHostMiddleware(app, allowed_hosts=allowed_hosts)
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send):
+        if scope["type"] == "http" and scope.get("path") == "/health":
+            await self.app(scope, receive, send)
+            return
+        await self.inner(scope, receive, send)
+
+
 if IS_PROD:
     app.add_middleware(
-        TrustedHostMiddleware,
+        HealthBypassTrustedHost,
         allowed_hosts=[
             "qtown.ai",
             "www.qtown.ai",
             "*.up.railway.app",
-            "*.railway.internal",  # Railway internal healthchecks
         ],
     )
 
