@@ -39,7 +39,7 @@ PRD_FILE = Path("prd.json")
 HUMAN_MD = Path("HUMAN.md")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen3.5:35b")
-MAX_ATTEMPTS = 5
+MAX_ATTEMPTS = 8
 
 # ---------------------------------------------------------------------------
 # Graceful shutdown
@@ -301,9 +301,10 @@ def run_story(story: dict) -> bool:
                 break
         if error_sig:
             recent_errors.append(error_sig)
-            # Same error 3 times in a row = loop
+            # Same error 3 times in a row = loop, bail early
             if len(recent_errors) >= 3 and len(set(recent_errors[-3:])) == 1:
-                alert("loop", f"Story {story_id}: same error 3x in a row\n`{error_sig}`")
+                alert("loop", f"Story {story_id}: same error 3x in a row — giving up\n`{error_sig}`")
+                return False
 
         # 2. Build prompt
         prompt = build_prompt(
