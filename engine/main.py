@@ -3,6 +3,8 @@
 import importlib
 import json
 import os
+import re
+import subprocess
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -257,6 +259,63 @@ def dashboard_data():
         "learnings": learnings,
         "alerts": alerts,
     }
+
+
+# ---------------------------------------------------------------------------
+# Stories — individual story detail view
+# ---------------------------------------------------------------------------
+
+
+@app.get("/stories", response_class=HTMLResponse)
+def stories_page(request: Request):
+    return templates.TemplateResponse("stories.html", {"request": request})
+
+
+@app.get("/api/stories-data")
+def stories_data():
+    """Return all stories with status, attempts, tags, and commit links."""
+    prd_path = Path("prd.json")
+    if not prd_path.exists():
+        return {"stories": []}
+
+    try:
+        prd = json.loads(prd_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {"stories": []}
+
+    all_stories = prd.get("stories", [])
+
+    # Build story_id -> commit SHA map from git log
+    commit_map = {}
+    try:
+        result = subprocess.run(
+            ["git", "log", "--oneline", "--all"],
+            capture_output=True, text=True, timeout=10,
+        )
+        for line in result.stdout.splitlines():
+            m = re.match(r"^([0-9a-f]+) \[Ralph\] Story (\d+):", line)
+            if m:
+                sha, story_id = m.group(1), m.group(2)
+                commit_map[story_id] = sha
+    except Exception:
+        pass
+
+    github_url = "https://github.com/kbadinger/qtown"
+    out = []
+    for s in all_stories:
+        sid = s.get("id", "")
+        status = s.get("status", "pending")
+        sha = commit_map.get(sid) if status == "done" else None
+        out.append({
+            "id": sid,
+            "title": s.get("title", ""),
+            "status": status,
+            "attempts": s.get("attempts", 0),
+            "tags": s.get("tags", []),
+            "commit_url": f"{github_url}/commit/{sha}" if sha else None,
+        })
+
+    return {"stories": out}
 
 
 # ---------------------------------------------------------------------------
