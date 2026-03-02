@@ -274,7 +274,11 @@ def save_prd(prd: dict):
 
 
 def get_next_story(prd: dict) -> dict | None:
-    """Get the next pending story by priority."""
+    """Get the next story to work on — resume in_progress first, then pending."""
+    # Resume any story left in_progress from a crash/restart
+    in_progress = [s for s in prd["stories"] if s["status"] == "in_progress"]
+    if in_progress:
+        return sorted(in_progress, key=lambda s: s.get("priority", 999))[0]
     pending = [s for s in prd["stories"] if s["status"] == "pending"]
     if not pending:
         return None
@@ -324,8 +328,9 @@ def run_story(story: dict) -> bool:
         # 1. Run tests (expect failure on first attempt)
         test_passed, test_output = run_tests(test_file, story_id)
         if test_passed and attempt == 1:
-            print("  Tests already pass — skipping story")
-            return True
+            print("  Tests already pass — skipping to deploy")
+            passed = True
+            break
 
         if test_passed:
             passed = True
@@ -462,8 +467,9 @@ def run_story(story: dict) -> bool:
             else:
                 alert(
                     "deploy_fail",
-                    f"Story {story_id} deploy failed twice — Ralph pausing\n{deploy_msg2[:200]}",
+                    f"Story {story_id} deploy failed twice — stopping\n{deploy_msg2[:200]}",
                 )
+                return False
 
     notify("story_done", f"Story {story_id} complete: {story['title']}")
     return True
