@@ -13,6 +13,7 @@ import signal
 import subprocess
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -109,7 +110,12 @@ def clear_oneshot_action():
 # ---------------------------------------------------------------------------
 
 
-def call_qwen(prompt: str) -> tuple[str, int, int, float]:
+def _ts() -> str:
+    """Compact UTC timestamp for log lines."""
+    return datetime.now(timezone.utc).strftime("%H:%M:%S")
+
+
+def call_qwen(prompt: str, label: str = "qwen") -> tuple[str, int, int, float]:
     """Call Qwen via Ollama API with exponential backoff on infra failures.
 
     Returns (response_text, tokens_in, tokens_out, duration_sec).
@@ -119,6 +125,8 @@ def call_qwen(prompt: str) -> tuple[str, int, int, float]:
     """
     max_retries = 5
     base_delay = 15  # seconds
+    prompt_chars = len(prompt)
+    print(f"  [{_ts()}] Ollama call starting ({label}, {prompt_chars} chars prompt)")
 
     for attempt in range(max_retries + 1):
         try:
@@ -134,7 +142,7 @@ def call_qwen(prompt: str) -> tuple[str, int, int, float]:
                         "temperature": 0.3,
                     },
                 },
-                timeout=3600,
+                timeout=7200,
             )
             duration = time.time() - start
             data = resp.json()
@@ -143,9 +151,12 @@ def call_qwen(prompt: str) -> tuple[str, int, int, float]:
             tokens_in = data.get("prompt_eval_count", 0)
             tokens_out = data.get("eval_count", 0)
 
+            print(f"  [{_ts()}] Ollama done ({label}, {duration:.0f}s, {tokens_in} in, {tokens_out} out, {len(response_text)} chars)")
             return response_text, tokens_in, tokens_out, duration
 
         except requests.RequestException as e:
+            elapsed = time.time() - start
+            print(f"  [{_ts()}] Ollama error after {elapsed:.0f}s: {e}")
             if attempt < max_retries:
                 delay = base_delay * (2 ** attempt) + random.uniform(0, 5)
                 warn(
@@ -161,7 +172,8 @@ def call_qwen(prompt: str) -> tuple[str, int, int, float]:
                 return "", 0, 0, 0.0
 
         except (json.JSONDecodeError, KeyError, ValueError) as e:
-            # Bad response from Qwen — don't retry, this is a model problem
+            elapsed = time.time() - start
+            print(f"  [{_ts()}] Ollama bad response after {elapsed:.0f}s: {e}")
             warn("ollama_bad_response", f"Ollama bad response: {e}")
             return "", 0, 0, 0.0
 
@@ -326,7 +338,9 @@ def run_story(story: dict) -> bool:
             warn("story_fail", f"Story {story_id} struggling — attempt 5/{MAX_ATTEMPTS}\n{story['title']}")
 
         # 1. Run tests (expect failure on first attempt)
+        print(f"  [{_ts()}] Running tests...")
         test_passed, test_output = run_tests(test_file, story_id)
+        print(f"  [{_ts()}] Tests {'PASSED' if test_passed else 'FAILED'}")
         if test_passed and attempt == 1:
             print("  Tests already pass — skipping to deploy")
             passed = True
@@ -357,9 +371,9 @@ def run_story(story: dict) -> bool:
         )
 
         # 3. Call Qwen
-        print(f"  Calling Qwen ({OLLAMA_MODEL})...")
+        print(f"  [{_ts()}] Calling Qwen ({OLLAMA_MODEL})...")
         idle_start = time.time()
-        response, tokens_in, tokens_out, gpu_time = call_qwen(prompt)
+        response, tokens_in, tokens_out, gpu_time = call_qwen(prompt, label=f"story {story_id} attempt {attempt}")
         idle_time = max(0, time.time() - idle_start - gpu_time)
 
         # Check for infrastructure failure (Ollama down after all retries)
@@ -414,40 +428,42 @@ def run_story(story: dict) -> bool:
     log_cost(tokens_in=0, tokens_out=0, gpu_time_sec=0, story_completed=True)
 
     # 7. Reflection — ask Qwen what it learned
-    print(f"  Reflecting on learnings...")
+    print(f"  [{_ts()}] Reflecting on learnings...")
     learn_prompt = build_learning_prompt(story_id, story["title"])
-    learn_text, learn_tin, learn_tout, learn_time = call_qwen(learn_prompt)
+    learn_text, learn_tin, learn_tout, learn_time = call_qwen(learn_prompt, label=f"story {story_id} reflection")
     log_cost(tokens_in=learn_tin, tokens_out=learn_tout, gpu_time_sec=learn_time)
     append_learning(story_id, story["title"], story.get("attempts", 1), learn_text)
-    print(f"  Learnings saved to progress.txt")
+    print(f"  [{_ts()}] Learnings saved to progress.txt")
 
     # 8. Git commit
-    print(f"  Committing...")
+    print(f"  [{_ts()}] Committing...")
     try:
         git_commit(f"[Ralph] Story {story_id}: {story['title']}")
     except subprocess.CalledProcessError as e:
-        print(f"  Git commit failed: {e}")
+        print(f"  [{_ts()}] Git commit failed: {e}")
 
     # 9. Deploy pipeline
-    print(f"  Deploying...")
+    print(f"  [{_ts()}] Deploying...")
     deploy_ok, deploy_msg = push_and_wait()
 
     if deploy_ok:
-        print(f"  Deploy healthy: {deploy_msg}")
+        print(f"  [{_ts()}] Deploy healthy: {deploy_msg}")
         notify("deploy_ok", f"Story {story_id} deployed: {deploy_msg}")
         # 10. Take snapshots
+        print(f"  [{_ts()}] Taking snapshots...")
         snapshot_files = take_all_snapshots(story_id)
         if snapshot_files:
             git_commit_snapshots(story_id)
             # Push snapshot commit
             subprocess.run(["git", "push", "origin", "main"], capture_output=True)
+        print(f"  [{_ts()}] Snapshots done")
     else:
-        print(f"  Deploy FAILED: {deploy_msg}")
+        print(f"  [{_ts()}] Deploy FAILED: {deploy_msg}")
         warn("deploy_fail", f"Story {story_id} deploy failed — starting fix cycle")
         # Feed deploy error back to Qwen as a fix cycle
-        print(f"  Starting deploy-fix cycle...")
+        print(f"  [{_ts()}] Starting deploy-fix cycle...")
         fix_prompt = build_prompt(story, "", deploy_error=deploy_msg)
-        fix_response, fix_tin, fix_tout, fix_time = call_qwen(fix_prompt)
+        fix_response, fix_tin, fix_tout, fix_time = call_qwen(fix_prompt, label=f"story {story_id} deploy-fix")
         log_cost(tokens_in=fix_tin, tokens_out=fix_tout, gpu_time_sec=fix_time)
         apply_files(fix_response)
         # Re-test, commit, and try deploy again

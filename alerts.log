@@ -52,3 +52,7 @@ Invalid RAILWAY_TOKEN. Please check that it is valid and has access to the resou
 [2026-03-02 21:24:22 UTC] CRITICAL critical: Story 001 failed: Initialize 50x50 grid
 Ralph stopped — needs human debugging
 [2026-03-02 21:24:23 UTC] stop: Ralph offline — 0/215 stories complete
+[2026-03-02 21:25:41 UTC] start: Ralph online — 0/215 stories complete
+[2026-03-02 21:25:42 UTC] story_start: Story 001: Initialize 50x50 grid
+[2026-03-02 22:21:30 UTC] WARN ollama_retry: Ollama unreachable (attempt 1/6): ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+Retrying in 18s
