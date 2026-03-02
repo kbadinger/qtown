@@ -3,14 +3,18 @@ import json
 import os
 import shutil
 import uuid
+from pathlib import Path
 
 import httpx
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+load_dotenv()
+
 # ---------- CONFIG ----------
 
-COMFY_URL = "http://127.0.0.1:8188"
+COMFY_URL = os.getenv("COMFY_URL", "http://127.0.0.1:8188")
 BASE_DIR = os.path.dirname(__file__)
 API_WORKFLOW_PATH = os.path.join(BASE_DIR, "workflows", "building_api.json")
 
@@ -18,7 +22,7 @@ API_WORKFLOW_PATH = os.path.join(BASE_DIR, "workflows", "building_api.json")
 ASSET_ROOT = os.path.abspath(os.path.join(BASE_DIR, "..", "assets"))
 
 # ../ComfyUI/output  (adjust if your ComfyUI path is different)
-COMFY_OUTPUT_DIR = r"D:\AICartoon\ComfyUI\ComfyUI\output"
+COMFY_OUTPUT_DIR = os.getenv("COMFY_OUTPUT_DIR", str(Path.home() / "ComfyUI" / "output"))
 
 app = FastAPI()
 

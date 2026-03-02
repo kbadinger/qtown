@@ -9,7 +9,7 @@ def _setup_world(db):
     seed_npcs(db)
 
 
-def test_npc_gold_field(db):
+def test_s012_npc_gold_field(db):
     """Story 012: NPC model should have a gold field."""
     from engine.models import NPC
 
@@ -19,7 +19,7 @@ def test_npc_gold_field(db):
     assert npc.gold == 100
 
 
-def test_transfer_gold(db):
+def test_s013_transfer_gold(db):
     """Story 013: transfer_gold() moves gold between NPCs."""
     from engine.models import NPC
     from engine.simulation import transfer_gold
@@ -37,7 +37,7 @@ def test_transfer_gold(db):
     assert receiver.gold == 50
 
 
-def test_transfer_gold_insufficient(db):
+def test_s013_transfer_gold_insufficient(db):
     """Story 013: transfer_gold() fails if sender lacks funds."""
     from engine.models import NPC
     from engine.simulation import transfer_gold
@@ -53,14 +53,14 @@ def test_transfer_gold_insufficient(db):
     assert sender.gold == 10  # Unchanged
 
 
-def test_transactions_api(client, admin_headers):
+def test_s014_transactions_api(client, admin_headers):
     """Story 014: GET /api/transactions returns transaction history."""
     resp = client.get("/api/transactions")
     assert resp.status_code == 200
     assert isinstance(resp.json(), list)
 
 
-def test_earn_gold_at_work(db):
+def test_s026_earn_gold_at_work(db):
     """Story 026: NPCs earn gold when working."""
     _setup_world(db)
     from engine.models import NPC
@@ -75,7 +75,7 @@ def test_earn_gold_at_work(db):
     assert npc.gold > 0, "NPC should have earned gold from working"
 
 
-def test_resource_model(db):
+def test_s027_resource_model(db):
     """Story 027: Resource model should exist."""
     from engine.models import Resource
 
@@ -85,7 +85,7 @@ def test_resource_model(db):
     assert r.id is not None
 
 
-def test_food_production(db):
+def test_s028_food_production(db):
     """Story 028: Farms should produce food resources."""
     _setup_world(db)
     from engine.simulation import produce_resources
@@ -98,7 +98,7 @@ def test_food_production(db):
     assert food is None or food.quantity >= 0
 
 
-def test_buy_food(db):
+def test_s029_buy_food(db):
     """Story 029: NPCs can buy food with gold."""
     _setup_world(db)
     from engine.models import NPC
@@ -113,7 +113,7 @@ def test_buy_food(db):
     assert npc.hunger < 80 or npc.gold < 50  # Something should change
 
 
-def test_treasury_taxes(db):
+def test_s030_treasury_taxes(db):
     """Story 030: Treasury collects taxes from NPCs."""
     _setup_world(db)
     from engine.simulation import collect_taxes

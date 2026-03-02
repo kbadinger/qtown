@@ -16,6 +16,9 @@ import shutil
 from pathlib import Path
 
 import httpx
+from dotenv import load_dotenv
+
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +26,7 @@ logger = logging.getLogger(__name__)
 # Configuration
 # ---------------------------------------------------------------------------
 
-COMFY_URL = "http://127.0.0.1:8188"
+COMFY_URL = os.getenv("COMFY_URL", "http://127.0.0.1:8188")
 
 # Paths relative to project root
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -36,7 +39,7 @@ NPCS_DIR = ASSET_DIR / "npcs"
 # ComfyUI output directory — where generated images land
 COMFY_OUTPUT_DIR = Path(os.getenv(
     "COMFY_OUTPUT_DIR",
-    r"D:\AICartoon\ComfyUI\ComfyUI\output",
+    str(Path.home() / "ComfyUI" / "output"),
 ))
 
 COMFY_TIMEOUT = 180  # seconds to wait for generation

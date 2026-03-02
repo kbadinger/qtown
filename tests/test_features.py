@@ -1,7 +1,7 @@
 """Tests for voting/feature stories: 042-045."""
 
 
-def test_submit_feature(client):
+def test_s042_submit_feature(client):
     """Story 042: POST /api/features submits a feature request."""
     resp = client.post(
         "/api/features",
@@ -13,7 +13,7 @@ def test_submit_feature(client):
     assert data["status"] == "submitted"
 
 
-def test_submit_feature_empty_title(client):
+def test_s042_submit_feature_empty_title(client):
     """Story 042: Empty title should return 422."""
     resp = client.post(
         "/api/features",
@@ -22,7 +22,7 @@ def test_submit_feature_empty_title(client):
     assert resp.status_code == 422
 
 
-def test_list_features(client):
+def test_s042_list_features(client):
     """Story 042: GET /api/features lists all submitted features."""
     # Submit one first
     client.post(
@@ -36,7 +36,7 @@ def test_list_features(client):
     assert len(data) >= 1
 
 
-def test_vote_for_feature(client):
+def test_s043_vote_for_feature(client):
     """Story 043: POST /api/features/{id}/vote registers a vote."""
     # Create feature
     create_resp = client.post(
@@ -52,7 +52,7 @@ def test_vote_for_feature(client):
     assert data["vote_count"] >= 1
 
 
-def test_vote_dedup_by_ip(client):
+def test_s043_vote_dedup_by_ip(client):
     """Story 043: Same IP can only vote once per feature."""
     create_resp = client.post(
         "/api/features",
@@ -71,7 +71,7 @@ def test_vote_dedup_by_ip(client):
     assert target["vote_count"] == 1
 
 
-def test_admin_approve_feature(client, admin_headers):
+def test_s044_admin_approve_feature(client, admin_headers):
     """Story 044: Admin can approve a feature."""
     create_resp = client.post(
         "/api/features",
@@ -87,7 +87,7 @@ def test_admin_approve_feature(client, admin_headers):
     assert resp.json()["status"] == "approved"
 
 
-def test_approve_requires_admin(client):
+def test_s044_approve_requires_admin(client):
     """Story 044: Approving without admin key returns 401/422."""
     create_resp = client.post(
         "/api/features",
@@ -99,7 +99,7 @@ def test_approve_requires_admin(client):
     assert resp.status_code in (401, 422)
 
 
-def test_convert_to_prd(client, admin_headers):
+def test_s045_convert_to_prd(client, admin_headers):
     """Story 045: Admin can convert approved feature to PRD story."""
     # Create and approve
     create_resp = client.post(

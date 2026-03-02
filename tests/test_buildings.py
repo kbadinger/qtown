@@ -1,7 +1,7 @@
 """Tests for building stories: 002, 004, 008-009, 031."""
 
 
-def test_building_model_exists(db):
+def test_s002_building_model_exists(db):
     """Story 002: Building model should exist with required fields."""
     from engine.models import Building
 
@@ -15,7 +15,7 @@ def test_building_model_exists(db):
     assert b.y == 25
 
 
-def test_seed_buildings(db):
+def test_s004_seed_buildings(db):
     """Story 004: seed_buildings() should create starter buildings."""
     from engine.simulation import init_grid, seed_buildings
 
@@ -27,7 +27,7 @@ def test_seed_buildings(db):
     assert count >= 3, f"Expected at least 3 seed buildings, got {count}"
 
 
-def test_seed_buildings_on_valid_tiles(db):
+def test_s004_seed_buildings_on_valid_tiles(db):
     """Story 004: Seeded buildings must be on valid grid coordinates."""
     from engine.simulation import init_grid, seed_buildings
 
@@ -40,14 +40,14 @@ def test_seed_buildings_on_valid_tiles(db):
         assert 0 <= b.y < 50, f"Building {b.name} y={b.y} out of range"
 
 
-def test_get_buildings_api(client, admin_headers):
+def test_s008_get_buildings_api(client, admin_headers):
     """Story 008: GET /api/buildings returns list of buildings."""
     resp = client.get("/api/buildings")
     assert resp.status_code == 200
     assert isinstance(resp.json(), list)
 
 
-def test_create_building_api(client, admin_headers):
+def test_s009_create_building_api(client, admin_headers):
     """Story 009: POST /api/buildings creates a building (admin only)."""
     resp = client.post(
         "/api/buildings",
@@ -59,7 +59,7 @@ def test_create_building_api(client, admin_headers):
     assert data["name"] == "Bakery"
 
 
-def test_create_building_requires_admin(client):
+def test_s009_create_building_requires_admin(client):
     """Story 009: POST /api/buildings without admin key returns 401/422."""
     resp = client.post(
         "/api/buildings",
@@ -68,7 +68,7 @@ def test_create_building_requires_admin(client):
     assert resp.status_code in (401, 422)
 
 
-def test_build_building_via_simulation(db):
+def test_s031_build_building_via_simulation(db):
     """Story 031: build_building() should deduct resources and create building."""
     from engine.simulation import init_grid, build_building
 

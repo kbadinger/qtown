@@ -1,7 +1,7 @@
 """Tests for Story 001: Initialize 50x50 grid."""
 
 
-def test_init_grid_creates_2500_tiles(db):
+def test_s001_init_grid_creates_2500_tiles(db):
     """Story 001: init_grid() should create 2500 tiles (50x50)."""
     from engine.simulation import init_grid
 
@@ -12,7 +12,7 @@ def test_init_grid_creates_2500_tiles(db):
     assert count == 2500, f"Expected 2500 tiles, got {count}"
 
 
-def test_init_grid_covers_full_range(db):
+def test_s001_init_grid_covers_full_range(db):
     """Story 001: Grid should cover x=0..49, y=0..49."""
     from engine.simulation import init_grid
 
@@ -25,7 +25,7 @@ def test_init_grid_covers_full_range(db):
     assert ys == set(range(50))
 
 
-def test_init_grid_default_terrain(db):
+def test_s001_init_grid_default_terrain(db):
     """Story 001: All tiles should default to 'grass' terrain."""
     from engine.simulation import init_grid
 
@@ -36,7 +36,7 @@ def test_init_grid_default_terrain(db):
     assert non_grass == 0, f"Expected all grass, found {non_grass} non-grass tiles"
 
 
-def test_init_grid_idempotent(db):
+def test_s001_init_grid_idempotent(db):
     """Story 001: Calling init_grid() twice should not duplicate tiles."""
     from engine.simulation import init_grid
 

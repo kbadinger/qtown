@@ -54,6 +54,7 @@ You must NEVER create or modify these files:
 - `engine/auth.py` — authentication (human-written, security-critical)
 - `engine/main.py` — app setup (human-written, security-critical)
 - `engine/db.py` — database setup (human-written)
+- `engine/sprites.py` — sprite generation bridge (human-written)
 - `engine/templates/dashboard.html` — progress dashboard (human-written)
 - `docs/` — documentation (human-written)
 - `HUMAN.md` — human intervention file
@@ -98,6 +99,25 @@ The file must:
 3. Export a variable named `router` (a FastAPI `APIRouter` instance)
 
 See `docs/fastapi-patterns.md` for full examples.
+
+## Sprite Generation (ComfyUI)
+
+When your story adds a new building type or NPC role, generate a sprite for it:
+
+```python
+from engine.sprites import generate_building, generate_npc
+
+# Generate a building sprite — returns path or None if ComfyUI is down
+path = generate_building("bakery")
+
+# Generate an NPC sprite
+path = generate_npc("merchant")
+```
+
+- Call these in your router or simulation code whenever a new type/role is created
+- They return `None` gracefully if ComfyUI is unavailable — never crash on sprite failure
+- Generated sprites land in `assets/buildings/` and `assets/npcs/`
+- The PixiJS renderer already serves files from `assets/`
 
 ## Behavioral Rules
 

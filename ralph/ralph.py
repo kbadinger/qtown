@@ -8,6 +8,7 @@ Supports safe shutdown via HUMAN.md (action: pause) or SIGINT/SIGTERM.
 
 import json
 import os
+import random
 import signal
 import subprocess
 import sys
@@ -109,41 +110,62 @@ def clear_oneshot_action():
 
 
 def call_qwen(prompt: str) -> tuple[str, int, int, float]:
-    """Call Qwen via Ollama API.
+    """Call Qwen via Ollama API with exponential backoff on infra failures.
 
     Returns (response_text, tokens_in, tokens_out, duration_sec).
-    Returns ("", 0, 0, 0.0) on any network or parse error so the retry loop continues.
+    Retries up to 5 times on network errors with backoff: 15s, 35s, 65s, 125s, 245s.
+    Returns ("", 0, 0, 0.0) only after all retries are exhausted.
+    Bad JSON responses return immediately (no retry — that's a Qwen problem).
     """
-    try:
-        start = time.time()
-        resp = requests.post(
-            f"{OLLAMA_URL}/api/generate",
-            json={
-                "model": OLLAMA_MODEL,
-                "prompt": prompt,
-                "stream": False,
-                "options": {
-                    "num_ctx": 32768,
-                    "temperature": 0.3,
+    max_retries = 5
+    base_delay = 15  # seconds
+
+    for attempt in range(max_retries + 1):
+        try:
+            start = time.time()
+            resp = requests.post(
+                f"{OLLAMA_URL}/api/generate",
+                json={
+                    "model": OLLAMA_MODEL,
+                    "prompt": prompt,
+                    "stream": False,
+                    "options": {
+                        "num_ctx": 32768,
+                        "temperature": 0.3,
+                    },
                 },
-            },
-            timeout=600,
-        )
-        duration = time.time() - start
-        data = resp.json()
+                timeout=600,
+            )
+            duration = time.time() - start
+            data = resp.json()
 
-        response_text = data.get("response", "")
-        tokens_in = data.get("prompt_eval_count", 0)
-        tokens_out = data.get("eval_count", 0)
+            response_text = data.get("response", "")
+            tokens_in = data.get("prompt_eval_count", 0)
+            tokens_out = data.get("eval_count", 0)
 
-        return response_text, tokens_in, tokens_out, duration
-    except requests.RequestException as e:
-        alert("warning", f"Ollama unreachable: {e} — retrying in 60s")
-        time.sleep(60)
-        return "", 0, 0, 0.0
-    except (json.JSONDecodeError, KeyError, ValueError) as e:
-        warn("warning", f"Ollama bad response: {e}")
-        return "", 0, 0, 0.0
+            return response_text, tokens_in, tokens_out, duration
+
+        except requests.RequestException as e:
+            if attempt < max_retries:
+                delay = base_delay * (2 ** attempt) + random.uniform(0, 5)
+                warn(
+                    "ollama_retry",
+                    f"Ollama unreachable (attempt {attempt + 1}/{max_retries + 1}): {e}\nRetrying in {delay:.0f}s",
+                )
+                time.sleep(delay)
+            else:
+                alert(
+                    "critical",
+                    f"Ollama unreachable after {max_retries + 1} attempts — giving up\nLast error: {e}",
+                )
+                return "", 0, 0, 0.0
+
+        except (json.JSONDecodeError, KeyError, ValueError) as e:
+            # Bad response from Qwen — don't retry, this is a model problem
+            warn("ollama_bad_response", f"Ollama bad response: {e}")
+            return "", 0, 0, 0.0
+
+    return "", 0, 0, 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -283,8 +305,13 @@ def run_story(story: dict) -> bool:
 
     # Loop detection — track recent error signatures
     recent_errors: list[str] = []
+    attempt = 0
+    consecutive_infra_failures = 0
+    passed = False
 
-    for attempt in range(1, MAX_ATTEMPTS + 1):
+    while attempt < MAX_ATTEMPTS:
+        attempt += 1
+
         if should_stop():
             print("[Ralph] Stop requested during story — pausing")
             return False
@@ -295,12 +322,13 @@ def run_story(story: dict) -> bool:
             warn("story_fail", f"Story {story_id} struggling — attempt 5/{MAX_ATTEMPTS}\n{story['title']}")
 
         # 1. Run tests (expect failure on first attempt)
-        passed, test_output = run_tests(test_file)
-        if passed and attempt == 1:
+        test_passed, test_output = run_tests(test_file, story_id)
+        if test_passed and attempt == 1:
             print("  Tests already pass — skipping story")
             return True
 
-        if passed:
+        if test_passed:
+            passed = True
             break
 
         # Loop detection — extract error signature (first failure line)
@@ -329,6 +357,20 @@ def run_story(story: dict) -> bool:
         response, tokens_in, tokens_out, gpu_time = call_qwen(prompt)
         idle_time = max(0, time.time() - idle_start - gpu_time)
 
+        # Check for infrastructure failure (Ollama down after all retries)
+        if not response and tokens_in == 0:
+            consecutive_infra_failures += 1
+            attempt -= 1  # Don't count infra failures as story attempts
+            print(f"  Ollama infrastructure failure ({consecutive_infra_failures}/3) — not counting as attempt")
+            if consecutive_infra_failures >= 3:
+                alert(
+                    "critical",
+                    f"Story {story_id}: Ollama down for 3 consecutive calls — bailing\n{story['title']}",
+                )
+                return False
+            continue
+        consecutive_infra_failures = 0
+
         # 4. Log cost (every call, pass or fail)
         log_cost(
             tokens_in=tokens_in,
@@ -348,15 +390,17 @@ def run_story(story: dict) -> bool:
             continue
 
         # 6. Re-run tests
-        passed, test_output = run_tests(test_file)
-        log_metric(story_id, attempt, passed, gpu_time, None if passed else test_output[:500], tokens_in, tokens_out)
+        test_passed, test_output = run_tests(test_file, story_id)
+        log_metric(story_id, attempt, test_passed, gpu_time, None if test_passed else test_output[:500], tokens_in, tokens_out)
 
-        if passed:
+        if test_passed:
             print(f"  PASSED on attempt {attempt}")
+            passed = True
             break
         else:
             print(f"  FAILED — will retry")
-    else:
+
+    if not passed:
         print(f"  Story {story_id} FAILED after {MAX_ATTEMPTS} attempts")
         warn("story_fail", f"Story {story_id} failed after {MAX_ATTEMPTS} attempts: {story['title']}")
         return False
@@ -402,7 +446,7 @@ def run_story(story: dict) -> bool:
         log_cost(tokens_in=fix_tin, tokens_out=fix_tout, gpu_time_sec=fix_time)
         apply_files(fix_response)
         # Re-test, commit, and try deploy again
-        fix_passed, _ = run_tests(test_file)
+        fix_passed, _ = run_tests(test_file, story_id)
         if fix_passed:
             try:
                 git_commit(f"[Ralph] Deploy fix: Story {story_id}")

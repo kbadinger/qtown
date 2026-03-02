@@ -9,7 +9,7 @@ def _setup_world(db):
     seed_npcs(db)
 
 
-def test_event_model(db):
+def test_s033_event_model(db):
     """Story 033: Event model should exist with required fields."""
     from engine.models import Event
 
@@ -24,7 +24,7 @@ def test_event_model(db):
     assert e.event_type == "harvest"
 
 
-def test_auto_log_events(db):
+def test_s034_auto_log_events(db):
     """Story 034: process_tick() should auto-log events."""
     _setup_world(db)
     from engine.simulation import process_tick
@@ -36,7 +36,7 @@ def test_auto_log_events(db):
     assert len(events) >= 0  # May or may not generate events on first tick
 
 
-def test_weather_system(db):
+def test_s035_weather_system(db):
     """Story 035: Weather model/system should exist."""
     from engine.models import WorldState
     from engine.simulation import update_weather
@@ -49,7 +49,7 @@ def test_weather_system(db):
     assert ws.weather is not None
 
 
-def test_weather_effects(db):
+def test_s036_weather_effects(db):
     """Story 036: Weather should affect simulation."""
     _setup_world(db)
     from engine.models import WorldState

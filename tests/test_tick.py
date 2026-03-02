@@ -10,7 +10,7 @@ def _setup_world(db):
     seed_npcs(db)
 
 
-def test_tick_decay(db):
+def test_s017_tick_decay(db):
     """Story 017: process_tick() should decay NPC hunger and energy."""
     from engine.simulation import init_grid, seed_buildings, seed_npcs, process_tick
 
@@ -26,7 +26,7 @@ def test_tick_decay(db):
     assert npc.hunger > initial_hunger or npc.energy < initial_energy
 
 
-def test_eating_behavior(db):
+def test_s021_eating_behavior(db):
     """Story 021: NPCs with high hunger should eat during tick."""
     _setup_world(db)
     from engine.models import NPC
@@ -41,7 +41,7 @@ def test_eating_behavior(db):
     assert npc.hunger < 90, "Hungry NPC should have eaten"
 
 
-def test_sleeping_behavior(db):
+def test_s023_sleeping_behavior(db):
     """Story 023: NPCs with low energy should sleep during tick."""
     _setup_world(db)
     from engine.models import NPC
@@ -55,7 +55,7 @@ def test_sleeping_behavior(db):
     assert npc.energy > 10, "Tired NPC should have slept"
 
 
-def test_world_state_model(db):
+def test_s024_world_state_model(db):
     """Story 024: WorldState model tracks global simulation state."""
     from engine.models import WorldState
 
@@ -67,7 +67,7 @@ def test_world_state_model(db):
     assert ws.day == 1
 
 
-def test_npc_movement(db):
+def test_s025_npc_movement(db):
     """Story 025: NPCs should move toward their target during tick."""
     _setup_world(db)
     from engine.models import NPC
@@ -85,7 +85,7 @@ def test_npc_movement(db):
     assert (npc.x != old_x or npc.y != old_y), "NPC should have moved toward target"
 
 
-def test_population_growth(db):
+def test_s032_population_growth(db):
     """Story 032: Population should grow under good conditions."""
     _setup_world(db)
     from engine.models import NPC
@@ -98,7 +98,7 @@ def test_population_growth(db):
     assert new_count >= initial_count
 
 
-def test_utility_based_decisions(db):
+def test_s041_utility_based_decisions(db):
     """Story 041: NPCs should make utility-based decisions."""
     _setup_world(db)
     from engine.simulation import get_npc_decision

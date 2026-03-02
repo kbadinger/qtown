@@ -3,14 +3,17 @@
 import subprocess
 
 
-def run_tests(test_file: str) -> tuple[bool, str]:
-    """Run pytest on a single test file.
+def run_tests(test_file: str, story_id: str = "") -> tuple[bool, str]:
+    """Run pytest on a single test file, optionally filtering by story ID.
 
     Returns (passed: bool, output: str).
     """
     try:
+        cmd = ["python", "-m", "pytest", test_file, "-v", "--tb=short"]
+        if story_id:
+            cmd.extend(["-k", f"s{story_id}"])
         result = subprocess.run(
-            ["python", "-m", "pytest", test_file, "-v", "--tb=short"],
+            cmd,
             capture_output=True,
             text=True,
             timeout=120,
