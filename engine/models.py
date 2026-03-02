@@ -70,6 +70,7 @@ class Vote(Base):
     id = Column(Integer, primary_key=True, index=True)
     feature_id = Column(Integer, ForeignKey("features.id"), nullable=False)
     voter_ip = Column(String(45), nullable=False)
+
     created_at = Column(DateTime, default=_utcnow)
 
     feature = relationship("Feature", back_populates="votes")

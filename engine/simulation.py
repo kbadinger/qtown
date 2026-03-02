@@ -1,17 +1,19 @@
-from sqlalchemy.orm import Session
+"""Simulation logic — pure functions that modify game state via DB."""
 
-from engine.models import Tile
+from sqlalchemy.orm import Session
 
 
 def init_grid(db: Session) -> None:
     """Initialize the 50x50 tile grid."""
-    # Idempotency check: if any tiles exist, grid is already initialized
-    if db.query(Tile).count() > 0:
+    from engine.models import Tile
+
+    existing_count = db.query(Tile).count()
+    if existing_count > 0:
         return
 
-    # Create 2500 tiles (50x50)
     for x in range(50):
         for y in range(50):
-            db.add(Tile(x=x, y=y, terrain="grass"))
+            tile = Tile(x=x, y=y, terrain="grass")
+            db.add(tile)
 
     db.commit()
