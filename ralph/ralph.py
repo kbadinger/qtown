@@ -274,11 +274,11 @@ def save_prd(prd: dict):
 
 
 def get_next_story(prd: dict) -> dict | None:
-    """Get the next pending story by priority."""
-    pending = [s for s in prd["stories"] if s["status"] == "pending"]
-    if not pending:
+    """Get the next pending or failed story by priority."""
+    eligible = [s for s in prd["stories"] if s["status"] in ("pending", "failed")]
+    if not eligible:
         return None
-    return sorted(pending, key=lambda s: s.get("priority", 999))[0]
+    return sorted(eligible, key=lambda s: s.get("priority", 999))[0]
 
 
 def run_story(story: dict) -> bool:
