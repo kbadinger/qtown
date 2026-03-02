@@ -1,0 +1,16 @@
+{
+  "total_stories": 1,
+  "total_attempts": 3,
+  "total_tokens_in": 4010,
+  "total_tokens_out": 6157,
+  "total_gpu_hours": 0.1700798883040746,
+  "total_idle_hours": 4.198153813680013e-07,
+  "qwen_electricity_usd": 0.01,
+  "opus46_equivalent_usd": 0.17,
+  "opus4_equivalent_usd": 0.52,
+  "gpt4o_equivalent_usd": 0.07,
+  "sonnet_equivalent_usd": 0.0,
+  "savings_vs_opus46_pct": 94.1,
+  "last_updated": "2026-03-02T14:52:31",
+  "sonnet45_equivalent_usd": 0.1
+}
