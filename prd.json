@@ -3,7 +3,7 @@
     {
       "id": "001",
       "title": "Initialize 50x50 grid",
-      "description": "Create init_grid(db) in engine/simulation.py that creates 2500 Tile rows with x=0..49, y=0..49, terrain='grass'. Must be idempotent \u2014 calling twice should not duplicate rows. Uses the Tile model from engine/models.py.",
+      "description": "Create init_grid(db) in engine/simulation.py that creates 2500 Tile rows with x=0..49, y=0..49, terrain='grass'. Must be idempotent — calling twice should not duplicate rows. Uses the Tile model from engine/models.py.",
       "acceptance": "Test creates a fresh DB, calls init_grid twice, asserts exactly 2500 Tile rows exist. Asserts tile at (0,0) and (49,49) both have terrain='grass'.",
       "test_file": "tests/test_grid.py",
       "context_files": [
@@ -13,8 +13,8 @@
         "simulation"
       ],
       "priority": 1,
-      "status": "failed",
-      "attempts": 1
+      "status": "pending",
+      "attempts": 0
     },
     {
       "id": "002",
@@ -2527,7 +2527,7 @@
     {
       "id": "143",
       "title": "About page",
-      "description": "Add /about page explaining Qwen Town \u2014 what it is, how it works, the tech stack, link to GitHub.",
+      "description": "Add /about page explaining Qwen Town — what it is, how it works, the tech stack, link to GitHub.",
       "acceptance": "Test: GET /about returns 200 with project description. Test: page contains 'Qwen Town'. Test: technologies mentioned.",
       "test_file": "tests/test_api.py",
       "context_files": [

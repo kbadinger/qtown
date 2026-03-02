@@ -563,8 +563,17 @@ def main():
             except (json.JSONDecodeError, AttributeError):
                 print("[Ralph] Failed to parse generated stories — continuing with backlog")
 
-        # Get next story
+        # Block if any stories are failed — wait for human to reset
         prd = load_prd()
+        failed = [s for s in prd["stories"] if s["status"] == "failed"]
+        if failed:
+            ids = ", ".join(s["id"] for s in failed)
+            alert("critical", f"Blocked by failed stories: {ids}\nReset to 'pending' in prd.json to retry")
+            print(f"[Ralph] Blocked by failed stories: {ids} — needs human intervention")
+            pause_marker.touch()
+            break
+
+        # Get next story
         story = get_next_story(prd)
 
         if not story:
