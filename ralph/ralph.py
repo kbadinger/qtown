@@ -134,7 +134,7 @@ def call_qwen(prompt: str) -> tuple[str, int, int, float]:
                         "temperature": 0.3,
                     },
                 },
-                timeout=600,
+                timeout=3600,
             )
             duration = time.time() - start
             data = resp.json()
