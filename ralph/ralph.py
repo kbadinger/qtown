@@ -210,8 +210,11 @@ def preflight() -> bool:
 
 
 def git_commit(message: str):
-    """Stage all changes and commit."""
-    subprocess.run(["git", "add", "-A"], check=True, capture_output=True)
+    """Stage Qwen-writable paths and commit. Never stages .env or secrets."""
+    safe_paths = ["engine/", "assets/", "prd.json", "cost_tracking.json",
+                  "metrics.jsonl", "progress.txt", "alerts.log"]
+    for p in safe_paths:
+        subprocess.run(["git", "add", p], capture_output=True)
     subprocess.run(
         ["git", "commit", "-m", message],
         check=True,

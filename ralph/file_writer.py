@@ -17,31 +17,52 @@ BLOCKLIST = [
     "docs/",
     "HUMAN.md",
     "AGENTS.md",
+    "CHANGELOG.md",
+    "COST_METHODOLOGY.md",
     "prd.json",
     ".env",
     ".gitignore",
     "requirements.txt",
+    "Procfile",
+    "railway.json",
+    ".claude/",
 ]
+
+
+def _normalize(filepath: str) -> str:
+    """Normalize a filepath for safe blocklist comparison.
+
+    Resolves ./segments, collapses separators, lowercases on Windows.
+    """
+    cleaned = filepath.replace("\\", "/")
+    cleaned = os.path.normpath(cleaned).replace("\\", "/")
+    # Windows is case-insensitive — normalize to lowercase
+    if os.name == "nt":
+        cleaned = cleaned.lower()
+    return cleaned
 
 
 def is_blocked(filepath: str) -> bool:
     """Check if a filepath is on the blocklist or attempts path traversal."""
-    normalized = filepath.replace("\\", "/")
+    raw = filepath.replace("\\", "/")
 
-    # Block path traversal
-    if ".." in normalized:
+    # Block path traversal (check BEFORE normalization so .. can't sneak through)
+    if ".." in raw:
         print(f"  [BLOCKED] Path traversal rejected: {filepath}")
         return True
-    if normalized.startswith("/"):
+    if raw.startswith("/"):
         print(f"  [BLOCKED] Absolute path rejected: {filepath}")
         return True
 
+    normalized = _normalize(filepath)
+
     for blocked in BLOCKLIST:
-        if blocked.endswith("/"):
-            if normalized.startswith(blocked):
+        b = blocked.lower() if os.name == "nt" else blocked
+        if b.endswith("/"):
+            if normalized.startswith(b) or normalized.startswith(b.rstrip("/")):
                 return True
         else:
-            if normalized == blocked:
+            if normalized == b:
                 return True
     return False
 
@@ -77,6 +98,13 @@ def apply_files(response: str) -> list[str]:
     for filepath, content in file_blocks:
         if is_blocked(filepath):
             print(f"  [BLOCKED] Skipping protected file: {filepath}")
+            continue
+
+        # Resolve to catch symlink attacks
+        target = Path(filepath).resolve()
+        repo_root = Path(".").resolve()
+        if not str(target).startswith(str(repo_root)):
+            print(f"  [BLOCKED] Path escapes repo: {filepath}")
             continue
 
         # Create parent directories if needed

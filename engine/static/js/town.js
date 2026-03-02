@@ -336,20 +336,26 @@
   const tooltipEl  = document.getElementById("tooltip");
   const tooltipDiv = document.getElementById("tooltip-content");
 
+  function esc(str) {
+    const d = document.createElement("div");
+    d.textContent = String(str);
+    return d.innerHTML;
+  }
+
   function onSpriteOver(e) {
     const data = e.currentTarget._tooltipData;
     if (!data) return;
 
-    let html = `<div class="font-semibold text-amber-300">${data.title}</div>`;
-    html += `<div class="text-gray-400 text-xs uppercase tracking-wide">${data.type}</div>`;
+    let html = `<div class="font-semibold text-amber-300">${esc(data.title)}</div>`;
+    html += `<div class="text-gray-400 text-xs uppercase tracking-wide">${esc(data.type)}</div>`;
 
     // Show extra info if available
     const ex = data.extra;
-    if (ex.gold !== undefined) html += `<div class="text-xs mt-1">Gold: <span class="text-amber-200">${ex.gold}</span></div>`;
-    if (ex.hunger !== undefined) html += `<div class="text-xs">Hunger: ${ex.hunger}</div>`;
-    if (ex.energy !== undefined) html += `<div class="text-xs">Energy: ${ex.energy}</div>`;
-    if (ex.hp !== undefined) html += `<div class="text-xs">HP: ${ex.hp}</div>`;
-    if (ex.level !== undefined) html += `<div class="text-xs">Level: ${ex.level}</div>`;
+    if (ex.gold !== undefined) html += `<div class="text-xs mt-1">Gold: <span class="text-amber-200">${esc(ex.gold)}</span></div>`;
+    if (ex.hunger !== undefined) html += `<div class="text-xs">Hunger: ${esc(ex.hunger)}</div>`;
+    if (ex.energy !== undefined) html += `<div class="text-xs">Energy: ${esc(ex.energy)}</div>`;
+    if (ex.hp !== undefined) html += `<div class="text-xs">HP: ${esc(ex.hp)}</div>`;
+    if (ex.level !== undefined) html += `<div class="text-xs">Level: ${esc(ex.level)}</div>`;
 
     tooltipDiv.innerHTML = html;
     tooltipEl.classList.remove("hidden");
