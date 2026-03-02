@@ -274,11 +274,11 @@ def save_prd(prd: dict):
 
 
 def get_next_story(prd: dict) -> dict | None:
-    """Get the next pending or failed story by priority."""
-    eligible = [s for s in prd["stories"] if s["status"] in ("pending", "failed")]
-    if not eligible:
+    """Get the next pending story by priority."""
+    pending = [s for s in prd["stories"] if s["status"] == "pending"]
+    if not pending:
         return None
-    return sorted(eligible, key=lambda s: s.get("priority", 999))[0]
+    return sorted(pending, key=lambda s: s.get("priority", 999))[0]
 
 
 def run_story(story: dict) -> bool:
@@ -501,8 +501,6 @@ def main():
     total = len(prd["stories"])
     notify("start", f"Ralph online — {done}/{total} stories complete")
 
-    consecutive_failures = 0
-
     while True:
         if should_stop():
             intervention = read_intervention()
@@ -584,19 +582,15 @@ def main():
                 break
         save_prd(prd)
 
-        # Track consecutive failures and alert
-        if success:
-            consecutive_failures = 0
-        else:
-            consecutive_failures += 1
-            if consecutive_failures >= 3:
-                alert(
-                    "critical",
-                    f"3 consecutive failures — Ralph auto-pausing\nLast: Story {story['id']}: {story['title']}",
-                )
-                print("[Ralph] 3 consecutive failures — auto-pausing")
-                pause_marker.touch()
-                break
+        # Any failure → stop and alert for human debugging
+        if not success:
+            alert(
+                "critical",
+                f"Story {story['id']} failed: {story['title']}\nRalph stopped — needs human debugging",
+            )
+            print(f"[Ralph] Story {story['id']} failed — stopping for human debug")
+            pause_marker.touch()
+            break
 
         if action == "retry":
             log_human_intervention("retry", f"Human requested retry of story {story['id']}")
