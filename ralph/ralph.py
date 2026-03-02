@@ -14,6 +14,10 @@ import sys
 import time
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 import requests
 import yaml
 
@@ -38,7 +42,7 @@ from ralph.test_runner import run_tests
 PRD_FILE = Path("prd.json")
 HUMAN_MD = Path("HUMAN.md")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen3.5:35b")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen3.5:27b")
 MAX_ATTEMPTS = 12
 
 # ---------------------------------------------------------------------------
