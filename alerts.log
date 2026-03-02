@@ -30,3 +30,11 @@ Ralph stopped — needs human debugging
 [2026-03-02 21:00:27 UTC] start: Ralph online — 0/215 stories complete
 [2026-03-02 21:00:28 UTC] story_start: Story 001: Initialize 50x50 grid
 [2026-03-02 21:01:58 UTC] WARN deploy_fail: Story 001 deploy failed — starting fix cycle
+[2026-03-02 21:05:11 UTC] CRITICAL deploy_fail: Story 001 deploy failed twice — stopping
+Deploy push failed:
+Railway CLI not installed — cannot deploy
+
+Could not fetch Railway logs: 'railway' CLI not installed
+[2026-03-02 21:05:11 UTC] CRITICAL critical: Story 001 failed: Initialize 50x50 grid
+Ralph stopped — needs human debugging
+[2026-03-02 21:05:12 UTC] stop: Ralph offline — 0/215 stories complete

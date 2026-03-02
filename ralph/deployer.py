@@ -37,7 +37,7 @@ def push_to_remote() -> tuple[bool, str, str]:
     try:
         result = subprocess.run(
             ["railway", "up", "--detach"],
-            capture_output=True, text=True, timeout=120,
+            capture_output=True, text=True, timeout=120, shell=True,
         )
         combined = result.stdout + result.stderr
         output_parts.append(combined)
@@ -99,7 +99,7 @@ def get_deploy_errors(deploy_id: str = "") -> str:
         try:
             result = subprocess.run(
                 ["railway", "logs", "--build", deploy_id],
-                capture_output=True, text=True, timeout=30,
+                capture_output=True, text=True, timeout=30, shell=True,
             )
             logs = result.stdout + result.stderr
             lines = logs.strip().split("\n")
@@ -117,7 +117,7 @@ def get_deploy_errors(deploy_id: str = "") -> str:
         try:
             result = subprocess.run(
                 ["railway", "logs", "--deployment", deploy_id],
-                capture_output=True, text=True, timeout=30,
+                capture_output=True, text=True, timeout=30, shell=True,
             )
             logs = result.stdout + result.stderr
             lines = logs.strip().split("\n")
@@ -131,7 +131,7 @@ def get_deploy_errors(deploy_id: str = "") -> str:
         try:
             result = subprocess.run(
                 ["railway", "logs"],
-                capture_output=True, text=True, timeout=30,
+                capture_output=True, text=True, timeout=30, shell=True,
             )
             logs = result.stdout + result.stderr
             lines = logs.strip().split("\n")
