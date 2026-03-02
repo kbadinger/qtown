@@ -1,1 +1,2 @@
 {"story_id": "001", "attempt": 1, "passed": true, "duration_sec": 438.26, "error": null, "tokens_in": 3920, "tokens_out": 4328, "timestamp": "2026-03-02T14:28:49"}
+{"story_id": "002", "attempt": 1, "passed": true, "duration_sec": 215.6, "error": null, "tokens_in": 3981, "tokens_out": 2210, "timestamp": "2026-03-02T16:09:27"}

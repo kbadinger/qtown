@@ -78,3 +78,15 @@ class Vote(Base):
     __table_args__ = (
         UniqueConstraint("feature_id", "voter_ip", name="uq_vote_feature_ip"),
     )
+
+
+class Building(Base):
+    __tablename__ = "buildings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(64), nullable=False)
+    building_type = Column(String(64), nullable=False)
+    x = Column(Integer, nullable=False)
+    y = Column(Integer, nullable=False)
+    capacity = Column(Integer, default=10)
+    created_at = Column(DateTime, default=_utcnow)
