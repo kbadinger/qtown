@@ -9,6 +9,9 @@ if exist .venv\Scripts\activate.bat (
     call .venv\Scripts\activate.bat
 )
 
+:: Ensure npm global bin is in PATH (for railway CLI)
+set PATH=%PATH%;%APPDATA%\npm
+
 :: Log startup
 echo [%date% %time%] Ralph starting >> ralph.log
 
