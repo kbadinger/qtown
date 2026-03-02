@@ -43,3 +43,12 @@ Ralph stopped — needs human debugging
 [2026-03-02 21:17:44 UTC] start: Ralph online — 0/215 stories complete
 [2026-03-02 21:17:44 UTC] story_start: Story 001: Initialize 50x50 grid
 [2026-03-02 21:23:19 UTC] WARN deploy_fail: Story 001 deploy failed — starting fix cycle
+[2026-03-02 21:24:22 UTC] CRITICAL deploy_fail: Story 001 deploy failed twice — stopping
+Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   6982324..ae84156  main -> main
+
+Invalid RAILWAY_TOKEN. Please check that it is valid and has access to the resource you're trying to us
+[2026-03-02 21:24:22 UTC] CRITICAL critical: Story 001 failed: Initialize 50x50 grid
+Ralph stopped — needs human debugging
+[2026-03-02 21:24:23 UTC] stop: Ralph offline — 0/215 stories complete

@@ -16,7 +16,7 @@ set PATH=%PATH%;%APPDATA%\npm
 echo [%date% %time%] Ralph starting >> ralph.log
 
 :: Run Ralph, appending output to log file
-python -m ralph.ralph >> ralph.log 2>&1
+python -u -m ralph.ralph >> ralph.log 2>&1
 
 :: If Ralph exits, log it
 echo [%date% %time%] Ralph exited with code %errorlevel% >> ralph.log
