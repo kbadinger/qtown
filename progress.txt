@@ -131,3 +131,8 @@
 - **Tricky Logic**: Determining valid home assignments required checking not just `is_resident` flags, but also ensuring the target house's `current_occupancy` didn't exceed `max_capacity` before attempting the assignment.
 - **Codebase Pattern**: The project consistently uses a `Repository` pattern for NPC data access, where all state mutations must go through `npc_repository.save()` rather than direct model updates to trigger event listeners.
 - **Correction**: Initially, I assigned homes without verifying if the NPC was already homeless; this caused duplicate entries until I added a guard clause to skip NPCs with an existing `home_id`.
+
+--- Story 019: Assign work to NPCs (attempts: 1, 2026-03-02 21:28) ---
+*   **Non-obvious dependency on state flags:** Assigning work requires checking the `is_busy` flag *and* the `current_task` nullability; relying solely on the flag causes race conditions if a task completes mid-assignment.
+*   **Convention for task injection:** The codebase consistently uses `TaskQueue.enqueue()` rather than direct method calls on NPCs, ensuring all work passes through the central scheduler for logging and priority handling.
+*   **Correction on null safety:** Initially attempted to access `npc.current_task.priority` directly, causing a crash on idle NPCs; corrected by adding a guard clause to verify task existence before accessing nested properties.

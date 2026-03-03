@@ -189,3 +189,38 @@ def assign_homes(db: Session) -> None:
                 break
     
     db.commit()
+
+
+def assign_work(db: Session) -> None:
+    """Assign work buildings to NPCs without one.
+    
+    For each NPC without a work_building_id, find a non-residential building 
+    matching their role and assign it.
+    """
+    # Role to building type mapping
+    role_mapping = {
+        'farmer': 'food',
+        'baker': 'food',
+        'guard': 'guard',
+        'merchant': 'market',
+        'priest': 'religious',
+    }
+    
+    # Find NPCs without work assignment
+    unemployed_npcs = db.query(NPC).filter(NPC.work_building_id == None).all()
+    
+    for npc in unemployed_npcs:
+        target_type = role_mapping.get(npc.role)
+        if not target_type:
+            continue
+        
+        # Find a matching non-residential building
+        building = db.query(Building).filter(
+            Building.building_type == target_type,
+            Building.building_type != 'residential'
+        ).first()
+        
+        if building:
+            npc.work_building_id = building.id
+    
+    db.commit()
