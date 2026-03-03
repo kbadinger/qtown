@@ -16,6 +16,11 @@ def _extract_function_inventory(filepath: str, content: str) -> str | None:
     defs = []
     for line in content.split("\n"):
         stripped = line.strip()
+        # Match class definitions (models, etc.)
+        m = re.match(r'^class (\w+)\(', stripped)
+        if m:
+            defs.append(f"  - class {m.group(1)}")
+            continue
         # Match function definitions
         m = re.match(r'^def (\w+)\(', stripped)
         if m:
@@ -42,6 +47,7 @@ def build_prompt(
     test_output: str,
     intervention_message: str | None = None,
     deploy_error: str | None = None,
+    regression_error: str | None = None,
 ) -> str:
     """Build the full prompt for Qwen.
 
@@ -50,6 +56,7 @@ def build_prompt(
         test_output: The failing test output.
         intervention_message: Optional human instruction from HUMAN.md.
         deploy_error: Optional deploy error logs to feed back.
+        regression_error: Optional regression test error from previous attempt.
 
     Returns:
         The assembled prompt string.
@@ -79,6 +86,14 @@ def build_prompt(
     if deploy_error:
         parts.append("=== DEPLOY ERROR (FIX THIS) ===")
         parts.append(deploy_error)
+        parts.append("")
+
+    # 4b. Regression error context (previous attempt broke earlier stories)
+    if regression_error:
+        parts.append("=== REGRESSION ERROR (YOUR PREVIOUS CODE BROKE THIS) ===")
+        parts.append("Your last attempt passed the current story's tests but BROKE a previously completed story.")
+        parts.append("You MUST fix the current story WITHOUT breaking the following test:")
+        parts.append(regression_error)
         parts.append("")
 
     # 5. Story details

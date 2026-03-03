@@ -1,5 +1,6 @@
 """Parse Qwen's output and apply file changes. Extended blocklist for safety."""
 
+import ast
 import os
 import re
 from pathlib import Path
@@ -68,6 +69,60 @@ def is_blocked(filepath: str) -> bool:
     return False
 
 
+def _extract_top_level_defs(source: str) -> dict[str, str]:
+    """Extract top-level function and class definitions from Python source.
+
+    Returns {name: source_text} for each top-level def/class.
+    """
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return {}
+
+    lines = source.split("\n")
+    defs = {}
+
+    for node in ast.iter_child_nodes(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            start = node.lineno - 1  # 0-indexed
+            end = node.end_lineno  # 1-indexed, exclusive
+            # Include decorators
+            if node.decorator_list:
+                start = min(d.lineno for d in node.decorator_list) - 1
+            block = "\n".join(lines[start:end])
+            defs[node.name] = block
+
+    return defs
+
+
+def _merge_dropped_definitions(filepath: str, old_content: str, new_content: str) -> str:
+    """Merge back any top-level definitions that Qwen dropped from a Python file.
+
+    If Qwen's new version is missing functions/classes that exist in the old
+    version, append them to the end of the new content.
+    """
+    old_defs = _extract_top_level_defs(old_content)
+    new_defs = _extract_top_level_defs(new_content)
+
+    dropped = set(old_defs.keys()) - set(new_defs.keys())
+    if not dropped:
+        return new_content
+
+    # Sort dropped definitions by their original order in the file
+    old_order = list(old_defs.keys())
+    dropped_sorted = sorted(dropped, key=lambda name: old_order.index(name))
+
+    restored_parts = []
+    for name in dropped_sorted:
+        restored_parts.append(old_defs[name])
+
+    print(f"  [MERGE] Restored {len(dropped)} dropped definitions in {filepath}: {', '.join(dropped_sorted)}")
+
+    # Append dropped definitions to end of new content
+    merged = new_content.rstrip("\n") + "\n\n\n" + "\n\n\n".join(restored_parts) + "\n"
+    return merged
+
+
 def parse_file_blocks(response: str) -> list[tuple[str, str]]:
     """Parse '### FILE: path' blocks from Qwen's response.
 
@@ -92,6 +147,7 @@ def apply_files(response: str) -> list[str]:
     """Parse and write all file blocks from Qwen's response.
 
     Returns list of written filepaths. Skips blocked files.
+    For Python files, automatically merges back any dropped definitions.
     """
     file_blocks = parse_file_blocks(response)
     written = []
@@ -116,6 +172,14 @@ def apply_files(response: str) -> list[str]:
         if not str(target).startswith(str(repo_root)):
             print(f"  [BLOCKED] Path escapes repo: {filepath}")
             continue
+
+        # For Python files that already exist, merge back dropped definitions
+        if filepath.endswith(".py") and Path(filepath).exists():
+            try:
+                old_content = Path(filepath).read_text(encoding="utf-8")
+                content = _merge_dropped_definitions(filepath, old_content, content)
+            except (OSError, UnicodeDecodeError):
+                pass  # If we can't read old file, just write new content
 
         # Create parent directories if needed
         parent = Path(filepath).parent

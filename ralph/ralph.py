@@ -332,6 +332,7 @@ def run_story(story: dict) -> bool:
     recent_errors: list[str] = []
     attempt = 0
     consecutive_infra_failures = 0
+    regression_feedback: str | None = None  # Fed back to Qwen after regression revert
     passed = False
 
     while attempt < MAX_ATTEMPTS:
@@ -345,6 +346,13 @@ def run_story(story: dict) -> bool:
 
         if attempt == 5:
             warn("story_fail", f"Story {story_id} struggling — attempt 5/{MAX_ATTEMPTS}\n{story['title']}")
+
+        # 0. Reset to clean state — undo any leftover changes from prior attempt
+        #    Each attempt starts from committed code. Qwen outputs complete files,
+        #    so there's no benefit to keeping partial changes from a failed attempt.
+        if attempt > 1:
+            subprocess.run(["git", "checkout", "engine/"], capture_output=True)
+            subprocess.run(["git", "checkout", "assets/"], capture_output=True)
 
         # 1. Run tests (expect failure on first attempt)
         print(f"  [{_ts()}] Running tests...")
@@ -377,7 +385,9 @@ def run_story(story: dict) -> bool:
             story,
             test_output,
             intervention_message=intervention_msg,
+            regression_error=regression_feedback,
         )
+        regression_feedback = None  # Only include once
 
         # 3. Call Qwen
         print(f"  [{_ts()}] Calling Qwen ({OLLAMA_MODEL})...")
@@ -415,6 +425,9 @@ def run_story(story: dict) -> bool:
         if not written:
             print("  No files written — Qwen may have returned empty/invalid output")
             log_metric(story_id, attempt, False, gpu_time, "No files written", tokens_in, tokens_out)
+            # Don't count empty output toward loop detection — it's not a code error
+            if recent_errors:
+                recent_errors.pop()  # Remove the test error we just added
             continue
 
         # 6. Re-run tests
@@ -430,6 +443,8 @@ def run_story(story: dict) -> bool:
                 subprocess.run(["git", "checkout", "engine/"], capture_output=True)
                 subprocess.run(["git", "checkout", "assets/"], capture_output=True)
                 log_metric(story_id, attempt, False, gpu_time, f"REGRESSION: {reg_output[:300]}", tokens_in, tokens_out)
+                regression_feedback = reg_output  # Feed back to Qwen on next attempt
+                recent_errors.clear()  # Reset loop detection — regression is a different problem
                 continue  # Retry — Qwen will get the regression error in next prompt
             print(f"  PASSED on attempt {attempt} (no regressions)")
             passed = True

@@ -55,6 +55,51 @@ def push_to_remote() -> tuple[bool, str, str]:
     return True, "\n".join(output_parts), deploy_id
 
 
+def _wait_for_build(deploy_id: str, timeout: int = 300) -> tuple[bool, str]:
+    """Wait for Railway build to complete by polling deployment list.
+
+    Returns (success, status_message).
+    Polls `railway deployment list` until the deployment shows SUCCESS or FAILED.
+    """
+    start = time.time()
+    # Short deploy ID prefix for matching (Railway shows full UUIDs)
+    id_prefix = deploy_id[:12] if deploy_id else ""
+
+    print(f"  [DEPLOY] Waiting for build to complete (timeout: {timeout}s)")
+
+    while time.time() - start < timeout:
+        try:
+            result = subprocess.run(
+                ["railway", "deployment", "list"],
+                capture_output=True, text=True, timeout=30, shell=True,
+            )
+            for line in result.stdout.split("\n"):
+                # Match lines with deployment status
+                if id_prefix and id_prefix in line:
+                    if "SUCCESS" in line:
+                        elapsed = round(time.time() - start, 1)
+                        return True, f"Build succeeded after {elapsed}s"
+                    elif "FAILED" in line:
+                        elapsed = round(time.time() - start, 1)
+                        return False, f"Build FAILED after {elapsed}s"
+                    # Still building — continue polling
+                    break
+                elif not id_prefix and ("SUCCESS" in line or "FAILED" in line):
+                    # No deploy_id — check the first (most recent) deployment
+                    if "SUCCESS" in line:
+                        elapsed = round(time.time() - start, 1)
+                        return True, f"Build succeeded after {elapsed}s"
+                    elif "FAILED" in line:
+                        elapsed = round(time.time() - start, 1)
+                        return False, f"Build FAILED after {elapsed}s"
+        except Exception as e:
+            print(f"  [DEPLOY] Error checking build status: {e}")
+
+        time.sleep(15)
+
+    return False, f"Build timed out after {timeout}s"
+
+
 def wait_for_deploy(timeout: int | None = None) -> tuple[bool, str]:
     """Poll health endpoint until deploy succeeds or times out.
 
@@ -147,7 +192,7 @@ def get_deploy_errors(deploy_id: str = "") -> str:
 
 
 def push_and_wait() -> tuple[bool, str]:
-    """Full deploy pipeline: push → wait for health → return status.
+    """Full deploy pipeline: push → wait for build → verify health → return status.
 
     Returns (success, message). On failure, message includes error context
     from both build and runtime logs.
@@ -157,7 +202,16 @@ def push_and_wait() -> tuple[bool, str]:
         error_logs = get_deploy_errors(deploy_id)
         return False, f"Deploy push failed:\n{push_output}\n\n{error_logs}"
 
-    healthy, status = wait_for_deploy()
+    # Wait for build to complete (SUCCESS or FAILED) before health checking
+    build_ok, build_status = _wait_for_build(deploy_id)
+    if not build_ok:
+        error_logs = get_deploy_errors(deploy_id)
+        return False, f"Build failed: {build_status}\n\n{error_logs}"
+
+    print(f"  [DEPLOY] {build_status}")
+
+    # Build succeeded — verify health endpoint responds
+    healthy, status = wait_for_deploy(timeout=60)
     if healthy:
         return True, status
 
