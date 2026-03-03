@@ -92,6 +92,7 @@ def process_tick(db: Session) -> int:
     """Advance the simulation by one tick.
     
     Increments WorldState.tick by 1 and returns the new tick number.
+    Updates all NPC hunger (+5, max 100) and energy (-3, min 0).
     Creates WorldState if it doesn't exist.
     """
     # Get or create world state
@@ -101,6 +102,13 @@ def process_tick(db: Session) -> int:
         db.add(world_state)
     
     world_state.tick += 1
+    
+    # Update all NPC hunger and energy
+    npcs = db.query(NPC).all()
+    for npc in npcs:
+        npc.hunger = min(100, npc.hunger + 5)
+        npc.energy = max(0, npc.energy - 3)
+    
     db.commit()
     
     return world_state.tick

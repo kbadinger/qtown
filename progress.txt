@@ -121,3 +121,8 @@
 *   **Tricky Aspect**: Determining the correct scope for the energy field's collision detection required distinguishing between the NPC's physical hitbox and the new visual/functional aura, which initially caused unintended overlap with nearby objects.
 *   **Pattern Discovered**: The codebase consistently uses a centralized `EntityComponent` registry for all spatial effects; adding the field required registering a new `EnergyFieldComponent` rather than modifying the NPC's existing `Transform` directly.
 *   **Correction**: Initially, I attached the field logic to the NPC's update loop, causing performance spikes when multiple NPCs spawned; refactored to use the global `PhysicsSystem` tick to ensure O(1) lookups for active fields.
+
+--- Story 017: Tick decay for hunger and energy (attempts: 1, 2026-03-02 21:19) ---
+- **Tricky Logic**: The decay logic required careful handling of the "tick" timing to ensure hunger/energy drops only once per interval, avoiding double-decay when the game loop runs faster than the intended update rate.
+- **Codebase Pattern**: State changes for player attributes consistently follow a `current = max(0, current - rate)` pattern, ensuring values never dip below zero without explicit checks elsewhere.
+- **Correction**: Initially, I applied the decay rate directly to the raw value before clamping, which caused negative numbers to persist in debug logs; I corrected this by applying the `max(0, ...)` clamp immediately after subtraction.
