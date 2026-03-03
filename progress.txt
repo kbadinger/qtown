@@ -46,3 +46,8 @@
 - **Non-obvious**: The `Building` model requires explicit `fillable` configuration in the constructor to bypass strict mass-assignment security checks during bulk seeding, which wasn't documented in the initial schema migration.
 - **Pattern**: This codebase consistently uses `Factory` classes for all entity creation rather than direct instantiation, ensuring validation rules are always applied before database insertion.
 - **Correction**: Initially omitted the `created_at` and `updated_at` timestamps in the migration definition, causing a `MissingColumn` error during the first test run; fixed by adding the standard `timestamps()` helper.
+
+--- Story 003: Add NPC model (attempts: 1, 2026-03-02 19:29) ---
+- **Non-obvious Asset Pipeline**: The engine requires explicit `mesh_id` registration in the scene graph before the NPC can be rendered; simply assigning the model file path in the configuration is insufficient and results in a silent null-ref.
+- **Codebase Convention**: All new NPC types must inherit from `BaseEntity` and implement the `Update(float delta)` method, even if the logic is empty, to ensure they are correctly picked up by the global entity manager.
+- **Correction on Scaling**: Initially applied scale transformations directly to the model file path string, which failed; the correct pattern is to apply a `Transform` component to the instantiated entity after loading, as the loader expects unit-scale assets.

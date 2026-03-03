@@ -90,3 +90,24 @@ class Building(Base):
     y = Column(Integer, nullable=False)
     capacity = Column(Integer, default=10)
     created_at = Column(DateTime, default=_utcnow)
+
+
+class NPC(Base):
+    __tablename__ = "npcs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(64), nullable=False)
+    role = Column(String(64), nullable=False)
+    x = Column(Integer, nullable=False)
+    y = Column(Integer, nullable=False)
+    gold = Column(Integer, default=0)
+    hunger = Column(Integer, default=0)
+    energy = Column(Integer, default=100)
+    home_building_id = Column(Integer, ForeignKey("buildings.id"), nullable=True)
+    work_building_id = Column(Integer, ForeignKey("buildings.id"), nullable=True)
+    target_x = Column(Integer, nullable=True)
+    target_y = Column(Integer, nullable=True)
+    created_at = Column(DateTime, default=_utcnow)
+
+    home_building = relationship("Building", foreign_keys=[home_building_id])
+    work_building = relationship("Building", foreign_keys=[work_building_id])

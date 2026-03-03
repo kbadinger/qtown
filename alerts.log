@@ -87,3 +87,6 @@ Ralph stopped — needs human debugging
 [2026-03-03 00:27:29 UTC] deploy_ok: Story 001 deployed: Healthy after 0.2s
 [2026-03-03 00:27:51 UTC] story_done: Story 001 complete: Initialize 50x50 grid
 [2026-03-03 00:27:51 UTC] story_start: Story 002: Add Building model
+[2026-03-03 00:28:01 UTC] deploy_ok: Story 002 deployed: Healthy after 0.2s
+[2026-03-03 00:28:06 UTC] story_done: Story 002 complete: Add Building model
+[2026-03-03 00:28:06 UTC] story_start: Story 003: Add NPC model
