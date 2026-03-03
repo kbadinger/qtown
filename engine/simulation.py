@@ -3,7 +3,7 @@
 import random
 from sqlalchemy.orm import Session, joinedload
 
-from engine.models import NPC, Building, WorldState, Tile, Resource, Treasury, Transaction
+from engine.models import NPC, Building, WorldState, Tile, Resource, Treasury, Transaction, Event
 
 
 def init_world_state(db: Session) -> WorldState:
@@ -166,9 +166,14 @@ def process_work(db: Session) -> None:
             npc.gold += 10
 
 
-def produce_resources(db: Session) -> None:
+def produce_resources(db: Session, weather: str = None) -> None:
     """Produce resources for buildings of type 'food'."""
     food_buildings = db.query(Building).filter(Building.building_type == 'food').all()
+    
+    # Determine production amount based on weather
+    base_production = 10
+    if weather == 'rain':
+        base_production = 12  # +20% bonus
     
     for building in food_buildings:
         resource = db.query(Resource).filter(
@@ -177,11 +182,11 @@ def produce_resources(db: Session) -> None:
         ).first()
         
         if resource:
-            resource.quantity += 10
+            resource.quantity += base_production
         else:
             new_resource = Resource(
                 name='Food',
-                quantity=10,
+                quantity=base_production,
                 building_id=building.id
             )
             db.add(new_resource)
@@ -249,6 +254,45 @@ def update_weather(db: Session) -> None:
     db.commit()
 
 
+def apply_weather_effects(db: Session) -> None:
+    """Apply weather-specific effects to the simulation.
+    
+    Rain: farms produce +20% (12 instead of 10)
+    Storm: random building takes damage (create damage Event)
+    Snow: NPC movement halved (move every other tick)
+    """
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return
+    
+    weather = world_state.weather
+    tick = world_state.tick
+    
+    if weather == 'rain':
+        # Rain effect is handled in produce_resources by passing weather parameter
+        pass
+    
+    elif weather == 'storm':
+        # Storm: random building takes damage (create damage Event)
+        buildings = db.query(Building).all()
+        if buildings:
+            damaged_building = random.choice(buildings)
+            damage_event = Event(
+                event_type='damage',
+                description=f"Building {damaged_building.name} took damage from storm",
+                tick=tick,
+                severity='warning',
+                affected_building_id=damaged_building.id
+            )
+            db.add(damage_event)
+            db.commit()
+    
+    elif weather == 'snow':
+        # Snow: NPC movement halved (move every other tick)
+        # This is handled in process_tick by checking tick parity before moving NPCs
+        pass
+
+
 def process_tick(db: Session) -> None:
     """Advance the simulation by one tick."""
     # 1. Update world state (time, weather)
@@ -259,7 +303,10 @@ def process_tick(db: Session) -> None:
     # 2. Update weather
     update_weather(db)
     
-    # 3. Process NPC needs (hunger, energy decay)
+    # 3. Apply weather effects
+    apply_weather_effects(db)
+    
+    # 4. Process NPC needs (hunger, energy decay)
     npcs = db.query(NPC).all()
     for npc in npcs:
         # Hunger increases by 1 per tick
@@ -267,36 +314,41 @@ def process_tick(db: Session) -> None:
         # Energy decreases by 1 per tick
         npc.energy = max(0, npc.energy - 1)
     
-    # 4. Auto-eat: NPCs with hunger > 70 and gold >= 5
+    # 5. Auto-eat: NPCs with hunger > 70 and gold >= 5
     for npc in npcs:
         if npc.hunger > 70 and npc.gold >= 5:
             npc.gold -= 5
             npc.hunger = max(0, npc.hunger - 30)
 
-    # 5. Auto-sleep: NPCs with energy < 20
+    # 6. Auto-sleep: NPCs with energy < 20
     for npc in npcs:
         if npc.energy < 20:
             npc.energy = min(100, npc.energy + 40)
-
-    # 6. Movement
-    for npc in npcs:
-        move_npc_toward_target(db, npc)
     
-    # 7. Process production (farms, workshops)
-    produce_resources(db)
+    # 7. Movement (with snow effect: move every other tick)
+    world_state = db.query(WorldState).first()
+    current_weather = world_state.weather if world_state else None
+    current_tick = world_state.tick if world_state else 0
+    
+    if current_weather != 'snow' or current_tick % 2 == 0:
+        for npc in npcs:
+            move_npc_toward_target(db, npc)
+    
+    # 8. Process production (farms, workshops)
+    produce_resources(db, weather=current_weather)
 
-    # 8. Process economy (trades, wages, taxes)
+    # 9. Process economy (trades, wages, taxes)
     process_work(db)
 
-    # 9. Collect taxes every 10 ticks
+    # 10. Collect taxes every 10 ticks
     if world_state and world_state.tick % 10 == 0:
         collect_taxes(db)
     
-    # 10. Population growth every 20 ticks
+    # 11. Population growth every 20 ticks
     if world_state and world_state.tick % 20 == 0:
         check_population_growth(db)
     
-    # 11. Log events
+    # 12. Log events
 
     db.commit()
 
