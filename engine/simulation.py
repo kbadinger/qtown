@@ -1,5 +1,6 @@
 """All simulation logic — pure functions that take db session and modify game state."""
 
+import random
 from sqlalchemy.orm import Session, joinedload
 
 from engine.models import NPC, Building, WorldState, Tile, Resource, Treasury, Transaction
@@ -265,8 +266,62 @@ def process_tick(db: Session) -> None:
     if world_state and world_state.tick % 10 == 0:
         collect_taxes(db)
     
-    # 9. Log events
+    # 9. Population growth every 20 ticks
+    if world_state and world_state.tick % 20 == 0:
+        check_population_growth(db)
+    
+    # 10. Log events
 
+    db.commit()
+
+
+def check_population_growth(db: Session) -> None:
+    """Check conditions for population growth and spawn new NPC if eligible.
+    
+    If average NPC happiness > 60 and total NPC count < 100,
+    spawn a new NPC with random name and role at a random valid position.
+    """
+    npcs = db.query(NPC).all()
+    
+    if not npcs:
+        return
+    
+    # Calculate average happiness
+    total_happiness = sum(npc.happiness for npc in npcs)
+    avg_happiness = total_happiness / len(npcs)
+    
+    # Check conditions
+    if avg_happiness <= 60:
+        return
+    
+    if len(npcs) >= 100:
+        return
+    
+    # Spawn new NPC
+    names = ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", "Henry", "Ivy", "Jack"]
+    roles = ["farmer", "baker", "guard", "merchant", "priest", "blacksmith", "teacher", "doctor"]
+    
+    # Find a random valid position (not occupied by another NPC)
+    existing_positions = {(npc.x, npc.y) for npc in npcs}
+    valid_positions = [(x, y) for x in range(50) for y in range(50) if (x, y) not in existing_positions]
+    
+    if not valid_positions:
+        return  # No space available
+    
+    new_x, new_y = random.choice(valid_positions)
+    
+    new_npc = NPC(
+        name=random.choice(names),
+        role=random.choice(roles),
+        x=new_x,
+        y=new_y,
+        gold=0,
+        hunger=0,
+        energy=100,
+        happiness=50
+    )
+    
+    db.add(new_npc)
     db.commit()
 
 

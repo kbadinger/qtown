@@ -196,3 +196,8 @@
 - **Simulation Granularity**: The trickiest part was distinguishing between the *simulation* phase (calculating resource consumption and structural integrity) and the *mutation* phase (actually updating the database); conflating them caused race conditions where resources were deducted before the build was validated.
 - **Domain Conventions**: The codebase strictly separates `BuildingSimulator` (pure logic, no DB access) from `BuildingService` (transactional orchestration), reinforcing a pattern where all side effects are isolated to the service layer.
 - **Correction on State**: Initially, I attempted to rollback the simulation state on failure, but realized the simulation is stateless by design; the fix was to ensure the service layer handles the transaction boundary entirely, leaving the simulator to only return a `Result` object.
+
+--- Story 032: Population growth (attempts: 1, 2026-03-03 12:50) ---
+*   **Non-obvious constraint:** The population growth logic requires handling integer overflow for large `time` inputs; using 64-bit integers for intermediate calculations was necessary to avoid silent data corruption.
+*   **Codebase pattern:** The repository strictly separates simulation state (immutable data) from rendering logic; all state mutations must go through the `SimulationEngine` interface to maintain testability.
+*   **Correction:** Initially applied the growth rate before validating the carrying capacity limit, causing temporary population spikes; fixed by enforcing the cap check as the first step in the update cycle.

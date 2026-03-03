@@ -114,6 +114,7 @@ class NPC(Base):
     gold = Column(Integer, default=0)
     hunger = Column(Integer, default=0)
     energy = Column(Integer, default=100)
+    happiness = Column(Integer, default=50)
     home_building_id = Column(Integer, ForeignKey("buildings.id"), nullable=True)
     work_building_id = Column(Integer, ForeignKey("buildings.id"), nullable=True)
     target_x = Column(Integer, nullable=True)
