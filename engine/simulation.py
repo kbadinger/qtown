@@ -2,7 +2,7 @@
 
 from sqlalchemy.orm import Session, joinedload
 
-from engine.models import NPC, Building, WorldState, Tile, Resource
+from engine.models import NPC, Building, WorldState, Tile, Resource, Treasury
 
 
 def init_world_state(db: Session) -> WorldState:
@@ -143,6 +143,45 @@ def produce_resources(db: Session) -> None:
             db.add(new_resource)
 
 
+def collect_taxes(db: Session) -> None:
+    """Collect 10% taxes from all NPCs and add to Treasury.
+    
+    Takes floor(10%) of each NPC's gold and adds it to the Treasury.
+    If no Treasury exists, creates one linked to Town Hall.
+    """
+    # Find or create Treasury
+    treasury = db.query(Treasury).first()
+    if not treasury:
+        # Find Town Hall building
+        town_hall = db.query(Building).filter(Building.name == "Town Hall").first()
+        if town_hall:
+            treasury = Treasury(
+                gold_stored=0,
+                building_id=town_hall.id
+            )
+            db.add(treasury)
+            db.commit()
+            db.refresh(treasury)
+        else:
+            return  # No Town Hall, cannot create Treasury
+    
+    # Collect taxes from all NPCs
+    npcs = db.query(NPC).all()
+    total_collected = 0
+    
+    for npc in npcs:
+        tax_amount = npc.gold // 10  # floor of 10%
+        if tax_amount > 0:
+            npc.gold -= tax_amount
+            total_collected += tax_amount
+    
+    # Add collected taxes to Treasury
+    if total_collected > 0:
+        treasury.gold_stored += total_collected
+    
+    db.commit()
+
+
 def process_tick(db: Session) -> None:
     """Advance the simulation by one tick."""
     # 1. Update world state (time, weather)
@@ -169,7 +208,11 @@ def process_tick(db: Session) -> None:
     # 5. Process economy (trades, wages, taxes)
     process_work(db)
     
-    # 6. Log events
+    # 6. Collect taxes every 10 ticks
+    if world_state and world_state.tick % 10 == 0:
+        collect_taxes(db)
+    
+    # 7. Log events
     
     db.commit()
 

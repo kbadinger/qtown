@@ -148,3 +148,14 @@ class Resource(Base):
     created_at = Column(DateTime, default=_utcnow)
 
     building = relationship("Building", foreign_keys=[building_id])
+
+
+class Treasury(Base):
+    __tablename__ = "treasuries"
+
+    id = Column(Integer, primary_key=True, index=True)
+    gold_stored = Column(Integer, default=0)
+    building_id = Column(Integer, ForeignKey("buildings.id"), nullable=True)
+    created_at = Column(DateTime, default=_utcnow)
+
+    building = relationship("Building", foreign_keys=[building_id])

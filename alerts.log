@@ -185,3 +185,6 @@ Ralph stopped — needs human debugging
 [2026-03-03 04:03:38 UTC] stop: Ralph offline — 28/215 stories complete
 [2026-03-03 13:09:52 UTC] start: Ralph online — 28/215 stories complete
 [2026-03-03 13:09:52 UTC] story_start: Story 029: Buy food
+[2026-03-03 13:10:21 UTC] deploy_ok: Story 029 deployed: Healthy after 0.3s
+[2026-03-03 13:10:35 UTC] story_done: Story 029 complete: Buy food
+[2026-03-03 13:10:36 UTC] story_start: Story 030: Treasury and taxes

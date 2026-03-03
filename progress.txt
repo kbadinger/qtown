@@ -186,3 +186,8 @@
 - **Non-obvious state synchronization**: The `Cart` component relies on a custom `useCart` hook that syncs with a global Redux store; forgetting to dispatch the `updateQuantity` action before rendering the total caused a race condition where the UI showed stale prices.
 - **Codebase convention for pricing**: All monetary values are stored as integers (cents) in the database and API, but the UI layer strictly uses a `formatCurrency` utility that expects floats; passing raw API data directly to the display component caused double-decimal formatting errors.
 - **Correction on validation logic**: Initially, I validated input fields only on form submission, which left the "Add to Cart" button disabled incorrectly for valid but unsubmitted inputs; I corrected this by moving validation into the `onChange` handler to provide immediate feedback.
+
+--- Story 030: Treasury and taxes (attempts: 1, 2026-03-03 08:15) ---
+- **Non-obvious tax logic**: The calculation of "effective tax rate" required handling negative taxable income by clamping the rate to zero rather than applying a negative multiplier, which initially caused unexpected refunds in the test suite.
+- **Codebase convention**: Financial aggregates in this module consistently use `BigDecimal` for all intermediate calculations to prevent floating-point drift, with rounding only applied at the final serialization step.
+- **Correction**: I initially attempted to reuse the `calculateGross` method for net tax calculations, but corrected this by extracting a dedicated `applyTaxBracket` helper to ensure the progressive logic remained isolated and testable.
