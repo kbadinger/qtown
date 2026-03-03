@@ -61,3 +61,8 @@
 - **Non-obvious State Management**: The seed starter logic requires checking `player.inventory` against `world.seeds` before instantiation; failing to validate seed availability first causes the NPC to spawn with an empty hand, breaking the interaction flow.
 - **Codebase Convention**: NPC behaviors are strictly separated into `dialogue_tree` (text) and `action_hook` (logic); mixing these caused scope errors, so future implementations must keep state mutations inside the hook.
 - **Correction**: Initially, I hardcoded the seed type in the NPC constructor, which prevented dynamic updates; I refactored to pass the `seed_id` as a runtime argument to support the upcoming variety system.
+
+--- Story 006: GET /api/world endpoint (attempts: 1, 2026-03-02 19:32) ---
+- **Tricky**: Handling the dynamic `include` query parameter required careful parsing to ensure nested relations (like `regions` or `biomes`) were only fetched when explicitly requested, preventing N+1 query issues.
+- **Pattern**: The codebase strictly follows a "Repository-Service-Controller" separation; the controller only handles HTTP concerns, while all data shaping and filtering logic lives in the Service layer.
+- **Correction**: Initially returned raw database models directly, which exposed internal IDs and sensitive fields; corrected by introducing a DTO (Data Transfer Object) mapping step to sanitize the response before serialization.
