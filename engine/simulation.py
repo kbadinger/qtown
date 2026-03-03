@@ -76,6 +76,38 @@ def seed_npcs(db: Session) -> None:
     db.commit()
 
 
+def build_building(db: Session, name: str, building_type: str, x: int, y: int) -> Building:
+    """Build a new building at the specified coordinates.
+    
+    Validates x,y are in 0-49 range. Creates a Building row.
+    Returns the new Building object.
+    Raises ValueError if coordinates out of range or occupied.
+    """
+    # Validate coordinates are in range
+    if x < 0 or x > 49 or y < 0 or y > 49:
+        raise ValueError(f"Coordinates ({x}, {y}) out of valid range (0-49)")
+    
+    # Check if tile is already occupied by another building
+    existing_building = db.query(Building).filter(Building.x == x, Building.y == y).first()
+    if existing_building:
+        raise ValueError(f"Tile ({x}, {y}) is already occupied by {existing_building.name}")
+    
+    # Create the new building
+    new_building = Building(
+        name=name,
+        building_type=building_type,
+        x=x,
+        y=y,
+        capacity=10
+    )
+    
+    db.add(new_building)
+    db.commit()
+    db.refresh(new_building)
+    
+    return new_building
+
+
 def move_npc_toward_target(db: Session, npc: NPC) -> None:
     """Move an NPC one step closer to its target position.
     

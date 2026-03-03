@@ -191,3 +191,8 @@
 - **Non-obvious tax logic**: The calculation of "effective tax rate" required handling negative taxable income by clamping the rate to zero rather than applying a negative multiplier, which initially caused unexpected refunds in the test suite.
 - **Codebase convention**: Financial aggregates in this module consistently use `BigDecimal` for all intermediate calculations to prevent floating-point drift, with rounding only applied at the final serialization step.
 - **Correction**: I initially attempted to reuse the `calculateGross` method for net tax calculations, but corrected this by extracting a dedicated `applyTaxBracket` helper to ensure the progressive logic remained isolated and testable.
+
+--- Story 031: Build building via simulation (attempts: 1, 2026-03-03 08:18) ---
+- **Simulation Granularity**: The trickiest part was distinguishing between the *simulation* phase (calculating resource consumption and structural integrity) and the *mutation* phase (actually updating the database); conflating them caused race conditions where resources were deducted before the build was validated.
+- **Domain Conventions**: The codebase strictly separates `BuildingSimulator` (pure logic, no DB access) from `BuildingService` (transactional orchestration), reinforcing a pattern where all side effects are isolated to the service layer.
+- **Correction on State**: Initially, I attempted to rollback the simulation state on failure, but realized the simulation is stateless by design; the fix was to ensure the service layer handles the transaction boundary entirely, leaving the simulator to only return a `Result` object.
