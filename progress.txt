@@ -91,3 +91,8 @@
 - **Non-obvious constraint**: The NPC schema requires a `faction_id` that must exist in the `Factions` table; the initial implementation failed to validate this foreign key relationship before insertion, causing silent data inconsistencies.
 - **Codebase pattern**: This project consistently uses a "service layer" (`services/npc_service.py`) to handle all business logic and validation, keeping the route handlers in `routes/npcs.py` strictly for request parsing and response formatting.
 - **Correction made**: Initially attempted to return the raw SQLAlchemy object in the JSON response, which caused serialization errors with circular references; switched to using the dedicated `NPCResponse` Pydantic model to ensure clean, safe serialization.
+
+--- Story 012: Add gold field to NPC (attempts: 1, 2026-03-02 19:39) ---
+- **Non-obvious serialization**: The NPC data model relies on a custom `serializeToJSON` method rather than standard JSON.stringify; adding the `gold` field required updating both the model and the serialization logic to persist changes.
+- **Convention for state mutation**: The codebase strictly separates read-only getters from state mutations; direct property assignment on the NPC instance was ignored by the game loop, requiring the use of `setGold()` to trigger the necessary `onDataChanged` event.
+- **Correction**: Initially placed the `gold` field inside the `inventory` object, which broke the rendering logic expecting a top-level property; moved it to the root of the NPC schema to align with existing `health` and `name` patterns.

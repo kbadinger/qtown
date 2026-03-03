@@ -114,3 +114,6 @@ Ralph stopped — needs human debugging
 [2026-03-03 00:38:08 UTC] deploy_ok: Story 010 deployed: Healthy after 0.1s
 [2026-03-03 00:38:13 UTC] story_done: Story 010 complete: GET /api/npcs
 [2026-03-03 00:38:14 UTC] story_start: Story 011: POST /api/npcs (admin)
+[2026-03-03 00:39:30 UTC] deploy_ok: Story 011 deployed: Healthy after 0.2s
+[2026-03-03 00:39:35 UTC] story_done: Story 011 complete: POST /api/npcs (admin)
+[2026-03-03 00:39:36 UTC] story_start: Story 012: Add gold field to NPC
