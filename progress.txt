@@ -226,3 +226,8 @@
 - **Tricky/Non-obvious**: The `Event` model relies on a custom `timezone_aware` decorator for timestamp normalization; omitting this caused silent failures in UTC conversion for client-provided ISO strings.
 - **Patterns/Conventions**: The codebase strictly enforces a "Service Layer" pattern where controllers only handle HTTP parsing and delegation, while all business logic and validation reside in `services/events.py`.
 - **Mistakes corrected**: Initially returned a 200 OK with a 404-style error body for missing events; corrected to return proper HTTP 404 status codes to align with the API's global error handling middleware.
+
+--- Story 038: GET /api/stats (attempts: 1, 2026-03-03 13:54) ---
+*   **Non-obvious aggregation logic**: The `stats` endpoint required a custom `GROUP BY` strategy on the `events` table to handle partial date ranges; relying on standard ORM pagination caused data skew when the `date_trunc` function was applied after filtering.
+*   **Codebase convention**: This project strictly separates read-only analytics queries from the main transactional repository layer, using a dedicated `AnalyticsService` that bypasses the standard `UnitOfWork` pattern to prevent accidental writes during heavy reporting.
+*   **Correction**: Initially, I attempted to cache the raw JSON response at the API level, which led to stale data for real-time dashboards; I corrected this by moving the caching logic to the database layer using a materialized view with a 5-minute refresh interval.

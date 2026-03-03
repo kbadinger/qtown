@@ -231,3 +231,6 @@ Weather effects
 [2026-03-03 18:42:32 UTC] WARN deploy_fail: Story 036 deploy failed — starting fix cycle
 [2026-03-03 18:50:01 UTC] story_done: Story 036 complete: Weather effects
 [2026-03-03 18:50:01 UTC] story_start: Story 037: GET /api/events
+[2026-03-03 18:52:03 UTC] deploy_ok: Story 037 deployed: Healthy after 0.2s
+[2026-03-03 18:52:24 UTC] story_done: Story 037 complete: GET /api/events
+[2026-03-03 18:52:25 UTC] story_start: Story 038: GET /api/stats
