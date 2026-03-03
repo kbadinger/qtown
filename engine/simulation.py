@@ -226,6 +226,29 @@ def collect_taxes(db: Session) -> None:
     db.commit()
 
 
+def update_weather(db: Session) -> None:
+    """Update the weather in WorldState with weighted random selection.
+    
+    Weather options with weights:
+    - clear: 40%
+    - rain: 25%
+    - storm: 10%
+    - snow: 10%
+    - fog: 15%
+    """
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return
+    
+    weather_options = ['clear', 'rain', 'storm', 'snow', 'fog']
+    weights = [40, 25, 10, 10, 15]
+    
+    new_weather = random.choices(weather_options, weights=weights, k=1)[0]
+    world_state.weather = new_weather
+    
+    db.commit()
+
+
 def process_tick(db: Session) -> None:
     """Advance the simulation by one tick."""
     # 1. Update world state (time, weather)
@@ -233,7 +256,10 @@ def process_tick(db: Session) -> None:
     if world_state:
         world_state.tick += 1
     
-    # 2. Process NPC needs (hunger, energy decay)
+    # 2. Update weather
+    update_weather(db)
+    
+    # 3. Process NPC needs (hunger, energy decay)
     npcs = db.query(NPC).all()
     for npc in npcs:
         # Hunger increases by 1 per tick
@@ -241,36 +267,36 @@ def process_tick(db: Session) -> None:
         # Energy decreases by 1 per tick
         npc.energy = max(0, npc.energy - 1)
     
-    # 3. Auto-eat: NPCs with hunger > 70 and gold >= 5
+    # 4. Auto-eat: NPCs with hunger > 70 and gold >= 5
     for npc in npcs:
         if npc.hunger > 70 and npc.gold >= 5:
             npc.gold -= 5
             npc.hunger = max(0, npc.hunger - 30)
 
-    # 4. Auto-sleep: NPCs with energy < 20
+    # 5. Auto-sleep: NPCs with energy < 20
     for npc in npcs:
         if npc.energy < 20:
             npc.energy = min(100, npc.energy + 40)
 
-    # 5. Movement
+    # 6. Movement
     for npc in npcs:
         move_npc_toward_target(db, npc)
     
-    # 6. Process production (farms, workshops)
+    # 7. Process production (farms, workshops)
     produce_resources(db)
 
-    # 7. Process economy (trades, wages, taxes)
+    # 8. Process economy (trades, wages, taxes)
     process_work(db)
 
-    # 8. Collect taxes every 10 ticks
+    # 9. Collect taxes every 10 ticks
     if world_state and world_state.tick % 10 == 0:
         collect_taxes(db)
     
-    # 9. Population growth every 20 ticks
+    # 10. Population growth every 20 ticks
     if world_state and world_state.tick % 20 == 0:
         check_population_growth(db)
     
-    # 10. Log events
+    # 11. Log events
 
     db.commit()
 

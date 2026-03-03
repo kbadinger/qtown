@@ -211,3 +211,8 @@
 - **Tick Timing Nuance**: The most non-obvious aspect was ensuring the auto-log hook fires *after* state updates but *before* the next tick begins; placing it too early in the loop caused race conditions where the logged event reflected stale data.
 - **Event Serialization Pattern**: Discovered a strict convention where all tick events must be serialized into a compact JSON string before being pushed to the queue to prevent memory bloat from holding complex object references across ticks.
 - **Correction on Scope**: Initially attempted to log raw internal state objects, which triggered unintended deep-copy side effects; corrected this by creating a shallow snapshot of only the `eventPayload` fields required for auditing.
+
+--- Story 035: Weather system (attempts: 1, 2026-03-03 12:57) ---
+- **Non-obvious dependency**: The weather system relies on a shared `GameState` singleton for seed synchronization; failing to pass the seed explicitly to the noise generator caused deterministic drift between client and server.
+- **Codebase convention**: All visual effects are decoupled from logic via `WeatherEvent` signals; new weather types must implement the `IWeatherModifier` interface to hook into the global tick loop.
+- **Correction**: Initially calculated wind vectors in local space, causing inconsistent particle drift across different camera angles; fixed by converting vectors to world space before applying to the particle system.
