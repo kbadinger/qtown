@@ -283,8 +283,8 @@
         sprite.anchor.set(0.5, 0.9);
         sprite.x = pos.x;
         sprite.y = pos.y;
-        sprite.width = TILE_W * 0.5;
-        sprite.height = TILE_W * 0.5;
+        sprite.width = TILE_W * 0.7;
+        sprite.height = TILE_W * 0.7;
       }
 
       if (!sprite || failedTextures.has(spriteUrl)) {
