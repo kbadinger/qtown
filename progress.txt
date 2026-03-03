@@ -221,3 +221,8 @@
 - **Tricky/Non-obvious**: The `WeatherManager` relies on a specific frame-skipping logic for particle density; changing the update frequency without adjusting the `deltaTime` accumulator caused particles to spawn in bursts rather than a steady stream.
 - **Patterns/Conventions**: All visual effects in this codebase extend the `MonoBehaviour` base but strictly use the `ObjectPool` pattern for instantiation to avoid garbage collection spikes during heavy rain/snow events.
 - **Mistakes corrected**: Initially applied wind force directly to the `Rigidbody` velocity, which ignored the physics engine's interpolation; corrected by using `AddForce` with `ForceMode.Acceleration` to ensure smooth, physics-simulated drift.
+
+--- Story 037: GET /api/events (attempts: 1, 2026-03-03 13:51) ---
+- **Tricky/Non-obvious**: The `Event` model relies on a custom `timezone_aware` decorator for timestamp normalization; omitting this caused silent failures in UTC conversion for client-provided ISO strings.
+- **Patterns/Conventions**: The codebase strictly enforces a "Service Layer" pattern where controllers only handle HTTP parsing and delegation, while all business logic and validation reside in `services/events.py`.
+- **Mistakes corrected**: Initially returned a 200 OK with a 404-style error body for missing events; corrected to return proper HTTP 404 status codes to align with the API's global error handling middleware.

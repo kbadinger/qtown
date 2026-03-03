@@ -228,3 +228,6 @@ Population growth
 [2026-03-03 17:57:55 UTC] story_start: Story 036: Weather effects
 [2026-03-03 18:30:53 UTC] WARN story_fail: Story 036 struggling — attempt 5/12
 Weather effects
+[2026-03-03 18:42:32 UTC] WARN deploy_fail: Story 036 deploy failed — starting fix cycle
+[2026-03-03 18:50:01 UTC] story_done: Story 036 complete: Weather effects
+[2026-03-03 18:50:01 UTC] story_start: Story 037: GET /api/events
