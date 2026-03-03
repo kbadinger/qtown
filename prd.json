@@ -134,7 +134,7 @@
         "building"
       ],
       "priority": 8,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
@@ -151,8 +151,8 @@
         "building"
       ],
       "priority": 9,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "010",

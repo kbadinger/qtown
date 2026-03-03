@@ -76,3 +76,8 @@
 - **Non-obvious behavior**: The `Building` model relies on a computed property for `total_area` that triggers a lazy database query; accessing this in the controller without explicit eager loading caused N+1 performance issues.
 - **Codebase pattern**: This repository strictly enforces a "Service Layer" pattern where all data transformation and validation logic must reside in `services/building_service.py`, keeping controllers as thin request handlers.
 - **Correction made**: Initially returned raw model dictionaries directly from the API; corrected to use the standardized `BuildingSerializer` to ensure consistent field naming and to mask internal `is_archived` flags from public responses.
+
+--- Story 009: POST /api/buildings (admin) (attempts: 1, 2026-03-02 19:37) ---
+- **Non-obvious validation logic**: The `Building` entity requires a custom validation rule where `floors` must be greater than 0, but the default DTO value was incorrectly set to `null`, causing a silent failure in the repository layer until explicit null-checking was added.
+- **Repository pattern consistency**: This codebase strictly separates domain logic from data access; the `BuildingService` must never interact with the database directly, always delegating to `BuildingRepository` which handles the ORM mapping and transaction boundaries.
+- **Correction on ID generation**: Initially attempted to generate UUIDs in the controller layer, but corrected this to use the database's `GENERATE_UUID()` function within the repository to ensure uniqueness across distributed instances and avoid race conditions.

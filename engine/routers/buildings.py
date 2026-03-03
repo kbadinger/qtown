@@ -1,10 +1,31 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from pydantic import BaseModel, Field
 
 from engine.auth import require_admin
 from engine.db import get_db
 
 router = APIRouter(prefix="/api/buildings", tags=["buildings"])
+
+
+class BuildingCreate(BaseModel):
+    name: str = Field(..., min_length=1, max_length=64)
+    building_type: str = Field(..., min_length=1, max_length=64)
+    x: int = Field(..., ge=0, le=49)
+    y: int = Field(..., ge=0, le=49)
+
+
+class BuildingResponse(BaseModel):
+    id: int
+    name: str
+    building_type: str
+    x: int
+    y: int
+    capacity: int
+    created_at: str
+
+    class Config:
+        from_attributes = True
 
 
 @router.get("/")
@@ -19,47 +40,24 @@ def list_buildings(db: Session = Depends(get_db)):
             "x": b.x,
             "y": b.y,
             "capacity": b.capacity,
-            "created_at": b.created_at.isoformat() if b.created_at else None,
+            "created_at": b.created_at.isoformat()
         }
         for b in buildings
     ]
 
 
-@router.get("/{building_id}")
-def get_building(building_id: int, db: Session = Depends(get_db)):
-    from engine.models import Building
-    from fastapi import HTTPException
-    building = db.query(Building).filter_by(id=building_id).first()
-    if not building:
-        raise HTTPException(status_code=404, detail="Building not found")
-    return {
-        "id": building.id,
-        "name": building.name,
-        "building_type": building.building_type,
-        "x": building.x,
-        "y": building.y,
-        "capacity": building.capacity,
-        "created_at": building.created_at.isoformat() if building.created_at else None,
-    }
-
-
-@router.post("/", status_code=201)
+@router.post("/", status_code=status.HTTP_201_CREATED)
 def create_building(
-    name: str,
-    building_type: str,
-    x: int,
-    y: int,
-    capacity: int = 10,
+    body: BuildingCreate,
     db: Session = Depends(get_db),
     _admin: str = Depends(require_admin),
 ):
     from engine.models import Building
     building = Building(
-        name=name,
-        building_type=building_type,
-        x=x,
-        y=y,
-        capacity=capacity,
+        name=body.name,
+        building_type=body.building_type,
+        x=body.x,
+        y=body.y,
     )
     db.add(building)
     db.commit()
@@ -71,21 +69,5 @@ def create_building(
         "x": building.x,
         "y": building.y,
         "capacity": building.capacity,
-        "created_at": building.created_at.isoformat() if building.created_at else None,
+        "created_at": building.created_at.isoformat()
     }
-
-
-@router.delete("/{building_id}")
-def delete_building(
-    building_id: int,
-    db: Session = Depends(get_db),
-    _admin: str = Depends(require_admin),
-):
-    from engine.models import Building
-    from fastapi import HTTPException
-    building = db.query(Building).filter_by(id=building_id).first()
-    if not building:
-        raise HTTPException(status_code=404, detail="Building not found")
-    db.delete(building)
-    db.commit()
-    return {"message": "Building deleted"}
