@@ -115,8 +115,8 @@ def _ts() -> str:
     return datetime.now(timezone.utc).strftime("%H:%M:%S")
 
 
-def call_qwen(prompt: str, label: str = "qwen") -> tuple[str, int, int, float]:
-    """Call Qwen via Ollama API with exponential backoff on infra failures.
+def call_qwen(prompt: str, label: str = "qwen", think: bool = True) -> tuple[str, int, int, float]:
+    """Call Qwen via Ollama /api/chat with exponential backoff on infra failures.
 
     Returns (response_text, tokens_in, tokens_out, duration_sec).
     Retries up to 5 times on network errors with backoff: 15s, 35s, 65s, 125s, 245s.
@@ -126,32 +126,41 @@ def call_qwen(prompt: str, label: str = "qwen") -> tuple[str, int, int, float]:
     max_retries = 5
     base_delay = 15  # seconds
     prompt_chars = len(prompt)
-    print(f"  [{_ts()}] Ollama call starting ({label}, {prompt_chars} chars prompt)")
+    think_str = "think" if think else "no-think"
+    print(f"  [{_ts()}] Ollama call starting ({label}, {prompt_chars} chars, {think_str})")
+
+    # Thinking vs non-thinking use different recommended params
+    if think:
+        options = {"num_ctx": 16384, "temperature": 0.6, "top_p": 0.95,
+                   "repeat_penalty": 1.1, "presence_penalty": 1.5}
+    else:
+        options = {"num_ctx": 16384, "temperature": 0.7, "top_p": 0.8,
+                   "repeat_penalty": 1.1, "presence_penalty": 1.5}
 
     for attempt in range(max_retries + 1):
         try:
             start = time.time()
             resp = requests.post(
-                f"{OLLAMA_URL}/api/generate",
+                f"{OLLAMA_URL}/api/chat",
                 json={
                     "model": OLLAMA_MODEL,
-                    "prompt": prompt,
+                    "messages": [{"role": "user", "content": prompt}],
                     "stream": False,
-                    "options": {
-                        "num_ctx": 32768,
-                        "temperature": 0.3,
-                    },
+                    "think": think,
+                    "options": options,
                 },
                 timeout=7200,
             )
             duration = time.time() - start
             data = resp.json()
 
-            response_text = data.get("response", "")
+            msg = data.get("message", {})
+            response_text = msg.get("content", "")
             tokens_in = data.get("prompt_eval_count", 0)
             tokens_out = data.get("eval_count", 0)
 
-            print(f"  [{_ts()}] Ollama done ({label}, {duration:.0f}s, {tokens_in} in, {tokens_out} out, {len(response_text)} chars)")
+            think_chars = len(msg.get("thinking", "") or "")
+            print(f"  [{_ts()}] Ollama done ({label}, {duration:.0f}s, {tokens_in} in, {tokens_out} out, {len(response_text)} chars response, {think_chars} chars thinking)")
             return response_text, tokens_in, tokens_out, duration
 
         except requests.RequestException as e:
@@ -430,7 +439,7 @@ def run_story(story: dict) -> bool:
     # 7. Reflection — ask Qwen what it learned
     print(f"  [{_ts()}] Reflecting on learnings...")
     learn_prompt = build_learning_prompt(story_id, story["title"])
-    learn_text, learn_tin, learn_tout, learn_time = call_qwen(learn_prompt, label=f"story {story_id} reflection")
+    learn_text, learn_tin, learn_tout, learn_time = call_qwen(learn_prompt, label=f"story {story_id} reflection", think=False)
     log_cost(tokens_in=learn_tin, tokens_out=learn_tout, gpu_time_sec=learn_time)
     append_learning(story_id, story["title"], story.get("attempts", 1), learn_text)
     print(f"  [{_ts()}] Learnings saved to progress.txt")
@@ -463,7 +472,7 @@ def run_story(story: dict) -> bool:
         # Feed deploy error back to Qwen as a fix cycle
         print(f"  [{_ts()}] Starting deploy-fix cycle...")
         fix_prompt = build_prompt(story, "", deploy_error=deploy_msg)
-        fix_response, fix_tin, fix_tout, fix_time = call_qwen(fix_prompt, label=f"story {story_id} deploy-fix")
+        fix_response, fix_tin, fix_tout, fix_time = call_qwen(fix_prompt, label=f"story {story_id} deploy-fix", think=False)
         log_cost(tokens_in=fix_tin, tokens_out=fix_tout, gpu_time_sec=fix_time)
         apply_files(fix_response)
         # Re-test, commit, and try deploy again
