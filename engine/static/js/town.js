@@ -120,7 +120,7 @@
   const textureCache = {};
   const failedTextures = new Set();
   const loadingTextures = new Set();
-  const ASSET_VERSION = "v7";  // Cache-buster for CDN/Cloudflare
+  const ASSET_VERSION = "v8";  // Cache-buster for CDN/Cloudflare
 
   function tryLoadTexture(url) {
     if (textureCache[url]) return textureCache[url];
@@ -207,7 +207,7 @@
         sprite = new PIXI.Sprite(tex);
         sprite.anchor.set(0.5, 1.0);
         sprite.x = pos.x;
-        sprite.y = pos.y + TILE_H * 0.75;
+        sprite.y = pos.y + TILE_H * 1.0;
         sprite.width = TILE_W * 2.0;
         sprite.height = TILE_W * 2.0;
       }
