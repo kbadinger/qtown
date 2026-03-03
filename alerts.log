@@ -90,3 +90,6 @@ Ralph stopped — needs human debugging
 [2026-03-03 00:28:01 UTC] deploy_ok: Story 002 deployed: Healthy after 0.2s
 [2026-03-03 00:28:06 UTC] story_done: Story 002 complete: Add Building model
 [2026-03-03 00:28:06 UTC] story_start: Story 003: Add NPC model
+[2026-03-03 00:29:04 UTC] deploy_ok: Story 003 deployed: Healthy after 0.2s
+[2026-03-03 00:29:09 UTC] story_done: Story 003 complete: Add NPC model
+[2026-03-03 00:29:09 UTC] story_start: Story 004: Seed starter buildings

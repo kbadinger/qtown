@@ -51,3 +51,8 @@
 - **Non-obvious Asset Pipeline**: The engine requires explicit `mesh_id` registration in the scene graph before the NPC can be rendered; simply assigning the model file path in the configuration is insufficient and results in a silent null-ref.
 - **Codebase Convention**: All new NPC types must inherit from `BaseEntity` and implement the `Update(float delta)` method, even if the logic is empty, to ensure they are correctly picked up by the global entity manager.
 - **Correction on Scaling**: Initially applied scale transformations directly to the model file path string, which failed; the correct pattern is to apply a `Transform` component to the instantiated entity after loading, as the loader expects unit-scale assets.
+
+--- Story 004: Seed starter buildings (attempts: 1, 2026-03-02 19:30) ---
+- **Non-obvious dependency**: The `SeedStarter` logic relies on a hidden global `WorldState` singleton for initial resource allocation, which isn't explicitly passed in the constructor and caused subtle race conditions during parallel seeding.
+- **Codebase pattern**: New building types consistently follow a "Factory + Registry" pattern where the building class implements `IBuilding` but is instantiated exclusively through the `BuildingRegistry` to ensure proper event subscription.
+- **Correction**: Initially attempted to hardcode seed coordinates in the `SeedStarter` class; refactored to use the `GridManager`'s `findValidSlot` method to prevent overlapping with existing structures and respect terrain constraints.

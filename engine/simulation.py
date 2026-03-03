@@ -2,7 +2,7 @@
 
 from sqlalchemy.orm import Session
 
-from engine.models import Tile
+from engine.models import Tile, Building
 
 
 def init_grid(db: Session) -> None:
@@ -21,5 +21,34 @@ def init_grid(db: Session) -> None:
         for y in range(50):
             tile = Tile(x=x, y=y, terrain="grass")
             db.add(tile)
+    
+    db.commit()
+
+
+def seed_buildings(db: Session) -> None:
+    """Seed starter buildings into the town.
+    
+    Creates 3 buildings:
+    - Town Hall (building_type='civic', x=25, y=25)
+    - Farm (building_type='food', x=10, y=10)
+    - House (building_type='residential', x=30, y=30)
+    
+    Idempotent: calling twice will not duplicate buildings.
+    """
+    # Check if buildings already exist
+    existing_count = db.query(Building).count()
+    if existing_count > 0:
+        return
+
+    # Create the 3 starter buildings
+    buildings_data = [
+        {"name": "Town Hall", "building_type": "civic", "x": 25, "y": 25},
+        {"name": "Farm", "building_type": "food", "x": 10, "y": 10},
+        {"name": "House", "building_type": "residential", "x": 30, "y": 30},
+    ]
+
+    for building_data in buildings_data:
+        building = Building(**building_data)
+        db.add(building)
     
     db.commit()
