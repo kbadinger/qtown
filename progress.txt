@@ -141,3 +141,8 @@
 - **Tricky Logic**: Handling the "eating" state transitions was non-obvious; the logic required checking for both `isHungry` and `hasFood` flags simultaneously before allowing the state change, rather than a simple boolean toggle.
 - **Codebase Patterns**: The project strictly enforces a "Command-Query Separation" pattern where state mutation methods (like `eat()`) return `void`, while status checks are isolated in dedicated `get*` methods to prevent side effects during reads.
 - **Correction**: Initially, I attempted to validate food inventory inside the `eat()` method, which violated the single responsibility principle; I corrected this by moving the inventory check to the caller and letting `eat()` assume valid input.
+
+--- Story 021: Auto-eat in tick (attempts: 1, 2026-03-02 21:35) ---
+- **Tick Scheduling Nuance**: The most non-obvious part was ensuring the auto-eat logic runs *after* the movement calculation but *before* the state serialization; placing it in the wrong phase caused the snake to eat and immediately die on the next render cycle.
+- **State Mutation Convention**: The codebase strictly separates "intent" (input handling) from "state mutation" (tick execution); I initially tried to mutate the food array directly in the input handler, which broke the undo/refactor logic.
+- **Correction on Collision Checks**: I initially checked for food collision using the snake's *head* position only, missing cases where the snake grew into a food item while moving; corrected by checking the *entire* new body path against food coordinates before finalizing the tick.

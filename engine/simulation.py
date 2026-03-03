@@ -93,6 +93,7 @@ def process_tick(db: Session) -> int:
     
     Increments WorldState.tick by 1 and returns the new tick number.
     Updates all NPC hunger (+5, max 100) and energy (-3, min 0).
+    NPCs with hunger > 70 and gold >= 5 automatically eat.
     Creates WorldState if it doesn't exist.
     """
     # Get or create world state
@@ -108,6 +109,12 @@ def process_tick(db: Session) -> int:
     for npc in npcs:
         npc.hunger = min(100, npc.hunger + 5)
         npc.energy = max(0, npc.energy - 3)
+    
+    # Auto-eat: NPCs with hunger > 70 and gold >= 5 eat automatically
+    for npc in npcs:
+        if npc.hunger > 70 and npc.gold >= 5:
+            npc.gold -= 5
+            npc.hunger = max(0, npc.hunger - 30)
     
     db.commit()
     
