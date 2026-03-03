@@ -176,3 +176,8 @@
 - **Tricky**: The distinction between `Resource` (the domain concept) and `ResourceModel` (the persistence layer) was initially blurred; the model must handle raw JSON parsing and validation before the domain logic even sees the data.
 - **Pattern**: The codebase consistently uses a factory method on the model class to handle instantiation and error handling, rather than public constructors, ensuring all resources are validated upon creation.
 - **Correction**: I initially tried to map database columns directly to domain properties in the model, which caused type mismatches; I corrected this by introducing a separate DTO layer for the persistence contract.
+
+--- Story 028: Food production (attempts: 1, 2026-03-02 22:56) ---
+- **Non-obvious complexity**: The `FoodProduction` logic relies heavily on implicit state transitions in the `CropLifecycle` enum; assuming a simple boolean flag for "harvestable" caused race conditions when multiple workers accessed the same plot.
+- **Codebase patterns**: The project consistently uses the **Strategy Pattern** for different crop types (e.g., `GrainStrategy`, `VegetableStrategy`) to handle varying growth rates and water requirements, rather than large conditional blocks.
+- **Correction made**: Initially, I calculated yield based on the *current* time step only, ignoring the `accumulatedSunlight` buffer; I corrected this by refactoring to use a running total that persists across story ticks, matching the domain model's intent.

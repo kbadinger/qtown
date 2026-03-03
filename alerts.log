@@ -172,3 +172,6 @@ Ralph stopped — needs human debugging
 [2026-03-03 03:52:09 UTC] deploy_ok: Story 026 deployed: Healthy after 0.2s
 [2026-03-03 03:52:22 UTC] story_done: Story 026 complete: Earn gold at work
 [2026-03-03 03:52:22 UTC] story_start: Story 027: Resource model
+[2026-03-03 03:53:31 UTC] deploy_ok: Story 027 deployed: Healthy after 0.2s
+[2026-03-03 03:53:36 UTC] story_done: Story 027 complete: Resource model
+[2026-03-03 03:53:37 UTC] story_start: Story 028: Food production

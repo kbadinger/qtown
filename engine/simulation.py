@@ -2,7 +2,7 @@
 
 from sqlalchemy.orm import Session, joinedload
 
-from engine.models import NPC, Building, WorldState, Tile
+from engine.models import NPC, Building, WorldState, Tile, Resource
 
 
 def init_world_state(db: Session) -> WorldState:
@@ -122,6 +122,27 @@ def process_work(db: Session) -> None:
             npc.gold += 10
 
 
+def produce_resources(db: Session) -> None:
+    """Produce resources for buildings of type 'food'."""
+    food_buildings = db.query(Building).filter(Building.building_type == 'food').all()
+    
+    for building in food_buildings:
+        resource = db.query(Resource).filter(
+            Resource.name == 'Food',
+            Resource.building_id == building.id
+        ).first()
+        
+        if resource:
+            resource.quantity += 10
+        else:
+            new_resource = Resource(
+                name='Food',
+                quantity=10,
+                building_id=building.id
+            )
+            db.add(new_resource)
+
+
 def process_tick(db: Session) -> None:
     """Advance the simulation by one tick."""
     # 1. Update world state (time, weather)
@@ -143,8 +164,11 @@ def process_tick(db: Session) -> None:
         move_npc_toward_target(db, npc)
     
     # 4. Process production (farms, workshops)
+    produce_resources(db)
+    
     # 5. Process economy (trades, wages, taxes)
     process_work(db)
+    
     # 6. Log events
     
     db.commit()
