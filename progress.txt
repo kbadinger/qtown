@@ -171,3 +171,8 @@
 - **Non-obvious state synchronization**: The gold reward logic required manually triggering a `recalculateTotal` event after updating the database; relying solely on the `onSuccess` callback caused a race condition where the UI displayed stale balances.
 - **Codebase convention**: All monetary values are stored as integers (cents) in the backend but must be explicitly formatted via the `MoneyFormatter` utility before rendering; direct floating-point math was consistently flagged by linters.
 - **Correction**: Initially attempted to bypass the `WorkSession` service to save a request, but this broke the audit trail; reverted to the standard service layer to ensure every gold transaction is logged in the `activity_log` table.
+
+--- Story 027: Resource model (attempts: 1, 2026-03-02 22:53) ---
+- **Tricky**: The distinction between `Resource` (the domain concept) and `ResourceModel` (the persistence layer) was initially blurred; the model must handle raw JSON parsing and validation before the domain logic even sees the data.
+- **Pattern**: The codebase consistently uses a factory method on the model class to handle instantiation and error handling, rather than public constructors, ensuring all resources are validated upon creation.
+- **Correction**: I initially tried to map database columns directly to domain properties in the model, which caused type mismatches; I corrected this by introducing a separate DTO layer for the persistence contract.
