@@ -159,3 +159,13 @@ Ralph stopped — needs human debugging
 [2026-03-03 02:45:45 UTC] deploy_ok: Story 024 deployed: Healthy after 0.2s
 [2026-03-03 02:45:50 UTC] story_done: Story 024 complete: WorldState model
 [2026-03-03 02:45:50 UTC] story_start: Story 025: NPC movement
+[2026-03-03 02:48:27 UTC] deploy_ok: Story 025 deployed: Healthy after 0.2s
+[2026-03-03 02:48:32 UTC] story_done: Story 025 complete: NPC movement
+[2026-03-03 02:48:33 UTC] story_start: Story 026: Earn gold at work
+[2026-03-03 02:57:00 UTC] CRITICAL loop: Story 026: same error 3x in a row — giving up
+`tests/test_economy.py::test_s026_earn_gold_at_work FAILED                [100%]`
+[2026-03-03 02:57:00 UTC] CRITICAL critical: Story 026 failed: Earn gold at work
+Ralph stopped — needs human debugging
+[2026-03-03 02:57:01 UTC] stop: Ralph offline — 25/215 stories complete
+[2026-03-03 03:51:44 UTC] start: Ralph online — 25/215 stories complete
+[2026-03-03 03:51:44 UTC] story_start: Story 026: Earn gold at work

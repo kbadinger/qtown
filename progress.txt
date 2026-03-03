@@ -166,3 +166,8 @@
 *   **Tricky**: Determining the correct `delta_time` scaling for movement was non-obvious; failing to normalize speed by frame rate caused characters to jitter on low-refresh-rate monitors.
 *   **Pattern**: The codebase strictly separates movement logic (in `MovementComponent`) from rendering (in `RenderComponent`), requiring all position updates to happen via the central `GameLoop` tick.
 *   **Correction**: Initially, I updated positions directly in the event handler, causing race conditions with the physics engine; I corrected this by queuing movement deltas and applying them only during the update phase.
+
+--- Story 026: Earn gold at work (attempts: 1, 2026-03-02 22:52) ---
+- **Non-obvious state synchronization**: The gold reward logic required manually triggering a `recalculateTotal` event after updating the database; relying solely on the `onSuccess` callback caused a race condition where the UI displayed stale balances.
+- **Codebase convention**: All monetary values are stored as integers (cents) in the backend but must be explicitly formatted via the `MoneyFormatter` utility before rendering; direct floating-point math was consistently flagged by linters.
+- **Correction**: Initially attempted to bypass the `WorkSession` service to save a request, but this broke the audit trail; reverted to the standard service layer to ensure every gold transaction is logged in the `activity_log` table.
