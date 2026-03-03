@@ -2,7 +2,7 @@
 
 from sqlalchemy.orm import Session
 
-from engine.models import Tile, Building, NPC, WorldState
+from engine.models import Tile, Building, NPC, WorldState, Transaction
 
 
 def init_grid(db: Session) -> None:
@@ -104,3 +104,52 @@ def process_tick(db: Session) -> int:
     db.commit()
     
     return world_state.tick
+
+
+def transfer_gold(db: Session, sender_id: int, receiver_id: int, amount: int) -> bool:
+    """Transfer gold from sender to receiver.
+    
+    Deducts amount from sender's gold, adds to receiver's gold.
+    Returns True on success, False if sender has insufficient funds.
+    Also creates a Transaction record.
+    
+    Args:
+        db: Database session
+        sender_id: ID of the sender NPC
+        receiver_id: ID of the receiver NPC
+        amount: Amount of gold to transfer (must be positive)
+    
+    Returns:
+        True if transfer succeeded, False otherwise
+    """
+    # Validate amount is positive
+    if amount <= 0:
+        return False
+    
+    # Get sender and receiver
+    sender = db.query(NPC).filter(NPC.id == sender_id).first()
+    receiver = db.query(NPC).filter(NPC.id == receiver_id).first()
+    
+    # Check if both NPCs exist
+    if not sender or not receiver:
+        return False
+    
+    # Check if sender has sufficient funds
+    if sender.gold < amount:
+        return False
+    
+    # Perform the transfer
+    sender.gold -= amount
+    receiver.gold += amount
+    
+    # Create transaction record
+    transaction = Transaction(
+        sender_id=sender_id,
+        receiver_id=receiver_id,
+        amount=amount
+    )
+    db.add(transaction)
+    
+    db.commit()
+    
+    return True

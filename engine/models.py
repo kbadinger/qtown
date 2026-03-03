@@ -119,3 +119,16 @@ class NPC(Base):
 
     home_building = relationship("Building", foreign_keys=[home_building_id])
     work_building = relationship("Building", foreign_keys=[work_building_id])
+
+
+class Transaction(Base):
+    __tablename__ = "transactions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    sender_id = Column(Integer, ForeignKey("npcs.id"), nullable=False)
+    receiver_id = Column(Integer, ForeignKey("npcs.id"), nullable=False)
+    amount = Column(Integer, nullable=False)
+    created_at = Column(DateTime, default=_utcnow)
+
+    sender = relationship("NPC", foreign_keys=[sender_id])
+    receiver = relationship("NPC", foreign_keys=[receiver_id])
