@@ -120,7 +120,7 @@
   const textureCache = {};
   const failedTextures = new Set();
   const loadingTextures = new Set();
-  const ASSET_VERSION = "v2";  // Cache-buster for CDN/Cloudflare
+  const ASSET_VERSION = "v3";  // Cache-buster for CDN/Cloudflare
 
   function tryLoadTexture(url) {
     if (textureCache[url]) return textureCache[url];
@@ -205,11 +205,11 @@
       const tex = tryLoadTexture(spriteUrl);
       if (tex && !failedTextures.has(spriteUrl)) {
         sprite = new PIXI.Sprite(tex);
-        sprite.anchor.set(0.5, 0.8);
+        sprite.anchor.set(0.5, 1.0);
         sprite.x = pos.x;
         sprite.y = pos.y;
-        sprite.width = TILE_W * 1.2;
-        sprite.height = TILE_W * 1.2;
+        sprite.width = TILE_W * 1.4;
+        sprite.height = TILE_W * 1.4;
       }
 
       if (!sprite || failedTextures.has(spriteUrl)) {
@@ -297,7 +297,7 @@
       const tex = tryLoadTexture(spriteUrl);
       if (tex && !failedTextures.has(spriteUrl)) {
         sprite = new PIXI.Sprite(tex);
-        sprite.anchor.set(0.5, 0.9);
+        sprite.anchor.set(0.5, 1.0);
         sprite.x = pos.x;
         sprite.y = pos.y;
         sprite.width = TILE_W * 0.7;
