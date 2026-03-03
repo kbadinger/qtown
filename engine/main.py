@@ -8,6 +8,7 @@ import subprocess
 from pathlib import Path
 
 from dotenv import load_dotenv
+from sqlalchemy.orm import Session
 
 load_dotenv()
 
@@ -16,7 +17,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware as _TrustedHo
 from starlette.responses import PlainTextResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -26,8 +27,8 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
 from engine.auth import hash_key
-from engine.db import Base, SessionLocal, engine, init_db
-from engine.models import AdminUser
+from engine.db import Base, SessionLocal, engine, get_db, init_db
+from engine.models import AdminUser, Building, NPC, Tile, WorldState
 
 # ---------------------------------------------------------------------------
 # App setup
@@ -258,6 +259,47 @@ def dashboard_data():
         "snapshot_url": snapshot_url,
         "learnings": learnings,
         "alerts": alerts,
+    }
+
+
+# ---------------------------------------------------------------------------
+# World state — main page PixiJS renderer polls this
+# ---------------------------------------------------------------------------
+
+
+@app.get("/api/world")
+def world_state(db: Session = Depends(get_db)):
+    """Return current world state for the PixiJS renderer."""
+    ws = db.query(WorldState).first()
+    tick = ws.tick if ws else 0
+
+    tiles = [
+        {"x": t.x, "y": t.y, "terrain": t.terrain}
+        for t in db.query(Tile).all()
+    ]
+    buildings = [
+        {
+            "id": b.id, "name": b.name, "building_type": b.building_type,
+            "x": b.x, "y": b.y, "capacity": b.capacity,
+        }
+        for b in db.query(Building).all()
+    ]
+    npcs = [
+        {
+            "id": n.id, "name": n.name, "role": n.role,
+            "x": n.x, "y": n.y, "gold": n.gold,
+            "hunger": n.hunger, "energy": n.energy,
+        }
+        for n in db.query(NPC).all()
+    ]
+
+    return {
+        "tick": tick,
+        "day": tick // 24 + 1,
+        "total_gold": sum(n["gold"] for n in npcs),
+        "tiles": tiles,
+        "buildings": buildings,
+        "npcs": npcs,
     }
 
 
