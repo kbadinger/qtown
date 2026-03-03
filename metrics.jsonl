@@ -12,3 +12,4 @@
 {"story_id": "013", "attempt": 1, "passed": true, "duration_sec": 177.41, "error": null, "tokens_in": 6832, "tokens_out": 5216, "timestamp": "2026-03-02T21:16:09"}
 {"story_id": "014", "attempt": 1, "passed": true, "duration_sec": 65.52, "error": null, "tokens_in": 7496, "tokens_out": 1766, "timestamp": "2026-03-02T21:17:32"}
 {"story_id": "017", "attempt": 1, "passed": true, "duration_sec": 74.23, "error": null, "tokens_in": 7224, "tokens_out": 2045, "timestamp": "2026-03-02T21:19:38"}
+{"story_id": "018", "attempt": 1, "passed": true, "duration_sec": 211.52, "error": null, "tokens_in": 7236, "tokens_out": 6110, "timestamp": "2026-03-02T21:23:28"}

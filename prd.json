@@ -290,7 +290,7 @@
         "tick"
       ],
       "priority": 17,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
@@ -309,8 +309,8 @@
         "building"
       ],
       "priority": 18,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "019",

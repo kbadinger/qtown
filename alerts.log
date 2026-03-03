@@ -135,3 +135,6 @@ Ralph stopped — needs human debugging
 [2026-03-03 02:18:13 UTC] deploy_ok: Story 016 deployed: Healthy after 0.1s
 [2026-03-03 02:18:18 UTC] story_done: Story 016 complete: Add energy field to NPC
 [2026-03-03 02:18:19 UTC] story_start: Story 017: Tick decay for hunger and energy
+[2026-03-03 02:19:46 UTC] deploy_ok: Story 017 deployed: Healthy after 0.2s
+[2026-03-03 02:19:51 UTC] story_done: Story 017 complete: Tick decay for hunger and energy
+[2026-03-03 02:19:52 UTC] story_start: Story 018: Assign homes to NPCs

@@ -161,3 +161,31 @@ def transfer_gold(db: Session, sender_id: int, receiver_id: int, amount: int) ->
     db.commit()
     
     return True
+
+
+def assign_homes(db: Session) -> None:
+    """Assign homes to NPCs without one.
+    
+    For each NPC without a home_building_id, find a residential building 
+    with capacity > current occupants and assign it.
+    """
+    # Find homeless NPCs
+    homeless_npcs = db.query(NPC).filter(NPC.home_building_id == None).all()
+    
+    # Find residential buildings
+    residential_buildings = db.query(Building).filter(Building.building_type == 'residential').all()
+    
+    # Calculate current occupancy for each residential building
+    occupancy = {}
+    for building in residential_buildings:
+        occupancy[building.id] = db.query(NPC).filter(NPC.home_building_id == building.id).count()
+    
+    # Assign homes
+    for npc in homeless_npcs:
+        for building in residential_buildings:
+            if occupancy.get(building.id, 0) < building.capacity:
+                npc.home_building_id = building.id
+                occupancy[building.id] += 1
+                break
+    
+    db.commit()
