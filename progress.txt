@@ -36,3 +36,8 @@
 - **Non-obvious indexing**: The grid initialization required careful handling of 0-based indexing vs. 1-based user expectations, specifically ensuring the `width` and `height` parameters strictly defined the bounds to avoid off-by-one errors in boundary checks.
 - **Codebase convention**: The project enforces a strict separation between data structures (raw 2D arrays) and view logic; the grid is initialized as a mutable state object before any rendering or interaction logic is attached.
 - **Correction**: Initially attempted to use a single flat array for the grid to save memory, but reverted to a 2D array structure to align with the existing coordinate-based access patterns used in subsequent stories.
+
+--- Story 001: Initialize 50x50 grid (attempts: 1, 2026-03-02 19:27) ---
+- **Non-obvious initialization**: The grid's internal state requires explicit zero-filling; relying on default constructor behavior led to garbage values in uninitialized cells.
+- **Convention discovery**: The codebase strictly uses 0-based indexing for internal logic but expects 1-based coordinates for external API calls, requiring a consistent `x-1`, `y-1` offset pattern.
+- **Correction made**: Initially allocated the grid as `50x50` integers without bounds checking, causing out-of-bounds writes during edge-case tests; fixed by adding explicit boundary validation before any cell access.
