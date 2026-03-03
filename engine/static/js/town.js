@@ -120,7 +120,7 @@
   const textureCache = {};
   const failedTextures = new Set();
   const loadingTextures = new Set();
-  const ASSET_VERSION = "v8";  // Cache-buster for CDN/Cloudflare
+  const ASSET_VERSION = "v9";  // Cache-buster for CDN/Cloudflare
 
   function tryLoadTexture(url) {
     if (textureCache[url]) return textureCache[url];
@@ -166,15 +166,14 @@
       for (let tx = 0; tx < GRID_SIZE; tx++) {
         const terrain = tileLookup[`${tx},${ty}`] || "grass";
         const colors = TERRAIN_COLORS[terrain] || TERRAIN_COLORS.grass;
-        // Subtle checkerboard variation
-        const fillColor = (tx + ty) % 2 === 0 ? colors[0] : colors[1];
+        // Use base color for all tiles (no checkerboard)
+        const fillColor = colors[0];
 
         const pos = toScreen(tx, ty);
         const g = new PIXI.Graphics();
 
-        // Draw isometric diamond
-        g.beginFill(fillColor, 0.85);
-        g.lineStyle(1, C.gridLine, 0.3);
+        // Draw isometric diamond — solid fill, no grid lines
+        g.beginFill(fillColor, 0.95);
         g.moveTo(pos.x,              pos.y - TILE_H / 2);
         g.lineTo(pos.x + TILE_W / 2, pos.y);
         g.lineTo(pos.x,              pos.y + TILE_H / 2);
