@@ -111,3 +111,8 @@
 - **Non-obvious transactional boundaries**: Initially assumed the `@Transactional` annotation on the controller would suffice, but discovered that self-invocation within the same service class bypasses the proxy, requiring a separate internal service layer to enforce proper rollback semantics.
 - **Idempotency pattern**: Identified a recurring convention of storing a unique `request_id` in a dedicated cache table before processing to prevent duplicate transaction processing during network retries, rather than relying solely on database unique constraints.
 - **Correction on error handling**: Mistakenly returned generic 500 errors for validation failures in the transactional block; corrected this by moving validation logic to the DTO layer to ensure specific 400 responses are returned before the transaction context is even opened.
+
+--- Story 015: Add hunger field to NPC (attempts: 1, 2026-03-02 21:17) ---
+*   **Non-obvious state propagation**: Adding the `hunger` field required updating the serialization logic in `NPC.save()` and `NPC.load()`, not just the data model, to prevent silent data loss on reload.
+*   **Codebase convention**: The project strictly separates entity state (in `Entity` classes) from rendering logic (in `Renderer` classes); hunger values must be passed explicitly to the renderer rather than accessed directly.
+*   **Correction**: Initially attempted to calculate hunger decay in the main game loop, but realized it violated the single-responsibility principle; moved the logic into a dedicated `NPC.tick()` method to align with other stat updates.
