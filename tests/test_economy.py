@@ -110,8 +110,13 @@ def test_s028_food_production(db):
 def test_s029_buy_food(db):
     """Story 029: NPCs can buy food with gold."""
     _setup_world(db)
-    from engine.models import NPC
+    from engine.models import NPC, Building, Resource
     from engine.simulation import buy_food
+
+    # Ensure food exists for purchase
+    building = db.query(Building).first()
+    food = Resource(name="Food", quantity=10, building_id=building.id)
+    db.add(food)
 
     npc = db.query(NPC).first()
     npc.gold = 50
