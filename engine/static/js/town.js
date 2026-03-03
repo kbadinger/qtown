@@ -45,7 +45,7 @@
   };
 
   const TERRAIN_COLORS = {
-    grass:  [C.grass, C.grassLight],
+    grass:  [0x1E6B23, 0x237A28],  // Subtle variation — close shades
     water:  [C.water, 0x1565C0],
     sand:   [C.sand,  0xD7CCC8],
     stone:  [C.stone, 0x757575],
@@ -120,7 +120,7 @@
   const textureCache = {};
   const failedTextures = new Set();
   const loadingTextures = new Set();
-  const ASSET_VERSION = "v9";  // Cache-buster for CDN/Cloudflare
+  const ASSET_VERSION = "v10";  // Cache-buster for CDN/Cloudflare
 
   function tryLoadTexture(url) {
     if (textureCache[url]) return textureCache[url];
@@ -166,14 +166,16 @@
       for (let tx = 0; tx < GRID_SIZE; tx++) {
         const terrain = tileLookup[`${tx},${ty}`] || "grass";
         const colors = TERRAIN_COLORS[terrain] || TERRAIN_COLORS.grass;
-        // Use base color for all tiles (no checkerboard)
-        const fillColor = colors[0];
+        // Subtle checkerboard — barely visible variation
+        const fillColor = (tx + ty) % 2 === 0 ? colors[0] : colors[1];
+        const alpha = (tx + ty) % 2 === 0 ? 0.90 : 0.85;
 
         const pos = toScreen(tx, ty);
         const g = new PIXI.Graphics();
 
-        // Draw isometric diamond — solid fill, no grid lines
-        g.beginFill(fillColor, 0.95);
+        // Draw isometric diamond — subtle fill, very faint grid edge
+        g.beginFill(fillColor, alpha);
+        g.lineStyle(1, C.gridLine, 0.08);
         g.moveTo(pos.x,              pos.y - TILE_H / 2);
         g.lineTo(pos.x + TILE_W / 2, pos.y);
         g.lineTo(pos.x,              pos.y + TILE_H / 2);
