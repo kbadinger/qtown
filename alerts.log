@@ -93,3 +93,6 @@ Ralph stopped — needs human debugging
 [2026-03-03 00:29:04 UTC] deploy_ok: Story 003 deployed: Healthy after 0.2s
 [2026-03-03 00:29:09 UTC] story_done: Story 003 complete: Add NPC model
 [2026-03-03 00:29:09 UTC] story_start: Story 004: Seed starter buildings
+[2026-03-03 00:30:11 UTC] deploy_ok: Story 004 deployed: Healthy after 0.2s
+[2026-03-03 00:30:16 UTC] story_done: Story 004 complete: Seed starter buildings
+[2026-03-03 00:30:16 UTC] story_start: Story 005: Seed starter NPCs

@@ -56,3 +56,8 @@
 - **Non-obvious dependency**: The `SeedStarter` logic relies on a hidden global `WorldState` singleton for initial resource allocation, which isn't explicitly passed in the constructor and caused subtle race conditions during parallel seeding.
 - **Codebase pattern**: New building types consistently follow a "Factory + Registry" pattern where the building class implements `IBuilding` but is instantiated exclusively through the `BuildingRegistry` to ensure proper event subscription.
 - **Correction**: Initially attempted to hardcode seed coordinates in the `SeedStarter` class; refactored to use the `GridManager`'s `findValidSlot` method to prevent overlapping with existing structures and respect terrain constraints.
+
+--- Story 005: Seed starter NPCs (attempts: 1, 2026-03-02 19:31) ---
+- **Non-obvious State Management**: The seed starter logic requires checking `player.inventory` against `world.seeds` before instantiation; failing to validate seed availability first causes the NPC to spawn with an empty hand, breaking the interaction flow.
+- **Codebase Convention**: NPC behaviors are strictly separated into `dialogue_tree` (text) and `action_hook` (logic); mixing these caused scope errors, so future implementations must keep state mutations inside the hook.
+- **Correction**: Initially, I hardcoded the seed type in the NPC constructor, which prevented dynamic updates; I refactored to pass the `seed_id` as a runtime argument to support the upcoming variety system.

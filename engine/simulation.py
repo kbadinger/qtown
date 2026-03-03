@@ -2,7 +2,7 @@
 
 from sqlalchemy.orm import Session
 
-from engine.models import Tile, Building
+from engine.models import Tile, Building, NPC
 
 
 def init_grid(db: Session) -> None:
@@ -50,5 +50,39 @@ def seed_buildings(db: Session) -> None:
     for building_data in buildings_data:
         building = Building(**building_data)
         db.add(building)
+    
+    db.commit()
+
+
+def seed_npcs(db: Session) -> None:
+    """Seed starter NPCs into the town.
+    
+    Creates 5 NPCs with names and roles:
+    - Farmer (role='farmer')
+    - Baker (role='baker')
+    - Guard (role='guard')
+    - Merchant (role='merchant')
+    - Priest (role='priest')
+    
+    Each NPC is placed at a valid grid position (0-49).
+    Idempotent: calling twice will not duplicate NPCs.
+    """
+    # Check if NPCs already exist
+    existing_count = db.query(NPC).count()
+    if existing_count > 0:
+        return
+
+    # Create the 5 starter NPCs
+    npcs_data = [
+        {"name": "Tom", "role": "farmer", "x": 12, "y": 12},
+        {"name": "Sarah", "role": "baker", "x": 15, "y": 15},
+        {"name": "Jake", "role": "guard", "x": 20, "y": 20},
+        {"name": "Lily", "role": "merchant", "x": 22, "y": 22},
+        {"name": "Father Mike", "role": "priest", "x": 27, "y": 27},
+    ]
+
+    for npc_data in npcs_data:
+        npc = NPC(**npc_data)
+        db.add(npc)
     
     db.commit()
