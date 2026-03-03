@@ -150,3 +150,6 @@ Ralph stopped — needs human debugging
 [2026-03-03 02:35:34 UTC] deploy_ok: Story 021 deployed: Healthy after 0.2s
 [2026-03-03 02:35:39 UTC] story_done: Story 021 complete: Auto-eat in tick
 [2026-03-03 02:35:39 UTC] story_start: Story 022: Sleeping behavior
+[2026-03-03 02:39:43 UTC] deploy_ok: Story 022 deployed: Healthy after 0.2s
+[2026-03-03 02:39:48 UTC] story_done: Story 022 complete: Sleeping behavior
+[2026-03-03 02:39:48 UTC] story_start: Story 023: Auto-sleep in tick

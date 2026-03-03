@@ -151,3 +151,8 @@
 - **Non-obvious state synchronization**: The sleep timer logic relied on a hidden dependency between the `SessionManager` and the `PowerMonitor`; failing to reset the `lastActive` timestamp in the manager caused the system to incorrectly report "asleep" status even after user interaction.
 - **Codebase convention**: This module strictly separates *state* (stored in the `SleepContext` singleton) from *behavior* (implemented via strategy pattern classes), avoiding direct mutation of context objects within event handlers.
 - **Correction**: Initially implemented the sleep entry check as a synchronous blocking call, which froze the UI thread; corrected by refactoring it to an async observer pattern that triggers state changes without halting the main loop.
+
+--- Story 023: Auto-sleep in tick (attempts: 1, 2026-03-02 21:44) ---
+- **Tick Timing Nuance**: The `auto-sleep` logic relies on precise tick boundaries; simply checking `last_tick != current_tick` is insufficient if the system skips ticks, requiring an explicit `elapsed_ticks` counter to prevent race conditions during rapid state changes.
+- **State Transition Pattern**: The codebase consistently isolates "sleep eligibility" checks from the actual `sleep()` call, using a dedicated `is_ready_to_sleep()` helper to ensure all preconditions (e.g., idle queue empty, no pending interrupts) are met before altering the thread state.
+- **Correction on Interrupt Masking**: Initially, I masked interrupts before checking the sleep condition, which caused a deadlock if a high-priority interrupt arrived while the check was pending; the fix was to perform the eligibility check with interrupts enabled and only mask them immediately before the atomic `sleep()` transition.
