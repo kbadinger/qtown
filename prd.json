@@ -418,7 +418,7 @@
         "simulation"
       ],
       "priority": 24,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
@@ -437,8 +437,8 @@
         "tick"
       ],
       "priority": 25,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "026",

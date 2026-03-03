@@ -161,3 +161,8 @@
 *   **Non-obvious state synchronization**: The `WorldState` model requires explicit handling of the `last_updated` timestamp to prevent race conditions during concurrent actor updates, which wasn't immediately clear from the schema definition alone.
 *   **Immutable update pattern**: The codebase strictly favors creating new `WorldState` instances for changes rather than mutating existing ones, necessitating the use of `.clone()` before applying any delta operations.
 *   **Correction on serialization**: Initially attempted to serialize the entire object graph for the cache key, causing performance degradation; corrected to use only the immutable `version_hash` for cache invalidation checks.
+
+--- Story 025: NPC movement (attempts: 1, 2026-03-02 21:48) ---
+*   **Tricky**: Determining the correct `delta_time` scaling for movement was non-obvious; failing to normalize speed by frame rate caused characters to jitter on low-refresh-rate monitors.
+*   **Pattern**: The codebase strictly separates movement logic (in `MovementComponent`) from rendering (in `RenderComponent`), requiring all position updates to happen via the central `GameLoop` tick.
+*   **Correction**: Initially, I updated positions directly in the event handler, causing race conditions with the physics engine; I corrected this by queuing movement deltas and applying them only during the update phase.
