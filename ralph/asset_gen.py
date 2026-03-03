@@ -1,18 +1,18 @@
-"""ComfyUI integration for generating isometric building and NPC sprites.
+"""ComfyUI integration for generating building and NPC sprites.
 
 Loads workflow templates from asset-gen/workflows/, patches prompts and seeds,
-submits to the ComfyUI API, polls for results, and copies output images into
-the assets/ directory tree that the PixiJS renderer serves.
+submits to the ComfyUI API, polls for results, runs rembg background removal,
+and saves output images into the assets/ directory tree.
 
 Gracefully degrades if ComfyUI is not running — returns None and logs a warning.
 """
 
 import asyncio
+import io
 import json
 import logging
 import os
 import random
-import shutil
 from pathlib import Path
 
 import httpx
@@ -36,14 +36,12 @@ ASSET_DIR = PROJECT_ROOT / "assets"
 BUILDINGS_DIR = ASSET_DIR / "buildings"
 NPCS_DIR = ASSET_DIR / "npcs"
 
-# ComfyUI output directory — where generated images land
-COMFY_OUTPUT_DIR = Path(os.getenv(
-    "COMFY_OUTPUT_DIR",
-    str(Path.home() / "ComfyUI" / "output"),
-))
-
 COMFY_TIMEOUT = 180  # seconds to wait for generation
 POLL_INTERVAL = 1.0  # seconds between history polls
+
+# Target sizes for final sprites
+BUILDING_SIZE = 256
+NPC_SIZE = 128
 
 
 # ---------------------------------------------------------------------------
@@ -57,11 +55,13 @@ def _load_workflow(path: Path) -> dict:
         return json.load(f)
 
 
-def _patch_workflow(flow: dict, prompt_text: str, seed: int | None = None) -> dict:
-    """Patch a workflow template with a new prompt and optional seed.
-
-    Mutates and returns `flow`.  The caller should pass a fresh copy.
-    """
+def _patch_workflow(
+    flow: dict,
+    prompt_text: str,
+    negative_text: str | None = None,
+    seed: int | None = None,
+) -> dict:
+    """Patch a workflow template with prompt, negative prompt, and seed."""
     flow = json.loads(json.dumps(flow))  # deep copy
 
     if "client_id" not in flow or not flow["client_id"]:
@@ -71,6 +71,10 @@ def _patch_workflow(flow: dict, prompt_text: str, seed: int | None = None) -> di
 
     # Node 3: positive CLIP text prompt
     nodes["3"]["inputs"]["text"] = prompt_text
+
+    # Node 4: negative CLIP text prompt
+    if negative_text is not None:
+        nodes["4"]["inputs"]["text"] = negative_text
 
     # Node 8: KSamplerAdvanced seed
     if seed is None:
@@ -93,8 +97,11 @@ async def _submit_prompt(flow: dict) -> str:
         return resp.json()["prompt_id"]
 
 
-async def _poll_result(prompt_id: str) -> Path | None:
-    """Poll ComfyUI history until the prompt completes and return the output image path."""
+async def _poll_and_download(prompt_id: str) -> bytes | None:
+    """Poll ComfyUI history until done, then download the image via API.
+
+    Returns raw PNG bytes, or None on failure/timeout.
+    """
     deadline = asyncio.get_event_loop().time() + COMFY_TIMEOUT
     async with httpx.AsyncClient(timeout=30) as client:
         while asyncio.get_event_loop().time() < deadline:
@@ -111,8 +118,17 @@ async def _poll_result(prompt_id: str) -> Path | None:
                     img = images[0]
                     filename = img["filename"]
                     subfolder = img.get("subfolder", "")
-                    return COMFY_OUTPUT_DIR / subfolder / filename
-                # Outputs exist but no images found
+                    img_type = img.get("type", "output")
+
+                    # Download via ComfyUI /view API
+                    dl_url = f"{COMFY_URL}/view?filename={filename}&type={img_type}"
+                    if subfolder:
+                        dl_url += f"&subfolder={subfolder}"
+
+                    dl_resp = await client.get(dl_url)
+                    dl_resp.raise_for_status()
+                    return dl_resp.content
+
                 logger.warning("ComfyUI outputs contained no images for prompt %s", prompt_id)
                 return None
 
@@ -133,6 +149,69 @@ async def _is_comfy_running() -> bool:
 
 
 # ---------------------------------------------------------------------------
+# Image post-processing
+# ---------------------------------------------------------------------------
+
+
+def _process_sprite(raw_bytes: bytes, target_size: int) -> bytes:
+    """Remove background with rembg, trim, pad to square, resize.
+
+    Returns processed PNG bytes.
+    """
+    from PIL import Image
+    from rembg import remove
+
+    # rembg background removal
+    cleaned = remove(raw_bytes)
+    img = Image.open(io.BytesIO(cleaned)).convert("RGBA")
+
+    # Trim transparent padding
+    bbox = img.getbbox()
+    if bbox:
+        img = img.crop(bbox)
+
+    # Pad to square (bottom-center align so sprite stands at bottom)
+    w, h = img.size
+    size = max(w, h)
+    padded = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    padded.paste(img, ((size - w) // 2, size - h))
+
+    # Resize to target
+    padded = padded.resize((target_size, target_size), Image.LANCZOS)
+
+    out = io.BytesIO()
+    padded.save(out, format="PNG")
+    return out.getvalue()
+
+
+# ---------------------------------------------------------------------------
+# Prompt templates
+# ---------------------------------------------------------------------------
+
+BUILDING_POSITIVE = (
+    "zavy-ctsmtrc, isometric, cute isometric {type} building, "
+    "white background, game asset, cartoon style"
+)
+BUILDING_NEGATIVE = (
+    "realistic, photo, 3d, text, watermark, logo, nsfw, low quality, blurry, "
+    "multiple, grid, collage"
+)
+
+NPC_POSITIVE = (
+    "zavy-ctsmtrc, cute chibi {role}, 1boy, solo, single character, "
+    "full body, standing, centered, simple solid white background, "
+    "game character sprite, isolated character"
+)
+NPC_NEGATIVE = (
+    "isometric, platform, ground plate, floor, base, tile, pedestal, "
+    "isometric base, green base, wooden platform, "
+    "multiple views, turnaround, character sheet, reference sheet, "
+    "multiple characters, multiple poses, grid, collage, "
+    "realistic, photo, 3d, text, watermark, logo, nsfw, low quality, blurry"
+)
+
+
+# ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
 
@@ -147,26 +226,25 @@ async def generate_building_sprite(building_type: str) -> str | None:
         logger.warning("ComfyUI is not running — skipping building sprite for '%s'", building_type)
         return None
 
-    prompt_text = (
-        f"zavy-ctsmtrc, isometric, cute isometric {building_type} building, "
-        "white background, game asset, pixel art style"
-    )
+    prompt_text = BUILDING_POSITIVE.format(type=building_type)
 
     try:
         flow = _load_workflow(BUILDING_WORKFLOW)
-        flow = _patch_workflow(flow, prompt_text)
+        flow = _patch_workflow(flow, prompt_text, BUILDING_NEGATIVE)
         prompt_id = await _submit_prompt(flow)
         logger.info("ComfyUI building prompt queued: %s (prompt_id=%s)", building_type, prompt_id)
 
-        src_path = await _poll_result(prompt_id)
-        if src_path is None or not src_path.exists():
+        raw_bytes = await _poll_and_download(prompt_id)
+        if raw_bytes is None:
             logger.warning("Building sprite generation failed for '%s'", building_type)
             return None
 
-        # Copy to assets directory
+        # Post-process: rembg + resize
+        processed = _process_sprite(raw_bytes, BUILDING_SIZE)
+
         BUILDINGS_DIR.mkdir(parents=True, exist_ok=True)
         dest = BUILDINGS_DIR / f"{building_type}.png"
-        shutil.copy2(str(src_path), str(dest))
+        dest.write_bytes(processed)
         logger.info("Building sprite saved: %s", dest)
         return str(dest)
 
@@ -176,7 +254,10 @@ async def generate_building_sprite(building_type: str) -> str | None:
 
 
 async def generate_npc_sprite(role: str) -> str | None:
-    """Generate an isometric NPC sprite via ComfyUI.
+    """Generate a chibi NPC sprite via ComfyUI.
+
+    Generates a standalone character (no isometric base/ground plate),
+    removes background with rembg, and saves as a clean transparent PNG.
 
     Returns the destination path (str) under assets/npcs/ on success,
     or None if ComfyUI is unavailable or generation failed.
@@ -185,26 +266,25 @@ async def generate_npc_sprite(role: str) -> str | None:
         logger.warning("ComfyUI is not running — skipping NPC sprite for '%s'", role)
         return None
 
-    prompt_text = (
-        f"zavy-ctsmtrc, isometric, cute character, {role}, "
-        "tiny person, white background, game asset"
-    )
+    prompt_text = NPC_POSITIVE.format(role=role)
 
     try:
         flow = _load_workflow(BUILDING_WORKFLOW)
-        flow = _patch_workflow(flow, prompt_text)
+        flow = _patch_workflow(flow, prompt_text, NPC_NEGATIVE)
         prompt_id = await _submit_prompt(flow)
         logger.info("ComfyUI NPC prompt queued: %s (prompt_id=%s)", role, prompt_id)
 
-        src_path = await _poll_result(prompt_id)
-        if src_path is None or not src_path.exists():
+        raw_bytes = await _poll_and_download(prompt_id)
+        if raw_bytes is None:
             logger.warning("NPC sprite generation failed for '%s'", role)
             return None
 
-        # Copy to assets directory
+        # Post-process: rembg + resize
+        processed = _process_sprite(raw_bytes, NPC_SIZE)
+
         NPCS_DIR.mkdir(parents=True, exist_ok=True)
         dest = NPCS_DIR / f"{role}.png"
-        shutil.copy2(str(src_path), str(dest))
+        dest.write_bytes(processed)
         logger.info("NPC sprite saved: %s", dest)
         return str(dest)
 
