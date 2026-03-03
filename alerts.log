@@ -214,3 +214,6 @@ Population growth
 [2026-03-03 16:53:07 UTC] story_start: Story 032: Population growth
 [2026-03-03 17:24:16 UTC] WARN story_fail: Story 032 struggling — attempt 5/12
 Population growth
+[2026-03-03 17:50:06 UTC] deploy_ok: Story 032 deployed: Healthy after 0.2s
+[2026-03-03 17:50:31 UTC] story_done: Story 032 complete: Population growth
+[2026-03-03 17:50:32 UTC] story_start: Story 033: Event model

@@ -160,3 +160,19 @@ class Treasury(Base):
     created_at = Column(DateTime, default=_utcnow)
 
     building = relationship("Building", foreign_keys=[building_id])
+
+
+class Event(Base):
+    __tablename__ = "events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    event_type = Column(String(64), nullable=False)
+    description = Column(String(256), nullable=False)
+    tick = Column(Integer, nullable=False)
+    severity = Column(String(16), nullable=False, default="info")
+    affected_npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=True)
+    affected_building_id = Column(Integer, ForeignKey("buildings.id"), nullable=True)
+    created_at = Column(DateTime, default=_utcnow)
+
+    affected_npc = relationship("NPC", foreign_keys=[affected_npc_id])
+    affected_building = relationship("Building", foreign_keys=[affected_building_id])

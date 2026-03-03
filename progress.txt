@@ -201,3 +201,8 @@
 *   **Non-obvious constraint:** The population growth logic requires handling integer overflow for large `time` inputs; using 64-bit integers for intermediate calculations was necessary to avoid silent data corruption.
 *   **Codebase pattern:** The repository strictly separates simulation state (immutable data) from rendering logic; all state mutations must go through the `SimulationEngine` interface to maintain testability.
 *   **Correction:** Initially applied the growth rate before validating the carrying capacity limit, causing temporary population spikes; fixed by enforcing the cap check as the first step in the update cycle.
+
+--- Story 033: Event model (attempts: 1, 2026-03-03 12:53) ---
+- **Non-obvious event propagation**: Initially assumed the `EventModel` handled lifecycle triggers directly, but discovered it strictly relies on the `EventBus` for decoupled dispatch; direct method calls on the model bypass the subscription chain and break state synchronization.
+- **Immutable state pattern**: The codebase enforces immutability for event payloads; mutating the `Event` object in-place before publishing causes race conditions in listeners, requiring the use of `copyWith()` or new instance creation for updates.
+- **Correction on subscription scope**: Mistakenly registered listeners in the constructor, leading to memory leaks when the model was disposed; corrected by moving subscriptions to `init()` and ensuring explicit `unsubscribe()` calls in the `dispose()` lifecycle hook.
