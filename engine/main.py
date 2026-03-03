@@ -129,7 +129,23 @@ async def global_exception_handler(request: Request, exc: Exception):
 def startup():
     init_db()
     _seed_admin()
+    _seed_world()
     _auto_discover_routers()
+
+
+def _seed_world():
+    """Seed grid, buildings, NPCs, and world state on first run. All idempotent."""
+    from engine.simulation import init_grid, seed_buildings, seed_npcs, init_world_state
+
+    db = SessionLocal()
+    try:
+        init_grid(db)
+        seed_buildings(db)
+        seed_npcs(db)
+        init_world_state(db)
+        print("[qtown] World seeded")
+    finally:
+        db.close()
 
 
 def _seed_admin():
