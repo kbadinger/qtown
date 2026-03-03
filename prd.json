@@ -202,8 +202,8 @@
         "npc"
       ],
       "priority": 12,
-      "status": "in_progress",
-      "attempts": 1
+      "status": "pending",
+      "attempts": 0
     },
     {
       "id": "013",

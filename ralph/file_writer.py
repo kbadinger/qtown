@@ -101,8 +101,17 @@ def apply_files(response: str) -> list[str]:
             print(f"  [BLOCKED] Skipping protected file: {filepath}")
             continue
 
+        # Reject obviously bad filenames (hallucinated paths, quotes, spaces in name)
+        if any(c in filepath for c in '"\'<>|') or filepath != filepath.strip():
+            print(f"  [BLOCKED] Invalid filename: {filepath!r}")
+            continue
+
         # Resolve to catch symlink attacks
-        target = Path(filepath).resolve()
+        try:
+            target = Path(filepath).resolve()
+        except (OSError, ValueError):
+            print(f"  [BLOCKED] Unresolvable path: {filepath!r}")
+            continue
         repo_root = Path(".").resolve()
         if not str(target).startswith(str(repo_root)):
             print(f"  [BLOCKED] Path escapes repo: {filepath}")
@@ -113,8 +122,12 @@ def apply_files(response: str) -> list[str]:
         if parent != Path("."):
             os.makedirs(parent, exist_ok=True)
 
-        with open(filepath, "w", encoding="utf-8") as f:
-            f.write(content)
+        try:
+            with open(filepath, "w", encoding="utf-8") as f:
+                f.write(content)
+        except OSError as e:
+            print(f"  [BLOCKED] Cannot write file {filepath!r}: {e}")
+            continue
 
         written.append(filepath)
         print(f"  [WROTE] {filepath}")

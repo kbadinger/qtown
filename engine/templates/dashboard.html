@@ -41,11 +41,11 @@ function renderDashboard(d) {
 
     // Cost data
     const cost = d.cost || {};
-    const qwenCost = (cost.total_electricity_cost || 0).toFixed(2);
-    const opusCost = (cost.equivalent_opus_cost || 0).toFixed(2);
-    const opus46Cost = (cost.equivalent_opus46_cost || 0).toFixed(2);
-    const gpt4oCost = (cost.equivalent_gpt4o_cost || 0).toFixed(2);
-    const sonnetCost = (cost.equivalent_sonnet_cost || 0).toFixed(2);
+    const qwenCost = (cost.qwen_electricity_usd || 0).toFixed(2);
+    const opusCost = (cost.opus4_equivalent_usd || 0).toFixed(2);
+    const opus46Cost = (cost.opus46_equivalent_usd || 0).toFixed(2);
+    const gpt4oCost = (cost.gpt4o_equivalent_usd || 0).toFixed(2);
+    const sonnetCost = (cost.sonnet45_equivalent_usd || cost.sonnet_equivalent_usd || 0).toFixed(2);
     const savings = opusCost > 0 ? Math.round((1 - qwenCost / opusCost) * 100) : 0;
 
     // Snapshot
@@ -120,7 +120,7 @@ function renderDashboard(d) {
                         <td class="text-right py-2 pl-4 text-green-400">${gpt4oCost > 0 ? Math.round((1 - qwenCost / gpt4oCost) * 100) : 0}%</td>
                     </tr>
                     <tr>
-                        <td class="py-2 pr-4 text-gray-300">Claude Sonnet</td>
+                        <td class="py-2 pr-4 text-gray-300">Claude Sonnet 4.5</td>
                         <td class="text-right py-2 px-4 text-gray-300 font-mono">$${sonnetCost}</td>
                         <td class="text-right py-2 pl-4 text-green-400">${sonnetCost > 0 ? Math.round((1 - qwenCost / sonnetCost) * 100) : 0}%</td>
                     </tr>
