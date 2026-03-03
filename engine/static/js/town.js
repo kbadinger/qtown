@@ -120,7 +120,7 @@
   const textureCache = {};
   const failedTextures = new Set();
   const loadingTextures = new Set();
-  const ASSET_VERSION = "v5";  // Cache-buster for CDN/Cloudflare
+  const ASSET_VERSION = "v6";  // Cache-buster for CDN/Cloudflare
 
   function tryLoadTexture(url) {
     if (textureCache[url]) return textureCache[url];
