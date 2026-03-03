@@ -63,14 +63,18 @@ def test_s014_transactions_api(client, admin_headers):
 def test_s026_earn_gold_at_work(db):
     """Story 026: NPCs earn gold when working."""
     _setup_world(db)
-    from engine.models import NPC
+    from engine.models import NPC, Building
     from engine.simulation import process_work
 
     npc = db.query(NPC).first()
+    building = db.query(Building).filter_by(id=1).first()
     npc.gold = 0
     npc.work_building_id = 1  # Assign to first building
+    npc.x = building.x  # Move NPC to building location
+    npc.y = building.y
     db.commit()
     process_work(db)
+    db.commit()  # flush changes to DB so refresh picks them up
     db.refresh(npc)
     assert npc.gold > 0, "NPC should have earned gold from working"
 
