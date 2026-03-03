@@ -42,6 +42,14 @@ class AdminUser(Base):
     created_at = Column(DateTime, default=_utcnow)
 
 
+class WorldState(Base):
+    __tablename__ = "world_state"
+
+    id = Column(Integer, primary_key=True, index=True)
+    tick = Column(Integer, default=0)
+    created_at = Column(DateTime, default=_utcnow)
+
+
 class Feature(Base):
     __tablename__ = "features"
 

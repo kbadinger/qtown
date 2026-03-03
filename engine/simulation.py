@@ -2,7 +2,7 @@
 
 from sqlalchemy.orm import Session
 
-from engine.models import Tile, Building, NPC
+from engine.models import Tile, Building, NPC, WorldState
 
 
 def init_grid(db: Session) -> None:
@@ -86,3 +86,21 @@ def seed_npcs(db: Session) -> None:
         db.add(npc)
     
     db.commit()
+
+
+def process_tick(db: Session) -> int:
+    """Advance the simulation by one tick.
+    
+    Increments WorldState.tick by 1 and returns the new tick number.
+    Creates WorldState if it doesn't exist.
+    """
+    # Get or create world state
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        world_state = WorldState(tick=0)
+        db.add(world_state)
+    
+    world_state.tick += 1
+    db.commit()
+    
+    return world_state.tick

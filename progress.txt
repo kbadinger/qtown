@@ -66,3 +66,8 @@
 - **Tricky**: Handling the dynamic `include` query parameter required careful parsing to ensure nested relations (like `regions` or `biomes`) were only fetched when explicitly requested, preventing N+1 query issues.
 - **Pattern**: The codebase strictly follows a "Repository-Service-Controller" separation; the controller only handles HTTP concerns, while all data shaping and filtering logic lives in the Service layer.
 - **Correction**: Initially returned raw database models directly, which exposed internal IDs and sensitive fields; corrected by introducing a DTO (Data Transfer Object) mapping step to sanitize the response before serialization.
+
+--- Story 007: POST /api/tick endpoint (attempts: 1, 2026-03-02 19:34) ---
+- **Tricky**: Handling the race condition between reading the current state and writing the new tick required careful locking; the initial implementation missed the edge case where the clock resets exactly at the boundary, causing a duplicate entry.
+- **Patterns**: The codebase strictly enforces "fail-fast" validation at the controller layer before any service logic runs, and all state mutations must be wrapped in a transactional context even for simple updates.
+- **Mistakes**: Initially returned the raw internal `Tick` object instead of the DTO, exposing internal IDs; corrected by mapping to `TickResponse` in the service layer to maintain API contract stability.
