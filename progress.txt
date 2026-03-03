@@ -156,3 +156,8 @@
 - **Tick Timing Nuance**: The `auto-sleep` logic relies on precise tick boundaries; simply checking `last_tick != current_tick` is insufficient if the system skips ticks, requiring an explicit `elapsed_ticks` counter to prevent race conditions during rapid state changes.
 - **State Transition Pattern**: The codebase consistently isolates "sleep eligibility" checks from the actual `sleep()` call, using a dedicated `is_ready_to_sleep()` helper to ensure all preconditions (e.g., idle queue empty, no pending interrupts) are met before altering the thread state.
 - **Correction on Interrupt Masking**: Initially, I masked interrupts before checking the sleep condition, which caused a deadlock if a high-priority interrupt arrived while the check was pending; the fix was to perform the eligibility check with interrupts enabled and only mask them immediately before the atomic `sleep()` transition.
+
+--- Story 024: WorldState model (attempts: 1, 2026-03-02 21:45) ---
+*   **Non-obvious state synchronization**: The `WorldState` model requires explicit handling of the `last_updated` timestamp to prevent race conditions during concurrent actor updates, which wasn't immediately clear from the schema definition alone.
+*   **Immutable update pattern**: The codebase strictly favors creating new `WorldState` instances for changes rather than mutating existing ones, necessitating the use of `.clone()` before applying any delta operations.
+*   **Correction on serialization**: Initially attempted to serialize the entire object graph for the cache key, causing performance degradation; corrected to use only the immutable `version_hash` for cache invalidation checks.

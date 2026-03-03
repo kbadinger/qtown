@@ -47,6 +47,9 @@ class WorldState(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     tick = Column(Integer, default=0)
+    day = Column(Integer, default=1)
+    time_of_day = Column(String(32), default="morning")
+    weather = Column(String(32), nullable=True)
     created_at = Column(DateTime, default=_utcnow)
 
 

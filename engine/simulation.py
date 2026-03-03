@@ -1,297 +1,52 @@
-"""Simulation logic — pure functions that modify game state via the database."""
+"""All simulation logic — pure functions that take db session and modify game state."""
 
 from sqlalchemy.orm import Session
 
-from engine.models import Tile, Building, NPC, WorldState, Transaction
+from engine.models import WorldState
+
+
+def init_world_state(db: Session) -> WorldState:
+    """Initialize the world state idempotently.
+    
+    Creates exactly one WorldState row if none exists.
+    Returns the existing or newly created WorldState.
+    """
+    existing = db.query(WorldState).first()
+    if existing:
+        return existing
+    
+    world_state = WorldState(
+        tick=0,
+        day=1,
+        time_of_day="morning",
+        weather=None
+    )
+    db.add(world_state)
+    db.commit()
+    db.refresh(world_state)
+    return world_state
 
 
 def init_grid(db: Session) -> None:
-    """Initialize the 50x50 tile grid.
+    """Initialize the 50x50 tile grid."""
+    from engine.models import Tile
     
-    Creates 2500 Tile rows with x=0..49, y=0..49, terrain='grass'.
-    Idempotent: calling twice will not duplicate rows.
-    """
-    # Check if grid already exists
-    existing_count = db.query(Tile).count()
-    if existing_count > 0:
-        return
-
-    # Create all 2500 tiles
+    existing = db.query(Tile).count()
+    if existing > 0:
+        return  # Already initialized
+    
     for x in range(50):
         for y in range(50):
-            tile = Tile(x=x, y=y, terrain="grass")
-            db.add(tile)
-    
+            db.add(Tile(x=x, y=y, terrain="grass"))
     db.commit()
 
 
-def seed_buildings(db: Session) -> None:
-    """Seed starter buildings into the town.
-    
-    Creates 3 buildings:
-    - Town Hall (building_type='civic', x=25, y=25)
-    - Farm (building_type='food', x=10, y=10)
-    - House (building_type='residential', x=30, y=30)
-    
-    Idempotent: calling twice will not duplicate buildings.
-    """
-    # Check if buildings already exist
-    existing_count = db.query(Building).count()
-    if existing_count > 0:
-        return
-
-    # Create the 3 starter buildings
-    buildings_data = [
-        {"name": "Town Hall", "building_type": "civic", "x": 25, "y": 25},
-        {"name": "Farm", "building_type": "food", "x": 10, "y": 10},
-        {"name": "House", "building_type": "residential", "x": 30, "y": 30},
-    ]
-
-    for building_data in buildings_data:
-        building = Building(**building_data)
-        db.add(building)
-    
-    db.commit()
-
-
-def seed_npcs(db: Session) -> None:
-    """Seed starter NPCs into the town.
-    
-    Creates 5 NPCs with names and roles:
-    - Farmer (role='farmer')
-    - Baker (role='baker')
-    - Guard (role='guard')
-    - Merchant (role='merchant')
-    - Priest (role='priest')
-    
-    Each NPC is placed at a valid grid position (0-49).
-    Idempotent: calling twice will not duplicate NPCs.
-    """
-    # Check if NPCs already exist
-    existing_count = db.query(NPC).count()
-    if existing_count > 0:
-        return
-
-    # Create the 5 starter NPCs
-    npcs_data = [
-        {"name": "Tom", "role": "farmer", "x": 12, "y": 12},
-        {"name": "Sarah", "role": "baker", "x": 15, "y": 15},
-        {"name": "Jake", "role": "guard", "x": 20, "y": 20},
-        {"name": "Lily", "role": "merchant", "x": 22, "y": 22},
-        {"name": "Father Mike", "role": "priest", "x": 27, "y": 27},
-    ]
-
-    for npc_data in npcs_data:
-        npc = NPC(**npc_data)
-        db.add(npc)
-    
-    db.commit()
-
-
-def process_tick(db: Session) -> int:
-    """Advance the simulation by one tick.
-    
-    Increments WorldState.tick by 1 and returns the new tick number.
-    Updates all NPC hunger (+5, max 100) and energy (-3, min 0).
-    NPCs with hunger > 70 and gold >= 5 automatically eat.
-    NPCs with energy < 20 automatically sleep (restores +40, max 100).
-    Creates WorldState if it doesn't exist.
-    """
-    # Get or create world state
-    world_state = db.query(WorldState).first()
-    if not world_state:
-        world_state = WorldState(tick=0)
-        db.add(world_state)
-    
-    world_state.tick += 1
-    
-    # Update all NPC hunger and energy
-    npcs = db.query(NPC).all()
-    for npc in npcs:
-        npc.hunger = min(100, npc.hunger + 5)
-        npc.energy = max(0, npc.energy - 3)
-    
-    # Auto-eat: NPCs with hunger > 70 and gold >= 5 eat automatically
-    for npc in npcs:
-        if npc.hunger > 70 and npc.gold >= 5:
-            npc.gold -= 5
-            npc.hunger = max(0, npc.hunger - 30)
-    
-    # Auto-sleep: NPCs with energy < 20 sleep automatically
-    # Inlined logic to maintain transaction atomicity for the tick
-    for npc in npcs:
-        if npc.energy < 20:
-            npc.energy = min(100, npc.energy + 40)
-    
-    db.commit()
-    
-    return world_state.tick
-
-
-def transfer_gold(db: Session, sender_id: int, receiver_id: int, amount: int) -> bool:
-    """Transfer gold from sender to receiver.
-    
-    Deducts amount from sender's gold, adds to receiver's gold.
-    Returns True on success, False if sender has insufficient funds.
-    Also creates a Transaction record.
-    
-    Args:
-        db: Database session
-        sender_id: ID of the sender NPC
-        receiver_id: ID of the receiver NPC
-        amount: Amount of gold to transfer (must be positive)
-    
-    Returns:
-        True if transfer succeeded, False otherwise
-    """
-    # Validate amount is positive
-    if amount <= 0:
-        return False
-    
-    # Get sender and receiver
-    sender = db.query(NPC).filter(NPC.id == sender_id).first()
-    receiver = db.query(NPC).filter(NPC.id == receiver_id).first()
-    
-    # Check if both NPCs exist
-    if not sender or not receiver:
-        return False
-    
-    # Check if sender has sufficient funds
-    if sender.gold < amount:
-        return False
-    
-    # Perform the transfer
-    sender.gold -= amount
-    receiver.gold += amount
-    
-    # Create transaction record
-    transaction = Transaction(
-        sender_id=sender_id,
-        receiver_id=receiver_id,
-        amount=amount
-    )
-    db.add(transaction)
-    
-    db.commit()
-    
-    return True
-
-
-def assign_homes(db: Session) -> None:
-    """Assign homes to NPCs without one.
-    
-    For each NPC without a home_building_id, find a residential building 
-    with capacity > current occupants and assign it.
-    """
-    # Find homeless NPCs
-    homeless_npcs = db.query(NPC).filter(NPC.home_building_id == None).all()
-    
-    # Find residential buildings
-    residential_buildings = db.query(Building).filter(Building.building_type == 'residential').all()
-    
-    # Calculate current occupancy for each residential building
-    occupancy = {}
-    for building in residential_buildings:
-        occupancy[building.id] = db.query(NPC).filter(NPC.home_building_id == building.id).count()
-    
-    # Assign homes
-    for npc in homeless_npcs:
-        for building in residential_buildings:
-            if occupancy.get(building.id, 0) < building.capacity:
-                npc.home_building_id = building.id
-                occupancy[building.id] += 1
-                break
-    
-    db.commit()
-
-
-def assign_work(db: Session) -> None:
-    """Assign work buildings to NPCs without one.
-    
-    For each NPC without a work_building_id, find a non-residential building 
-    matching their role and assign it.
-    """
-    # Role to building type mapping
-    role_mapping = {
-        'farmer': 'food',
-        'baker': 'food',
-        'guard': 'guard',
-        'merchant': 'market',
-        'priest': 'religious',
-    }
-    
-    # Find NPCs without work assignment
-    unemployed_npcs = db.query(NPC).filter(NPC.work_building_id == None).all()
-    
-    for npc in unemployed_npcs:
-        target_type = role_mapping.get(npc.role)
-        if not target_type:
-            continue
-        
-        # Find a matching non-residential building
-        building = db.query(Building).filter(
-            Building.building_type == target_type,
-            Building.building_type != 'residential'
-        ).first()
-        
-        if building:
-            npc.work_building_id = building.id
-    
-    db.commit()
-
-
-def eat(db: Session, npc_id: int) -> bool:
-    """Allow an NPC to eat food.
-    
-    Reduces the NPC's hunger by 30 (minimum 0).
-    Costs 5 gold.
-    If NPC has less than 5 gold, do nothing and return False.
-    Returns True on success.
-    
-    Args:
-        db: Database session
-        npc_id: ID of the NPC to feed
-    
-    Returns:
-        True if eating succeeded, False otherwise
-    """
-    npc = db.query(NPC).filter(NPC.id == npc_id).first()
-    
-    if not npc:
-        return False
-    
-    if npc.gold < 5:
-        return False
-    
-    npc.gold -= 5
-    npc.hunger = max(0, npc.hunger - 30)
-    
-    db.commit()
-    
-    return True
-
-
-def sleep_npc(db: Session, npc_id: int) -> bool:
-    """Allow an NPC to sleep.
-    
-    Restores the NPC's energy by 40, capped at 100.
-    Always succeeds if NPC exists.
-    Returns True on success, False if NPC not found.
-    
-    Args:
-        db: Database session
-        npc_id: ID of the NPC to sleep
-    
-    Returns:
-        True if sleeping succeeded, False otherwise
-    """
-    npc = db.query(NPC).filter(NPC.id == npc_id).first()
-    
-    if not npc:
-        return False
-    
-    npc.energy = min(100, npc.energy + 40)
-    
-    db.commit()
-    
-    return True
+def process_tick(db: Session) -> None:
+    """Advance the simulation by one tick."""
+    # 1. Update world state (time, weather)
+    # 2. Process NPC needs (hunger, energy decay)
+    # 3. Process NPC decisions (eat, sleep, work, move)
+    # 4. Process production (farms, workshops)
+    # 5. Process economy (trades, wages, taxes)
+    # 6. Log events
+    pass
