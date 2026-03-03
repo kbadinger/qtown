@@ -9,6 +9,14 @@
 (function () {
   "use strict";
 
+  // Debug: show errors visually since we can't access console
+  window.onerror = function(msg, src, line) {
+    var d = document.createElement("div");
+    d.style.cssText = "position:fixed;bottom:10px;left:10px;z-index:9999;background:red;color:white;padding:8px 12px;font:12px monospace;max-width:80vw;border-radius:4px;";
+    d.textContent = "JS Error: " + msg + " (" + src + ":" + line + ")";
+    document.body.appendChild(d);
+  };
+
   // -------------------------------------------------------------------------
   // Constants
   // -------------------------------------------------------------------------
@@ -545,6 +553,27 @@
   // -------------------------------------------------------------------------
   // Boot
   // -------------------------------------------------------------------------
+
+  // Debug status indicator
+  var dbg = document.createElement("div");
+  dbg.style.cssText = "position:fixed;bottom:10px;right:10px;z-index:9999;background:rgba(0,0,0,0.8);color:#0f0;padding:6px 10px;font:11px monospace;border-radius:4px;";
+  dbg.textContent = "PIXI OK, fetching world...";
+  document.body.appendChild(dbg);
+
+  var _origFetch = fetchWorld;
+  fetchWorld = async function() {
+    try {
+      await _origFetch();
+      var b = buildingLayer.children.length;
+      var n = npcLayer.children.length;
+      var g = groundLayer.children.length;
+      dbg.textContent = "tiles:" + g + " buildings:" + b + " npcs:" + n;
+      dbg.style.color = (g > 0) ? "#0f0" : "#f00";
+    } catch(e) {
+      dbg.textContent = "fetch error: " + e.message;
+      dbg.style.color = "#f00";
+    }
+  };
 
   // Initial fetch, then poll
   fetchWorld();
