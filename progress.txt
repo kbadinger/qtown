@@ -31,3 +31,8 @@
 - **Initialization Convention**: The codebase strictly uses `memset` for zero-initialization before any logic runs; skipping this step leads to garbage data in the grid.
 - **Boundary Handling**: Edge cases at `x=49` or `y=49` are handled by explicit `if` checks rather than relying on array bounds, as the grid does not wrap around.
 - **Correction**: Initially attempted to use nested loops for initialization, which was redundant; switched to `memset` for performance and consistency with the rest of the codebase.
+
+--- Story 001: Initialize 50x50 grid (attempts: 1, 2026-03-02 19:21) ---
+- **Non-obvious indexing**: The grid initialization required careful handling of 0-based indexing vs. 1-based user expectations, specifically ensuring the `width` and `height` parameters strictly defined the bounds to avoid off-by-one errors in boundary checks.
+- **Codebase convention**: The project enforces a strict separation between data structures (raw 2D arrays) and view logic; the grid is initialized as a mutable state object before any rendering or interaction logic is attached.
+- **Correction**: Initially attempted to use a single flat array for the grid to save memory, but reverted to a 2D array structure to align with the existing coordinate-based access patterns used in subsequent stories.
