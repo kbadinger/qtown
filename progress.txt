@@ -136,3 +136,8 @@
 *   **Non-obvious dependency on state flags:** Assigning work requires checking the `is_busy` flag *and* the `current_task` nullability; relying solely on the flag causes race conditions if a task completes mid-assignment.
 *   **Convention for task injection:** The codebase consistently uses `TaskQueue.enqueue()` rather than direct method calls on NPCs, ensuring all work passes through the central scheduler for logging and priority handling.
 *   **Correction on null safety:** Initially attempted to access `npc.current_task.priority` directly, causing a crash on idle NPCs; corrected by adding a guard clause to verify task existence before accessing nested properties.
+
+--- Story 020: Eating behavior (attempts: 1, 2026-03-02 21:32) ---
+- **Tricky Logic**: Handling the "eating" state transitions was non-obvious; the logic required checking for both `isHungry` and `hasFood` flags simultaneously before allowing the state change, rather than a simple boolean toggle.
+- **Codebase Patterns**: The project strictly enforces a "Command-Query Separation" pattern where state mutation methods (like `eat()`) return `void`, while status checks are isolated in dedicated `get*` methods to prevent side effects during reads.
+- **Correction**: Initially, I attempted to validate food inventory inside the `eat()` method, which violated the single responsibility principle; I corrected this by moving the inventory check to the caller and letting `eat()` assume valid input.

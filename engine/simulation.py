@@ -224,3 +224,34 @@ def assign_work(db: Session) -> None:
             npc.work_building_id = building.id
     
     db.commit()
+
+
+def eat(db: Session, npc_id: int) -> bool:
+    """Allow an NPC to eat food.
+    
+    Reduces the NPC's hunger by 30 (minimum 0).
+    Costs 5 gold.
+    If NPC has less than 5 gold, do nothing and return False.
+    Returns True on success.
+    
+    Args:
+        db: Database session
+        npc_id: ID of the NPC to feed
+    
+    Returns:
+        True if eating succeeded, False otherwise
+    """
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    
+    if not npc:
+        return False
+    
+    if npc.gold < 5:
+        return False
+    
+    npc.gold -= 5
+    npc.hunger = max(0, npc.hunger - 30)
+    
+    db.commit()
+    
+    return True
