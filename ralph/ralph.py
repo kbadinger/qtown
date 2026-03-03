@@ -39,7 +39,7 @@ from ralph.story_generator import (
     request_review,
 )
 from ralph.learnings import append_learning, build_learning_prompt
-from ralph.test_runner import run_tests
+from ralph.test_runner import run_tests, run_regression_tests
 
 PRD_FILE = Path("prd.json")
 HUMAN_MD = Path("HUMAN.md")
@@ -422,7 +422,16 @@ def run_story(story: dict) -> bool:
         log_metric(story_id, attempt, test_passed, gpu_time, None if test_passed else test_output[:500], tokens_in, tokens_out)
 
         if test_passed:
-            print(f"  PASSED on attempt {attempt}")
+            # Regression gate: check all previous stories still pass
+            print(f"  [{_ts()}] Story tests passed — running regression check...")
+            reg_passed, reg_output = run_regression_tests()
+            if not reg_passed:
+                print(f"  REGRESSION detected — undoing changes, will retry")
+                subprocess.run(["git", "checkout", "engine/"], capture_output=True)
+                subprocess.run(["git", "checkout", "assets/"], capture_output=True)
+                log_metric(story_id, attempt, False, gpu_time, f"REGRESSION: {reg_output[:300]}", tokens_in, tokens_out)
+                continue  # Retry — Qwen will get the regression error in next prompt
+            print(f"  PASSED on attempt {attempt} (no regressions)")
             passed = True
             break
         else:

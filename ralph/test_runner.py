@@ -1,6 +1,8 @@
 """Runs pytest for a given test file and returns pass/fail + output."""
 
+import json
 import subprocess
+from pathlib import Path
 
 
 def run_tests(test_file: str, story_id: str = "") -> tuple[bool, str]:
@@ -23,3 +25,27 @@ def run_tests(test_file: str, story_id: str = "") -> tuple[bool, str]:
         return passed, output
     except subprocess.TimeoutExpired:
         return False, "Test timed out after 120s"
+
+
+def run_regression_tests(prd_path: str = "prd.json") -> tuple[bool, str]:
+    """Run tests for all completed stories to detect regressions.
+
+    Returns (passed, message). On first failure, returns immediately
+    with the story ID and truncated output.
+    """
+    prd_file = Path(prd_path)
+    if not prd_file.exists():
+        return True, "No prd.json found — skipping regression check"
+
+    prd = json.loads(prd_file.read_text(encoding="utf-8"))
+    done_stories = [s for s in prd["stories"] if s["status"] == "done"]
+
+    if not done_stories:
+        return True, "No completed stories to regress"
+
+    for story in done_stories:
+        passed, output = run_tests(story["test_file"], story["id"])
+        if not passed:
+            return False, f"REGRESSION in Story {story['id']}: {output[:500]}"
+
+    return True, f"All {len(done_stories)} regression tests passed"

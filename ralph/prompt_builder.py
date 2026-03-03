@@ -1,6 +1,7 @@
 """Prompt assembly — loads AGENTS.md, story context, docs library, intervention messages."""
 
 import json
+import re
 from pathlib import Path
 
 from ralph.learnings import load_learnings
@@ -8,6 +9,32 @@ from ralph.learnings import load_learnings
 AGENTS_MD = Path("AGENTS.md")
 DOCS_INDEX = Path("docs/index.json")
 CHAR_BUDGET = 100_000  # Max chars to load from context files
+
+
+def _extract_function_inventory(filepath: str, content: str) -> str | None:
+    """Scan a Python file for function/class/route definitions and return an inventory string."""
+    defs = []
+    for line in content.split("\n"):
+        stripped = line.strip()
+        # Match function definitions
+        m = re.match(r'^def (\w+)\(', stripped)
+        if m:
+            defs.append(f"  - {m.group(1)}()")
+            continue
+        # Match FastAPI route decorators
+        m = re.match(r'^@router\.(get|post|put|delete|patch)\("([^"]+)"', stripped)
+        if m:
+            defs.append(f"  - {m.group(1).upper()} {m.group(2)}")
+    if len(defs) >= 2:  # Only warn if file has multiple definitions
+        lines = [
+            f"=== WARNING: PRESERVE ALL EXISTING CODE IN {filepath} ===",
+            f"{filepath} currently contains these definitions:",
+        ]
+        lines.extend(defs)
+        lines.append("You MUST include ALL of them in your output. Dropping any function will cause regression test failure.")
+        lines.append("")
+        return "\n".join(lines)
+    return None
 
 
 def build_prompt(
@@ -81,6 +108,7 @@ def build_prompt(
 
     # Load context files within budget
     total_chars = 0
+    inventories = []
     for filepath in context_files:
         p = Path(filepath)
         if not p.exists():
@@ -93,6 +121,16 @@ def build_prompt(
         parts.append(content)
         parts.append("")
         total_chars += len(content)
+        # Build function inventory for Python files
+        if filepath.endswith(".py"):
+            inv = _extract_function_inventory(filepath, content)
+            if inv:
+                inventories.append(inv)
+
+    # Inject function inventories as warnings
+    if inventories:
+        for inv in inventories:
+            parts.append(inv)
 
     # 7. Failing test output
     parts.append("=== FAILING TEST OUTPUT ===")
