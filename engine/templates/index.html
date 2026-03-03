@@ -26,14 +26,14 @@
                 </div>
             </div>
             <p class="text-gray-500 text-xs mb-3">A self-evolving town built entirely by a local AI</p>
-            <div class="grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm pointer-events-none">
-                <span class="text-gray-400">Tick</span>
+            <div class="grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm pointer-events-auto">
+                <span class="text-gray-400 cursor-help border-b border-dotted border-gray-600" title="Simulation steps completed. Each tick advances NPC actions, economy, and world events.">Tick</span>
                 <span id="hud-tick" class="text-gray-200 font-mono tabular-nums">0</span>
-                <span class="text-gray-400">Day</span>
+                <span class="text-gray-400 cursor-help border-b border-dotted border-gray-600" title="In-game day (24 ticks = 1 day). Controls day/night cycles and daily events.">Day</span>
                 <span id="hud-day" class="text-gray-200 font-mono tabular-nums">1</span>
-                <span class="text-gray-400">Population</span>
+                <span class="text-gray-400 cursor-help border-b border-dotted border-gray-600" title="Number of NPCs living in town. New residents arrive as the town grows.">Population</span>
                 <span id="hud-pop" class="text-gray-200 font-mono tabular-nums">0</span>
-                <span class="text-gray-400">Gold</span>
+                <span class="text-gray-400 cursor-help border-b border-dotted border-gray-600" title="Total gold across all NPCs. Earned through work, spent at shops and markets.">Gold</span>
                 <span id="hud-gold" class="text-amber-300 font-mono tabular-nums">0</span>
             </div>
         </div>
@@ -49,6 +49,6 @@
     <!-- PixiJS from CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
     <!-- Town renderer -->
-    <script src="/static/js/town.js?v=8"></script>
+    <script src="/static/js/town.js?v=9"></script>
 </body>
 </html>
