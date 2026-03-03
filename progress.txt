@@ -86,3 +86,8 @@
 - **Non-obvious routing**: The NPC endpoint relies on a custom `@npc_handler` decorator that injects the `world_state` context, meaning standard request parsing fails if the decorator is omitted or applied incorrectly.
 - **Data consistency pattern**: The codebase enforces a strict "frozen snapshot" pattern for NPC data; any modification to the returned object must be done via `.copy()` to prevent accidental mutation of the shared global state.
 - **Correction made**: Initially attempted to filter NPCs by `id` in the database query, but the API contract requires filtering by `uuid` string; corrected the query parameter mapping to align with the frontend's expectation.
+
+--- Story 011: POST /api/npcs (admin) (attempts: 1, 2026-03-02 19:39) ---
+- **Non-obvious constraint**: The NPC schema requires a `faction_id` that must exist in the `Factions` table; the initial implementation failed to validate this foreign key relationship before insertion, causing silent data inconsistencies.
+- **Codebase pattern**: This project consistently uses a "service layer" (`services/npc_service.py`) to handle all business logic and validation, keeping the route handlers in `routes/npcs.py` strictly for request parsing and response formatting.
+- **Correction made**: Initially attempted to return the raw SQLAlchemy object in the JSON response, which caused serialization errors with circular references; switched to using the dedicated `NPCResponse` Pydantic model to ensure clean, safe serialization.
