@@ -71,3 +71,8 @@
 - **Tricky**: Handling the race condition between reading the current state and writing the new tick required careful locking; the initial implementation missed the edge case where the clock resets exactly at the boundary, causing a duplicate entry.
 - **Patterns**: The codebase strictly enforces "fail-fast" validation at the controller layer before any service logic runs, and all state mutations must be wrapped in a transactional context even for simple updates.
 - **Mistakes**: Initially returned the raw internal `Tick` object instead of the DTO, exposing internal IDs; corrected by mapping to `TickResponse` in the service layer to maintain API contract stability.
+
+--- Story 008: GET /api/buildings (attempts: 1, 2026-03-02 19:35) ---
+- **Non-obvious behavior**: The `Building` model relies on a computed property for `total_area` that triggers a lazy database query; accessing this in the controller without explicit eager loading caused N+1 performance issues.
+- **Codebase pattern**: This repository strictly enforces a "Service Layer" pattern where all data transformation and validation logic must reside in `services/building_service.py`, keeping controllers as thin request handlers.
+- **Correction made**: Initially returned raw model dictionaries directly from the API; corrected to use the standardized `BuildingSerializer` to ensure consistent field naming and to mask internal `is_archived` flags from public responses.
