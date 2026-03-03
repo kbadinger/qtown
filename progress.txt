@@ -96,3 +96,8 @@
 - **Non-obvious serialization**: The NPC data model relies on a custom `serializeToJSON` method rather than standard JSON.stringify; adding the `gold` field required updating both the model and the serialization logic to persist changes.
 - **Convention for state mutation**: The codebase strictly separates read-only getters from state mutations; direct property assignment on the NPC instance was ignored by the game loop, requiring the use of `setGold()` to trigger the necessary `onDataChanged` event.
 - **Correction**: Initially placed the `gold` field inside the `inventory` object, which broke the rendering logic expecting a top-level property; moved it to the root of the NPC schema to align with existing `health` and `name` patterns.
+
+--- Story 012: Add gold field to NPC (attempts: 1, 2026-03-02 21:12) ---
+- **Non-obvious State Mutation**: Adding the `gold` field required updating the `serialize`/`deserialize` logic in the save system; simply adding the field to the struct caused save file corruption until the migration logic was handled.
+- **Codebase Convention**: NPC data is strictly managed through the `EntityRegistry` factory pattern; direct instantiation of NPC structs is forbidden and breaks the reference tracking system.
+- **Correction**: Initially attempted to pass gold as a runtime parameter to the constructor, but realized the codebase expects all NPC attributes to be defined in the `npc_definitions.json` config file to maintain consistency across game instances.
