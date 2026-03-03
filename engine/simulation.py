@@ -1,6 +1,6 @@
 """All simulation logic — pure functions that take db session and modify game state."""
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from engine.models import NPC, Building, WorldState, Tile
 
@@ -67,6 +67,8 @@ def seed_npcs(db: Session) -> None:
         NPC(name="Alice", role="merchant", x=5, y=5, gold=100, hunger=20, energy=80),
         NPC(name="Bob", role="farmer", x=10, y=10, gold=50, hunger=30, energy=90),
         NPC(name="Charlie", role="worker", x=15, y=15, gold=75, hunger=10, energy=100),
+        NPC(name="Diana", role="guard", x=25, y=24, gold=30, hunger=15, energy=95),
+        NPC(name="Erik", role="priest", x=27, y=27, gold=20, hunger=5, energy=85),
     ]
     
     for npc in npcs:
@@ -106,6 +108,20 @@ def move_npc_toward_target(db: Session, npc: NPC) -> None:
         npc.target_y = None
 
 
+def process_work(db: Session) -> None:
+    """Process work earnings for NPCs at their work building.
+    
+    For each NPC that has a work_building_id and is at the same (x,y)
+    as their work building, add 10 gold.
+    """
+    npcs = db.query(NPC).options(joinedload(NPC.work_building)).filter(NPC.work_building_id.isnot(None)).all()
+    
+    for npc in npcs:
+        building = npc.work_building
+        if building and npc.x == building.x and npc.y == building.y:
+            npc.gold += 10
+
+
 def process_tick(db: Session) -> None:
     """Advance the simulation by one tick."""
     # 1. Update world state (time, weather)
@@ -128,6 +144,7 @@ def process_tick(db: Session) -> None:
     
     # 4. Process production (farms, workshops)
     # 5. Process economy (trades, wages, taxes)
+    process_work(db)
     # 6. Log events
     
     db.commit()

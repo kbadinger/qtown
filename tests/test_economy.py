@@ -31,6 +31,7 @@ def test_s013_transfer_gold(db):
 
     result = transfer_gold(db, sender.id, receiver.id, 50)
     assert result is True
+    db.commit()
     db.refresh(sender)
     db.refresh(receiver)
     assert sender.gold == 50
@@ -49,6 +50,7 @@ def test_s013_transfer_gold_insufficient(db):
 
     result = transfer_gold(db, sender.id, receiver.id, 50)
     assert result is False
+    db.commit()
     db.refresh(sender)
     assert sender.gold == 10  # Unchanged
 
@@ -67,9 +69,9 @@ def test_s026_earn_gold_at_work(db):
     from engine.simulation import process_work
 
     npc = db.query(NPC).first()
-    building = db.query(Building).filter_by(id=1).first()
+    building = db.query(Building).first()
     npc.gold = 0
-    npc.work_building_id = 1  # Assign to first building
+    npc.work_building_id = building.id  # Assign to first building
     npc.x = building.x  # Move NPC to building location
     npc.y = building.y
     db.commit()
@@ -81,9 +83,12 @@ def test_s026_earn_gold_at_work(db):
 
 def test_s027_resource_model(db):
     """Story 027: Resource model should exist."""
-    from engine.models import Resource
+    from engine.models import Resource, Building
 
-    r = Resource(name="Wheat", quantity=100, building_id=1)
+    b = Building(name="Farm", building_type="farm", x=0, y=0)
+    db.add(b)
+    db.commit()
+    r = Resource(name="Wheat", quantity=100, building_id=b.id)
     db.add(r)
     db.commit()
     assert r.id is not None
@@ -113,6 +118,7 @@ def test_s029_buy_food(db):
     npc.hunger = 80
     db.commit()
     buy_food(db, npc.id)
+    db.commit()
     db.refresh(npc)
     assert npc.hunger < 80 or npc.gold < 50  # Something should change
 

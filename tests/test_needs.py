@@ -30,6 +30,7 @@ def test_s020_eating_reduces_hunger(db):
     db.add(npc)
     db.commit()
     eat(db, npc.id)
+    db.commit()
     db.refresh(npc)
     assert npc.hunger < 80
 
@@ -43,6 +44,7 @@ def test_s022_sleeping_restores_energy(db):
     db.add(npc)
     db.commit()
     sleep_npc(db, npc.id)
+    db.commit()
     db.refresh(npc)
     assert npc.energy > 20
 
