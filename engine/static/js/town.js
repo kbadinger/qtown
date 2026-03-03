@@ -119,24 +119,33 @@
 
   const textureCache = {};
   const failedTextures = new Set();
+  const loadingTextures = new Set();
+  const ASSET_VERSION = "v2";  // Cache-buster for CDN/Cloudflare
 
   function tryLoadTexture(url) {
     if (textureCache[url]) return textureCache[url];
     if (failedTextures.has(url)) return null;
+    if (loadingTextures.has(url)) return null;  // Still loading — use fallback
 
-    // Start async load
-    const tex = PIXI.Texture.from(url);
+    // Start async load with cache-buster
+    const bustUrl = url + "?" + ASSET_VERSION;
+    loadingTextures.add(url);
+
+    const tex = PIXI.Texture.from(bustUrl);
     tex.baseTexture.on("loaded", () => {
       textureCache[url] = tex;
+      loadingTextures.delete(url);
+      needsRerender = true;  // Force re-render with loaded texture
     });
     tex.baseTexture.on("error", () => {
       failedTextures.add(url);
-      delete textureCache[url];
+      loadingTextures.delete(url);
     });
 
-    textureCache[url] = tex;
-    return tex;
+    return null;  // Use fallback until texture is confirmed loaded
   }
+
+  let needsRerender = false;
 
   // -------------------------------------------------------------------------
   // Drawing: ground tiles
@@ -516,9 +525,10 @@
       const old = camera.getChildByName("loadingMsg");
       if (old) camera.removeChild(old);
 
-      // Only re-render if state actually changed
-      if (json !== lastWorldJSON) {
+      // Re-render if state changed OR textures finished loading
+      if (json !== lastWorldJSON || needsRerender) {
         lastWorldJSON = json;
+        needsRerender = false;
         render(world);
       }
     } catch (err) {
