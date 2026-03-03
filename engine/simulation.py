@@ -262,3 +262,29 @@ def eat(db: Session, npc_id: int) -> bool:
     db.commit()
     
     return True
+
+
+def sleep_npc(db: Session, npc_id: int) -> bool:
+    """Allow an NPC to sleep.
+    
+    Restores the NPC's energy by 40, capped at 100.
+    Always succeeds if NPC exists.
+    Returns True on success, False if NPC not found.
+    
+    Args:
+        db: Database session
+        npc_id: ID of the NPC to sleep
+    
+    Returns:
+        True if sleeping succeeded, False otherwise
+    """
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    
+    if not npc:
+        return False
+    
+    npc.energy = min(100, npc.energy + 40)
+    
+    db.commit()
+    
+    return True

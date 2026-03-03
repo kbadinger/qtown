@@ -146,3 +146,8 @@
 - **Tick Scheduling Nuance**: The most non-obvious part was ensuring the auto-eat logic runs *after* the movement calculation but *before* the state serialization; placing it in the wrong phase caused the snake to eat and immediately die on the next render cycle.
 - **State Mutation Convention**: The codebase strictly separates "intent" (input handling) from "state mutation" (tick execution); I initially tried to mutate the food array directly in the input handler, which broke the undo/refactor logic.
 - **Correction on Collision Checks**: I initially checked for food collision using the snake's *head* position only, missing cases where the snake grew into a food item while moving; corrected by checking the *entire* new body path against food coordinates before finalizing the tick.
+
+--- Story 022: Sleeping behavior (attempts: 1, 2026-03-02 21:39) ---
+- **Non-obvious state synchronization**: The sleep timer logic relied on a hidden dependency between the `SessionManager` and the `PowerMonitor`; failing to reset the `lastActive` timestamp in the manager caused the system to incorrectly report "asleep" status even after user interaction.
+- **Codebase convention**: This module strictly separates *state* (stored in the `SleepContext` singleton) from *behavior* (implemented via strategy pattern classes), avoiding direct mutation of context objects within event handlers.
+- **Correction**: Initially implemented the sleep entry check as a synchronous blocking call, which froze the UI thread; corrected by refactoring it to an async observer pattern that triggers state changes without halting the main loop.
