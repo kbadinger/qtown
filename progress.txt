@@ -181,3 +181,8 @@
 - **Non-obvious complexity**: The `FoodProduction` logic relies heavily on implicit state transitions in the `CropLifecycle` enum; assuming a simple boolean flag for "harvestable" caused race conditions when multiple workers accessed the same plot.
 - **Codebase patterns**: The project consistently uses the **Strategy Pattern** for different crop types (e.g., `GrainStrategy`, `VegetableStrategy`) to handle varying growth rates and water requirements, rather than large conditional blocks.
 - **Correction made**: Initially, I calculated yield based on the *current* time step only, ignoring the `accumulatedSunlight` buffer; I corrected this by refactoring to use a running total that persists across story ticks, matching the domain model's intent.
+
+--- Story 029: Buy food (attempts: 1, 2026-03-03 08:10) ---
+- **Non-obvious state synchronization**: The `Cart` component relies on a custom `useCart` hook that syncs with a global Redux store; forgetting to dispatch the `updateQuantity` action before rendering the total caused a race condition where the UI showed stale prices.
+- **Codebase convention for pricing**: All monetary values are stored as integers (cents) in the database and API, but the UI layer strictly uses a `formatCurrency` utility that expects floats; passing raw API data directly to the display component caused double-decimal formatting errors.
+- **Correction on validation logic**: Initially, I validated input fields only on form submission, which left the "Add to Cart" button disabled incorrectly for valid but unsubmitted inputs; I corrected this by moving validation into the `onChange` handler to provide immediate feedback.

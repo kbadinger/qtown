@@ -172,3 +172,38 @@ def process_tick(db: Session) -> None:
     # 6. Log events
     
     db.commit()
+
+
+def buy_food(db: Session, npc_id: int) -> bool:
+    """Allow an NPC to buy food from any building.
+    
+    NPC spends 5 gold, hunger decreases by 30 (min 0).
+    Requires a Food resource with quantity >= 1 at any building.
+    Decrements food quantity by 1.
+    Returns False if no food or insufficient gold.
+    """
+    # Get the NPC
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return False
+    
+    # Check if NPC has enough gold
+    if npc.gold < 5:
+        return False
+    
+    # Find a Food resource with quantity >= 1 at any building
+    food_resource = db.query(Resource).filter(
+        Resource.name == 'Food',
+        Resource.quantity >= 1
+    ).first()
+    
+    if not food_resource:
+        return False
+    
+    # Execute the purchase
+    npc.gold -= 5
+    npc.hunger = max(0, npc.hunger - 30)
+    food_resource.quantity -= 1
+    
+    db.commit()
+    return True

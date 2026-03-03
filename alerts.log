@@ -175,3 +175,13 @@ Ralph stopped — needs human debugging
 [2026-03-03 03:53:31 UTC] deploy_ok: Story 027 deployed: Healthy after 0.2s
 [2026-03-03 03:53:36 UTC] story_done: Story 027 complete: Resource model
 [2026-03-03 03:53:37 UTC] story_start: Story 028: Food production
+[2026-03-03 03:56:58 UTC] deploy_ok: Story 028 deployed: Healthy after 0.2s
+[2026-03-03 03:57:03 UTC] story_done: Story 028 complete: Food production
+[2026-03-03 03:57:04 UTC] story_start: Story 029: Buy food
+[2026-03-03 04:03:38 UTC] CRITICAL loop: Story 029: same error 3x in a row — giving up
+`tests/test_economy.py::test_s029_buy_food FAILED                         [100%]`
+[2026-03-03 04:03:38 UTC] CRITICAL critical: Story 029 failed: Buy food
+Ralph stopped — needs human debugging
+[2026-03-03 04:03:38 UTC] stop: Ralph offline — 28/215 stories complete
+[2026-03-03 13:09:52 UTC] start: Ralph online — 28/215 stories complete
+[2026-03-03 13:09:52 UTC] story_start: Story 029: Buy food
