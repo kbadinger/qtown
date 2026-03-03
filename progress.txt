@@ -25,3 +25,9 @@
 *   **What was tricky:** Balancing technical exposition with narrative momentum during the setup phase.
 *   **What conventions you made:** Established a distinct format for system logs versus character dialogue.
 *   **What you corrected:** Removed redundant initialization steps to improve pacing.
+
+--- Story 001: Initialize 50x50 grid (attempts: 1, 2026-03-02 19:14) ---
+- **Memory Layout**: The grid is a flat 1D array, not a 2D structure; calculating indices requires `(y * width) + x`, and forgetting the width multiplier causes subtle boundary overwrites.
+- **Initialization Convention**: The codebase strictly uses `memset` for zero-initialization before any logic runs; skipping this step leads to garbage data in the grid.
+- **Boundary Handling**: Edge cases at `x=49` or `y=49` are handled by explicit `if` checks rather than relying on array bounds, as the grid does not wrap around.
+- **Correction**: Initially attempted to use nested loops for initialization, which was redundant; switched to `memset` for performance and consistency with the rest of the codebase.
