@@ -106,3 +106,8 @@
 - **Atomicity in Gold Transfers**: The trickiest part was ensuring the deduction and addition happen within a single transaction scope; a naive two-step approach risks race conditions or partial state updates if the system crashes mid-operation.
 - **Repository Pattern Consistency**: The codebase strictly separates domain logic from data access, using repository interfaces for all entity operations (e.g., `IWalletRepository`) rather than direct database calls in services.
 - **Correction on Validation Logic**: Initially, I placed balance checks inside the database update query, but corrected this to perform validation in the service layer first to provide clearer error messages and avoid unnecessary DB round-trips.
+
+--- Story 014: Transaction model and endpoint (attempts: 1, 2026-03-02 21:17) ---
+- **Non-obvious transactional boundaries**: Initially assumed the `@Transactional` annotation on the controller would suffice, but discovered that self-invocation within the same service class bypasses the proxy, requiring a separate internal service layer to enforce proper rollback semantics.
+- **Idempotency pattern**: Identified a recurring convention of storing a unique `request_id` in a dedicated cache table before processing to prevent duplicate transaction processing during network retries, rather than relying solely on database unique constraints.
+- **Correction on error handling**: Mistakenly returned generic 500 errors for validation failures in the transactional block; corrected this by moving validation logic to the DTO layer to ensure specific 400 responses are returned before the transaction context is even opened.

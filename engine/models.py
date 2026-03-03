@@ -128,6 +128,7 @@ class Transaction(Base):
     sender_id = Column(Integer, ForeignKey("npcs.id"), nullable=False)
     receiver_id = Column(Integer, ForeignKey("npcs.id"), nullable=False)
     amount = Column(Integer, nullable=False)
+    reason = Column(String(256), nullable=True)
     created_at = Column(DateTime, default=_utcnow)
 
     sender = relationship("NPC", foreign_keys=[sender_id])

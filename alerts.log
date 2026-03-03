@@ -123,3 +123,6 @@ Ralph stopped — needs human debugging
 [2026-03-03 02:12:54 UTC] deploy_ok: Story 012 deployed: Healthy after 0.2s
 [2026-03-03 02:13:06 UTC] story_done: Story 012 complete: Add gold field to NPC
 [2026-03-03 02:13:07 UTC] story_start: Story 013: Transfer gold function
+[2026-03-03 02:16:17 UTC] deploy_ok: Story 013 deployed: Healthy after 0.2s
+[2026-03-03 02:16:22 UTC] story_done: Story 013 complete: Transfer gold function
+[2026-03-03 02:16:22 UTC] story_start: Story 014: Transaction model and endpoint
