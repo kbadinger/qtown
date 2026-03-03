@@ -108,3 +108,6 @@ Ralph stopped — needs human debugging
 [2026-03-03 00:35:44 UTC] deploy_ok: Story 008 deployed: Healthy after 0.2s
 [2026-03-03 00:35:49 UTC] story_done: Story 008 complete: GET /api/buildings
 [2026-03-03 00:35:50 UTC] story_start: Story 009: POST /api/buildings (admin)
+[2026-03-03 00:37:19 UTC] deploy_ok: Story 009 deployed: Healthy after 0.2s
+[2026-03-03 00:37:24 UTC] story_done: Story 009 complete: POST /api/buildings (admin)
+[2026-03-03 00:37:25 UTC] story_start: Story 010: GET /api/npcs

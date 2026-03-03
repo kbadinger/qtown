@@ -81,3 +81,8 @@
 - **Non-obvious validation logic**: The `Building` entity requires a custom validation rule where `floors` must be greater than 0, but the default DTO value was incorrectly set to `null`, causing a silent failure in the repository layer until explicit null-checking was added.
 - **Repository pattern consistency**: This codebase strictly separates domain logic from data access; the `BuildingService` must never interact with the database directly, always delegating to `BuildingRepository` which handles the ORM mapping and transaction boundaries.
 - **Correction on ID generation**: Initially attempted to generate UUIDs in the controller layer, but corrected this to use the database's `GENERATE_UUID()` function within the repository to ensure uniqueness across distributed instances and avoid race conditions.
+
+--- Story 010: GET /api/npcs (attempts: 1, 2026-03-02 19:38) ---
+- **Non-obvious routing**: The NPC endpoint relies on a custom `@npc_handler` decorator that injects the `world_state` context, meaning standard request parsing fails if the decorator is omitted or applied incorrectly.
+- **Data consistency pattern**: The codebase enforces a strict "frozen snapshot" pattern for NPC data; any modification to the returned object must be done via `.copy()` to prevent accidental mutation of the shared global state.
+- **Correction made**: Initially attempted to filter NPCs by `id` in the database query, but the API contract requires filtering by `uuid` string; corrected the query parameter mapping to align with the frontend's expectation.
