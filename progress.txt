@@ -116,3 +116,8 @@
 *   **Non-obvious state propagation**: Adding the `hunger` field required updating the serialization logic in `NPC.save()` and `NPC.load()`, not just the data model, to prevent silent data loss on reload.
 *   **Codebase convention**: The project strictly separates entity state (in `Entity` classes) from rendering logic (in `Renderer` classes); hunger values must be passed explicitly to the renderer rather than accessed directly.
 *   **Correction**: Initially attempted to calculate hunger decay in the main game loop, but realized it violated the single-responsibility principle; moved the logic into a dedicated `NPC.tick()` method to align with other stat updates.
+
+--- Story 016: Add energy field to NPC (attempts: 1, 2026-03-02 21:18) ---
+*   **Tricky Aspect**: Determining the correct scope for the energy field's collision detection required distinguishing between the NPC's physical hitbox and the new visual/functional aura, which initially caused unintended overlap with nearby objects.
+*   **Pattern Discovered**: The codebase consistently uses a centralized `EntityComponent` registry for all spatial effects; adding the field required registering a new `EnergyFieldComponent` rather than modifying the NPC's existing `Transform` directly.
+*   **Correction**: Initially, I attached the field logic to the NPC's update loop, causing performance spikes when multiple NPCs spawned; refactored to use the global `PhysicsSystem` tick to ensure O(1) lookups for active fields.

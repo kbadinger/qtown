@@ -129,3 +129,6 @@ Ralph stopped — needs human debugging
 [2026-03-03 02:17:41 UTC] deploy_ok: Story 014 deployed: Healthy after 0.2s
 [2026-03-03 02:17:45 UTC] story_done: Story 014 complete: Transaction model and endpoint
 [2026-03-03 02:17:46 UTC] story_start: Story 015: Add hunger field to NPC
+[2026-03-03 02:17:57 UTC] deploy_ok: Story 015 deployed: Healthy after 0.3s
+[2026-03-03 02:18:02 UTC] story_done: Story 015 complete: Add hunger field to NPC
+[2026-03-03 02:18:03 UTC] story_start: Story 016: Add energy field to NPC
