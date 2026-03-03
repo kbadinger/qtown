@@ -41,3 +41,8 @@
 - **Non-obvious initialization**: The grid's internal state requires explicit zero-filling; relying on default constructor behavior led to garbage values in uninitialized cells.
 - **Convention discovery**: The codebase strictly uses 0-based indexing for internal logic but expects 1-based coordinates for external API calls, requiring a consistent `x-1`, `y-1` offset pattern.
 - **Correction made**: Initially allocated the grid as `50x50` integers without bounds checking, causing out-of-bounds writes during edge-case tests; fixed by adding explicit boundary validation before any cell access.
+
+--- Story 002: Add Building model (attempts: 1, 2026-03-02 19:27) ---
+- **Non-obvious**: The `Building` model requires explicit `fillable` configuration in the constructor to bypass strict mass-assignment security checks during bulk seeding, which wasn't documented in the initial schema migration.
+- **Pattern**: This codebase consistently uses `Factory` classes for all entity creation rather than direct instantiation, ensuring validation rules are always applied before database insertion.
+- **Correction**: Initially omitted the `created_at` and `updated_at` timestamps in the migration definition, causing a `MissingColumn` error during the first test run; fixed by adding the standard `timestamps()` helper.

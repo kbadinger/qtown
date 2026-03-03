@@ -84,3 +84,6 @@ Ralph stopped — needs human debugging
 [2026-03-03 00:22:11 UTC] stop: Ralph offline — 0/215 stories complete
 [2026-03-03 00:27:05 UTC] start: Ralph online — 0/215 stories complete
 [2026-03-03 00:27:05 UTC] story_start: Story 001: Initialize 50x50 grid
+[2026-03-03 00:27:29 UTC] deploy_ok: Story 001 deployed: Healthy after 0.2s
+[2026-03-03 00:27:51 UTC] story_done: Story 001 complete: Initialize 50x50 grid
+[2026-03-03 00:27:51 UTC] story_start: Story 002: Add Building model
