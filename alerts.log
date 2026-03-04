@@ -252,3 +252,6 @@ Ralph stopped — needs human debugging
 [2026-03-04 03:01:37 UTC] deploy_ok: Story 040 deployed: Healthy after 0.2s
 [2026-03-04 03:01:50 UTC] story_done: Story 040 complete: Personality traits
 [2026-03-04 03:01:50 UTC] story_start: Story 041: Utility-based decisions
+[2026-03-04 03:14:15 UTC] deploy_ok: Story 041 deployed: Healthy after 0.2s
+[2026-03-04 03:14:28 UTC] story_done: Story 041 complete: Utility-based decisions
+[2026-03-04 03:14:29 UTC] story_start: Story 042: Feature submit and list

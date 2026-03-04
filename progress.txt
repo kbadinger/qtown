@@ -246,3 +246,8 @@
 *   **Non-obvious logic**: The utility calculation requires normalizing disparate metrics (e.g., latency vs. cost) before aggregation; failing to scale these values causes the decision engine to prioritize high-magnitude but low-impact metrics.
 *   **Codebase pattern**: The project enforces a strict "pure function" boundary for all scoring logic, separating data fetching from decision-making to ensure deterministic behavior and easier unit testing.
 *   **Correction**: Initially, I attempted to handle missing data by returning `null` within the utility function, which broke the downstream sort; I corrected this by implementing a default "neutral" score and handling nulls at the data ingestion layer instead.
+
+--- Story 042: Feature submit and list (attempts: 1, 2026-03-03 22:16) ---
+- **Non-obvious API contract**: The submit endpoint silently rejects requests with `Content-Type: application/json` if the body isn't strictly a JSON object (not an array), requiring explicit validation before parsing to avoid 500 errors.
+- **Codebase pattern**: The project enforces a strict "Service-Repository" separation where all external API calls are wrapped in a `fetcher` utility that handles retries and global error logging, rather than using `fetch` directly in components.
+- **Correction made**: Initially implemented optimistic UI updates that failed to revert on network errors; fixed by wrapping the update in a transactional state manager that rolls back the list state if the API call fails.
