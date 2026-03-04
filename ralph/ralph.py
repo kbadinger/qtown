@@ -372,18 +372,12 @@ def run_story(story: dict) -> bool:
             alert("critical", f"Story {story_id}: NO TESTS EXIST — cannot proceed\nQwen cannot fix this. Check tests/test_*.py for test_s{story_id}_* functions.")
             return False
 
-        # Loop detection — extract error signature (first failure line)
-        error_sig = ""
+        # Extract error signature for loop detection (used AFTER Qwen's fix attempt)
+        pre_error_sig = ""
         for line in test_output.split("\n"):
             if "Error" in line or "FAILED" in line or "assert" in line.lower():
-                error_sig = line.strip()[:120]
+                pre_error_sig = line.strip()[:120]
                 break
-        if error_sig:
-            recent_errors.append(error_sig)
-            # Same error 3 times in a row = loop, bail early
-            if len(recent_errors) >= 3 and len(set(recent_errors[-3:])) == 1:
-                alert("loop", f"Story {story_id}: same error 3x in a row — giving up\n`{error_sig}`")
-                return False
 
         # 2. Build prompt
         prompt = build_prompt(
@@ -467,6 +461,17 @@ def run_story(story: dict) -> bool:
             passed = True
             break
         else:
+            # Loop detection — track POST-WRITE errors (not pre-write, which are always the same)
+            post_error_sig = ""
+            for line in test_output.split("\n"):
+                if "Error" in line or "FAILED" in line or "assert" in line.lower():
+                    post_error_sig = line.strip()[:120]
+                    break
+            if post_error_sig:
+                recent_errors.append(post_error_sig)
+                if len(recent_errors) >= 3 and len(set(recent_errors[-3:])) == 1:
+                    alert("loop", f"Story {story_id}: same error 3x in a row — giving up\n`{post_error_sig}`")
+                    return False
             print(f"  FAILED — will retry")
 
     if not passed:
