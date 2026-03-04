@@ -559,6 +559,49 @@ def parse_file_blocks(response: str) -> list[FileBlock]:
     return blocks
 
 
+def _redirect_misplaced_sections(file_blocks: list[FileBlock]) -> list[FileBlock]:
+    """Redirect patch sections that target the wrong file.
+
+    Common Qwen mistake: writing BUILDING_TYPES to engine/models.py when it
+    lives in engine/simulation.py. Detect and redirect.
+    """
+    # Constants that live in engine/simulation.py, NOT engine/models.py
+    SIM_CONSTANTS = {"BUILDING_TYPES"}
+
+    sim_block = None
+    for b in file_blocks:
+        if b.filepath.replace("\\", "/") == "engine/simulation.py" and b.mode == "patch":
+            sim_block = b
+            break
+
+    for block in file_blocks:
+        if block.mode != "patch":
+            continue
+        norm = block.filepath.replace("\\", "/")
+        if norm == "engine/simulation.py":
+            continue
+
+        redirected = []
+        kept = []
+        for s in block.sections:
+            if s.action == "update_constant" and s.target in SIM_CONSTANTS:
+                redirected.append(s)
+            else:
+                kept.append(s)
+
+        if redirected:
+            names = [s.target for s in redirected]
+            print(f"  [REDIRECT] Moving {names} from {block.filepath} -> engine/simulation.py")
+            block.sections = kept
+
+            if sim_block is None:
+                sim_block = FileBlock(filepath="engine/simulation.py", content="", mode="patch", sections=[])
+                file_blocks.append(sim_block)
+            sim_block.sections = redirected + sim_block.sections
+
+    return file_blocks
+
+
 def apply_files(response: str) -> list[str]:
     """Parse and write all file blocks from Qwen's response.
 
@@ -566,6 +609,7 @@ def apply_files(response: str) -> list[str]:
     For Python files, automatically merges back any dropped definitions.
     """
     file_blocks = parse_file_blocks(response)
+    file_blocks = _redirect_misplaced_sections(file_blocks)
     written = []
 
     for block in file_blocks:

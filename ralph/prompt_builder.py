@@ -12,10 +12,15 @@ CHAR_BUDGET = 100_000  # Max chars to load from context files
 
 
 def _extract_function_inventory(filepath: str, content: str) -> str | None:
-    """Scan a Python file for function/class/route definitions and return an inventory string."""
+    """Scan a Python file for function/class/route/constant definitions and return an inventory string."""
     defs = []
     for line in content.split("\n"):
         stripped = line.strip()
+        # Match module-level constants (UPPER_CASE = ...)
+        m = re.match(r'^([A-Z][A-Z_]+)\s*=\s*', stripped)
+        if m:
+            defs.append(f"  - constant {m.group(1)}  [lives in {filepath}]")
+            continue
         # Match class definitions (models, etc.)
         m = re.match(r'^class (\w+)\(', stripped)
         if m:
@@ -36,7 +41,8 @@ def _extract_function_inventory(filepath: str, content: str) -> str | None:
             f"{filepath} currently contains these definitions:",
         ]
         lines.extend(defs)
-        lines.append("Use ### PATCH: with ADD/UPDATE sections — do NOT rewrite the entire file.")
+        lines.append(f"Use ### PATCH: {filepath} with ADD/UPDATE sections — do NOT rewrite the entire file.")
+        lines.append(f"IMPORTANT: Constants like BUILDING_TYPES live in {filepath}. Update them there, NOT in engine/models.py.")
         lines.append("You MUST preserve ALL existing functions. Dropping any will cause regression test failure.")
         lines.append("")
         return "\n".join(lines)
