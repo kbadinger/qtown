@@ -28,6 +28,7 @@ BUILDING_TYPES = [
     'lumber_mill',
     'fishing_dock',
     'guard_tower',
+    'wall'
 ]
 
 
@@ -1293,3 +1294,25 @@ def produce_guard_tower_resources(db: Session) -> None:
                 building_id=building.id
             )
             db.add(new_defense)
+
+
+def seed_wall(db: Session) -> None:
+    """Seed a wall building into the town.
+
+    Creates 1 wall building at coordinates (49, 49).
+    Idempotent - will not create if one already exists.
+    """
+    existing_walls = db.query(Building).filter(Building.building_type == 'wall').count()
+    if existing_walls > 0:
+        return
+    
+    # Create wall at (49, 49)
+    wall = Building(
+        name="Town Wall",
+        building_type="wall",
+        x=49,
+        y=49,
+        capacity=5
+    )
+    db.add(wall)
+    db.commit()
