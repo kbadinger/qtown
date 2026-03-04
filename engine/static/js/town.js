@@ -120,7 +120,7 @@
   const textureCache = {};
   const failedTextures = new Set();
   const loadingTextures = new Set();
-  const ASSET_VERSION = "v10";  // Cache-buster for CDN/Cloudflare
+  const ASSET_VERSION = "v12";  // Cache-buster for CDN/Cloudflare
 
   function tryLoadTexture(url) {
     if (textureCache[url]) return textureCache[url];
@@ -184,6 +184,20 @@
         g.endFill();
 
         groundLayer.addChild(g);
+
+        // DEBUG: tile coordinate labels (every 5th tile)
+        if (tx % 5 === 0 && ty % 5 === 0) {
+          const label = new PIXI.Text(`${tx},${ty}`, {
+            fontSize: 8,
+            fill: 0xFFFFFF,
+            fontFamily: "monospace",
+          });
+          label.anchor.set(0.5, 0.5);
+          label.x = pos.x;
+          label.y = pos.y;
+          label.alpha = 0.6;
+          groundLayer.addChild(label);
+        }
       }
     }
   }
