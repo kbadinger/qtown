@@ -6,9 +6,16 @@ import math
 from sqlalchemy.orm import Session, joinedload
 
 from engine.models import NPC, Building, WorldState, Tile, Resource, Treasury, Transaction, Event
+from sqlalchemy.orm import Session
+from engine.models import (
+Tile, NPC, Building, Resource, WorldState, Treasury, Event, Transaction
+)
 
 # Building types available in the simulation
-BUILDING_TYPES = ["civic", "food", "residential", "bakery", "blacksmith", "farm", "church", "school", "hospital", "tavern", "library", "mine"]
+BUILDING_TYPES = [
+    'civic', 'food', 'residential', 'bakery', 'blacksmith', 'farm',
+    'church', 'school', 'hospital', 'tavern', 'library', 'mine', 'lumber_mill'
+]
 
 
 def _generate_personality() -> str:
@@ -743,15 +750,15 @@ def process_tick(db: Session) -> None:
     """Advance the simulation by one tick.
     
     Processes all systems in the correct order:
-    1. World State — increment tick counter, advance time of day, change day
-    2. Weather — update weather, apply weather effects
-    3. Needs Decay — hunger increases, energy decreases for all NPCs
-    4. NPC Decisions — each NPC decides what to do based on needs + utility
-    5. Movement — NPCs move toward their targets
-    6. Production — buildings produce resources
-    7. Economy — wages, trades, tax collection
-    8. Population — births, deaths, aging
-    9. Events — log notable events that occurred this tick
+    1. World State â€” increment tick counter, advance time of day, change day
+    2. Weather â€” update weather, apply weather effects
+    3. Needs Decay â€” hunger increases, energy decreases for all NPCs
+    4. NPC Decisions â€” each NPC decides what to do based on needs + utility
+    5. Movement â€” NPCs move toward their targets
+    6. Production â€” buildings produce resources
+    7. Economy â€” wages, trades, tax collection
+    8. Population â€” births, deaths, aging
+    9. Events â€” log notable events that occurred this tick
     """
     # 1. Update world state (time, weather)
     world_state = db.query(WorldState).first()
@@ -807,6 +814,7 @@ def process_tick(db: Session) -> None:
     produce_farm_resources(db)  # Farm production
     produce_library_resources(db)  # Library production
     produce_mine_resources(db)  # Mine production
+    produce_lumber_mill_resources(db)  # Lumber Mill production
     process_hospital(db)  # Hospital healing
     process_tavern(db)  # Tavern effects
     
@@ -1129,3 +1137,50 @@ def produce_mine_resources(db: Session) -> None:
                 building_id=building.id
             )
             db.add(new_ore)
+
+
+def seed_lumber_mill(db: Session) -> None:
+    """Seed a lumber mill building into the town.
+
+    Creates 1 lumber mill building at coordinates (46, 46).
+    Idempotent - will not create if one already exists.
+    """
+    existing_mills = db.query(Building).filter(Building.building_type == 'lumber_mill').count()
+    if existing_mills > 0:
+        return
+    
+    # Create lumber mill at (46, 46)
+    lumber_mill = Building(
+        name="Town Lumber Mill",
+        building_type="lumber_mill",
+        x=46,
+        y=46,
+        capacity=5
+    )
+    db.add(lumber_mill)
+    db.commit()
+
+
+def produce_lumber_mill_resources(db: Session) -> None:
+    """Produce resources for buildings of type 'lumber_mill'.
+    
+    Lumber Mill produces 8 Wood per tick.
+    """
+    lumber_mill_buildings = db.query(Building).filter(Building.building_type == 'lumber_mill').all()
+    
+    for building in lumber_mill_buildings:
+        # Check if Wood resource exists at this building
+        wood_resource = db.query(Resource).filter(
+            Resource.name == 'Wood',
+            Resource.building_id == building.id
+        ).first()
+        
+        if wood_resource:
+            wood_resource.quantity += 8
+        else:
+            new_wood = Resource(
+                name='Wood',
+                quantity=8,
+                building_id=building.id
+            )
+            db.add(new_wood)
