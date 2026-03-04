@@ -13,32 +13,33 @@ Tile, NPC, Building, Resource, WorldState, Treasury, Event, Transaction
 
 # Building types available in the simulation
 BUILDING_TYPES = [
-    'residential',
-    'food',
-    'guard',
-    'market',
-    'religious',
-    'school',
-    'hospital',
-    'tavern',
-    'library',
-    'bakery',
-    'blacksmith',
-    'farm',
-    'church',
-    'mine',
-    'lumber_mill',
-    'fishing_dock',
-    'guard_tower',
-    'wall',
-    'gate',
-    'fountain',
-    'well',
-    'warehouse',
-    'bank',
-    'theater',
-    'arena',
-    'prison',
+    "residential",
+    "food",
+    "guard",
+    "market",
+    "religious",
+    "school",
+    "hospital",
+    "tavern",
+    "library",
+    "bakery",
+    "blacksmith",
+    "farm",
+    "church",
+    "mine",
+    "lumber_mill",
+    "fishing_dock",
+    "guard_tower",
+    "wall",
+    "gate",
+    "fountain",
+    "well",
+    "warehouse",
+    "bank",
+    "theater",
+    "arena",
+    "prison",
+    "graveyard"
 ]
 
 
@@ -1680,4 +1681,26 @@ def seed_prison(db: Session) -> None:
         capacity=5
     )
     db.add(prison)
+    db.commit()
+
+
+def seed_graveyard(db: Session) -> None:
+    """Seed a graveyard building into the town.
+
+    Creates 1 graveyard building at coordinates (55, 55).
+    Idempotent - will not create if one already exists.
+    """
+    existing_graveyards = db.query(Building).filter(Building.building_type == 'graveyard').count()
+    if existing_graveyards > 0:
+        return
+    
+    # Create graveyard at (55, 55)
+    graveyard = Building(
+        name="Town Graveyard",
+        building_type="graveyard",
+        x=55,
+        y=55,
+        capacity=5
+    )
+    db.add(graveyard)
     db.commit()

@@ -444,3 +444,6 @@ Add theater building type
 [2026-03-04 23:25:05 UTC] deploy_ok: Story 065 deployed: Healthy after 0.2s
 [2026-03-04 23:25:11 UTC] story_done: Story 065 complete: Add arena building type
 [2026-03-04 23:25:11 UTC] story_start: Story 066: Add prison building type
+[2026-03-04 23:29:47 UTC] deploy_ok: Story 066 deployed: Healthy after 0.1s
+[2026-03-04 23:29:52 UTC] story_done: Story 066 complete: Add prison building type
+[2026-03-04 23:29:53 UTC] story_start: Story 067: Add graveyard building type

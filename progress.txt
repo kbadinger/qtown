@@ -356,3 +356,8 @@
 - **Non-obvious State Coupling**: The prison building type isn't just a static label; it implicitly triggers the `Incarceration` mechanic, requiring careful checks in the `BuildingManager` to prevent invalid interactions (e.g., trying to trade goods with a locked facility).
 - **Codebase Pattern**: New building types follow a strict "Registry-First" convention: define the enum in `BuildingTypes.cs`, register the prefab in `BuildingFactory`, and finally add the specific logic handler in `BuildingBehavior`. Skipping the factory registration causes silent runtime failures.
 - **Correction**: Initially attempted to hardcode prison-specific logic directly in the base `Building` class; refactored to use a dedicated `PrisonBehavior` script to maintain separation of concerns and avoid bloating the base class with conditional checks.
+
+--- Story 067: Add graveyard building type (attempts: 1, 2026-03-04 18:33) ---
+- **Non-obvious State Dependencies**: The graveyard building type requires a specific `is_active` flag check in the `BuildingManager` that wasn't documented; without it, the building renders but fails to trigger the "soul collection" logic during the nightly cycle.
+- **Codebase Pattern**: New building types must extend `BaseBuilding` and explicitly register their `interaction_radius` in the `WorldConfig` JSON, rather than defining it in the class constructor, to ensure pathfinding agents recognize the zone.
+- **Correction**: Initially placed the graveyard's unique texture in the shared `assets/structures` folder, causing a naming collision with the crypt; moved it to `assets/structures/death` and updated the sprite loader to handle the new sub-directory prefix.

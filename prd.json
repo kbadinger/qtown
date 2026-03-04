@@ -1202,7 +1202,7 @@
         "asset"
       ],
       "priority": 66,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
@@ -1221,8 +1221,8 @@
         "asset"
       ],
       "priority": 67,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "068",
