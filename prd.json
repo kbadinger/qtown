@@ -767,25 +767,26 @@
         "security"
       ],
       "priority": 44,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
       "id": "045",
       "title": "PRD conversion",
-      "description": "Add POST /api/features/{id}/to-prd to features router. Requires admin auth. Sets prd_title, prd_description, prd_priority fields on Feature model. Changes status to 'published'. Returns updated feature.",
+      "description": "Add POST /api/features/{id}/to-prd to the features router. Requires admin auth. Request body accepts: story_id (str), title (str), description (str), test_file (str). Maps these to Feature model fields: prd_story_id=story_id, prd_title=title, prd_description=description, prd_test_file=test_file. Changes feature status to 'published'. Only approved features can be converted (return 400 if not approved). Returns the full updated feature object including prd_story_id.",
       "acceptance": "Test: admin converts approved feature to PRD, status='published', prd_title is set. Test: converting pending feature returns 400. Test: non-admin returns 401/403.",
       "test_file": "tests/test_features.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/features.py"
       ],
       "tags": [
         "api",
         "security"
       ],
       "priority": 45,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "046",
@@ -2446,7 +2447,8 @@
       "acceptance": "Test: GET /features returns HTML with form element. Test: form has title and description inputs. Test: form action targets /api/features.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/features.py"
       ],
       "tags": [
         "template",
@@ -2463,7 +2465,8 @@
       "acceptance": "Test: GET /features shows feature list. Test: each feature has vote button. Test: vote count displayed.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/features.py"
       ],
       "tags": [
         "template",
@@ -2497,7 +2500,8 @@
       "acceptance": "Test: GET /admin/features with admin shows pending features. Test: approve button present. Test: to-prd button present.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/features.py"
       ],
       "tags": [
         "template",
@@ -2598,7 +2602,8 @@
       "acceptance": "Test: admin panel has tick button. Test: clicking triggers POST /api/tick. Test: auto-tick toggle present.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/world.py"
       ],
       "tags": [
         "api"
@@ -2662,7 +2667,8 @@
       "acceptance": "Test: ?page=1&per_page=5 returns 5 items. Test: total reflects actual count. Test: pages calculated correctly. Test: page beyond range returns empty items.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/features.py"
       ],
       "tags": [
         "api"
@@ -2678,7 +2684,8 @@
       "acceptance": "Test: /api/npcs?role=farmer returns only farmers. Test: /api/buildings?type=food returns only food buildings. Test: invalid filter returns all.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/npcs.py"
       ],
       "tags": [
         "api"
@@ -2694,7 +2701,8 @@
       "acceptance": "Test: /api/npcs?sort=gold&order=desc returns richest first. Test: default sort is by id asc. Test: invalid sort field uses default.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/npcs.py"
       ],
       "tags": [
         "api"
@@ -2710,7 +2718,8 @@
       "acceptance": "Test: /api/npcs?q=farm returns farmer NPCs. Test: case-insensitive search works. Test: no match returns empty list.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/npcs.py"
       ],
       "tags": [
         "api"
@@ -2838,7 +2847,8 @@
       "acceptance": "Test: /api/world returns in under 200ms with 2500 tiles. Test: ?full=true returns all tiles. Test: ETag header present.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/world.py"
       ],
       "tags": [
         "api"
@@ -2854,7 +2864,8 @@
       "acceptance": "Test: second GET /api/stats within 5s returns same data. Test: POST /api/tick invalidates cache. Test: Cache-Control header present.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/buildings.py"
       ],
       "tags": [
         "api"
@@ -3673,7 +3684,8 @@
       "test_file": "tests/test_buildings.py",
       "context_files": [
         "engine/models.py",
-        "engine/simulation.py"
+        "engine/simulation.py",
+        "engine/routers/buildings.py"
       ],
       "tags": [
         "simulation",
@@ -3778,7 +3790,8 @@
       "acceptance": "The isometric grid changes color tint based on time of day. Night is visibly darker with star particles. Morning has a warm glow. HUD shows sun or moon icon. Transitions are smooth, not instant.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/static/js/town.js"
+        "engine/static/js/town.js",
+        "engine/routers/world.py"
       ],
       "tags": [
         "template"

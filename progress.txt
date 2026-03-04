@@ -261,3 +261,8 @@
 - **Tricky Logic**: The approval workflow required careful handling of race conditions where a user might attempt to edit a record while an admin is simultaneously reviewing it; adding a version check on the `status` field was necessary to prevent stale updates.
 - **Codebase Patterns**: This project strictly separates authorization logic from business logic by using a dedicated `Policy` service for role checks, rather than scattering `if (user.isAdmin)` guards throughout the controllers.
 - **Correction**: Initially, I attempted to trigger the approval notification via a synchronous call in the controller, which caused timeouts under load; I corrected this by moving the notification dispatch to a background job queue.
+
+--- Story 045: PRD conversion (attempts: 1, 2026-03-03 23:12) ---
+*   **Non-obvious complexity**: The PRD-to-implementation mapping required careful handling of implicit state transitions; the source text often omitted edge-case behaviors that needed to be explicitly defined in the code logic before execution.
+*   **Codebase patterns**: Discovered a strict separation between "domain primitives" (pure logic) and "infrastructure adapters" (I/O), where all external data ingestion must pass through a normalized `PRDParser` interface before reaching business logic.
+*   **Correction made**: Initially attempted to parse nested requirements recursively in a single pass, which caused stack overflow on deep structures; corrected by switching to an iterative queue-based approach with explicit depth limits.

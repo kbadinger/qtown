@@ -35,6 +35,13 @@ class FeatureResponse(BaseModel):
         from_attributes = True
 
 
+class PRDConversion(BaseModel):
+    story_id: str = Field(..., min_length=1, max_length=10)
+    title: str = Field(..., min_length=1, max_length=200)
+    description: str = Field(..., min_length=1)
+    test_file: str = Field(..., min_length=1, max_length=200)
+
+
 @router.get("/")
 def list_features(db: Session = Depends(get_db)):
     from engine.models import Feature
@@ -190,4 +197,44 @@ def reject_feature(
         "title": feature.title,
         "status": feature.status,
         "vote_count": feature.vote_count,
+    }
+
+
+@router.post("/{feature_id}/to-prd", status_code=200)
+def convert_to_prd(
+    feature_id: int,
+    data: PRDConversion,
+    db: Session = Depends(get_db),
+    _admin: str = Depends(require_admin),
+):
+    from engine.models import Feature
+    feature = db.query(Feature).filter_by(id=feature_id).first()
+    if not feature:
+        raise HTTPException(status_code=404, detail="Feature not found")
+
+    if feature.status != "approved":
+        raise HTTPException(status_code=400, detail="Only approved features can be converted to PRD")
+
+    feature.prd_story_id = data.story_id
+    feature.prd_title = data.title
+    feature.prd_description = data.description
+    feature.prd_test_file = data.test_file
+    feature.status = "published"
+
+    db.commit()
+    db.refresh(feature)
+
+    return {
+        "id": feature.id,
+        "title": feature.title,
+        "description": feature.description,
+        "submitted_by_ip": feature.submitted_by_ip,
+        "status": feature.status,
+        "vote_count": feature.vote_count,
+        "prd_story_id": feature.prd_story_id,
+        "prd_title": feature.prd_title,
+        "prd_description": feature.prd_description,
+        "prd_test_file": feature.prd_test_file,
+        "created_at": feature.created_at.isoformat(),
+        "updated_at": feature.updated_at.isoformat(),
     }
