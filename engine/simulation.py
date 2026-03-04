@@ -27,6 +27,7 @@ BUILDING_TYPES = [
     'mine',
     'lumber_mill',
     'fishing_dock',
+    'guard_tower',
 ]
 
 
@@ -762,15 +763,15 @@ def process_tick(db: Session) -> None:
     """Advance the simulation by one tick.
     
     Processes all systems in the correct order:
-    1. World State â€” increment tick counter, advance time of day, change day
-    2. Weather â€” update weather, apply weather effects
-    3. Needs Decay â€” hunger increases, energy decreases for all NPCs
-    4. NPC Decisions â€” each NPC decides what to do based on needs + utility
-    5. Movement â€” NPCs move toward their targets
-    6. Production â€” buildings produce resources
-    7. Economy â€” wages, trades, tax collection
-    8. Population â€” births, deaths, aging
-    9. Events â€” log notable events that occurred this tick
+    1. World State â€" increment tick counter, advance time of day, change day
+    2. Weather â€" update weather, apply weather effects
+    3. Needs Decay â€" hunger increases, energy decreases for all NPCs
+    4. NPC Decisions â€" each NPC decides what to do based on needs + utility
+    5. Movement â€" NPCs move toward their targets
+    6. Production â€" buildings produce resources
+    7. Economy â€" wages, trades, tax collection
+    8. Population â€" births, deaths, aging
+    9. Events â€" log notable events that occurred this tick
     """
     # 1. Update world state (time, weather)
     world_state = db.query(WorldState).first()
@@ -828,6 +829,7 @@ def process_tick(db: Session) -> None:
     produce_mine_resources(db)  # Mine production
     produce_lumber_mill_resources(db)  # Lumber Mill production
     produce_fishing_dock_resources(db)  # Fishing Dock production
+    produce_guard_tower_resources(db)  # Guard Tower production
     process_hospital(db)  # Hospital healing
     process_tavern(db)  # Tavern effects
     
@@ -1244,3 +1246,50 @@ def produce_fishing_dock_resources(db: Session) -> None:
                 building_id=building.id
             )
             db.add(new_fish)
+
+
+def seed_guard_tower(db: Session) -> None:
+    """Seed a guard tower building into the town.
+
+    Creates 1 guard tower building at coordinates (48, 48).
+    Idempotent - will not create if one already exists.
+    """
+    existing_towers = db.query(Building).filter(Building.building_type == 'guard_tower').count()
+    if existing_towers > 0:
+        return
+    
+    # Create guard tower at (48, 48)
+    guard_tower = Building(
+        name="Town Guard Tower",
+        building_type="guard_tower",
+        x=48,
+        y=48,
+        capacity=5
+    )
+    db.add(guard_tower)
+    db.commit()
+
+
+def produce_guard_tower_resources(db: Session) -> None:
+    """Produce resources for buildings of type 'guard_tower'.
+    
+    Guard Tower produces 5 Defense per tick.
+    """
+    guard_tower_buildings = db.query(Building).filter(Building.building_type == 'guard_tower').all()
+    
+    for building in guard_tower_buildings:
+        # Check if Defense resource exists at this building
+        defense_resource = db.query(Resource).filter(
+            Resource.name == 'Defense',
+            Resource.building_id == building.id
+        ).first()
+        
+        if defense_resource:
+            defense_resource.quantity += 5
+        else:
+            new_defense = Resource(
+                name='Defense',
+                quantity=5,
+                building_id=building.id
+            )
+            db.add(new_defense)

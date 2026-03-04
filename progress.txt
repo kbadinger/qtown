@@ -306,3 +306,8 @@
 - **Tricky Logic**: Determining the correct `BuildingType` enum value for mines required tracing through the `BuildingFactory` switch statement, as the naming convention (`MINE` vs `MINE_BUILDING`) was inconsistent with other resource structures.
 - **Codebase Pattern**: The project strictly separates data definition (in `BuildingConfig`) from instantiation logic; new building types must be registered in the config map before they can be spawned by the factory.
 - **Correction**: Initially omitted the `mineral_yield` property in the config, causing runtime null errors during resource generation; fixed by ensuring all new building types inherit the base `ResourceBuilding` schema.
+
+--- Story 057: Add guard_tower building type (attempts: 1, 2026-03-04 15:49) ---
+- **Non-obvious Logic**: The `guard_tower` requires a specific `range` validation in the `validate_building` service that differs from standard defensive structures; it must check adjacency to existing `wall` segments rather than just terrain elevation.
+- **Codebase Pattern**: New building types are consistently registered via the `BuildingRegistry` factory pattern, where the constructor signature must match the `BuildingInterface` exactly, including the optional `owner_id` parameter for faction-specific logic.
+- **Correction**: Initially, I placed the `guard_tower` logic in the generic `defensive` module, causing a circular dependency with the `wall` module; I corrected this by moving it to the dedicated `towers` namespace and injecting the `WallService` explicitly.

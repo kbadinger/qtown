@@ -1031,8 +1031,8 @@
         "asset"
       ],
       "priority": 57,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "058",
