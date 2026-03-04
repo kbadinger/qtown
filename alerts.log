@@ -296,3 +296,4 @@ Ralph stopped — needs human debugging
 [2026-03-04 05:19:40 UTC] stop: Ralph offline — 45/215 stories complete
 [2026-03-04 13:37:13 UTC] start: Ralph online — 46/215 stories complete
 [2026-03-04 13:37:14 UTC] story_start: Story 047: Add blacksmith building type
+[2026-03-04 13:43:15 UTC] WARN deploy_fail: Story 047 deploy failed — starting fix cycle
