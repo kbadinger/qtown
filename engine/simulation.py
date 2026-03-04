@@ -31,6 +31,7 @@ BUILDING_TYPES = [
     "fountain",
     "well",
     "warehouse",
+    "bank"
 ]
 
 
@@ -836,6 +837,7 @@ def process_tick(db: Session) -> None:
     produce_gate_resources(db)  # Gate production
     produce_well_resources(db)  # Well production
     produce_warehouse_resources(db)  # Warehouse production
+    produce_bank_resources(db)  # Bank production
     process_hospital(db)  # Hospital healing
     process_tavern(db)  # Tavern effects
     
@@ -1509,3 +1511,50 @@ def produce_warehouse_resources(db: Session) -> None:
                 building_id=building.id
             )
             db.add(new_storage)
+
+
+def seed_bank(db: Session) -> None:
+    """Seed a bank building into the town.
+
+    Creates 1 bank building at coordinates (51, 51).
+    Idempotent - will not create if one already exists.
+    """
+    existing_banks = db.query(Building).filter(Building.building_type == 'bank').count()
+    if existing_banks > 0:
+        return
+    
+    # Create bank at (51, 51)
+    bank = Building(
+        name="Town Bank",
+        building_type="bank",
+        x=51,
+        y=51,
+        capacity=5
+    )
+    db.add(bank)
+    db.commit()
+
+
+def produce_bank_resources(db: Session) -> None:
+    """Produce resources for buildings of type 'bank'.
+    
+    Bank produces 10 Gold per tick.
+    """
+    bank_buildings = db.query(Building).filter(Building.building_type == 'bank').all()
+    
+    for building in bank_buildings:
+        # Check if Gold resource exists at this building
+        gold_resource = db.query(Resource).filter(
+            Resource.name == 'Gold',
+            Resource.building_id == building.id
+        ).first()
+        
+        if gold_resource:
+            gold_resource.quantity += 10
+        else:
+            new_gold = Resource(
+                name='Gold',
+                quantity=10,
+                building_id=building.id
+            )
+            db.add(new_gold)
