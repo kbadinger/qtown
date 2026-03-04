@@ -895,3 +895,61 @@ def test_s070_seed_watchtower(db):
 
     seed_watchtower(db)
     assert db.query(Building).filter_by(building_type="watchtower").count() == 1
+
+
+# ---------------------------------------------------------------------------
+# Story 209: Building level and upgrade system
+# ---------------------------------------------------------------------------
+
+
+def test_s209_building_has_level_field(db):
+    """Story 209: Building should have a level field defaulting to 1."""
+    from engine.models import Building
+
+    b = Building(name="Farm", building_type="farm", x=0, y=0)
+    db.add(b)
+    db.flush()
+
+    assert hasattr(b, "level"), "Building must have a 'level' field"
+    assert b.level == 1, f"Building level should default to 1, got {b.level}"
+
+
+def test_s209_upgrade_building_increases_level(db):
+    """Story 209: upgrade_building() increases building level by 1."""
+    from engine.models import Building
+    from engine.simulation import upgrade_building
+
+    b = Building(name="Farm", building_type="farm", x=0, y=0)
+    db.add(b)
+    db.flush()
+
+    level_before = b.level
+    upgrade_building(db, b.id)
+    db.flush()
+    db.refresh(b)
+
+    assert b.level == level_before + 1, (
+        f"upgrade_building should increase level by 1: was {level_before}, "
+        f"now {b.level}"
+    )
+
+
+def test_s209_upgrade_building_api(client, admin_headers):
+    """Story 209: POST /api/buildings/{id}/upgrade with admin auth works."""
+    # Create a building first
+    resp = client.post(
+        "/api/buildings",
+        json={"name": "TestUpgrade", "building_type": "farm", "x": 5, "y": 5},
+        headers=admin_headers,
+    )
+    assert resp.status_code in (200, 201), f"Failed to create building: {resp.text}"
+    building_id = resp.json()["id"]
+
+    # Upgrade it
+    resp = client.post(
+        f"/api/buildings/{building_id}/upgrade",
+        headers=admin_headers,
+    )
+    assert resp.status_code in (200, 201), (
+        f"POST /api/buildings/{building_id}/upgrade failed: {resp.text}"
+    )

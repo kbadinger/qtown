@@ -40,7 +40,8 @@
       "acceptance": "Test imports NPC from engine.models, creates one, asserts all fields exist. gold defaults to 0, hunger to 0, energy to 100.",
       "test_file": "tests/test_npcs.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/simulation.py"
       ],
       "tags": [
         "simulation",
@@ -93,7 +94,8 @@
       "acceptance": "Test GET /api/world returns 200 with JSON containing 'tiles', 'buildings', 'npcs' keys, each as lists.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/world.py"
       ],
       "tags": [
         "api"
@@ -110,7 +112,8 @@
       "test_file": "tests/test_api.py",
       "context_files": [
         "engine/models.py",
-        "engine/simulation.py"
+        "engine/simulation.py",
+        "engine/routers/world.py"
       ],
       "tags": [
         "api",
@@ -127,7 +130,8 @@
       "acceptance": "Test GET /api/buildings returns 200 with a JSON list. After seeding, list length >= 3.",
       "test_file": "tests/test_buildings.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/buildings.py"
       ],
       "tags": [
         "api",
@@ -144,7 +148,8 @@
       "acceptance": "Test POST with admin creates building and returns it. Test POST without admin returns 401/403. Test missing fields returns 422.",
       "test_file": "tests/test_buildings.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/buildings.py"
       ],
       "tags": [
         "api",
@@ -161,7 +166,9 @@
       "acceptance": "Test GET /api/npcs returns 200 with a JSON list. After seeding, list length >= 5.",
       "test_file": "tests/test_npcs.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/simulation.py",
+        "engine/routers/npcs.py"
       ],
       "tags": [
         "api",
@@ -178,7 +185,9 @@
       "acceptance": "Test POST with admin creates NPC and returns it. Test POST without admin returns 401/403. Test missing fields returns 422.",
       "test_file": "tests/test_npcs.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/simulation.py",
+        "engine/routers/npcs.py"
       ],
       "tags": [
         "api",
@@ -195,7 +204,8 @@
       "acceptance": "Test creates an NPC with gold=100, asserts npc.gold == 100. Test creates NPC with default, asserts gold == 0.",
       "test_file": "tests/test_economy.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/simulation.py"
       ],
       "tags": [
         "economy",
@@ -230,7 +240,9 @@
       "acceptance": "Test creates a transaction, GET /api/transactions returns it. Test transaction has sender_id, receiver_id, amount fields.",
       "test_file": "tests/test_economy.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/simulation.py",
+        "engine/routers/transactions.py"
       ],
       "tags": [
         "api",
@@ -412,7 +424,8 @@
       "acceptance": "Test: init_world_state creates exactly 1 WorldState row. Second call does not create another. tick defaults to 0, day to 1.",
       "test_file": "tests/test_tick.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/simulation.py"
       ],
       "tags": [
         "simulation"
@@ -465,7 +478,8 @@
       "acceptance": "Test imports Resource, creates one with name='Food', quantity=50, building_id set. Asserts all fields stored correctly.",
       "test_file": "tests/test_economy.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/simulation.py"
       ],
       "tags": [
         "economy",
@@ -574,7 +588,8 @@
       "acceptance": "Test imports Event, creates one with event_type='test', description='something happened', tick=1. Asserts severity defaults to 'info'.",
       "test_file": "tests/test_events.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/simulation.py"
       ],
       "tags": [
         "simulation"
@@ -642,7 +657,8 @@
       "acceptance": "Test: create 3 events, GET /api/events returns all 3. Test ?limit=1 returns only 1. Test events are ordered newest first.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/events.py"
       ],
       "tags": [
         "api"
@@ -658,7 +674,8 @@
       "acceptance": "Test: seed data, GET /api/stats returns 200 with all 8 keys. population matches NPC count. total_gold matches sum of NPC gold.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/stats.py"
       ],
       "tags": [
         "api"
@@ -728,7 +745,8 @@
       "acceptance": "Test: POST creates feature with title. GET returns list including it. Test: empty title returns 422. Test: vote_count defaults to 0.",
       "test_file": "tests/test_features.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/features.py"
       ],
       "tags": [
         "api"
@@ -2277,7 +2295,8 @@
       "acceptance": "Test: GET /grid returns 200 with grid container. Test: grid has representation of tiles. Test: buildings are displayed.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/pages.py"
       ],
       "tags": [
         "template",
@@ -2294,7 +2313,8 @@
       "acceptance": "Test: GET /buildings/1 returns 200 with building name. Test: assigned NPCs listed. Test: non-existent building returns 404.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/pages.py"
       ],
       "tags": [
         "template",
@@ -2308,10 +2328,11 @@
       "id": "130",
       "title": "NPC list page",
       "description": "Add /npcs page template listing all NPCs with name, role, hunger, energy, gold. HTMX filtering by role.",
-      "acceptance": "Test: GET /npcs/1 returns 200 with NPC name. Test: stats displayed. Test: non-existent NPC returns 404.",
+      "acceptance": "Test: GET /npcs (Accept: text/html) returns HTML table. Test: all seeded NPCs appear. Test: table has sortable headers.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/pages.py"
       ],
       "tags": [
         "template",
@@ -2325,10 +2346,11 @@
       "id": "131",
       "title": "NPC detail page",
       "description": "Add /npcs/{id} detail page showing NPC stats, personality, current activity, home/work buildings.",
-      "acceptance": "Test: GET /npcs (Accept: text/html) returns HTML table. Test: all seeded NPCs appear. Test: table has sortable headers.",
+      "acceptance": "Test: GET /npcs/1 returns 200 with NPC name. Test: stats displayed. Test: non-existent NPC returns 404.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/pages.py"
       ],
       "tags": [
         "template",
@@ -2345,7 +2367,8 @@
       "acceptance": "Test: GET /buildings (Accept: text/html) returns HTML table. Test: all seeded buildings appear. Test: occupancy column shows count.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/pages.py"
       ],
       "tags": [
         "template",
@@ -2379,7 +2402,8 @@
       "acceptance": "Test: GET /population returns 200 with population data. Test: role distribution displayed. Test: age distribution displayed.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/charts.py"
       ],
       "tags": [
         "template",
@@ -2396,7 +2420,8 @@
       "acceptance": "Test: GET /events returns HTML with event list. Test: events ordered by tick descending. Test: severity has color indicator.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/pages.py"
       ],
       "tags": [
         "template",
@@ -2430,7 +2455,8 @@
       "acceptance": "Test: GET /happiness returns 200 with happiness data. Test: average happiness displayed. Test: NPC happiness list shown.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/pages.py"
       ],
       "tags": [
         "template",
@@ -2448,7 +2474,8 @@
       "test_file": "tests/test_api.py",
       "context_files": [
         "engine/models.py",
-        "engine/routers/features.py"
+        "engine/routers/features.py",
+        "engine/routers/pages.py"
       ],
       "tags": [
         "template",
@@ -2466,7 +2493,8 @@
       "test_file": "tests/test_api.py",
       "context_files": [
         "engine/models.py",
-        "engine/routers/features.py"
+        "engine/routers/features.py",
+        "engine/routers/pages.py"
       ],
       "tags": [
         "template",
@@ -2483,7 +2511,8 @@
       "acceptance": "Test: GET /admin with admin auth returns 200 with admin panel. Test: without admin returns 401/403. Test: tick controls present.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/admin.py"
       ],
       "tags": [
         "template",
@@ -2501,7 +2530,8 @@
       "test_file": "tests/test_api.py",
       "context_files": [
         "engine/models.py",
-        "engine/routers/features.py"
+        "engine/routers/features.py",
+        "engine/routers/admin.py"
       ],
       "tags": [
         "template",
@@ -2518,7 +2548,8 @@
       "acceptance": "Test: GET /costs returns 200 with cost data display. Test: table has model and cost columns. Test: running total shown.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/pages.py"
       ],
       "tags": [
         "template",
@@ -2535,7 +2566,8 @@
       "acceptance": "Test: GET /about returns 200 with project description. Test: page contains 'Qwen Town'. Test: technologies mentioned.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/pages.py"
       ],
       "tags": [
         "template",
@@ -2552,7 +2584,8 @@
       "acceptance": "Test: GET /api-docs returns 200 with endpoint list. Test: /api/world endpoint documented. Test: auth requirements shown.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/pages.py"
       ],
       "tags": [
         "template",
@@ -2569,7 +2602,8 @@
       "acceptance": "Test: GET /changelog returns 200. Test: completed stories shown. Test: stories grouped by phase.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/pages.py"
       ],
       "tags": [
         "template",
@@ -2586,7 +2620,8 @@
       "acceptance": "Test: default speed is 1.0. Test: admin can set speed to 2.0. Test: speed=2.0 doubles hunger/energy decay. Test: non-admin returns 403.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/admin.py"
       ],
       "tags": [
         "api"
@@ -2619,7 +2654,8 @@
       "acceptance": "Test: after reset, world state is fresh. Test: tick is 0, NPCs are seeded, buildings are seeded. Test: non-admin returns 403.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/admin.py"
       ],
       "tags": [
         "api"
@@ -2635,7 +2671,8 @@
       "acceptance": "Test: export returns all data sections. Test: NPC count matches. Test: building count matches. Test: non-admin returns 403.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/admin.py"
       ],
       "tags": [
         "api"
@@ -2651,7 +2688,8 @@
       "acceptance": "Test: export then import restores same state. Test: invalid JSON returns 422. Test: NPC count matches after import. Test: non-admin returns 403.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/admin.py"
       ],
       "tags": [
         "api"
@@ -2668,7 +2706,8 @@
       "test_file": "tests/test_api.py",
       "context_files": [
         "engine/models.py",
-        "engine/routers/features.py"
+        "engine/routers/features.py",
+        "engine/routers/npcs.py"
       ],
       "tags": [
         "api"
@@ -2735,7 +2774,8 @@
       "acceptance": "Test: feed_all with amount=20 reduces all NPC hunger by 20. Test: pay_all gives N gold to each NPC. Test: non-admin returns 403.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/admin.py"
       ],
       "tags": [
         "api"
@@ -2751,7 +2791,8 @@
       "acceptance": "Test: POST /api/buildings with x=100 returns 422. Test: POST /api/npcs with empty name returns 422. Test: error response has detail message.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/buildings.py"
       ],
       "tags": [
         "api"
@@ -2913,7 +2954,8 @@
       "acceptance": "Test: GET /api/costs returns 200 with JSON. Test: response contains cost data or empty object. Test: content-type is application/json.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/costs.py"
       ],
       "tags": [
         "api",
@@ -2947,7 +2989,8 @@
       "acceptance": "Test: GET / returns HTML with progress counter. Test: counter shows X/200 format. Test: progress bar element present.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/pages.py"
       ],
       "tags": [
         "api",
@@ -2964,7 +3007,8 @@
       "acceptance": "Test: GET / returns HTML with timeline chart container. Test: chart has data attributes. Test: axis labels present.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/pages.py"
       ],
       "tags": [
         "api",
@@ -2981,7 +3025,8 @@
       "acceptance": "Test: GET /api/metrics returns 200 with JSON array. Test: each element has expected fields. Test: missing file returns empty array.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/costs.py"
       ],
       "tags": [
         "api",
@@ -2998,7 +3043,8 @@
       "acceptance": "Test: POST creates new story with correct next ID. Test: story appears in prd.json. Test: non-admin returns 403.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/costs.py"
       ],
       "tags": [
         "api",
@@ -3015,7 +3061,8 @@
       "acceptance": "Test: GET /admin/stories returns HTML table of stories. Test: filter controls present. Test: status column shows pending/completed.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/admin.py"
       ],
       "tags": [
         "api",
@@ -3444,7 +3491,8 @@
       "test_file": "tests/test_npcs.py",
       "context_files": [
         "engine/models.py",
-        "engine/simulation.py"
+        "engine/simulation.py",
+        "engine/routers/newspapers.py"
       ],
       "tags": [
         "simulation",
@@ -3462,7 +3510,8 @@
       "test_file": "tests/test_npcs.py",
       "context_files": [
         "engine/models.py",
-        "engine/simulation.py"
+        "engine/simulation.py",
+        "engine/routers/milestones.py"
       ],
       "tags": [
         "simulation",
@@ -3480,7 +3529,8 @@
       "test_file": "tests/test_npcs.py",
       "context_files": [
         "engine/models.py",
-        "engine/simulation.py"
+        "engine/simulation.py",
+        "engine/routers/achievements.py"
       ],
       "tags": [
         "simulation",
@@ -3498,7 +3548,8 @@
       "test_file": "tests/test_npcs.py",
       "context_files": [
         "engine/models.py",
-        "engine/simulation.py"
+        "engine/simulation.py",
+        "engine/routers/visitors.py"
       ],
       "tags": [
         "simulation",
@@ -3516,7 +3567,8 @@
       "test_file": "tests/test_npcs.py",
       "context_files": [
         "engine/models.py",
-        "engine/simulation.py"
+        "engine/simulation.py",
+        "engine/routers/anthem.py"
       ],
       "tags": [
         "simulation",
@@ -3591,7 +3643,8 @@
       "test_file": "tests/test_events.py",
       "context_files": [
         "engine/models.py",
-        "engine/simulation.py"
+        "engine/simulation.py",
+        "engine/routers/newspapers.py"
       ],
       "tags": [
         "simulation",
@@ -3610,7 +3663,8 @@
       "test_file": "tests/test_events.py",
       "context_files": [
         "engine/models.py",
-        "engine/simulation.py"
+        "engine/simulation.py",
+        "engine/routers/achievements.py"
       ],
       "tags": [
         "simulation",
@@ -3665,7 +3719,8 @@
       "acceptance": "GET /api/dialogues returns JSON list. The dialogue feed partial renders chat-style bubbles with NPC names. Feed auto-updates via HTMX.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/dialogues.py"
       ],
       "tags": [
         "api",
@@ -3703,8 +3758,7 @@
       "acceptance": "generate_upgraded_sprite creates level-variant sprites. PixiJS renderer checks for {type}_lvl{level}.png before falling back to {type}.png. At least level 1 and level 3 variants look visually different.",
       "test_file": "tests/test_buildings.py",
       "context_files": [
-        "engine/models.py",
-        "ralph/asset_gen.py"
+        "engine/models.py"
       ],
       "tags": [
         "building",
@@ -3712,7 +3766,7 @@
         "template"
       ],
       "priority": 210,
-      "status": "pending",
+      "status": "skipped",
       "attempts": 0
     },
     {
@@ -3722,7 +3776,8 @@
       "acceptance": "WebSocket endpoint accepts connections. Visitor count increments on connect, decrements on disconnect. GET /api/visitors returns current count. Multiple simultaneous connections show correct count.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py"
+        "engine/models.py",
+        "engine/routers/ws.py"
       ],
       "tags": [
         "api",
@@ -3740,7 +3795,8 @@
       "test_file": "tests/test_events.py",
       "context_files": [
         "engine/models.py",
-        "engine/simulation.py"
+        "engine/simulation.py",
+        "engine/routers/triggers.py"
       ],
       "tags": [
         "api",

@@ -367,6 +367,11 @@ def run_story(story: dict) -> bool:
             passed = True
             break
 
+        # Detect "no tests collected" — bail immediately, this is a scaffolding problem
+        if "NO TESTS COLLECTED" in test_output:
+            alert("critical", f"Story {story_id}: NO TESTS EXIST — cannot proceed\nQwen cannot fix this. Check tests/test_*.py for test_s{story_id}_* functions.")
+            return False
+
         # Loop detection — extract error signature (first failure line)
         error_sig = ""
         for line in test_output.split("\n"):
@@ -435,9 +440,11 @@ def run_story(story: dict) -> bool:
         if not written:
             print("  No files written — Qwen may have returned empty/invalid output")
             log_metric(story_id, attempt, False, gpu_time, "No files written", tokens_in, tokens_out)
-            # Don't count empty output toward loop detection — it's not a code error
-            if recent_errors:
-                recent_errors.pop()  # Remove the test error we just added
+            # Track consecutive empty outputs — 3 in a row means Qwen can't parse the story
+            recent_errors.append("NO_FILES_WRITTEN")
+            if len(recent_errors) >= 3 and all(e == "NO_FILES_WRITTEN" for e in recent_errors[-3:]):
+                alert("loop", f"Story {story_id}: Qwen returned empty/unparseable output 3x in a row — giving up")
+                return False
             continue
 
         # 6. Re-run tests
@@ -484,6 +491,7 @@ def run_story(story: dict) -> bool:
         git_commit(f"[Ralph] Story {story_id}: {story['title']}")
     except subprocess.CalledProcessError as e:
         print(f"  [{_ts()}] Git commit failed: {e}")
+        warn("git_fail", f"Story {story_id}: git commit failed: {e}\nContinuing without commit.")
 
     # 9. Deploy pipeline
     print(f"  [{_ts()}] Deploying...")
