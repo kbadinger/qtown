@@ -120,7 +120,7 @@
   const textureCache = {};
   const failedTextures = new Set();
   const loadingTextures = new Set();
-  const ASSET_VERSION = "v13";  // Cache-buster for CDN/Cloudflare
+  const ASSET_VERSION = "v14";  // Cache-buster for CDN/Cloudflare
 
   function tryLoadTexture(url) {
     if (textureCache[url]) return textureCache[url];
@@ -225,10 +225,8 @@
         var center2x2 = toScreen(b.x + 1, b.y + 1);
         sprite.x = center2x2.x;
         sprite.y = center2x2.y + TILE_H / 2;
-        // Civic/town hall sprite has compact base — scale up slightly
-        var scale = bType === "civic" ? 2.4 : 2.0;
-        sprite.width = TILE_W * scale;
-        sprite.height = TILE_W * scale;
+        sprite.width = TILE_W * 2.0;
+        sprite.height = TILE_W * 2.0;
       }
 
       if (!sprite || failedTextures.has(spriteUrl)) {
