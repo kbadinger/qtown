@@ -346,3 +346,8 @@
 - **Non-obvious constraint**: The `Building` entity requires a specific `type` enum value to trigger the correct rendering pipeline; simply adding the geometry wasn't enough without updating the `BuildingFactory` switch statement.
 - **Codebase pattern**: New building types must be registered in `config/buildings.json` first, then the corresponding logic added to `services/building-service.ts` to maintain the separation of data and logic.
 - **Correction**: Initially attempted to hardcode the theater's capacity in the component, but realized the codebase enforces dynamic capacity calculation based on `area` and `type` in the service layer to ensure consistency across reports.
+
+--- Story 065: Add arena building type (attempts: 1, 2026-03-04 18:23) ---
+- **Tricky Logic**: Determining the correct `BuildingType` enum value for the arena required checking the `isArena` flag in the `BuildingConfig` rather than relying on the generic `type` field, which defaults to "Generic" for special structures.
+- **Codebase Pattern**: New building types must be registered in `BuildingRegistry` *before* the `WorldGenerator` runs; otherwise, the arena fails to instantiate during the initial map seed phase.
+- **Correction**: Initially attempted to hardcode arena dimensions in the `Arena` class, but corrected this to use the scalable `config.width` and `config.height` properties to maintain consistency with the existing dynamic sizing pattern used for other building types.

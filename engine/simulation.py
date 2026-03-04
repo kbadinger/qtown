@@ -13,30 +13,31 @@ Tile, NPC, Building, Resource, WorldState, Treasury, Event, Transaction
 
 # Building types available in the simulation
 BUILDING_TYPES = [
-    "residential",
-    "food",
-    "guard",
-    "market",
-    "religious",
-    "school",
-    "hospital",
-    "tavern",
-    "library",
-    "bakery",
-    "blacksmith",
-    "farm",
-    "church",
-    "mine",
-    "lumber_mill",
-    "fishing_dock",
-    "guard_tower",
-    "wall",
-    "gate",
-    "fountain",
-    "well",
-    "warehouse",
-    "bank",
-    "theater",
+    'residential',
+    'food',
+    'guard',
+    'market',
+    'religious',
+    'school',
+    'hospital',
+    'tavern',
+    'library',
+    'bakery',
+    'blacksmith',
+    'farm',
+    'church',
+    'mine',
+    'lumber_mill',
+    'fishing_dock',
+    'guard_tower',
+    'wall',
+    'gate',
+    'fountain',
+    'well',
+    'warehouse',
+    'bank',
+    'theater',
+    'arena',
 ]
 
 
@@ -1610,3 +1611,50 @@ def produce_theater_resources(db: Session) -> None:
                 building_id=building.id
             )
             db.add(new_art)
+
+
+def seed_arena(db: Session) -> None:
+    """Seed an arena building into the town.
+
+    Creates 1 arena building at coordinates (53, 53).
+    Idempotent - will not create if one already exists.
+    """
+    existing_arenas = db.query(Building).filter(Building.building_type == 'arena').count()
+    if existing_arenas > 0:
+        return
+    
+    # Create arena at (53, 53)
+    arena = Building(
+        name="Town Arena",
+        building_type="arena",
+        x=53,
+        y=53,
+        capacity=5
+    )
+    db.add(arena)
+    db.commit()
+
+
+def produce_arena_resources(db: Session) -> None:
+    """Produce resources for buildings of type 'arena'.
+    
+    Arena produces 3 Entertainment per tick.
+    """
+    arena_buildings = db.query(Building).filter(Building.building_type == 'arena').all()
+    
+    for building in arena_buildings:
+        # Check if Entertainment resource exists at this building
+        entertainment_resource = db.query(Resource).filter(
+            Resource.name == 'Entertainment',
+            Resource.building_id == building.id
+        ).first()
+        
+        if entertainment_resource:
+            entertainment_resource.quantity += 3
+        else:
+            new_entertainment = Resource(
+                name='Entertainment',
+                quantity=3,
+                building_id=building.id
+            )
+            db.add(new_entertainment)
