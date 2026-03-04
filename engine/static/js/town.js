@@ -110,29 +110,38 @@
   // -------------------------------------------------------------------------
 
   const textureCache = {};
-  const failedTextures = new Set();
+  const failedTextures = {};    // url → timestamp of last failure
   const loadingTextures = new Set();
-  const ASSET_VERSION = "v18";  // Cache-buster for CDN/Cloudflare
+  const ASSET_VERSION = "v20";  // Cache-buster for CDN/Cloudflare
+  const RETRY_INTERVAL = 10000; // Retry failed textures every 10s
 
   function tryLoadTexture(url) {
     if (textureCache[url]) return textureCache[url];
-    if (failedTextures.has(url)) return null;
-    if (loadingTextures.has(url)) return null;  // Still loading — use fallback
+    if (loadingTextures.has(url)) return null;
 
-    // Start async load with cache-buster
-    const bustUrl = url + "?" + ASSET_VERSION;
+    // Retry failed textures after RETRY_INTERVAL
+    if (failedTextures[url]) {
+      if (Date.now() - failedTextures[url] < RETRY_INTERVAL) return null;
+      delete failedTextures[url];  // Time to retry
+    }
+
+    // Start async load with cache-buster (add timestamp on retries to bypass CDN cache)
+    const bustUrl = url + "?" + ASSET_VERSION + "_" + Date.now();
     loadingTextures.add(url);
 
-    const tex = PIXI.Texture.from(bustUrl);
-    tex.baseTexture.on("loaded", () => {
-      textureCache[url] = tex;
+    // Use Image directly for reliable load/error events
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = function() {
+      textureCache[url] = PIXI.Texture.from(img);
       loadingTextures.delete(url);
-      needsRerender = true;  // Force re-render with loaded texture
-    });
-    tex.baseTexture.on("error", () => {
-      failedTextures.add(url);
+      needsRerender = true;
+    };
+    img.onerror = function() {
+      failedTextures[url] = Date.now();
       loadingTextures.delete(url);
-    });
+    };
+    img.src = bustUrl;
 
     return null;  // Use fallback until texture is confirmed loaded
   }
@@ -196,7 +205,7 @@
 
       let sprite = null;
       const tex = tryLoadTexture(spriteUrl);
-      if (tex && !failedTextures.has(spriteUrl)) {
+      if (tex && !failedTextures[spriteUrl]) {
         sprite = new PIXI.Sprite(tex);
         sprite.anchor.set(0.5, 1.0);
         // Building at (x,y) occupies 2x2 block: position at center of that block
@@ -207,7 +216,7 @@
         sprite.height = TILE_W * 2.0;
       }
 
-      if (!sprite || failedTextures.has(spriteUrl)) {
+      if (!sprite || failedTextures[spriteUrl]) {
         // Fallback: colored isometric box
         const color = BUILDING_COLORS[bType] || C.building;
         sprite = drawFallbackBuilding(pos.x, pos.y, color);
@@ -290,7 +299,7 @@
 
       let sprite = null;
       const tex = tryLoadTexture(spriteUrl);
-      if (tex && !failedTextures.has(spriteUrl)) {
+      if (tex && !failedTextures[spriteUrl]) {
         sprite = new PIXI.Sprite(tex);
         sprite.anchor.set(0.5, 1.0);
         sprite.x = pos.x;
@@ -299,7 +308,7 @@
         sprite.height = TILE_W * 0.6;
       }
 
-      if (!sprite || failedTextures.has(spriteUrl)) {
+      if (!sprite || failedTextures[spriteUrl]) {
         // Fallback: colored circle with glow
         sprite = drawFallbackNPC(pos.x, pos.y);
       }
