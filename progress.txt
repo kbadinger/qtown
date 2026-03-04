@@ -316,3 +316,8 @@
 - **Non-obvious enum handling**: Adding a new `Wall` building type required updating not just the data model, but also the `BuildingType` enum switch statements in the rendering and collision logic; missing one case caused silent failures in unit placement.
 - **Codebase pattern**: The project strictly separates building definitions (static properties like cost/size) from runtime instances (dynamic state like health/owner), meaning new types must be registered in the `BuildingFactory` to be instantiable.
 - **Correction**: Initially placed the wall's collision logic inside the generic `Building` class, which broke existing unit pathfinding; moved it to a dedicated `WallBehavior` strategy to maintain the open/closed principle.
+
+--- Story 059: Add gate building type (attempts: 1, 2026-03-04 16:02) ---
+- **Non-obvious gate logic**: The gate's `is_open` state must be explicitly synchronized with the `BuildingType` enum; simply adding the type wasn't enough without updating the `can_pass_through` check in the movement engine.
+- **Codebase convention**: New building types follow a strict "Enum → Config JSON → Logic Handler" pattern; skipping the JSON config entry causes the renderer to default to a generic placeholder sprite.
+- **Correction made**: Initially forgot to add the gate to the `buildable_types` whitelist in the UI controller, which prevented users from selecting it; fixed by ensuring the `BUILDABLE` flag is set in the base configuration.

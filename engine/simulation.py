@@ -13,22 +13,23 @@ Tile, NPC, Building, Resource, WorldState, Treasury, Event, Transaction
 
 # Building types available in the simulation
 BUILDING_TYPES = [
-    'civic',
-    'food',
-    'residential',
-    'bakery',
-    'blacksmith',
-    'farm',
-    'church',
-    'school',
-    'hospital',
-    'tavern',
-    'library',
-    'mine',
-    'lumber_mill',
-    'fishing_dock',
-    'guard_tower',
-    'wall'
+    "civic",
+    "food",
+    "residential",
+    "bakery",
+    "blacksmith",
+    "farm",
+    "church",
+    "school",
+    "hospital",
+    "tavern",
+    "library",
+    "mine",
+    "lumber_mill",
+    "fishing_dock",
+    "guard_tower",
+    "wall",
+    "gate",
 ]
 
 
@@ -1316,3 +1317,50 @@ def seed_wall(db: Session) -> None:
     )
     db.add(wall)
     db.commit()
+
+
+def seed_gate(db: Session) -> None:
+    """Seed a gate building into the town.
+
+    Creates 1 gate building at coordinates (50, 50).
+    Idempotent - will not create if one already exists.
+    """
+    existing_gates = db.query(Building).filter(Building.building_type == 'gate').count()
+    if existing_gates > 0:
+        return
+    
+    # Create gate at (50, 50)
+    gate = Building(
+        name="Town Gate",
+        building_type="gate",
+        x=50,
+        y=50,
+        capacity=5
+    )
+    db.add(gate)
+    db.commit()
+
+
+def produce_gate_resources(db: Session) -> None:
+    """Produce resources for buildings of type 'gate'.
+    
+    Gate produces 3 Security per tick.
+    """
+    gate_buildings = db.query(Building).filter(Building.building_type == 'gate').all()
+    
+    for building in gate_buildings:
+        # Check if Security resource exists at this building
+        security_resource = db.query(Resource).filter(
+            Resource.name == 'Security',
+            Resource.building_id == building.id
+        ).first()
+        
+        if security_resource:
+            security_resource.quantity += 3
+        else:
+            new_security = Resource(
+                name='Security',
+                quantity=3,
+                building_id=building.id
+            )
+            db.add(new_security)
