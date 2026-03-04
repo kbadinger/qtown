@@ -120,7 +120,7 @@
   const textureCache = {};
   const failedTextures = new Set();
   const loadingTextures = new Set();
-  const ASSET_VERSION = "v15";  // Cache-buster for CDN/Cloudflare
+  const ASSET_VERSION = "v16";  // Cache-buster for CDN/Cloudflare
 
   function tryLoadTexture(url) {
     if (textureCache[url]) return textureCache[url];
@@ -216,17 +216,18 @@
       const name = b.name || bType;
       const spriteUrl = `/static/assets/buildings/${bType}.png`;
 
-      // DEBUG: draw 2x2 footprint diamond
-      const topPt    = toScreen(b.x, b.y);
-      const rightPt  = toScreen(b.x + 2, b.y);
-      const bottomPt = toScreen(b.x + 2, b.y + 2);
-      const leftPt   = toScreen(b.x, b.y + 2);
+      // DEBUG: draw actual 2x2 tile footprint (outer vertices of tiles x,y to x+1,y+1)
+      const tTop   = toScreen(b.x, b.y);
+      const tRight = toScreen(b.x + 1, b.y);
+      const tBot   = toScreen(b.x + 1, b.y + 1);
+      const tLeft  = toScreen(b.x, b.y + 1);
       const dbg = new PIXI.Graphics();
-      dbg.beginFill(0xFF0000, 0.25);
-      dbg.moveTo(topPt.x,    topPt.y);
-      dbg.lineTo(rightPt.x,  rightPt.y);
-      dbg.lineTo(bottomPt.x, bottomPt.y);
-      dbg.lineTo(leftPt.x,   leftPt.y);
+      dbg.lineStyle(2, 0xFF0000, 0.8);
+      dbg.beginFill(0xFF0000, 0.15);
+      dbg.moveTo(tTop.x,                  tTop.y - TILE_H / 2);
+      dbg.lineTo(tRight.x + TILE_W / 2,   tRight.y);
+      dbg.lineTo(tBot.x,                  tBot.y + TILE_H / 2);
+      dbg.lineTo(tLeft.x - TILE_W / 2,    tLeft.y);
       dbg.closePath();
       dbg.endFill();
       buildingLayer.addChild(dbg);
