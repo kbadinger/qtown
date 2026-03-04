@@ -334,6 +334,44 @@ def calculate_happiness(db: Session, npc_id: int) -> int:
     return happiness
 
 
+def get_npc_decision(db: Session, npc: NPC) -> dict:
+    """Determine what action an NPC should take based on needs and personality.
+    
+    Decision priority:
+    1. hunger > 70 -> eat
+    2. energy < 20 (or < 40 if lazy) -> sleep
+    3. has work_building_id -> work
+    4. else -> wander
+    
+    Returns dict with 'action' key: {'action': 'eat'|'sleep'|'work'|'wander'}
+    """
+    # Parse personality to check for lazy trait
+    personality = {}
+    if npc.personality:
+        try:
+            personality = json.loads(npc.personality)
+        except (json.JSONDecodeError, TypeError):
+            personality = {}
+    
+    is_lazy = personality.get('lazy', False)
+    
+    # Decision logic with personality-modified thresholds
+    if npc.hunger > 70:
+        return {'action': 'eat'}
+    
+    # Lazy NPCs sleep at energy < 40, others at energy < 20
+    sleep_threshold = 40 if is_lazy else 20
+    if npc.energy < sleep_threshold:
+        return {'action': 'sleep'}
+    
+    # Check if NPC has a work building assigned
+    if npc.work_building_id is not None:
+        return {'action': 'work'}
+    
+    # Default action
+    return {'action': 'wander'}
+
+
 def process_tick(db: Session) -> None:
     """Advance the simulation by one tick.
     

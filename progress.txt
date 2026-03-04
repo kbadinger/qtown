@@ -241,3 +241,8 @@
 *   **Non-obvious state management**: Initially assumed personality traits were static flags, but discovered they dynamically influence dialogue weights via the `TraitContext` middleware, requiring careful handling of inheritance chains.
 *   **Codebase convention**: Traits are strictly defined as immutable value objects in the `Domain` layer, while their behavioral side effects are isolated in the `Application` layer using the Strategy pattern.
 *   **Correction**: Mistakenly coupled trait logic directly to the UI component; refactored to inject a `TraitResolver` service to ensure the UI remains agnostic of trait calculation rules.
+
+--- Story 041: Utility-based decisions (attempts: 1, 2026-03-03 22:13) ---
+*   **Non-obvious logic**: The utility calculation requires normalizing disparate metrics (e.g., latency vs. cost) before aggregation; failing to scale these values causes the decision engine to prioritize high-magnitude but low-impact metrics.
+*   **Codebase pattern**: The project enforces a strict "pure function" boundary for all scoring logic, separating data fetching from decision-making to ensure deterministic behavior and easier unit testing.
+*   **Correction**: Initially, I attempted to handle missing data by returning `null` within the utility function, which broke the downstream sort; I corrected this by implementing a default "neutral" score and handling nulls at the data ingestion layer instead.
