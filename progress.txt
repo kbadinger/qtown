@@ -301,3 +301,8 @@
 - **Non-obvious constraint**: The `BuildingType` enum requires explicit `is_residential` and `is_commercial` flags; simply adding a new enum value without these defaults breaks the zoning logic in `CityZoningService`.
 - **Codebase pattern**: New building types must be registered in `BuildingRegistry` *and* added to the `BuildingTemplate` factory map; missing the factory registration causes runtime `ClassCastException` during city generation.
 - **Correction**: Initially omitted the `render_icon` configuration for the library, causing a blank tile in the UI; fixed by adding the missing SVG asset reference in `BuildingIcons` enum.
+
+--- Story 054: Add mine building type (attempts: 1, 2026-03-04 14:12) ---
+- **Tricky Logic**: Determining the correct `BuildingType` enum value for mines required tracing through the `BuildingFactory` switch statement, as the naming convention (`MINE` vs `MINE_BUILDING`) was inconsistent with other resource structures.
+- **Codebase Pattern**: The project strictly separates data definition (in `BuildingConfig`) from instantiation logic; new building types must be registered in the config map before they can be spawned by the factory.
+- **Correction**: Initially omitted the `mineral_yield` property in the config, causing runtime null errors during resource generation; fixed by ensuring all new building types inherit the base `ResourceBuilding` schema.

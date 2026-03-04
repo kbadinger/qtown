@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session, joinedload
 from engine.models import NPC, Building, WorldState, Tile, Resource, Treasury, Transaction, Event
 
 # Building types available in the simulation
-BUILDING_TYPES = ["civic", "food", "residential", "bakery", "blacksmith", "farm", "church", "school", "hospital", "tavern", "library"]
+BUILDING_TYPES = ["civic", "food", "residential", "bakery", "blacksmith", "farm", "church", "school", "hospital", "tavern", "library", "mine"]
 
 
 def _generate_personality() -> str:
@@ -806,6 +806,7 @@ def process_tick(db: Session) -> None:
     produce_blacksmith_resources(db)  # Blacksmith production
     produce_farm_resources(db)  # Farm production
     produce_library_resources(db)  # Library production
+    produce_mine_resources(db)  # Mine production
     process_hospital(db)  # Hospital healing
     process_tavern(db)  # Tavern effects
     
@@ -1081,3 +1082,50 @@ def apply_church_effects(db: Session) -> None:
                 npc.happiness = min(100, npc.happiness + 5)
     
     db.commit()
+
+
+def seed_mine(db: Session) -> None:
+    """Seed a mine building into the town.
+
+    Creates 1 mine building at coordinates (45, 45).
+    Idempotent - will not create if one already exists.
+    """
+    existing_mines = db.query(Building).filter(Building.building_type == 'mine').count()
+    if existing_mines > 0:
+        return
+    
+    # Create mine at (45, 45)
+    mine = Building(
+        name="Town Mine",
+        building_type="mine",
+        x=45,
+        y=45,
+        capacity=5
+    )
+    db.add(mine)
+    db.commit()
+
+
+def produce_mine_resources(db: Session) -> None:
+    """Produce resources for buildings of type 'mine'.
+    
+    Mine produces 8 Ore per tick.
+    """
+    mine_buildings = db.query(Building).filter(Building.building_type == 'mine').all()
+    
+    for building in mine_buildings:
+        # Check if Ore resource exists at this building
+        ore_resource = db.query(Resource).filter(
+            Resource.name == 'Ore',
+            Resource.building_id == building.id
+        ).first()
+        
+        if ore_resource:
+            ore_resource.quantity += 8
+        else:
+            new_ore = Resource(
+                name='Ore',
+                quantity=8,
+                building_id=building.id
+            )
+            db.add(new_ore)
