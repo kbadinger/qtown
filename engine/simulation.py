@@ -30,6 +30,7 @@ BUILDING_TYPES = [
     "guard_tower",
     "wall",
     "gate",
+    "fountain"
 ]
 
 
@@ -1364,3 +1365,47 @@ def produce_gate_resources(db: Session) -> None:
                 building_id=building.id
             )
             db.add(new_security)
+
+
+def seed_fountain(db: Session) -> None:
+    """Seed a fountain building into the town.
+
+    Creates 1 fountain building at coordinates (40, 40).
+    Idempotent - will not create if one already exists.
+    """
+    existing_fountains = db.query(Building).filter(Building.building_type == 'fountain').count()
+    if existing_fountains > 0:
+        return
+    
+    # Create fountain at (40, 40)
+    fountain = Building(
+        name="Town Fountain",
+        building_type="fountain",
+        x=40,
+        y=40,
+        capacity=5
+    )
+    db.add(fountain)
+    db.commit()
+
+
+def apply_fountain_effects(db: Session) -> None:
+    """Apply fountain effects on NPC happiness.
+    
+    Increases happiness of NPCs within radius 8 of any fountain building by 3.
+    """
+    fountain_buildings = db.query(Building).filter(Building.building_type == 'fountain').all()
+    
+    for fountain in fountain_buildings:
+        # Get all NPCs
+        npcs = db.query(NPC).all()
+        
+        for npc in npcs:
+            # Calculate Euclidean distance
+            distance = math.sqrt((npc.x - fountain.x) ** 2 + (npc.y - fountain.y) ** 2)
+            
+            # If within radius 8, increase happiness
+            if distance <= 8:
+                npc.happiness = min(100, npc.happiness + 3)
+    
+    db.commit()
