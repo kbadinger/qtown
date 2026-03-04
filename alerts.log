@@ -297,3 +297,18 @@ Ralph stopped — needs human debugging
 [2026-03-04 13:37:13 UTC] start: Ralph online — 46/215 stories complete
 [2026-03-04 13:37:14 UTC] story_start: Story 047: Add blacksmith building type
 [2026-03-04 13:43:15 UTC] WARN deploy_fail: Story 047 deploy failed — starting fix cycle
+[2026-03-04 13:47:14 UTC] CRITICAL deploy_fail: Story 047 deploy failed twice — stopping
+Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   f7507db..eaa074d  main -> main
+
+Indexing...
+Incorrect function. (os error 1) when getting metadata for D:\Projects\qtown\NUL
+
+
+--- Rail
+[2026-03-04 13:47:14 UTC] CRITICAL critical: Story 047 failed: Add blacksmith building type
+Ralph stopped — needs human debugging
+[2026-03-04 13:47:15 UTC] stop: Ralph offline — 46/215 stories complete
+[2026-03-04 13:57:07 UTC] start: Ralph online — 47/215 stories complete
+[2026-03-04 13:57:07 UTC] story_start: Story 048: Add farm building type

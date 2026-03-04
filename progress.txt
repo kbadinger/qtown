@@ -271,3 +271,8 @@
 *   **Non-obvious coupling**: The `BuildingType` enum required updates in three distinct layers (domain model, UI rendering logic, and the `World` state factory) to ensure the new blacksmith appeared correctly in both the simulation and the interface.
 *   **Codebase pattern**: New building types follow a strict "declaration-first" convention; the enum value must be added before the `getBuildingStats()` switch statement is updated, or the build process fails with a silent null reference in the factory.
 *   **Correction**: Initially, I hardcoded the blacksmith's production rate directly in the UI component; I corrected this by extracting the value to the central `BuildingConfig` map to maintain consistency with other building types.
+
+--- Story 048: Add farm building type (attempts: 1, 2026-03-04 09:08) ---
+- **Tricky**: The `BuildingType` enum requires explicit handling in the `Farm` class's `get_production()` method; simply adding the enum value wasn't enough without updating the switch logic to return the correct yield.
+- **Pattern**: The codebase strictly separates domain entities (like `Farm`) from configuration data; new building types must be defined in `config/buildings.json` and mapped via the `BuildingRegistry` singleton rather than hardcoded.
+- **Correction**: Initially attempted to hardcode the new building's stats in the test file, but realized this violates the separation of concerns; moved the definition to the shared configuration to ensure consistency across tests and runtime.

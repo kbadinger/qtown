@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session, joinedload
 from engine.models import NPC, Building, WorldState, Tile, Resource, Treasury, Transaction, Event
 
 # Building types available in the simulation
-BUILDING_TYPES = ["civic", "food", "residential", "bakery", "blacksmith"]
+BUILDING_TYPES = ["civic", "food", "residential", "bakery", "blacksmith", "farm"]
 
 
 def _generate_personality() -> str:
@@ -126,6 +126,29 @@ def seed_blacksmith(db: Session) -> None:
         capacity=10
     )
     db.add(blacksmith)
+    db.commit()
+
+
+def seed_farm(db: Session) -> None:
+    """Seed a farm building into the town.
+
+    Creates 1 farm building at coordinates (15, 15).
+    Idempotent: calling twice will not duplicate the farm.
+    """
+    existing_farm = db.query(Building).filter(
+        Building.building_type == "farm"
+    ).first()
+    if existing_farm:
+        return
+
+    farm = Building(
+        name="Farm",
+        building_type="farm",
+        x=15,
+        y=15,
+        capacity=10
+    )
+    db.add(farm)
     db.commit()
 
 
@@ -331,40 +354,63 @@ def produce_blacksmith_resources(db: Session) -> None:
                 db.add(new_tools)
 
 
-def collect_taxes(db: Session) -> None:
-    """Collect 10% taxes from all NPCs and add to Treasury.
+def produce_farm_resources(db: Session) -> None:
+    """Produce resources for buildings of type 'farm'.
     
-    Takes floor(10%) of each NPC's gold and adds it to the Treasury.
-    If no Treasury exists, creates one linked to Town Hall.
+    Farm produces 10 Wheat and 10 Food per tick.
     """
-    # Find or create Treasury
-    treasury = db.query(Treasury).first()
-    if not treasury:
-        # Find Town Hall building
-        town_hall = db.query(Building).filter(Building.name == "Town Hall").first()
-        if town_hall:
-            treasury = Treasury(
-                gold_stored=0,
-                building_id=town_hall.id
-            )
-            db.add(treasury)
-            db.commit()
-            db.refresh(treasury)
-        else:
-            return  # No Town Hall, cannot create Treasury
+    farm_buildings = db.query(Building).filter(Building.building_type == 'farm').all()
     
-    # Collect taxes from all NPCs
+    for building in farm_buildings:
+        # Produce Wheat
+        wheat_resource = db.query(Resource).filter(
+            Resource.name == 'Wheat',
+            Resource.building_id == building.id
+        ).first()
+        
+        if wheat_resource:
+            wheat_resource.quantity += 10
+        else:
+            new_wheat = Resource(
+                name='Wheat',
+                quantity=10,
+                building_id=building.id
+            )
+            db.add(new_wheat)
+        
+        # Produce Food
+        food_resource = db.query(Resource).filter(
+            Resource.name == 'Food',
+            Resource.building_id == building.id
+        ).first()
+        
+        if food_resource:
+            food_resource.quantity += 10
+        else:
+            new_food = Resource(
+                name='Food',
+                quantity=10,
+                building_id=building.id
+            )
+            db.add(new_food)
+
+
+def collect_taxes(db: Session) -> None:
+    """Collect taxes from all NPCs and add to Treasury.
+    
+    Each NPC pays 2 gold in taxes (if they have enough).
+    Total collected is added to treasury.gold_stored.
+    """
     npcs = db.query(NPC).all()
     total_collected = 0
     
     for npc in npcs:
-        tax_amount = npc.gold // 10  # floor of 10%
-        if tax_amount > 0:
-            npc.gold -= tax_amount
-            total_collected += tax_amount
+        if npc.gold >= 2:
+            npc.gold -= 2
+            total_collected += 2
     
-    # Add collected taxes to Treasury
-    if total_collected > 0:
+    treasury = db.query(Treasury).first()
+    if treasury:
         treasury.gold_stored += total_collected
     
     db.commit()
@@ -532,6 +578,7 @@ def process_tick(db: Session) -> None:
     produce_resources(db, weather)
     produce_bakery_resources(db)  # Bakery production
     produce_blacksmith_resources(db)  # Blacksmith production
+    produce_farm_resources(db)  # Farm production
     
     # 7. Process economy (wages, trades, tax collection)
     process_work(db)
