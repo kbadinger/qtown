@@ -236,3 +236,8 @@
 - **Non-obvious state coupling**: NPC happiness isn't a standalone scalar; it's tightly coupled with the `InteractionCooldown` system, requiring a check against the last interaction timestamp before applying decay logic to prevent infinite loops.
 - **Convention discovery**: The codebase strictly separates "calculation" (pure functions in `HappinessCalculator`) from "mutation" (side effects in `NPCController`), meaning all state updates must flow through the `ApplyDelta` method rather than direct property assignment.
 - **Correction**: Initially attempted to apply happiness modifiers directly in the event listener, which caused race conditions during rapid player interactions; refactored to queue changes in a `PendingModifications` list processed in the main game loop.
+
+--- Story 040: Personality traits (attempts: 1, 2026-03-03 22:00) ---
+*   **Non-obvious state management**: Initially assumed personality traits were static flags, but discovered they dynamically influence dialogue weights via the `TraitContext` middleware, requiring careful handling of inheritance chains.
+*   **Codebase convention**: Traits are strictly defined as immutable value objects in the `Domain` layer, while their behavioral side effects are isolated in the `Application` layer using the Strategy pattern.
+*   **Correction**: Mistakenly coupled trait logic directly to the UI component; refactored to inject a `TraitResolver` service to ensure the UI remains agnostic of trait calculation rules.

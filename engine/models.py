@@ -119,6 +119,7 @@ class NPC(Base):
     work_building_id = Column(Integer, ForeignKey("buildings.id"), nullable=True)
     target_x = Column(Integer, nullable=True)
     target_y = Column(Integer, nullable=True)
+    personality = Column(String(256), nullable=True, default='{}')
     created_at = Column(DateTime, default=_utcnow)
 
     home_building = relationship("Building", foreign_keys=[home_building_id])

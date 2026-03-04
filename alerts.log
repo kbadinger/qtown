@@ -246,3 +246,6 @@ Ralph stopped — needs human debugging
 [2026-03-03 19:22:24 UTC] stop: Ralph offline — 38/215 stories complete
 [2026-03-04 02:39:43 UTC] start: Ralph online — 38/215 stories complete
 [2026-03-04 02:39:43 UTC] story_start: Story 039: NPC happiness field
+[2026-03-04 02:54:02 UTC] deploy_ok: Story 039 deployed: Healthy after 0.3s
+[2026-03-04 02:54:25 UTC] story_done: Story 039 complete: NPC happiness field
+[2026-03-04 02:54:25 UTC] story_start: Story 040: Personality traits

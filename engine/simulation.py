@@ -1,9 +1,24 @@
 """All simulation logic — pure functions that take db session and modify game state."""
 
+import json
 import random
 from sqlalchemy.orm import Session, joinedload
 
 from engine.models import NPC, Building, WorldState, Tile, Resource, Treasury, Transaction, Event
+
+
+def _generate_personality() -> str:
+    """Generate a random personality JSON string for an NPC.
+    
+    Creates a dictionary with random boolean values for each trait:
+    hardworking, lazy, social, greedy, brave, cautious.
+    Returns the JSON string representation.
+    """
+    traits = ['hardworking', 'lazy', 'social', 'greedy', 'brave', 'cautious']
+    personality = {}
+    for trait in traits:
+        personality[trait] = random.choice([True, False])
+    return json.dumps(personality)
 
 
 def init_world_state(db: Session) -> WorldState:
@@ -69,6 +84,7 @@ def seed_npcs(db: Session) -> None:
     """Seed starter NPCs into the town.
 
     Creates 5 NPCs with names and roles at valid grid positions.
+    Each NPC is assigned a random personality trait JSON string.
     Idempotent: calling twice will not duplicate NPCs.
     """
     existing = db.query(NPC).count()
@@ -84,7 +100,7 @@ def seed_npcs(db: Session) -> None:
     ]
 
     for data in npcs_data:
-        db.add(NPC(**data))
+        db.add(NPC(personality=_generate_personality(), **data))
     db.commit()
 
 
@@ -313,77 +329,95 @@ def calculate_happiness(db: Session, npc_id: int) -> int:
     
     # Update the NPC's happiness field
     npc.happiness = happiness
+    db.commit()
     
     return happiness
 
 
 def process_tick(db: Session) -> None:
-    """Advance the simulation by one tick."""
+    """Advance the simulation by one tick.
+    
+    Processes all systems in order:
+    1. World State — increment tick counter, advance time of day, change day
+    2. Weather — update weather, apply weather effects
+    3. Needs Decay — hunger increases, energy decreases for all NPCs
+    4. NPC Decisions — each NPC decides what to do based on needs + utility
+    5. Movement — NPCs move toward their targets
+    6. Production — buildings produce resources
+    7. Economy — wages, trades, tax collection
+    8. Population — births, deaths, aging
+    9. Events — log notable events that occurred this tick
+    """
     # 1. Update world state (time, weather)
     world_state = db.query(WorldState).first()
-    if world_state:
-        world_state.tick += 1
+    if not world_state:
+        init_world_state(db)
+        world_state = db.query(WorldState).first()
     
-    # 2. Update weather
+    world_state.tick += 1
+    
+    # Advance time of day
+    time_order = ['morning', 'afternoon', 'evening', 'night']
+    current_time_idx = time_order.index(world_state.time_of_day)
+    world_state.time_of_day = time_order[(current_time_idx + 1) % 4]
+    
+    # Change day every 4 ticks
+    if world_state.time_of_day == 'morning':
+        world_state.day += 1
+    
+    # 2. Process weather
     update_weather(db)
-    
-    # 3. Apply weather effects
     apply_weather_effects(db)
     
-    # 4. Process NPC needs (hunger, energy decay)
+    # 3. Process NPC needs (hunger, energy decay)
     npcs = db.query(NPC).all()
     for npc in npcs:
-        # Hunger increases by 1 per tick
-        npc.hunger = min(100, npc.hunger + 1)
-        # Energy decreases by 1 per tick
-        npc.energy = max(0, npc.energy - 1)
+        npc.hunger = min(100, npc.hunger + 5)
+        npc.energy = max(0, npc.energy - 3)
     
-    # 5. Auto-eat: NPCs with hunger > 70 and gold >= 5
+    # 4. Process NPC decisions (eat, sleep, work, move)
     for npc in npcs:
-        if npc.hunger > 70 and npc.gold >= 5:
-            npc.gold -= 5
-            npc.hunger = max(0, npc.hunger - 30)
-
-    # 6. Auto-sleep: NPCs with energy < 20
-    for npc in npcs:
-        if npc.energy < 20:
-            npc.energy = min(100, npc.energy + 40)
+        # Decide based on needs
+        if npc.hunger > 50:
+            # Try to eat
+            if npc.gold >= 5:
+                eat(db, npc.id)
+        elif npc.energy < 30:
+            # Try to sleep
+            sleep_npc(db, npc.id)
+        
+        # Calculate happiness
+        calculate_happiness(db, npc.id)
     
-    # 7. Movement (with snow effect: move every other tick)
-    world_state = db.query(WorldState).first()
-    current_weather = world_state.weather if world_state else None
-    current_tick = world_state.tick if world_state else 0
-    
-    if current_weather != 'snow' or current_tick % 2 == 0:
+    # 5. Process movement (snow halves movement - every other tick)
+    weather = world_state.weather
+    if weather != 'snow' or world_state.tick % 2 == 0:
         for npc in npcs:
             move_npc_toward_target(db, npc)
     
-    # 8. Process production (farms, workshops)
-    produce_resources(db, weather=current_weather)
-
-    # 9. Process economy (trades, wages, taxes)
+    # 6. Process production
+    produce_resources(db, weather)
+    
+    # 7. Process economy (wages, trades, tax collection)
     process_work(db)
-
-    # 10. Collect taxes every 10 ticks
-    if world_state and world_state.tick % 10 == 0:
+    
+    # Collect taxes every 10 ticks
+    if world_state.tick % 10 == 0:
         collect_taxes(db)
     
-    # 11. Population growth every 20 ticks
-    if world_state and world_state.tick % 20 == 0:
-        check_population_growth(db)
+    # 8. Process population (births, deaths, aging)
+    check_population_growth(db)
     
-    # 12. Calculate happiness for all NPCs
-    for npc in npcs:
-        calculate_happiness(db, npc.id)
-
+    # 9. Log events (notable events)
+    # Events are logged throughout other functions
+    
     db.commit()
 
 
 def check_population_growth(db: Session) -> None:
-    """Check conditions for population growth and spawn new NPC if eligible.
+    """Check if we can spawn a new NPC based on happiness and population.
     
-    If average NPC happiness > 60 and total NPC count < 100,
-    spawn a new NPC with random name and role at a random valid position.
+    If average happiness > 60 and population < 100, spawn a new NPC.
     """
     npcs = db.query(NPC).all()
     
@@ -414,7 +448,8 @@ def check_population_growth(db: Session) -> None:
                 gold=0,
                 hunger=0,
                 energy=100,
-                happiness=50
+                happiness=50,
+                personality=_generate_personality()
             )
             
             db.add(new_npc)
