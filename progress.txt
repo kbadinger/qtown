@@ -231,3 +231,8 @@
 *   **Non-obvious aggregation logic**: The `stats` endpoint required a custom `GROUP BY` strategy on the `events` table to handle partial date ranges; relying on standard ORM pagination caused data skew when the `date_trunc` function was applied after filtering.
 *   **Codebase convention**: This project strictly separates read-only analytics queries from the main transactional repository layer, using a dedicated `AnalyticsService` that bypasses the standard `UnitOfWork` pattern to prevent accidental writes during heavy reporting.
 *   **Correction**: Initially, I attempted to cache the raw JSON response at the API level, which led to stale data for real-time dashboards; I corrected this by moving the caching logic to the database layer using a materialized view with a 5-minute refresh interval.
+
+--- Story 039: NPC happiness field (attempts: 1, 2026-03-03 21:52) ---
+- **Non-obvious state coupling**: NPC happiness isn't a standalone scalar; it's tightly coupled with the `InteractionCooldown` system, requiring a check against the last interaction timestamp before applying decay logic to prevent infinite loops.
+- **Convention discovery**: The codebase strictly separates "calculation" (pure functions in `HappinessCalculator`) from "mutation" (side effects in `NPCController`), meaning all state updates must flow through the `ApplyDelta` method rather than direct property assignment.
+- **Correction**: Initially attempted to apply happiness modifiers directly in the event listener, which caused race conditions during rapid player interactions; refactored to queue changes in a `PendingModifications` list processed in the main game loop.

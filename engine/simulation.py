@@ -293,6 +293,30 @@ def apply_weather_effects(db: Session) -> None:
         pass
 
 
+def calculate_happiness(db: Session, npc_id: int) -> int:
+    """Calculate and update happiness for an NPC.
+    
+    Formula: happiness = 100 - hunger + (energy/2) + min(gold, 50)/2
+    Clamped to range 0-100.
+    
+    Returns the calculated happiness value.
+    """
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return 50
+    
+    # Calculate happiness using the formula
+    happiness = 100 - npc.hunger + (npc.energy // 2) + min(npc.gold, 50) // 2
+    
+    # Clamp to 0-100
+    happiness = max(0, min(100, happiness))
+    
+    # Update the NPC's happiness field
+    npc.happiness = happiness
+    
+    return happiness
+
+
 def process_tick(db: Session) -> None:
     """Advance the simulation by one tick."""
     # 1. Update world state (time, weather)
@@ -348,7 +372,9 @@ def process_tick(db: Session) -> None:
     if world_state and world_state.tick % 20 == 0:
         check_population_growth(db)
     
-    # 12. Log events
+    # 12. Calculate happiness for all NPCs
+    for npc in npcs:
+        calculate_happiness(db, npc.id)
 
     db.commit()
 
@@ -368,39 +394,31 @@ def check_population_growth(db: Session) -> None:
     total_happiness = sum(npc.happiness for npc in npcs)
     avg_happiness = total_happiness / len(npcs)
     
-    # Check conditions
-    if avg_happiness <= 60:
-        return
-    
-    if len(npcs) >= 100:
-        return
-    
-    # Spawn new NPC
-    names = ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", "Henry", "Ivy", "Jack"]
-    roles = ["farmer", "baker", "guard", "merchant", "priest", "blacksmith", "teacher", "doctor"]
-    
-    # Find a random valid position (not occupied by another NPC)
-    existing_positions = {(npc.x, npc.y) for npc in npcs}
-    valid_positions = [(x, y) for x in range(50) for y in range(50) if (x, y) not in existing_positions]
-    
-    if not valid_positions:
-        return  # No space available
-    
-    new_x, new_y = random.choice(valid_positions)
-    
-    new_npc = NPC(
-        name=random.choice(names),
-        role=random.choice(roles),
-        x=new_x,
-        y=new_y,
-        gold=0,
-        hunger=0,
-        energy=100,
-        happiness=50
-    )
-    
-    db.add(new_npc)
-    db.commit()
+    # Check if we can spawn a new NPC
+    if avg_happiness > 60 and len(npcs) < 100:
+        names = ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", "Henry", "Ivy", "Jack"]
+        roles = ["farmer", "baker", "guard", "merchant", "priest"]
+        
+        # Find valid positions (not occupied by existing NPCs)
+        existing_positions = set((npc.x, npc.y) for npc in npcs)
+        valid_positions = [(x, y) for x in range(50) for y in range(50) if (x, y) not in existing_positions]
+        
+        if valid_positions:
+            new_x, new_y = random.choice(valid_positions)
+            
+            new_npc = NPC(
+                name=random.choice(names),
+                role=random.choice(roles),
+                x=new_x,
+                y=new_y,
+                gold=0,
+                hunger=0,
+                energy=100,
+                happiness=50
+            )
+            
+            db.add(new_npc)
+            db.commit()
 
 
 def buy_food(db: Session, npc_id: int) -> bool:
