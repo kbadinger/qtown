@@ -559,6 +559,20 @@
   // Boot
   // -------------------------------------------------------------------------
 
+  // Status counter (bottom-right)
+  var statusEl = document.createElement("div");
+  statusEl.style.cssText = "position:fixed;bottom:10px;right:10px;z-index:9999;background:rgba(0,0,0,0.6);color:#9ca3af;padding:4px 10px;font:11px monospace;border-radius:4px;";
+  document.body.appendChild(statusEl);
+
+  var _baseFetch = fetchWorld;
+  fetchWorld = async function() {
+    await _baseFetch();
+    var b = buildingLayer.children.length;
+    var n = npcLayer.children.length;
+    var g = groundLayer.children.length;
+    statusEl.textContent = "tiles:" + g + " buildings:" + b + " npcs:" + n;
+  };
+
   // Initial fetch, then poll
   fetchWorld();
   setInterval(fetchWorld, POLL_MS);
