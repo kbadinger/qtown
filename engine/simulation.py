@@ -13,24 +13,24 @@ Tile, NPC, Building, Resource, WorldState, Treasury, Event, Transaction
 
 # Building types available in the simulation
 BUILDING_TYPES = [
-    "civic",
-    "food",
     "residential",
+    "farm",
     "bakery",
     "blacksmith",
-    "farm",
     "church",
     "school",
     "hospital",
     "tavern",
     "library",
+    "market",
     "mine",
     "lumber_mill",
     "fishing_dock",
     "guard_tower",
     "wall",
     "gate",
-    "fountain"
+    "fountain",
+    "well",
 ]
 
 
@@ -833,6 +833,8 @@ def process_tick(db: Session) -> None:
     produce_lumber_mill_resources(db)  # Lumber Mill production
     produce_fishing_dock_resources(db)  # Fishing Dock production
     produce_guard_tower_resources(db)  # Guard Tower production
+    produce_gate_resources(db)  # Gate production
+    produce_well_resources(db)  # Well production
     process_hospital(db)  # Hospital healing
     process_tavern(db)  # Tavern effects
     
@@ -855,6 +857,9 @@ def process_tick(db: Session) -> None:
     
     # Apply church effects
     apply_church_effects(db)
+    
+    # Apply fountain effects
+    apply_fountain_effects(db)
     
     db.commit()
 
@@ -1409,3 +1414,50 @@ def apply_fountain_effects(db: Session) -> None:
                 npc.happiness = min(100, npc.happiness + 3)
     
     db.commit()
+
+
+def seed_well(db: Session) -> None:
+    """Seed a well building into the town.
+
+    Creates 1 well building at coordinates (41, 41).
+    Idempotent - will not create if one already exists.
+    """
+    existing_wells = db.query(Building).filter(Building.building_type == 'well').count()
+    if existing_wells > 0:
+        return
+    
+    # Create well at (41, 41)
+    well = Building(
+        name="Town Well",
+        building_type="well",
+        x=41,
+        y=41,
+        capacity=5
+    )
+    db.add(well)
+    db.commit()
+
+
+def produce_well_resources(db: Session) -> None:
+    """Produce resources for buildings of type 'well'.
+    
+    Well produces 20 Water per tick.
+    """
+    well_buildings = db.query(Building).filter(Building.building_type == 'well').all()
+    
+    for building in well_buildings:
+        # Check if Water resource exists at this building
+        water_resource = db.query(Resource).filter(
+            Resource.name == 'Water',
+            Resource.building_id == building.id
+        ).first()
+        
+        if water_resource:
+            water_resource.quantity += 20
+        else:
+            new_water = Resource(
+                name='Water',
+                quantity=20,
+                building_id=building.id
+            )
+            db.add(new_water)

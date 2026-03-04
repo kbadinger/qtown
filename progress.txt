@@ -326,3 +326,8 @@
 - **Tricky**: Handling the `Fountain` entity's unique `water_level` attribute required careful integration with the existing `Building` base class to avoid breaking polymorphic rendering logic.
 - **Pattern**: The codebase consistently uses factory functions in `src/buildings/` to instantiate new types, ensuring all new building types automatically inherit the standard `validate()` and `render()` hooks.
 - **Correction**: Initially forgot to register the `Fountain` type in the `BUILDING_REGISTRY` map, causing runtime errors when the parser encountered the new type; fixed by adding the registration step in `init_buildings.py`.
+
+--- Story 061: Add well building type (attempts: 1, 2026-03-04 16:21) ---
+- **Non-obvious enum handling**: The `BuildingType` enum required explicit mapping in the GraphQL resolver layer; simply adding the enum to the schema didn't automatically propagate to the database migration or the UI dropdowns without manual updates in three separate files.
+- **Codebase convention**: New domain entities follow a strict "Schema -> Migration -> Entity -> DTO -> Resolver" flow, where the DTO layer is the single source of truth for validation logic before hitting the database.
+- **Correction**: Initially attempted to reuse the generic `Entity` base class for `WellBuilding`, but realized the `well_id` foreign key required a custom join strategy; switched to extending `BaseEntity` directly to avoid circular dependency errors in the ORM.
