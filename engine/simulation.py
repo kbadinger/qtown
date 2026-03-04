@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session, joinedload
 from engine.models import NPC, Building, WorldState, Tile, Resource, Treasury, Transaction, Event
 
 # Building types available in the simulation
-BUILDING_TYPES = ["civic", "food", "residential", "bakery", "blacksmith", "farm", "church", "school", "hospital"]
+BUILDING_TYPES = ["civic", "food", "residential", "bakery", "blacksmith", "farm", "church", "school", "hospital", "tavern"]
 
 
 def _generate_personality() -> str:
@@ -209,6 +209,29 @@ def seed_hospital(db: Session) -> None:
         capacity=10
     )
     db.add(hospital)
+    db.commit()
+
+
+def seed_tavern(db: Session) -> None:
+    """Seed a tavern building into the town.
+
+    Creates 1 tavern building at coordinates (40, 40).
+    Idempotent: calling twice will not duplicate the tavern.
+    """
+    existing_tavern = db.query(Building).filter(
+        Building.building_type == "tavern"
+    ).first()
+    if existing_tavern:
+        return
+
+    tavern = Building(
+        name="Tavern",
+        building_type="tavern",
+        x=40,
+        y=40,
+        capacity=10
+    )
+    db.add(tavern)
     db.commit()
 
 
@@ -604,6 +627,79 @@ def process_hospital(db: Session) -> None:
     db.commit()
 
 
+def process_tavern(db: Session) -> None:
+    """Process tavern effects on NPCs.
+    
+    NPCs assigned to tavern buildings (work_building_id pointing to tavern)
+    gain energy and happiness.
+    Increases energy by 20 and happiness by 10 for NPCs at tavern.
+    """
+    taverns = db.query(Building).filter(Building.building_type == "tavern").all()
+    
+    for tavern in taverns:
+        # Get NPCs assigned to this tavern
+        visitor_npcs = db.query(NPC).filter(NPC.work_building_id == tavern.id).all()
+        
+        for npc in visitor_npcs:
+            # Tavern effect: increase energy and happiness
+            npc.energy = min(100, npc.energy + 20)
+            npc.happiness = min(100, npc.happiness + 10)
+            
+            # Log tavern visit event
+            event = Event(
+                event_type="tavern_visit",
+                description=f"{npc.name} visited {tavern.name}",
+                tick=db.query(WorldState).first().tick if db.query(WorldState).first() else 0,
+                severity="info",
+                affected_npc_id=npc.id,
+                affected_building_id=tavern.id
+            )
+            db.add(event)
+    
+    db.commit()
+
+
+def visit_tavern(db: Session, npc_id: int) -> bool:
+    """Allow an NPC to visit a tavern.
+    
+    NPC spends 3 gold, gains +20 energy (capped at 100) and +10 happiness.
+    Requires a tavern building to exist.
+    Returns False if no tavern or insufficient gold.
+    """
+    # Get the NPC
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return False
+    
+    # Check if NPC has enough gold
+    if npc.gold < 3:
+        return False
+    
+    # Find a tavern
+    tavern = db.query(Building).filter(Building.building_type == "tavern").first()
+    if not tavern:
+        return False
+    
+    # Execute the visit
+    npc.gold -= 3
+    npc.energy = min(100, npc.energy + 20)
+    npc.happiness = min(100, npc.happiness + 10)
+    
+    # Log tavern visit event
+    event = Event(
+        event_type="tavern_visit",
+        description=f"{npc.name} visited {tavern.name}",
+        tick=db.query(WorldState).first().tick if db.query(WorldState).first() else 0,
+        severity="info",
+        affected_npc_id=npc.id,
+        affected_building_id=tavern.id
+    )
+    db.add(event)
+    
+    db.commit()
+    return True
+
+
 def process_tick(db: Session) -> None:
     """Advance the simulation by one tick.
     
@@ -671,6 +767,7 @@ def process_tick(db: Session) -> None:
     produce_blacksmith_resources(db)  # Blacksmith production
     produce_farm_resources(db)  # Farm production
     process_hospital(db)  # Hospital healing
+    process_tavern(db)  # Tavern effects
     
     # 7. Process economy (wages, trades, tax collection)
     process_work(db)
@@ -688,6 +785,9 @@ def process_tick(db: Session) -> None:
     # Process school skill gains every 5 ticks
     if world_state.tick % 5 == 0:
         process_school_skill_gain(db)
+    
+    # Apply church effects
+    apply_church_effects(db)
     
     db.commit()
 

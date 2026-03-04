@@ -291,3 +291,8 @@
 *   **Non-obvious coupling**: Adding a new building type required updating the `BuildingFactory` switch statement in three separate locations (logic, rendering, and data persistence), which wasn't immediately apparent from the initial interface definition.
 *   **Codebase convention**: The project strictly enforces that all new building types must implement the `IHasCapacity` interface, even if the capacity is zero, to ensure uniformity in the simulation loop.
 *   **Correction**: Initially missed registering the new `Hospital` enum value in the `BuildingSerializer`, causing a runtime deserialization error on reload; fixed by ensuring the JSON enum mapping is updated alongside the code changes.
+
+--- Story 052: Add tavern building type (attempts: 1, 2026-03-04 11:26) ---
+- **Non-obvious state coupling**: Adding a new building type required updating the `BuildingType` enum in three separate locations (data layer, UI renderer, and logic validator) to prevent runtime deserialization errors, which wasn't immediately apparent from the initial schema.
+- **Codebase convention**: The project strictly enforces that all new entity types must define a `defaultStats` constant object before being registered in the factory, ensuring consistent initialization across different game modes.
+- **Correction**: Initially attempted to hardcode tavern-specific logic inside the generic `BuildingManager`, but refactored it into a dedicated `TavernBehavior` class to align with the existing strategy pattern used for other building types.
