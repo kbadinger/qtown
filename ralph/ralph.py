@@ -347,12 +347,12 @@ def run_story(story: dict) -> bool:
         if attempt == 5:
             warn("story_fail", f"Story {story_id} struggling — attempt 5/{MAX_ATTEMPTS}\n{story['title']}")
 
-        # 0. Reset to clean state — undo any leftover changes from prior attempt
+        # 0. Reset to clean state — undo any changes from prior attempt (or crash)
         #    Each attempt starts from committed code. Qwen outputs complete files,
         #    so there's no benefit to keeping partial changes from a failed attempt.
-        if attempt > 1:
-            subprocess.run(["git", "checkout", "engine/"], capture_output=True)
-            subprocess.run(["git", "checkout", "assets/"], capture_output=True)
+        #    Runs on ALL attempts including attempt 1 to handle Ralph crash recovery.
+        subprocess.run(["git", "checkout", "engine/"], capture_output=True)
+        subprocess.run(["git", "checkout", "assets/"], capture_output=True)
 
         # 1. Run tests (expect failure on first attempt)
         print(f"  [{_ts()}] Running tests...")

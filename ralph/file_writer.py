@@ -69,10 +69,11 @@ def is_blocked(filepath: str) -> bool:
     return False
 
 
-def _extract_top_level_defs(source: str) -> dict[str, str]:
+def _extract_top_level_defs(source: str) -> dict[str, dict]:
     """Extract top-level function and class definitions from Python source.
 
-    Returns {name: source_text} for each top-level def/class.
+    Returns {name: {"body": str, "start": int, "end": int}} for each
+    top-level def/class.  start/end are 0-indexed line numbers (end exclusive).
     """
     try:
         tree = ast.parse(source)
@@ -90,37 +91,67 @@ def _extract_top_level_defs(source: str) -> dict[str, str]:
             if node.decorator_list:
                 start = min(d.lineno for d in node.decorator_list) - 1
             block = "\n".join(lines[start:end])
-            defs[node.name] = block
+            defs[node.name] = {"body": block, "start": start, "end": end}
 
     return defs
 
 
 def _merge_dropped_definitions(filepath: str, old_content: str, new_content: str) -> str:
-    """Merge back any top-level definitions that Qwen dropped from a Python file.
+    """Protect existing definitions from corruption when Qwen rewrites a file.
 
-    If Qwen's new version is missing functions/classes that exist in the old
-    version, append them to the end of the new content.
+    Handles two failure modes:
+    1. Dropped definitions — functions Qwen forgot to include (appended back).
+    2. Corrupted definitions — functions Qwen subtly changed (Ore→Iron, etc).
+       For these, the OLD body is preserved UNLESS the new body references a
+       function that only exists in the new version (meaning Qwen intentionally
+       modified it to call new code, e.g. adding produce_church_resources to
+       process_tick).
     """
     old_defs = _extract_top_level_defs(old_content)
     new_defs = _extract_top_level_defs(new_content)
 
-    dropped = set(old_defs.keys()) - set(new_defs.keys())
-    if not dropped:
-        return new_content
+    if not old_defs:
+        return new_content  # Can't parse old file — nothing to protect
 
-    # Sort dropped definitions by their original order in the file
-    old_order = list(old_defs.keys())
-    dropped_sorted = sorted(dropped, key=lambda name: old_order.index(name))
+    dropped = set(old_defs) - set(new_defs)
+    new_only = set(new_defs) - set(old_defs)
+    shared = set(old_defs) & set(new_defs)
 
-    restored_parts = []
-    for name in dropped_sorted:
-        restored_parts.append(old_defs[name])
+    # --- Detect corrupted shared functions ---
+    corrupted = []
+    for name in shared:
+        old_body = old_defs[name]["body"].strip()
+        new_body = new_defs[name]["body"].strip()
+        if old_body != new_body:
+            # Allow the change if new body references any new-only function
+            # (e.g. process_tick calling produce_church_resources)
+            references_new = any(
+                re.search(r"\b" + re.escape(nn) + r"\b", new_body)
+                for nn in new_only
+            )
+            if not references_new:
+                corrupted.append(name)
 
-    print(f"  [MERGE] Restored {len(dropped)} dropped definitions in {filepath}: {', '.join(dropped_sorted)}")
+    # --- Replace corrupted function bodies (bottom-up to keep line numbers) ---
+    if corrupted:
+        lines = new_content.split("\n")
+        for name in sorted(corrupted, key=lambda n: new_defs[n]["start"], reverse=True):
+            start = new_defs[name]["start"]
+            end = new_defs[name]["end"]
+            old_lines = old_defs[name]["body"].split("\n")
+            lines[start:end] = old_lines
+        new_content = "\n".join(lines)
+        print(f"  [MERGE] Preserved old bodies for {len(corrupted)} corrupted definitions in {filepath}: {', '.join(corrupted)}")
 
-    # Append dropped definitions to end of new content
-    merged = new_content.rstrip("\n") + "\n\n\n" + "\n\n\n".join(restored_parts) + "\n"
-    return merged
+    # --- Append dropped definitions ---
+    if dropped:
+        old_order = list(old_defs.keys())
+        dropped_sorted = sorted(dropped, key=lambda name: old_order.index(name))
+        restored_parts = [old_defs[name]["body"] for name in dropped_sorted]
+        print(f"  [MERGE] Restored {len(dropped)} dropped definitions in {filepath}: {', '.join(dropped_sorted)}")
+        new_content = new_content.rstrip("\n") + "\n\n\n" + "\n\n\n".join(restored_parts) + "\n"
+
+    return new_content
 
 
 def parse_file_blocks(response: str) -> list[tuple[str, str]]:
