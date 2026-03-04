@@ -281,3 +281,8 @@
 - **Tricky/Non-obvious**: The `BuildingType` enum requires a corresponding entry in the `building_definitions.json` configuration file; adding the enum alone causes runtime failures when the game attempts to load building stats.
 - **Patterns/Conventions**: New building types follow a strict "Enum + JSON Config + UI Icon" triad, where the JSON filename must match the enum constant (e.g., `church.json` for `BuildingType.CHURCH`) to be auto-discovered by the loader.
 - **Mistakes/Corrections**: Initially placed the new enum value in the wrong alphabetical position, breaking the serialization order expected by the save-game loader; corrected by ensuring strict alphabetical ordering of all enum constants.
+
+--- Story 050: Add school building type (attempts: 1, 2026-03-04 10:54) ---
+- **Tricky**: The `School` building type requires a distinct `capacity` calculation logic that overrides the default `Building` formula, which was not immediately obvious from the base class interface.
+- **Pattern**: New building types follow a strict convention: define the enum in `BuildingType`, implement the specific logic in a dedicated `*Builder` class, and register it in the central `Factory` registry.
+- **Correction**: Initially attempted to pass `capacity` as a constructor argument to the base `Building` class; corrected by moving this specific logic into the `SchoolBuilder` to maintain the open/closed principle.

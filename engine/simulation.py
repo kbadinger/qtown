@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session, joinedload
 from engine.models import NPC, Building, WorldState, Tile, Resource, Treasury, Transaction, Event
 
 # Building types available in the simulation
-BUILDING_TYPES = ["civic", "food", "residential", "bakery", "blacksmith", "farm", "church"]
+BUILDING_TYPES = ["civic", "food", "residential", "bakery", "blacksmith", "farm", "church", "school"]
 
 
 def _generate_personality() -> str:
@@ -173,6 +173,19 @@ def seed_church(db: Session) -> None:
         capacity=10
     )
     db.add(church)
+    db.commit()
+
+
+def seed_school(db: Session) -> None:
+    """Seed school building idempotently.
+    
+    Creates one school if none exists.
+    """
+    existing = db.query(Building).filter(Building.building_type == "school").first()
+    if existing:
+        return
+    
+    db.add(Building(name="School", building_type="school", x=25, y=35, capacity=30))
     db.commit()
 
 
@@ -616,6 +629,39 @@ def process_tick(db: Session) -> None:
     
     # 9. Log events (notable events)
     # Events are logged throughout other functions
+    
+    # Process school skill gains every 5 ticks
+    if world_state.tick % 5 == 0:
+        process_school_skill_gain(db)
+    
+    db.commit()
+
+
+def process_school_skill_gain(db: Session) -> None:
+    """Process skill gain for NPCs assigned to school buildings.
+    
+    NPCs with work_building_id pointing to a school building gain +1 skill.
+    """
+    schools = db.query(Building).filter(Building.building_type == "school").all()
+    
+    for school in schools:
+        # Get NPCs assigned to this school
+        student_npcs = db.query(NPC).filter(NPC.work_building_id == school.id).all()
+        
+        for npc in student_npcs:
+            # NPC gains +1 skill
+            npc.skill += 1
+            
+            # Log skill gain event
+            event = Event(
+                event_type="skill_gain",
+                description=f"{npc.name} gained skill at {school.name}",
+                tick=db.query(WorldState).first().tick if db.query(WorldState).first() else 0,
+                severity="info",
+                affected_npc_id=npc.id,
+                affected_building_id=school.id
+            )
+            db.add(event)
     
     db.commit()
 

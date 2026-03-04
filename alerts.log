@@ -319,3 +319,6 @@ Ralph stopped — needs human debugging
 Add church building type
 [2026-03-04 15:38:13 UTC] start: Ralph online — 48/215 stories complete
 [2026-03-04 15:38:14 UTC] story_start: Story 049: Add church building type
+[2026-03-04 15:47:07 UTC] deploy_ok: Story 049 deployed: Healthy after 0.2s
+[2026-03-04 15:47:21 UTC] story_done: Story 049 complete: Add church building type
+[2026-03-04 15:47:21 UTC] story_start: Story 050: Add school building type
