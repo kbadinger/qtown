@@ -9,6 +9,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0e17; }
         #game-canvas { width: 100vw; height: 100vh; display: block; }
+        .hud-label { cursor: pointer; border-bottom: 1px dotted #4b5563; transition: color 0.15s; }
+        .hud-label:hover, .hud-label.active { color: #fbbf24; }
     </style>
 </head>
 <body>
@@ -27,15 +29,16 @@
             </div>
             <p class="text-gray-500 text-xs mb-3">A self-evolving town built entirely by a local AI</p>
             <div class="grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm pointer-events-auto">
-                <span class="text-gray-400 cursor-help border-b border-dotted border-gray-600" title="Simulation steps completed. Each tick advances NPC actions, economy, and world events.">Tick</span>
+                <span class="text-gray-400 hud-label" data-info="Simulation steps completed. Each tick advances NPC actions, economy, and world events.">Tick</span>
                 <span id="hud-tick" class="text-gray-200 font-mono tabular-nums">0</span>
-                <span class="text-gray-400 cursor-help border-b border-dotted border-gray-600" title="In-game day (24 ticks = 1 day). Controls day/night cycles and daily events.">Day</span>
+                <span class="text-gray-400 hud-label" data-info="In-game day (24 ticks = 1 day). Controls day/night cycles and daily events.">Day</span>
                 <span id="hud-day" class="text-gray-200 font-mono tabular-nums">1</span>
-                <span class="text-gray-400 cursor-help border-b border-dotted border-gray-600" title="Number of NPCs living in town. New residents arrive as the town grows.">Population</span>
+                <span class="text-gray-400 hud-label" data-info="Number of NPCs living in town. New residents arrive as the town grows.">Population</span>
                 <span id="hud-pop" class="text-gray-200 font-mono tabular-nums">0</span>
-                <span class="text-gray-400 cursor-help border-b border-dotted border-gray-600" title="Total gold across all NPCs. Earned through work, spent at shops and markets.">Gold</span>
+                <span class="text-gray-400 hud-label" data-info="Total gold across all NPCs. Earned through work, spent at shops and markets.">Gold</span>
                 <span id="hud-gold" class="text-amber-300 font-mono tabular-nums">0</span>
             </div>
+            <div id="hud-info" class="hidden mt-2 text-xs text-gray-400 border-t border-gray-700 pt-2 leading-relaxed"></div>
         </div>
     </div>
 
@@ -46,9 +49,29 @@
         </div>
     </div>
 
+    <!-- HUD info toggle -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var infoBox = document.getElementById("hud-info");
+        document.querySelectorAll(".hud-label").forEach(function(el) {
+            el.addEventListener("click", function() {
+                var wasActive = el.classList.contains("active");
+                document.querySelectorAll(".hud-label").forEach(function(l) { l.classList.remove("active"); });
+                if (wasActive) {
+                    infoBox.classList.add("hidden");
+                } else {
+                    el.classList.add("active");
+                    infoBox.textContent = el.dataset.info;
+                    infoBox.classList.remove("hidden");
+                }
+            });
+        });
+    });
+    </script>
+
     <!-- PixiJS from CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
     <!-- Town renderer -->
-    <script src="/static/js/town.js?v=12"></script>
+    <script src="/static/js/town.js?v=13"></script>
 </body>
 </html>
