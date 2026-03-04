@@ -251,3 +251,8 @@
 - **Non-obvious API contract**: The submit endpoint silently rejects requests with `Content-Type: application/json` if the body isn't strictly a JSON object (not an array), requiring explicit validation before parsing to avoid 500 errors.
 - **Codebase pattern**: The project enforces a strict "Service-Repository" separation where all external API calls are wrapped in a `fetcher` utility that handles retries and global error logging, rather than using `fetch` directly in components.
 - **Correction made**: Initially implemented optimistic UI updates that failed to revert on network errors; fixed by wrapping the update in a transactional state manager that rolls back the list state if the API call fails.
+
+--- Story 043: Voting with IP dedup (attempts: 1, 2026-03-03 22:21) ---
+*   **Tricky**: The `dedup` logic required handling the race condition where a single IP submits multiple votes in rapid succession before the previous one is persisted; using a simple in-memory set failed under load, necessitating a database-level unique constraint on `(ip, story_id)` with explicit error handling.
+*   **Pattern**: The codebase consistently uses a "command-query separation" pattern where write operations (voting) return a boolean status rather than the updated entity, forcing the caller to re-fetch data if immediate UI updates are needed.
+*   **Correction**: Initially attempted to validate IP uniqueness in the controller layer, which caused duplicate votes during high concurrency; moved the validation logic to the repository layer to ensure atomicity and leverage database transaction isolation.
