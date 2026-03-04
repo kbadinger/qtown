@@ -13,8 +13,20 @@ Tile, NPC, Building, Resource, WorldState, Treasury, Event, Transaction
 
 # Building types available in the simulation
 BUILDING_TYPES = [
-    'civic', 'food', 'residential', 'bakery', 'blacksmith', 'farm',
-    'church', 'school', 'hospital', 'tavern', 'library', 'mine', 'lumber_mill'
+    'civic',
+    'food',
+    'residential',
+    'bakery',
+    'blacksmith',
+    'farm',
+    'church',
+    'school',
+    'hospital',
+    'tavern',
+    'library',
+    'mine',
+    'lumber_mill',
+    'fishing_dock',
 ]
 
 
@@ -815,6 +827,7 @@ def process_tick(db: Session) -> None:
     produce_library_resources(db)  # Library production
     produce_mine_resources(db)  # Mine production
     produce_lumber_mill_resources(db)  # Lumber Mill production
+    produce_fishing_dock_resources(db)  # Fishing Dock production
     process_hospital(db)  # Hospital healing
     process_tavern(db)  # Tavern effects
     
@@ -1120,14 +1133,14 @@ def produce_mine_resources(db: Session) -> None:
     Mine produces 8 Ore per tick.
     """
     mine_buildings = db.query(Building).filter(Building.building_type == 'mine').all()
-    
+
     for building in mine_buildings:
         # Check if Ore resource exists at this building
         ore_resource = db.query(Resource).filter(
             Resource.name == 'Ore',
             Resource.building_id == building.id
         ).first()
-        
+
         if ore_resource:
             ore_resource.quantity += 8
         else:
@@ -1184,3 +1197,50 @@ def produce_lumber_mill_resources(db: Session) -> None:
                 building_id=building.id
             )
             db.add(new_wood)
+
+
+def seed_fishing_dock(db: Session) -> None:
+    """Seed a fishing dock building into the town.
+
+    Creates 1 fishing dock building at coordinates (47, 47).
+    Idempotent - will not create if one already exists.
+    """
+    existing_docks = db.query(Building).filter(Building.building_type == 'fishing_dock').count()
+    if existing_docks > 0:
+        return
+    
+    # Create fishing dock at (47, 47)
+    fishing_dock = Building(
+        name="Town Fishing Dock",
+        building_type="fishing_dock",
+        x=47,
+        y=47,
+        capacity=5
+    )
+    db.add(fishing_dock)
+    db.commit()
+
+
+def produce_fishing_dock_resources(db: Session) -> None:
+    """Produce resources for buildings of type 'fishing_dock'.
+    
+    Fishing Dock produces 6 Fish per tick.
+    """
+    fishing_dock_buildings = db.query(Building).filter(Building.building_type == 'fishing_dock').all()
+    
+    for building in fishing_dock_buildings:
+        # Check if Fish resource exists at this building
+        fish_resource = db.query(Resource).filter(
+            Resource.name == 'Fish',
+            Resource.building_id == building.id
+        ).first()
+        
+        if fish_resource:
+            fish_resource.quantity += 6
+        else:
+            new_fish = Resource(
+                name='Fish',
+                quantity=6,
+                building_id=building.id
+            )
+            db.add(new_fish)
