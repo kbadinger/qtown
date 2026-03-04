@@ -955,7 +955,7 @@
         "asset"
       ],
       "priority": 53,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
@@ -974,8 +974,8 @@
         "asset"
       ],
       "priority": 54,
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     {
       "id": "055",

@@ -275,21 +275,51 @@ class FileBlock:
     sections: list[PatchSection] = field(default_factory=list)
 
 
+def _strip_code_fences(text: str) -> str:
+    """Strip markdown code fences from a block of text."""
+    # Remove all ```python / ``` pairs, keeping inner content
+    text = re.sub(r"```\w*\n", "", text)
+    text = re.sub(r"\n```", "", text)
+    return text.strip()
+
+
+def _split_multi_function_body(body: str) -> list[str]:
+    """Split a body that contains multiple top-level function defs into separate bodies."""
+    # Split on top-level def (no leading whitespace)
+    chunks = re.split(r"\n(?=def |\nasync def |@)", body)
+    # First chunk might start with def already
+    results = []
+    current = ""
+    for chunk in chunks:
+        stripped = chunk.strip()
+        if not stripped:
+            continue
+        if (stripped.startswith("def ") or stripped.startswith("async def ") or stripped.startswith("@")):
+            if current.strip():
+                results.append(current.strip())
+            current = chunk
+        else:
+            current += "\n" + chunk
+    if current.strip():
+        results.append(current.strip())
+    return results if len(results) > 1 else [body]
+
+
 def parse_patch_sections(content: str) -> list[PatchSection]:
     """Parse patch sections from a ### PATCH: block's content.
 
-    Recognized headers (case-insensitive):
+    Recognized headers (case-insensitive, 3 or 4 hashes):
       ### ADD IMPORT
       ### ADD FUNCTION
       ### UPDATE FUNCTION: name
       ### UPDATE CONSTANT: name
     """
-    # Split on section headers, capturing the header
+    # Split on section headers — allow ###, ####, or no hashes (Qwen varies)
     header_re = re.compile(
-        r"^###\s+"
-        r"(ADD\s+IMPORT|ADD\s+FUNCTION|UPDATE\s+FUNCTION|UPDATE\s+CONSTANT)"
+        r"^(?:#{3,4}\s+)?"
+        r"(ADD\s+IMPORT|ADD\s+FUNCTION|UPDATE\s+FUNCTION|(?:UPDATE|ADD)\s+CONSTANT)"
         r"(?:\s*:\s*(\w+))?"  # optional : name
-        r"\s*$",
+        r":?\s*$",  # allow trailing colon with no name
         re.IGNORECASE | re.MULTILINE,
     )
 
@@ -298,14 +328,23 @@ def parse_patch_sections(content: str) -> list[PatchSection]:
 
     for i, m in enumerate(splits):
         raw_action = re.sub(r"\s+", "_", m.group(1).strip().lower())
+        # Normalize add_constant → update_constant
+        if raw_action == "add_constant":
+            raw_action = "update_constant"
         target = m.group(2) or ""
         start = m.end()
         end = splits[i + 1].start() if i + 1 < len(splits) else len(content)
-        body = content[start:end].strip()
-        # Strip markdown code fences
-        body = re.sub(r"^```\w*\n", "", body)
-        body = re.sub(r"\n```\s*$", "", body)
-        if body:
+        body = _strip_code_fences(content[start:end])
+        if not body:
+            continue
+
+        # If ADD FUNCTION contains multiple defs, split them
+        if raw_action == "add_function":
+            func_bodies = _split_multi_function_body(body)
+            for fb in func_bodies:
+                fname = _guess_func_name(fb)
+                sections.append(PatchSection(action="add_function", target=fname, body=fb))
+        else:
             sections.append(PatchSection(action=raw_action, target=target, body=body))
 
     return sections
