@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session, joinedload
 from engine.models import NPC, Building, WorldState, Tile, Resource, Treasury, Transaction, Event
 
 # Building types available in the simulation
-BUILDING_TYPES = ["civic", "food", "residential", "bakery"]
+BUILDING_TYPES = ["civic", "food", "residential", "bakery", "blacksmith"]
 
 
 def _generate_personality() -> str:
@@ -103,6 +103,29 @@ def seed_bakery(db: Session) -> None:
         capacity=10
     )
     db.add(bakery)
+    db.commit()
+
+
+def seed_blacksmith(db: Session) -> None:
+    """Seed a blacksmith building into the town.
+
+    Creates 1 blacksmith building at coordinates (22, 22).
+    Idempotent: calling twice will not duplicate the blacksmith.
+    """
+    existing_blacksmith = db.query(Building).filter(
+        Building.building_type == "blacksmith"
+    ).first()
+    if existing_blacksmith:
+        return
+
+    blacksmith = Building(
+        name="Blacksmith",
+        building_type="blacksmith",
+        x=22,
+        y=22,
+        capacity=10
+    )
+    db.add(blacksmith)
     db.commit()
 
 
@@ -271,6 +294,43 @@ def produce_bakery_resources(db: Session) -> None:
                 db.add(new_bread)
 
 
+def produce_blacksmith_resources(db: Session) -> None:
+    """Produce resources for buildings of type 'blacksmith'.
+    
+    Blacksmith converts Ore into Tools.
+    Produces 3 Tools per tick if Ore resource available.
+    """
+    blacksmith_buildings = db.query(Building).filter(Building.building_type == 'blacksmith').all()
+    
+    for building in blacksmith_buildings:
+        # Check if Ore resource is available at this building
+        ore_resource = db.query(Resource).filter(
+            Resource.name == 'Ore',
+            Resource.building_id == building.id
+        ).first()
+        
+        # Only produce if Ore is available (quantity > 0)
+        if ore_resource and ore_resource.quantity > 0:
+            # Consume 1 Ore to produce 3 Tools
+            ore_resource.quantity -= 1
+            
+            # Check if Tools resource exists at this building
+            tools_resource = db.query(Resource).filter(
+                Resource.name == 'Tools',
+                Resource.building_id == building.id
+            ).first()
+            
+            if tools_resource:
+                tools_resource.quantity += 3
+            else:
+                new_tools = Resource(
+                    name='Tools',
+                    quantity=3,
+                    building_id=building.id
+                )
+                db.add(new_tools)
+
+
 def collect_taxes(db: Session) -> None:
     """Collect 10% taxes from all NPCs and add to Treasury.
     
@@ -383,9 +443,9 @@ def calculate_happiness(db: Session, npc_id: int) -> None:
 
 
 def get_npc_decision(db: Session, npc_id: int) -> str:
-    """Return the action an NPC should take based on needs.
+    """Determine what an NPC should do based on their state.
     
-    Priority order:
+    Decision priority:
     1. eat (if hunger > 50)
     2. sleep (if energy < 30)
     3. work (if has work_building and not at work)
@@ -470,7 +530,8 @@ def process_tick(db: Session) -> None:
     
     # 6. Process production
     produce_resources(db, weather)
-    produce_bakery_resources(db)  # New: bakery production
+    produce_bakery_resources(db)  # Bakery production
+    produce_blacksmith_resources(db)  # Blacksmith production
     
     # 7. Process economy (wages, trades, tax collection)
     process_work(db)

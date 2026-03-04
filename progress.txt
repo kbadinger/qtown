@@ -266,3 +266,8 @@
 *   **Non-obvious complexity**: The PRD-to-implementation mapping required careful handling of implicit state transitions; the source text often omitted edge-case behaviors that needed to be explicitly defined in the code logic before execution.
 *   **Codebase patterns**: Discovered a strict separation between "domain primitives" (pure logic) and "infrastructure adapters" (I/O), where all external data ingestion must pass through a normalized `PRDParser` interface before reaching business logic.
 *   **Correction made**: Initially attempted to parse nested requirements recursively in a single pass, which caused stack overflow on deep structures; corrected by switching to an iterative queue-based approach with explicit depth limits.
+
+--- Story 047: Add blacksmith building type (attempts: 1, 2026-03-04 08:43) ---
+*   **Non-obvious coupling**: The `BuildingType` enum required updates in three distinct layers (domain model, UI rendering logic, and the `World` state factory) to ensure the new blacksmith appeared correctly in both the simulation and the interface.
+*   **Codebase pattern**: New building types follow a strict "declaration-first" convention; the enum value must be added before the `getBuildingStats()` switch statement is updated, or the build process fails with a silent null reference in the factory.
+*   **Correction**: Initially, I hardcoded the blacksmith's production rate directly in the UI component; I corrected this by extracting the value to the central `BuildingConfig` map to maintain consistency with other building types.
