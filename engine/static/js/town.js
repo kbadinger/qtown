@@ -560,18 +560,24 @@
   // -------------------------------------------------------------------------
 
   // Status counter (bottom-right)
-  var statusEl = document.createElement("div");
-  statusEl.style.cssText = "position:fixed;bottom:10px;right:10px;z-index:9999;background:rgba(0,0,0,0.6);color:#9ca3af;padding:4px 10px;font:11px monospace;border-radius:4px;";
-  document.body.appendChild(statusEl);
+  (function() {
+    var el = document.createElement("div");
+    el.id = "status-counter";
+    el.style.cssText = "position:fixed;bottom:10px;right:10px;z-index:99999;background:rgba(0,0,0,0.8);color:#0f0;padding:6px 10px;font:11px monospace;border-radius:4px;pointer-events:none;";
+    el.textContent = "loading...";
+    document.body.appendChild(el);
 
-  var _baseFetch = fetchWorld;
-  fetchWorld = async function() {
-    await _baseFetch();
-    var b = buildingLayer.children.length;
-    var n = npcLayer.children.length;
-    var g = groundLayer.children.length;
-    statusEl.textContent = "tiles:" + g + " buildings:" + b + " npcs:" + n;
-  };
+    var _base = fetchWorld;
+    fetchWorld = async function() {
+      try {
+        await _base();
+        el.textContent = "tiles:" + groundLayer.children.length + " buildings:" + buildingLayer.children.length + " npcs:" + npcLayer.children.length;
+      } catch(e) {
+        el.textContent = "error: " + e.message;
+        el.style.color = "#f00";
+      }
+    };
+  })();
 
   // Initial fetch, then poll
   fetchWorld();
