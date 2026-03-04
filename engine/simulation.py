@@ -2,12 +2,13 @@
 
 import json
 import random
+import math
 from sqlalchemy.orm import Session, joinedload
 
 from engine.models import NPC, Building, WorldState, Tile, Resource, Treasury, Transaction, Event
 
 # Building types available in the simulation
-BUILDING_TYPES = ["civic", "food", "residential", "bakery", "blacksmith", "farm"]
+BUILDING_TYPES = ["civic", "food", "residential", "bakery", "blacksmith", "farm", "church"]
 
 
 def _generate_personality() -> str:
@@ -149,6 +150,29 @@ def seed_farm(db: Session) -> None:
         capacity=10
     )
     db.add(farm)
+    db.commit()
+
+
+def seed_church(db: Session) -> None:
+    """Seed a church building into the town.
+
+    Creates 1 church building at coordinates (35, 35).
+    Idempotent: calling twice will not duplicate the church.
+    """
+    existing_church = db.query(Building).filter(
+        Building.building_type == "church"
+    ).first()
+    if existing_church:
+        return
+
+    church = Building(
+        name="Church",
+        building_type="church",
+        x=35,
+        y=35,
+        capacity=10
+    )
+    db.add(church)
     db.commit()
 
 
@@ -794,3 +818,25 @@ def sleep_npc(db: Session, npc_id: int) -> bool:
     npc.energy = min(100, npc.energy + 40)
     db.commit()
     return True
+
+
+def apply_church_effects(db: Session) -> None:
+    """Apply church effects on NPC happiness.
+    
+    Increases happiness of NPCs within radius 10 of any church building by 5.
+    """
+    church_buildings = db.query(Building).filter(Building.building_type == 'church').all()
+    
+    for church in church_buildings:
+        # Get all NPCs
+        npcs = db.query(NPC).all()
+        
+        for npc in npcs:
+            # Calculate Euclidean distance
+            distance = math.sqrt((npc.x - church.x) ** 2 + (npc.y - church.y) ** 2)
+            
+            # If within radius 10, increase happiness
+            if distance <= 10:
+                npc.happiness = min(100, npc.happiness + 5)
+    
+    db.commit()

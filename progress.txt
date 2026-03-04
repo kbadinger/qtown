@@ -276,3 +276,8 @@
 - **Tricky**: The `BuildingType` enum requires explicit handling in the `Farm` class's `get_production()` method; simply adding the enum value wasn't enough without updating the switch logic to return the correct yield.
 - **Pattern**: The codebase strictly separates domain entities (like `Farm`) from configuration data; new building types must be defined in `config/buildings.json` and mapped via the `BuildingRegistry` singleton rather than hardcoded.
 - **Correction**: Initially attempted to hardcode the new building's stats in the test file, but realized this violates the separation of concerns; moved the definition to the shared configuration to ensure consistency across tests and runtime.
+
+--- Story 049: Add church building type (attempts: 1, 2026-03-04 10:44) ---
+- **Tricky/Non-obvious**: The `BuildingType` enum requires a corresponding entry in the `building_definitions.json` configuration file; adding the enum alone causes runtime failures when the game attempts to load building stats.
+- **Patterns/Conventions**: New building types follow a strict "Enum + JSON Config + UI Icon" triad, where the JSON filename must match the enum constant (e.g., `church.json` for `BuildingType.CHURCH`) to be auto-discovered by the loader.
+- **Mistakes/Corrections**: Initially placed the new enum value in the wrong alphabetical position, breaking the serialization order expected by the save-game loader; corrected by ensuring strict alphabetical ordering of all enum constants.
