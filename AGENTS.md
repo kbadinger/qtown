@@ -134,15 +134,48 @@ path = generate_npc("merchant")
 
 ## Output Format
 
-Respond with `### FILE: path/to/file.py` blocks containing the COMPLETE file contents:
+Use **`### PATCH:`** for existing files and **`### FILE:`** for new files.
+
+### Patching existing files (preferred)
+
+For files that already exist (especially `engine/simulation.py`), output ONLY the new or changed
+sections — do NOT rewrite the entire file:
 
 ```
-### FILE: engine/simulation.py
-<complete file contents here>
+### PATCH: engine/simulation.py
 
-### FILE: engine/routers/buildings.py
+### ADD IMPORT
+from engine.models import Warehouse
+
+### UPDATE CONSTANT: BUILDING_TYPES
+BUILDING_TYPES = ["civic", "food", "tavern", "library", "mine"]
+
+### ADD FUNCTION
+def seed_mine(db: Session) -> None:
+    """Seed a mine building."""
+    from engine.models import Building
+    ...full function body...
+
+### UPDATE FUNCTION: process_tick
+def process_tick(db: Session) -> None:
+    """Run one simulation tick."""
+    ...full function body with new call added...
+```
+
+Section types:
+- `### ADD IMPORT` — new import lines (duplicates are automatically ignored)
+- `### ADD FUNCTION` — a completely new function (full body required)
+- `### UPDATE FUNCTION: name` — replace an existing function (full body required)
+- `### UPDATE CONSTANT: name` — replace a module-level constant (e.g. BUILDING_TYPES)
+
+### Creating new files
+
+For files that do not exist yet, use `### FILE:` with complete contents:
+
+```
+### FILE: engine/routers/mining.py
 <complete file contents here>
 ```
 
-Always output complete files — never use `...` or `# rest unchanged`. Every `### FILE:` block
-must contain the full, working file content.
+Every `### FILE:` block must contain the full, working file content — never use `...` or
+`# rest unchanged`.

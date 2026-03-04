@@ -36,7 +36,8 @@ def _extract_function_inventory(filepath: str, content: str) -> str | None:
             f"{filepath} currently contains these definitions:",
         ]
         lines.extend(defs)
-        lines.append("You MUST include ALL of them in your output. Dropping any function will cause regression test failure.")
+        lines.append("Use ### PATCH: with ADD/UPDATE sections — do NOT rewrite the entire file.")
+        lines.append("You MUST preserve ALL existing functions. Dropping any will cause regression test failure.")
         lines.append("")
         return "\n".join(lines)
     return None
@@ -156,8 +157,9 @@ def build_prompt(
     parts.append("=== YOUR TASK ===")
     parts.append(
         "Write the code to make the failing tests pass. "
-        "Output your code using ### FILE: path/to/file.py blocks. "
-        "Include the COMPLETE file contents in each block. "
+        "For EXISTING files, use ### PATCH: path/to/file.py with ADD IMPORT / ADD FUNCTION / "
+        "UPDATE FUNCTION: name / UPDATE CONSTANT: name sections — output ONLY new or changed code. "
+        "For NEW files, use ### FILE: path/to/file.py with complete contents. "
         "Do NOT modify any files on the blocklist (see AGENTS.md)."
     )
 
