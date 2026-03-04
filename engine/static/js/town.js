@@ -9,14 +9,6 @@
 (function () {
   "use strict";
 
-  // Debug: show errors visually since we can't access console
-  window.onerror = function(msg, src, line) {
-    var d = document.createElement("div");
-    d.style.cssText = "position:fixed;bottom:10px;left:10px;z-index:9999;background:red;color:white;padding:8px 12px;font:12px monospace;max-width:80vw;border-radius:4px;";
-    d.textContent = "JS Error: " + msg + " (" + src + ":" + line + ")";
-    document.body.appendChild(d);
-  };
-
   // -------------------------------------------------------------------------
   // Constants
   // -------------------------------------------------------------------------
@@ -120,7 +112,7 @@
   const textureCache = {};
   const failedTextures = new Set();
   const loadingTextures = new Set();
-  const ASSET_VERSION = "v17";  // Cache-buster for CDN/Cloudflare
+  const ASSET_VERSION = "v18";  // Cache-buster for CDN/Cloudflare
 
   function tryLoadTexture(url) {
     if (textureCache[url]) return textureCache[url];
@@ -184,20 +176,6 @@
         g.endFill();
 
         groundLayer.addChild(g);
-
-        // DEBUG: tile coordinate labels (every 5th tile)
-        if (tx % 5 === 0 && ty % 5 === 0) {
-          const label = new PIXI.Text(`${tx},${ty}`, {
-            fontSize: 8,
-            fill: 0xFFFFFF,
-            fontFamily: "monospace",
-          });
-          label.anchor.set(0.5, 0.5);
-          label.x = pos.x;
-          label.y = pos.y;
-          label.alpha = 0.6;
-          groundLayer.addChild(label);
-        }
       }
     }
   }
@@ -215,22 +193,6 @@
       const bType = (b.building_type || b.type || "civic").toLowerCase();
       const name = b.name || bType;
       const spriteUrl = `/static/assets/buildings/${bType}.png`;
-
-      // DEBUG: draw actual 2x2 tile footprint (outer vertices of tiles x,y to x+1,y+1)
-      const tTop   = toScreen(b.x, b.y);
-      const tRight = toScreen(b.x + 1, b.y);
-      const tBot   = toScreen(b.x + 1, b.y + 1);
-      const tLeft  = toScreen(b.x, b.y + 1);
-      const dbg = new PIXI.Graphics();
-      dbg.lineStyle(2, 0xFF0000, 0.8);
-      dbg.beginFill(0xFF0000, 0.15);
-      dbg.moveTo(tTop.x,                  tTop.y - TILE_H / 2);
-      dbg.lineTo(tRight.x + TILE_W / 2,   tRight.y);
-      dbg.lineTo(tBot.x,                  tBot.y + TILE_H / 2);
-      dbg.lineTo(tLeft.x - TILE_W / 2,    tLeft.y);
-      dbg.closePath();
-      dbg.endFill();
-      buildingLayer.addChild(dbg);
 
       let sprite = null;
       const tex = tryLoadTexture(spriteUrl);
@@ -596,27 +558,6 @@
   // -------------------------------------------------------------------------
   // Boot
   // -------------------------------------------------------------------------
-
-  // Debug status indicator
-  var dbg = document.createElement("div");
-  dbg.style.cssText = "position:fixed;bottom:10px;right:10px;z-index:9999;background:rgba(0,0,0,0.8);color:#0f0;padding:6px 10px;font:11px monospace;border-radius:4px;";
-  dbg.textContent = "PIXI OK, fetching world...";
-  document.body.appendChild(dbg);
-
-  var _origFetch = fetchWorld;
-  fetchWorld = async function() {
-    try {
-      await _origFetch();
-      var b = buildingLayer.children.length;
-      var n = npcLayer.children.length;
-      var g = groundLayer.children.length;
-      dbg.textContent = "tiles:" + g + " buildings:" + b + " npcs:" + n;
-      dbg.style.color = (g > 0) ? "#0f0" : "#f00";
-    } catch(e) {
-      dbg.textContent = "fetch error: " + e.message;
-      dbg.style.color = "#f00";
-    }
-  };
 
   // Initial fetch, then poll
   fetchWorld();
