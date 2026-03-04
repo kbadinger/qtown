@@ -256,3 +256,8 @@
 *   **Tricky**: The `dedup` logic required handling the race condition where a single IP submits multiple votes in rapid succession before the previous one is persisted; using a simple in-memory set failed under load, necessitating a database-level unique constraint on `(ip, story_id)` with explicit error handling.
 *   **Pattern**: The codebase consistently uses a "command-query separation" pattern where write operations (voting) return a boolean status rather than the updated entity, forcing the caller to re-fetch data if immediate UI updates are needed.
 *   **Correction**: Initially attempted to validate IP uniqueness in the controller layer, which caused duplicate votes during high concurrency; moved the validation logic to the repository layer to ensure atomicity and leverage database transaction isolation.
+
+--- Story 044: Admin approval (attempts: 1, 2026-03-03 22:23) ---
+- **Tricky Logic**: The approval workflow required careful handling of race conditions where a user might attempt to edit a record while an admin is simultaneously reviewing it; adding a version check on the `status` field was necessary to prevent stale updates.
+- **Codebase Patterns**: This project strictly separates authorization logic from business logic by using a dedicated `Policy` service for role checks, rather than scattering `if (user.isAdmin)` guards throughout the controllers.
+- **Correction**: Initially, I attempted to trigger the approval notification via a synchronous call in the controller, which caused timeouts under load; I corrected this by moving the notification dispatch to a background job queue.
