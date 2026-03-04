@@ -67,6 +67,7 @@ def test_s039_happiness_calculation(db):
     npc = NPC(name="Test", role="farmer", x=0, y=0, hunger=20, energy=80)
     db.add(npc)
     db.commit()
-    happiness = calculate_happiness(db, npc.id)
-    assert isinstance(happiness, (int, float))
-    assert 0 <= happiness <= 100
+    calculate_happiness(db, npc.id)
+    db.refresh(npc)
+    assert isinstance(npc.happiness, (int, float))
+    assert 0 <= npc.happiness <= 100

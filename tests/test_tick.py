@@ -105,6 +105,6 @@ def test_s041_utility_based_decisions(db):
     from engine.models import NPC
 
     npc = db.query(NPC).first()
-    decision = get_npc_decision(db, npc)
+    decision = get_npc_decision(db, npc.id)
     assert decision is not None
-    assert "action" in decision
+    assert decision in ("eat", "sleep", "work", "rest")

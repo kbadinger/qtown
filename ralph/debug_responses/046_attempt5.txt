@@ -1,0 +1,346 @@
+### FILE: engine/simulation.py
+
+```python
+import json
+import random
+from sqlalchemy.orm import Session, joinedload
+from engine.models import (
+    NPC, Building, Resource, Transaction, Treasury,
+    WorldState, Feature, Tile, Vote, Event, AdminUser
+)
+
+BUILDING_TYPES = ['civic', 'food', 'residential', 'bakery', 'guard', 'market', 'religious']
+
+def _generate_personality():
+    """Generate a random personality for an NPC."""
+    traits = ['brave', 'cowardly', 'greedy', 'generous', 'kind', 'cruel', 'smart', 'foolish']
+    return json.dumps(random.sample(traits, k=3))
+
+def init_world_state(db: Session) -> None:
+    """Initialize the world state if it doesn't exist."""
+    if not db.query(WorldState).first():
+        db.add(WorldState(
+            day=1,
+            gold=1000,
+            population=0,
+            happiness=50
+        ))
+        db.commit()
+
+def init_grid(db: Session) -> None:
+    """Initialize the grid with 50x50 tiles."""
+    if not db.query(Tile).first():
+        for x in range(50):
+            for y in range(50):
+                db.add(Tile(x=x, y=y, feature=None))
+        db.commit()
+
+def seed_buildings(db: Session) -> None:
+    """Seed the world with initial buildings."""
+    buildings_data = [
+        {"name": "Town Hall", "type": "civic", "x": 25, "y": 25, "capacity": 10},
+        {"name": "General Store", "type": "market", "x": 20, "y": 20, "capacity": 5},
+        {"name": "City Guard Post", "type": "guard", "x": 30, "y": 30, "capacity": 5},
+        {"name": "Community Center", "type": "residential", "x": 35, "y": 35, "capacity": 20},
+        {"name": "Farm", "type": "food", "x": 10, "y": 10, "capacity": 5},
+    ]
+    
+    for data in buildings_data:
+        building = Building(
+            name=data["name"],
+            building_type=data["type"],
+            x=data["x"],
+            y=data["y"],
+            capacity=data["capacity"]
+        )
+        db.add(building)
+    
+    db.commit()
+
+def seed_npcs(db: Session) -> None:
+    """Seed the world with initial NPCs."""
+    names = ["Alice", "Bob", "Charlie", "David", "Eve"]
+    roles = ["farmer", "baker", "guard", "merchant", "priest"]
+    
+    existing_positions = set()
+    for npc in db.query(NPC).all():
+        existing_positions.add((npc.x, npc.y))
+    
+    valid_positions = [(x, y) for x in range(50) for y in range(50) if (x, y) not in existing_positions]
+    
+    if valid_positions:
+        new_x, new_y = random.choice(valid_positions)
+        
+        new_npc = NPC(
+            name=random.choice(names),
+            role=random.choice(roles),
+            x=new_x,
+            y=new_y,
+            gold=0,
+            hunger=0,
+            energy=100,
+            happiness=50,
+            personality=_generate_personality()
+        )
+        
+        db.add(new_npc)
+        db.commit()
+
+def build_building(db: Session, building_type: str, x: int, y: int, capacity: int = 10) -> bool:
+    """Build a new building at the specified location."""
+    if not (0 <= x < 50 and 0 <= y < 50):
+        return False
+    
+    existing = db.query(Building).filter(Building.x == x, Building.y == y).first()
+    if existing:
+        return False
+    
+    building = Building(
+        name=f"New {building_type.capitalize()}",
+        building_type=building_type,
+        x=x,
+        y=y,
+        capacity=capacity
+    )
+    
+    db.add(building)
+    db.commit()
+    return True
+
+def move_npc_toward_target(db: Session, npc_id: int, target_x: int, target_y: int) -> bool:
+    """Move an NPC one step toward the target coordinates."""
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return False
+    
+    dx = target_x - npc.x
+    dy = target_y - npc.y
+    
+    if dx == 0 and dy == 0:
+        return True
+    
+    if dx != 0:
+        npc.x += 1 if dx > 0 else -1
+    elif dy != 0:
+        npc.y += 1 if dy > 0 else -1
+    
+    db.commit()
+    return True
+
+def process_work(db: Session) -> None:
+    """Process work for NPCs assigned to buildings."""
+    # Simple implementation: NPCs at work buildings gain gold
+    for npc in db.query(NPC).filter(NPC.work_building_id != None).all():
+        if npc.energy > 0:
+            npc.gold += 2
+            npc.energy -= 5
+
+def produce_resources(db: Session, weather: str = None) -> None:
+    """Produce resources for buildings of type 'food' and 'bakery'.
+    
+    Food buildings produce 10 Food per tick (12 if rain).
+    Bakery buildings convert 1 Wheat into 5 Bread per tick.
+    """
+    # Food production
+    food_buildings = db.query(Building).filter(Building.building_type == 'food').all()
+    
+    # Determine production amount based on weather
+    base_production = 10
+    if weather == 'rain':
+        base_production = 12  # +20% bonus
+    
+    for building in food_buildings:
+        resource = db.query(Resource).filter(
+            Resource.name == 'Food',
+            Resource.building_id == building.id
+        ).first()
+        
+        if resource:
+            resource.quantity += base_production
+        else:
+            new_resource = Resource(
+                name='Food',
+                quantity=base_production,
+                building_id=building.id
+            )
+            db.add(new_resource)
+    
+    # Bakery production (convert Wheat to Bread)
+    bakery_buildings = db.query(Building).filter(Building.building_type == 'bakery').all()
+    
+    for building in bakery_buildings:
+        # Find Wheat resource available (not necessarily at this building)
+        wheat_resource = db.query(Resource).filter(
+            Resource.name == 'Wheat',
+            Resource.quantity >= 1
+        ).first()
+        
+        if wheat_resource:
+            # Decrement Wheat by 1
+            wheat_resource.quantity -= 1
+            
+            # Create or increment Bread resource at this bakery
+            bread_resource = db.query(Resource).filter(
+                Resource.name == 'Bread',
+                Resource.building_id == building.id
+            ).first()
+            
+            if bread_resource:
+                bread_resource.quantity += 5
+            else:
+                new_bread = Resource(
+                    name='Bread',
+                    quantity=5,
+                    building_id=building.id
+                )
+                db.add(new_bread)
+
+def collect_taxes(db: Session) -> None:
+    """Collect taxes from NPCs."""
+    tax_rate = 1
+    treasury = db.query(Treasury).first()
+    
+    for npc in db.query(NPC).all():
+        if npc.gold >= tax_rate:
+            npc.gold -= tax_rate
+            if treasury:
+                treasury.gold += tax_rate
+    
+    db.commit()
+
+def update_weather(db: Session) -> None:
+    """Update the weather for the next tick."""
+    world = db.query(WorldState).first()
+    if not world:
+        return
+    
+    weather_options = ['sunny', 'cloudy', 'rain', 'snow']
+    world.weather = random.choice(weather_options)
+    db.commit()
+
+def apply_weather_effects(db: Session) -> None:
+    """Apply weather effects to the world."""
+    world = db.query(WorldState).first()
+    if not world:
+        return
+    
+    if world.weather == 'rain':
+        # Rain increases food production (handled in produce_resources)
+        pass
+    elif world.weather == 'snow':
+        # Snow decreases NPC happiness
+        for npc in db.query(NPC).all():
+            npc.happiness = max(0, npc.happiness - 5)
+    
+    db.commit()
+
+def calculate_happiness(db: Session) -> float:
+    """Calculate average happiness of all NPCs."""
+    npcs = db.query(NPC).all()
+    if not npcs:
+        return 50.0
+    
+    total_happiness = sum(npc.happiness for npc in npcs)
+    return total_happiness / len(npcs)
+
+def get_npc_decision(db: Session, npc_id: int) -> str:
+    """Get the next decision for an NPC."""
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return "idle"
+    
+    if npc.hunger > 80:
+        return "eat"
+    elif npc.energy < 20:
+        return "sleep"
+    elif npc.gold < 10:
+        return "work"
+    else:
+        return "idle"
+
+def process_tick(db: Session) -> None:
+    """Process one tick of the simulation."""
+    world = db.query(WorldState).first()
+    if not world:
+        return
+    
+    world.day += 1
+    
+    # Update weather
+    update_weather(db)
+    
+    # Apply weather effects
+    apply_weather_effects(db)
+    
+    # Produce resources
+    produce_resources(db, weather=world.weather)
+    
+    # Process work
+    process_work(db)
+    
+    # Collect taxes
+    collect_taxes(db)
+    
+    # Check for population growth
+    check_population_growth(db)
+    
+    db.commit()
+
+def check_population_growth(db: Session) -> None:
+    """Check if the population should grow."""
+    world = db.query(WorldState).first()
+    if not world:
+        return
+    
+    avg_happiness = calculate_happiness(db)
+    if avg_happiness > 70 and world.population < 100:
+        # Add a new NPC
+        names = ["Alice", "Bob", "Charlie", "David", "Eve"]
+        roles = ["farmer", "baker", "guard", "merchant", "priest"]
+        
+        existing_positions = set()
+        for npc in db.query(NPC).all():
+            existing_positions.add((npc.x, npc.y))
+        
+        valid_positions = [(x, y) for x in range(50) for y in range(50) if (x, y) not in existing_positions]
+        
+        if valid_positions:
+            new_x, new_y = random.choice(valid_positions)
+            
+            new_npc = NPC(
+                name=random.choice(names),
+                role=random.choice(roles),
+                x=new_x,
+                y=new_y,
+                gold=0,
+                hunger=0,
+                energy=100,
+                happiness=50,
+                personality=_generate_personality()
+            )
+            
+            db.add(new_npc)
+            world.population += 1
+            db.commit()
+
+def seed_bakery(db: Session) -> None:
+    """Seed the world with a bakery building.
+    
+    Places one bakery at appropriate coordinates (18, 18).
+    """
+    # Check if a bakery already exists
+    existing_bakery = db.query(Building).filter(Building.building_type == 'bakery').first()
+    if existing_bakery:
+        return
+    
+    bakery = Building(
+        name="Town Bakery",
+        building_type='bakery',
+        x=18,
+        y=18,
+        capacity=10
+    )
+    
+    db.add(bakery)
+    db.commit()
+```

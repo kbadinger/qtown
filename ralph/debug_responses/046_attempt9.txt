@@ -1,3 +1,185 @@
+### FILE: engine/models.py
+"""All data models — single source of truth for the DB schema."""
+
+from datetime import datetime, timezone
+
+from sqlalchemy import (
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
+from sqlalchemy.orm import relationship
+
+from engine.db import Base
+
+
+def _utcnow():
+    return datetime.now(timezone.utc)
+
+
+class Tile(Base):
+    __tablename__ = "tiles"
+
+    id = Column(Integer, primary_key=True, index=True)
+    x = Column(Integer, nullable=False)
+    y = Column(Integer, nullable=False)
+    terrain = Column(String(32), nullable=False, default="grass")
+
+    __table_args__ = (UniqueConstraint("x", "y", name="uq_tile_xy"),)
+
+
+class AdminUser(Base):
+    __tablename__ = "admin_users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(64), unique=True, nullable=False)
+    key_hash = Column(String(128), nullable=False)
+    is_active = Column(Integer, default=1)
+    created_at = Column(DateTime, default=_utcnow)
+
+
+class WorldState(Base):
+    __tablename__ = "world_state"
+
+    id = Column(Integer, primary_key=True, index=True)
+    tick = Column(Integer, default=0)
+    day = Column(Integer, default=1)
+    time_of_day = Column(String(32), default="morning")
+    weather = Column(String(32), nullable=True)
+    created_at = Column(DateTime, default=_utcnow)
+
+
+class Feature(Base):
+    __tablename__ = "features"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(200), nullable=False)
+    description = Column(Text, nullable=True)
+    submitted_by_ip = Column(String(45), nullable=True)
+    status = Column(String(20), nullable=False, default="submitted")
+    vote_count = Column(Integer, default=0)
+
+    # PRD staging fields — populated when admin converts to a story
+    prd_story_id = Column(String(10), nullable=True)
+    prd_title = Column(String(200), nullable=True)
+    prd_description = Column(Text, nullable=True)
+    prd_test_file = Column(String(200), nullable=True)
+
+    created_at = Column(DateTime, default=_utcnow)
+    updated_at = Column(DateTime, default=_utcnow, onupdate=_utcnow)
+
+    votes = relationship("Vote", back_populates="feature", cascade="all, delete-orphan")
+
+
+class Vote(Base):
+    __tablename__ = "votes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    feature_id = Column(Integer, ForeignKey("features.id"), nullable=False)
+    voter_ip = Column(String(45), nullable=False)
+
+    created_at = Column(DateTime, default=_utcnow)
+
+    feature = relationship("Feature", back_populates="votes")
+
+    __table_args__ = (
+        UniqueConstraint("feature_id", "voter_ip", name="uq_vote_feature_ip"),
+    )
+
+
+class Building(Base):
+    __tablename__ = "buildings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(64), nullable=False)
+    building_type = Column(String(64), nullable=False)
+    x = Column(Integer, nullable=False)
+    y = Column(Integer, nullable=False)
+    capacity = Column(Integer, default=10)
+    created_at = Column(DateTime, default=_utcnow)
+
+
+class NPC(Base):
+    __tablename__ = "npcs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(64), nullable=False)
+    role = Column(String(64), nullable=False)
+    x = Column(Integer, nullable=False)
+    y = Column(Integer, nullable=False)
+    gold = Column(Integer, default=0)
+    hunger = Column(Integer, default=0)
+    energy = Column(Integer, default=100)
+    happiness = Column(Integer, default=50)
+    home_building_id = Column(Integer, ForeignKey("buildings.id"), nullable=True)
+    work_building_id = Column(Integer, ForeignKey("buildings.id"), nullable=True)
+    target_x = Column(Integer, nullable=True)
+    target_y = Column(Integer, nullable=True)
+    personality = Column(String(256), nullable=True, default='{}')
+    created_at = Column(DateTime, default=_utcnow)
+
+    home_building = relationship("Building", foreign_keys=[home_building_id])
+    work_building = relationship("Building", foreign_keys=[work_building_id])
+
+
+class Transaction(Base):
+    __tablename__ = "transactions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    sender_id = Column(Integer, ForeignKey("npcs.id"), nullable=False)
+    receiver_id = Column(Integer, ForeignKey("npcs.id"), nullable=False)
+    amount = Column(Integer, nullable=False)
+    reason = Column(String(256), nullable=True)
+    created_at = Column(DateTime, default=_utcnow)
+
+    sender = relationship("NPC", foreign_keys=[sender_id])
+    receiver = relationship("NPC", foreign_keys=[receiver_id])
+
+
+class Resource(Base):
+    __tablename__ = "resources"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(64), nullable=False)
+    quantity = Column(Integer, default=0)
+    building_id = Column(Integer, ForeignKey("buildings.id"), nullable=True)
+    created_at = Column(DateTime, default=_utcnow)
+
+    building = relationship("Building", foreign_keys=[building_id])
+
+
+class Treasury(Base):
+    __tablename__ = "treasuries"
+
+    id = Column(Integer, primary_key=True, index=True)
+    gold_stored = Column(Integer, default=0)
+    building_id = Column(Integer, ForeignKey("buildings.id"), nullable=True)
+    created_at = Column(DateTime, default=_utcnow)
+
+    building = relationship("Building", foreign_keys=[building_id])
+
+
+class Event(Base):
+    __tablename__ = "events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    event_type = Column(String(64), nullable=False)
+    description = Column(String(256), nullable=False)
+    tick = Column(Integer, nullable=False)
+    severity = Column(String(16), nullable=False, default="info")
+    affected_npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=True)
+    affected_building_id = Column(Integer, ForeignKey("buildings.id"), nullable=True)
+    created_at = Column(DateTime, default=_utcnow)
+
+    affected_npc = relationship("NPC", foreign_keys=[affected_npc_id])
+    affected_building = relationship("Building", foreign_keys=[affected_building_id])
+
+### FILE: engine/simulation.py
 """All simulation logic — pure functions that take db session and modify game state."""
 
 import json
@@ -6,8 +188,7 @@ from sqlalchemy.orm import Session, joinedload
 
 from engine.models import NPC, Building, WorldState, Tile, Resource, Treasury, Transaction, Event
 
-# Building types available in the simulation
-BUILDING_TYPES = ["civic", "food", "residential", "bakery"]
+BUILDING_TYPES = ['civic', 'food', 'residential', 'bakery']
 
 
 def _generate_personality() -> str:
@@ -86,23 +267,20 @@ def seed_buildings(db: Session) -> None:
 def seed_bakery(db: Session) -> None:
     """Seed a bakery building into the town.
 
-    Creates 1 bakery building at coordinates (18, 18).
-    Idempotent: calling twice will not duplicate the bakery.
+    Creates 1 bakery building at appropriate coordinates.
+    Idempotent: calling twice will not duplicate bakeries.
     """
-    existing_bakery = db.query(Building).filter(
-        Building.building_type == "bakery"
-    ).first()
-    if existing_bakery:
+    existing = db.query(Building).filter(Building.building_type == 'bakery').count()
+    if existing > 0:
         return
 
-    bakery = Building(
+    db.add(Building(
         name="Bakery",
         building_type="bakery",
-        x=18,
-        y=18,
+        x=35,
+        y=35,
         capacity=10
-    )
-    db.add(bakery)
+    ))
     db.commit()
 
 
@@ -235,26 +413,25 @@ def produce_resources(db: Session, weather: str = None) -> None:
 
 
 def produce_bakery_resources(db: Session) -> None:
-    """Produce resources for buildings of type 'bakery'.
+    """Produce bread for buildings of type 'bakery'.
     
-    Bakery converts Wheat into Bread.
-    Produces 5 Bread per tick if Wheat resource available.
+    Bakery converts Wheat into Bread. Produces 5 Bread per tick
+    if Wheat resource is available.
     """
     bakery_buildings = db.query(Building).filter(Building.building_type == 'bakery').all()
     
     for building in bakery_buildings:
-        # Check if Wheat resource is available at this building
+        # Check if Wheat resource is available
         wheat_resource = db.query(Resource).filter(
             Resource.name == 'Wheat',
             Resource.building_id == building.id
         ).first()
         
-        # Only produce if Wheat is available (quantity > 0)
-        if wheat_resource and wheat_resource.quantity > 0:
-            # Consume 1 Wheat to produce 5 Bread
+        if wheat_resource and wheat_resource.quantity >= 1:
+            # Consume 1 Wheat
             wheat_resource.quantity -= 1
             
-            # Check if Bread resource exists at this building
+            # Produce 5 Bread
             bread_resource = db.query(Resource).filter(
                 Resource.name == 'Bread',
                 Resource.building_id == building.id
@@ -303,123 +480,90 @@ def collect_taxes(db: Session) -> None:
             npc.gold -= tax_amount
             total_collected += tax_amount
     
-    # Add collected taxes to Treasury
-    if total_collected > 0:
-        treasury.gold_stored += total_collected
-    
+    treasury.gold_stored += total_collected
     db.commit()
 
 
 def update_weather(db: Session) -> None:
-    """Update the weather in WorldState with weighted random selection.
-    
-    Weather options with weights:
-    - clear: 40%
-    - rain: 25%
-    - storm: 10%
-    - snow: 10%
-    - fog: 15%
-    """
+    """Update weather randomly every 10 ticks."""
     world_state = db.query(WorldState).first()
     if not world_state:
         return
     
-    weather_options = ['clear', 'rain', 'storm', 'snow', 'fog']
-    weights = [40, 25, 10, 10, 15]
-    
-    new_weather = random.choices(weather_options, weights=weights, k=1)[0]
-    
-    # Only update if weather changed
-    if new_weather != world_state.weather:
-        world_state.weather = new_weather
+    # Only change weather every 10 ticks
+    if world_state.tick % 10 == 0:
+        # Random weather selection
+        weather_options = ['sunny', 'rain', 'snow', 'cloudy']
+        world_state.weather = random.choice(weather_options)
         db.commit()
 
 
 def apply_weather_effects(db: Session) -> None:
-    """Apply weather effects on NPC movement and production."""
+    """Apply weather effects to NPCs (e.g., snow halves movement)."""
     world_state = db.query(WorldState).first()
     if not world_state:
         return
     
     weather = world_state.weather
     
-    # Snow reduces movement speed (handled in movement by checking tick % 2)
-    # Rain increases food production (handled in produce_resources)
-    # Storm temporarily stops all NPC movement (handled in movement)
+    # Snow makes NPCs move slower (handled in process_tick movement logic)
+    # Rain makes NPCs lose energy faster
+    if weather == 'rain':
+        npcs = db.query(NPC).all()
+        for npc in npcs:
+            npc.energy = max(0, npc.energy - 2)
+    
+    db.commit()
 
 
 def calculate_happiness(db: Session, npc_id: int) -> None:
-    """Calculate and update happiness for an NPC.
+    """Recalculate happiness for an NPC based on needs.
     
-    Happiness is affected by:
-    - Hunger: -10 if hunger > 50
-    - Energy: -10 if energy < 30
-    - Gold: +5 if gold > 20
-    - Has home: +10 if home_building_id is set
-    - Has work: +10 if work_building_id is set
-    Base happiness is 50.
+    Happiness = 100 - (hunger penalty) - (energy penalty)
+    hunger penalty = hunger * 0.5 (max 50)
+    energy penalty = (100 - energy) * 0.3 (max 30)
     """
     npc = db.query(NPC).filter(NPC.id == npc_id).first()
     if not npc:
         return
     
-    # Calculate happiness based on conditions
-    happiness = 50
+    hunger_penalty = min(50, int(npc.hunger * 0.5))
+    energy_penalty = min(30, int((100 - npc.energy) * 0.3))
     
-    if npc.hunger > 50:
-        happiness -= 10
-    if npc.energy < 30:
-        happiness -= 10
-    if npc.gold > 20:
-        happiness += 5
-    if npc.home_building_id is not None:
-        happiness += 10
-    if npc.work_building_id is not None:
-        happiness += 10
-    
-    # Clamp happiness between 0 and 100
-    npc.happiness = max(0, min(100, happiness))
+    npc.happiness = max(0, 100 - hunger_penalty - energy_penalty)
     db.commit()
 
 
-def get_npc_decision(db: Session, npc_id: int) -> str:
-    """Return the action an NPC should take based on needs.
+def get_npc_decision(db: Session, npc: NPC) -> str:
+    """Return the NPC's next decision based on needs.
     
-    Priority order:
-    1. eat (if hunger > 50)
-    2. sleep (if energy < 30)
-    3. work (if has work_building and not at work)
-    4. rest (otherwise)
+    Priority:
+    1. If hunger > 50: 'eat'
+    2. If energy < 30: 'sleep'
+    3. If not at work building: 'work'
+    4. Otherwise: 'idle'
     """
-    npc = db.query(NPC).filter(NPC.id == npc_id).first()
-    if not npc:
-        return "rest"
-    
     if npc.hunger > 50:
-        return "eat"
+        return 'eat'
     elif npc.energy < 30:
-        return "sleep"
-    elif npc.work_building_id is not None:
-        work_building = db.query(Building).filter(Building.id == npc.work_building_id).first()
-        if work_building and (npc.x != work_building.x or npc.y != work_building.y):
-            return "work"
-    
-    return "rest"
+        return 'sleep'
+    elif npc.work_building_id:
+        building = db.query(Building).filter(Building.id == npc.work_building_id).first()
+        if building and (npc.x != building.x or npc.y != building.y):
+            return 'work'
+    return 'idle'
 
 
 def process_tick(db: Session) -> None:
     """Advance the simulation by one tick.
     
-    Processes all systems in the correct order:
-    1. World State — increment tick counter, advance time of day, change day
-    2. Weather — update weather, apply weather effects
-    3. Needs Decay — hunger increases, energy decreases for all NPCs
-    4. NPC Decisions — each NPC decides what to do based on needs + utility
-    5. Movement — NPCs move toward their targets
-    6. Production — buildings produce resources
-    7. Economy — wages, trades, tax collection
-    8. Population — births, deaths, aging
-    9. Events — log notable events that occurred this tick
+    Processes all systems in order:
+    1. Update world state (time, weather)
+    2. Process NPC needs (hunger, energy decay)
+    3. Process NPC decisions (eat, sleep, work, move)
+    4. Process production (farms, workshops, bakeries)
+    5. Process economy (trades, wages, taxes)
+    6. Log events
     """
     # 1. Update world state (time, weather)
     world_state = db.query(WorldState).first()
@@ -470,7 +614,7 @@ def process_tick(db: Session) -> None:
     
     # 6. Process production
     produce_resources(db, weather)
-    produce_bakery_resources(db)  # New: bakery production
+    produce_bakery_resources(db)
     
     # 7. Process economy (wages, trades, tax collection)
     process_work(db)
@@ -631,7 +775,7 @@ def assign_work(db: Session) -> None:
     """
     role_mapping = {
         "farmer": "food",
-        "baker": "food",
+        "baker": "bakery",
         "guard": "guard",
         "merchant": "market",
         "priest": "religious",

@@ -420,6 +420,16 @@ def run_story(story: dict) -> bool:
 
         print(f"  Qwen responded: {tokens_in} tokens in, {tokens_out} tokens out, {gpu_time:.1f}s")
 
+        # Debug: log raw response to file for diagnosis
+        try:
+            debug_dir = Path("ralph/debug_responses")
+            debug_dir.mkdir(exist_ok=True)
+            debug_file = debug_dir / f"{story_id}_attempt{attempt}.txt"
+            debug_file.write_text(response, encoding="utf-8")
+            print(f"  [DEBUG] Response saved to {debug_file}")
+        except Exception as e:
+            print(f"  [DEBUG] Failed to save response: {e}")
+
         # 5. Apply file changes
         written = apply_files(response)
         if not written:

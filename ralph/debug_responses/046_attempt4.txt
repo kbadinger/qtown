@@ -1,0 +1,540 @@
+### FILE: engine/models.py
+
+```python
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Boolean, DateTime, Text, Enum, UniqueConstraint
+from sqlalchemy.orm import relationship, declarative_base
+from datetime import datetime, timezone
+from enum import Enum as PyEnum
+
+Base = declarative_base()
+
+def _utcnow():
+    return datetime.now(timezone.utc)
+
+class Tile(Base):
+    __tablename__ = 'tiles'
+    id = Column(Integer, primary_key=True)
+    x = Column(Integer, nullable=False)
+    y = Column(Integer, nullable=False)
+    feature_id = Column(Integer, ForeignKey('features.id'), nullable=True)
+    building_id = Column(Integer, ForeignKey('buildings.id'), nullable=True)
+    __table_args__ = (UniqueConstraint('x', 'y'),)
+    feature = relationship("Feature")
+    building = relationship("Building")
+
+class AdminUser(Base):
+    __tablename__ = 'admin_users'
+    id = Column(Integer, primary_key=True)
+    username = Column(String(50), unique=True, nullable=False)
+    password_hash = Column(String(255), nullable=False)
+    is_active = Column(Boolean, default=True)
+
+class WorldState(Base):
+    __tablename__ = 'world_state'
+    id = Column(Integer, primary_key=True)
+    day = Column(Integer, default=1)
+    time_of_day = Column(Integer, default=0) # 0-23
+    weather = Column(String(20), default='Clear')
+    treasury_gold = Column(Float, default=1000.0)
+    treasury_food = Column(Float, default=1000.0)
+    treasury_wood = Column(Float, default=1000.0)
+    treasury_stone = Column(Float, default=1000.0)
+    population = Column(Integer, default=0)
+    happiness = Column(Float, default=50.0)
+
+class Feature(Base):
+    __tablename__ = 'features'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), nullable=False)
+    type = Column(String(20), nullable=False) # Forest, Mountain, Water, Field
+    description = Column(Text)
+
+class Vote(Base):
+    __tablename__ = 'votes'
+    id = Column(Integer, primary_key=True)
+    npc_id = Column(Integer, ForeignKey('npcs.id'), nullable=False)
+    proposal_id = Column(Integer, nullable=False)
+    vote_type = Column(String(20), nullable=False) # For, Against, Abstain
+    created_at = Column(DateTime, default=_utcnow)
+
+class Building(Base):
+    __tablename__ = 'buildings'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), nullable=False)
+    type = Column(String(20), nullable=False) # House, Shop, Bakery, Farm, etc.
+    x = Column(Integer, nullable=False)
+    y = Column(Integer, nullable=False)
+    owner_id = Column(Integer, ForeignKey('npcs.id'), nullable=True)
+    capacity = Column(Integer, default=1)
+    workers = Column(Integer, default=0)
+    production_rate = Column(Float, default=1.0)
+    resource_type = Column(String(20), nullable=True) # Gold, Food, Wood, Stone
+    created_at = Column(DateTime, default=_utcnow)
+    tile = relationship("Tile", backref="building")
+    owner = relationship("NPC")
+
+class NPC(Base):
+    __tablename__ = 'npcs'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), nullable=False)
+    age = Column(Integer, default=20)
+    gender = Column(String(10), default='Male')
+    profession = Column(String(50), nullable=True)
+    gold = Column(Float, default=0.0)
+    food = Column(Float, default=0.0)
+    wood = Column(Float, default=0.0)
+    stone = Column(Float, default=0.0)
+    x = Column(Integer, nullable=False)
+    y = Column(Integer, nullable=False)
+    home_id = Column(Integer, ForeignKey('buildings.id'), nullable=True)
+    work_id = Column(Integer, ForeignKey('buildings.id'), nullable=True)
+    happiness = Column(Float, default=50.0)
+    personality = relationship("Personality", uselist=False, back_populates="npc")
+    home = relationship("Building", foreign_keys=[home_id])
+    work = relationship("Building", foreign_keys=[work_id])
+
+class Personality(Base):
+    __tablename__ = 'personalities'
+    id = Column(Integer, primary_key=True)
+    npc_id = Column(Integer, ForeignKey('npcs.id'), unique=True, nullable=False)
+    traits = Column(String(255)) # Comma separated
+    likes = Column(String(255))
+    dislikes = Column(String(255))
+    npc = relationship("NPC", back_populates="personality")
+
+class Transaction(Base):
+    __tablename__ = 'transactions'
+    id = Column(Integer, primary_key=True)
+    npc_id = Column(Integer, ForeignKey('npcs.id'), nullable=False)
+    amount = Column(Float, nullable=False)
+    resource_type = Column(String(20), nullable=False) # Gold, Food, Wood, Stone
+    transaction_type = Column(String(20), nullable=False) # Income, Expense, Tax, Gift
+    description = Column(Text)
+    created_at = Column(DateTime, default=_utcnow)
+    npc = relationship("NPC")
+
+class Resource(Base):
+    __tablename__ = 'resources'
+    id = Column(Integer, primary_key=True)
+    type = Column(String(20), nullable=False) # Gold, Food, Wood, Stone
+    amount = Column(Float, nullable=False)
+    location_x = Column(Integer, nullable=False)
+    location_y = Column(Integer, nullable=False)
+    collected = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=_utcnow)
+
+class Treasury(Base):
+    __tablename__ = 'treasury'
+    id = Column(Integer, primary_key=True)
+    gold = Column(Float, default=0.0)
+    food = Column(Float, default=0.0)
+    wood = Column(Float, default=0.0)
+    stone = Column(Float, default=0.0)
+    last_updated = Column(DateTime, default=_utcnow)
+
+class Event(Base):
+    __tablename__ = 'events'
+    id = Column(Integer, primary_key=True)
+    title = Column(String(100), nullable=False)
+    description = Column(Text)
+    date = Column(DateTime, nullable=False)
+    type = Column(String(50), nullable=False) # Festival, Disaster, Election
+    impact = Column(Float, default=0.0)
+    created_at = Column(DateTime, default=_utcnow)
+```
+
+### FILE: engine/simulation.py
+
+```python
+import random
+from sqlalchemy.orm import Session
+from engine.models import (
+    Base, WorldState, NPC, Building, Tile, Feature, 
+    Personality, Resource, Transaction, Event, Treasury,
+    _utcnow
+)
+from typing import Optional
+
+# Building Types Configuration
+BUILDING_TYPES = {
+    "House": {"capacity": 4, "production_rate": 0, "resource_type": None},
+    "Bakery": {"capacity": 2, "production_rate": 5, "resource_type": "Food"},
+    "Farm": {"capacity": 3, "production_rate": 10, "resource_type": "Food"},
+    "Lumbermill": {"capacity": 2, "production_rate": 8, "resource_type": "Wood"},
+    "Quarry": {"capacity": 2, "production_rate": 8, "resource_type": "Stone"},
+    "Shop": {"capacity": 1, "production_rate": 0, "resource_type": "Gold"}
+}
+
+def _generate_personality():
+    traits = ["Cheerful", "Grumpy", "Lazy", "Hardworking", "Generous", "Greedy"]
+    likes = ["Food", "Gold", "Nature", "Art", "Music"]
+    dislikes = ["Rain", "Cold", "Noise", "Crowds", "Work"]
+    return {
+        "traits": random.sample(traits, 2),
+        "likes": random.sample(likes, 2),
+        "dislikes": random.sample(dislikes, 2)
+    }
+
+def init_world_state(db: Session):
+    world = WorldState(
+        day=1,
+        time_of_day=8,
+        weather="Clear",
+        treasury_gold=1000.0,
+        treasury_food=1000.0,
+        treasury_wood=1000.0,
+        treasury_stone=1000.0,
+        population=0,
+        happiness=50.0
+    )
+    db.add(world)
+    db.commit()
+    db.refresh(world)
+    return world
+
+def init_grid(db: Session, width=10, height=10):
+    for x in range(width):
+        for y in range(height):
+            tile = Tile(x=x, y=y)
+            db.add(tile)
+    db.commit()
+
+def seed_buildings(db: Session):
+    # Seed a few basic buildings
+    for i in range(3):
+        building = Building(
+            name=f"House {i+1}",
+            type="House",
+            x=i,
+            y=0,
+            capacity=4,
+            workers=0
+        )
+        db.add(building)
+    db.commit()
+
+def seed_npcs(db: Session):
+    for i in range(10):
+        personality_data = _generate_personality()
+        npc = NPC(
+            name=f"NPC {i+1}",
+            age=random.randint(18, 60),
+            gender=random.choice(["Male", "Female"]),
+            gold=random.uniform(0, 100),
+            food=random.uniform(0, 50),
+            wood=0,
+            stone=0,
+            x=random.randint(0, 9),
+            y=random.randint(0, 9),
+            happiness=50.0
+        )
+        personality = Personality(
+            npc_id=npc.id,
+            traits=",".join(personality_data["traits"]),
+            likes=",".join(personality_data["likes"]),
+            dislikes=",".join(personality_data["dislikes"])
+        )
+        db.add(npc)
+        db.add(personality)
+    db.commit()
+
+def seed_bakery(db: Session):
+    # Seed a bakery building
+    bakery = Building(
+        name="The Golden Loaf",
+        type="Bakery",
+        x=5,
+        y=5,
+        capacity=2,
+        workers=0,
+        production_rate=5.0,
+        resource_type="Food"
+    )
+    db.add(bakery)
+    db.commit()
+    db.refresh(bakery)
+    return bakery
+
+def build_building(db: Session, x: int, y: int, b_type: str, owner_id: Optional[int] = None):
+    if b_type not in BUILDING_TYPES:
+        raise ValueError(f"Unknown building type: {b_type}")
+    
+    config = BUILDING_TYPES[b_type]
+    building = Building(
+        name=f"{b_type} at {x},{y}",
+        type=b_type,
+        x=x,
+        y=y,
+        owner_id=owner_id,
+        capacity=config["capacity"],
+        workers=0,
+        production_rate=config["production_rate"],
+        resource_type=config["resource_type"]
+    )
+    db.add(building)
+    db.commit()
+    db.refresh(building)
+    return building
+
+def move_npc_toward_target(db: Session, npc: NPC, target_x: int, target_y: int):
+    if npc.x < target_x:
+        npc.x += 1
+    elif npc.x > target_x:
+        npc.x -= 1
+    if npc.y < target_y:
+        npc.y += 1
+    elif npc.y > target_y:
+        npc.y -= 1
+    db.commit()
+
+def process_work(db: Session, npc: NPC, building: Building):
+    if npc.work_id != building.id:
+        return
+    # Simple work logic: gain gold based on building type
+    if building.type == "Shop":
+        npc.gold += 5.0
+        transaction = Transaction(
+            npc_id=npc.id,
+            amount=5.0,
+            resource_type="Gold",
+            transaction_type="Income",
+            description="Worked at shop"
+        )
+        db.add(transaction)
+    elif building.type == "Farm":
+        npc.food += 5.0
+        transaction = Transaction(
+            npc_id=npc.id,
+            amount=5.0,
+            resource_type="Food",
+            transaction_type="Income",
+            description="Worked at farm"
+        )
+        db.add(transaction)
+    db.commit()
+
+def produce_resources(db: Session):
+    buildings = db.query(Building).filter(Building.production_rate > 0).all()
+    for building in buildings:
+        if building.workers > 0:
+            amount = building.production_rate * building.workers
+            if building.resource_type == "Food":
+                building.owner.food += amount
+            elif building.resource_type == "Wood":
+                building.owner.wood += amount
+            elif building.resource_type == "Stone":
+                building.owner.stone += amount
+            elif building.resource_type == "Gold":
+                building.owner.gold += amount
+            
+            transaction = Transaction(
+                npc_id=building.owner_id,
+                amount=amount,
+                resource_type=building.resource_type,
+                transaction_type="Production",
+                description=f"Produced {building.resource_type} at {building.name}"
+            )
+            db.add(transaction)
+    db.commit()
+
+def collect_taxes(db: Session):
+    world = db.query(WorldState).first()
+    if not world:
+        return
+    
+    tax_rate = 0.1
+    for npc in db.query(NPC).all():
+        if npc.gold > 10:
+            tax = npc.gold * tax_rate
+            npc.gold -= tax
+            world.treasury_gold += tax
+            transaction = Transaction(
+                npc_id=npc.id,
+                amount=tax,
+                resource_type="Gold",
+                transaction_type="Tax",
+                description="Paid taxes"
+            )
+            db.add(transaction)
+    db.commit()
+
+def update_weather(db: Session):
+    world = db.query(WorldState).first()
+    if not world:
+        return
+    
+    weather_options = ["Clear", "Rain", "Snow", "Storm"]
+    new_weather = random.choice(weather_options)
+    world.weather = new_weather
+    db.commit()
+
+def apply_weather_effects(db: Session):
+    world = db.query(WorldState).first()
+    if not world:
+        return
+    
+    if world.weather == "Rain":
+        # Rain reduces happiness slightly
+        for npc in db.query(NPC).all():
+            npc.happiness = max(0, npc.happiness - 1)
+    elif world.weather == "Storm":
+        # Storm reduces happiness more
+        for npc in db.query(NPC).all():
+            npc.happiness = max(0, npc.happiness - 3)
+    db.commit()
+
+def calculate_happiness(db: Session):
+    npcs = db.query(NPC).all()
+    if not npcs:
+        return 0.0
+    total_happiness = sum(npc.happiness for npc in npcs)
+    return total_happiness / len(npcs)
+
+def get_npc_decision(db: Session, npc: NPC):
+    # Simple decision making based on needs
+    if npc.food < 10:
+        return "Buy Food"
+    elif npc.gold < 5:
+        return "Work"
+    elif npc.happiness < 30:
+        return "Relax"
+    else:
+        return "Idle"
+
+def process_tick(db: Session):
+    # Update world state
+    world = db.query(WorldState).first()
+    if world:
+        world.time_of_day += 1
+        if world.time_of_day >= 24:
+            world.time_of_day = 0
+            world.day += 1
+            collect_taxes(db)
+            update_weather(db)
+            apply_weather_effects(db)
+    
+    # Process NPCs
+    for npc in db.query(NPC).all():
+        decision = get_npc_decision(db, npc)
+        if decision == "Buy Food":
+            buy_food(db, npc)
+        elif decision == "Work":
+            if npc.work_id:
+                building = db.query(Building).filter_by(id=npc.work_id).first()
+                if building:
+                    process_work(db, npc, building)
+        elif decision == "Relax":
+            npc.happiness = min(100, npc.happiness + 2)
+        
+        # Move NPCs
+        target_x = random.randint(0, 9)
+        target_y = random.randint(0, 9)
+        move_npc_toward_target(db, npc, target_x, target_y)
+        
+        # Eat
+        if npc.food > 0:
+            eat(db, npc)
+        
+        # Sleep
+        if world and world.time_of_day > 22:
+            sleep_npc(db, npc)
+    
+    # Produce resources
+    produce_resources(db)
+    
+    db.commit()
+
+def check_population_growth(db: Session):
+    world = db.query(WorldState).first()
+    if not world:
+        return
+    # Simple growth logic
+    if world.happiness > 70 and world.treasury_food > 100:
+        # Add new NPC
+        personality_data = _generate_personality()
+        npc = NPC(
+            name=f"Newborn {world.population}",
+            age=0,
+            gender=random.choice(["Male", "Female"]),
+            gold=0,
+            food=0,
+            wood=0,
+            stone=0,
+            x=random.randint(0, 9),
+            y=random.randint(0, 9),
+            happiness=50.0
+        )
+        personality = Personality(
+            npc_id=npc.id,
+            traits=",".join(personality_data["traits"]),
+            likes=",".join(personality_data["likes"]),
+            dislikes=",".join(personality_data["dislikes"])
+        )
+        db.add(npc)
+        db.add(personality)
+        world.population += 1
+        db.commit()
+
+def buy_food(db: Session, npc: NPC):
+    cost = 1.0
+    if npc.gold >= cost:
+        npc.gold -= cost
+        npc.food += 5.0
+        transaction = Transaction(
+            npc_id=npc.id,
+            amount=cost,
+            resource_type="Gold",
+            transaction_type="Expense",
+            description="Bought food"
+        )
+        db.add(transaction)
+        db.commit()
+
+def transfer_gold(db: Session, from_npc: NPC, to_npc: NPC, amount: float):
+    if from_npc.gold >= amount:
+        from_npc.gold -= amount
+        to_npc.gold += amount
+        transaction = Transaction(
+            npc_id=from_npc.id,
+            amount=amount,
+            resource_type="Gold",
+            transaction_type="Gift",
+            description=f"Gifted to {to_npc.name}"
+        )
+        db.add(transaction)
+        db.commit()
+
+def assign_homes(db: Session):
+    houses = db.query(Building).filter(Building.type == "House").all()
+    homeless_npcs = db.query(NPC).filter(NPC.home_id == None).all()
+    
+    for house in houses:
+        if house.workers < house.capacity:
+            if homeless_npcs:
+                npc = homeless_npcs.pop(0)
+                npc.home_id = house.id
+                house.workers += 1
+                db.commit()
+
+def assign_work(db: Session):
+    buildings = db.query(Building).filter(Building.workers < Building.capacity).all()
+    unemployed_npcs = db.query(NPC).filter(NPC.work_id == None).all()
+    
+    for building in buildings:
+        if building.workers < building.capacity:
+            if unemployed_npcs:
+                npc = unemployed_npcs.pop(0)
+                npc.work_id = building.id
+                building.workers += 1
+                db.commit()
+
+def eat(db: Session, npc: NPC):
+    if npc.food > 0:
+        npc.food -= 1
+        npc.happiness = min(100, npc.happiness + 1)
+        db.commit()
+
+def sleep_npc(db: Session, npc: NPC):
+    npc.happiness = min(100, npc.happiness + 5)
+    db.commit()
+```

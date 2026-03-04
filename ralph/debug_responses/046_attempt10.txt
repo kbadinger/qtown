@@ -1,3 +1,4 @@
+### FILE: engine/simulation.py
 """All simulation logic — pure functions that take db session and modify game state."""
 
 import json
@@ -6,8 +7,8 @@ from sqlalchemy.orm import Session, joinedload
 
 from engine.models import NPC, Building, WorldState, Tile, Resource, Treasury, Transaction, Event
 
-# Building types available in the simulation
-BUILDING_TYPES = ["civic", "food", "residential", "bakery"]
+# Valid building types in the simulation
+BUILDING_TYPES = ['civic', 'food', 'residential', 'bakery', 'guard', 'market', 'religious']
 
 
 def _generate_personality() -> str:
@@ -85,24 +86,21 @@ def seed_buildings(db: Session) -> None:
 
 def seed_bakery(db: Session) -> None:
     """Seed a bakery building into the town.
-
-    Creates 1 bakery building at coordinates (18, 18).
-    Idempotent: calling twice will not duplicate the bakery.
+    
+    Creates one bakery at coordinates (18, 18).
+    Idempotent: calling twice will not duplicate buildings.
     """
-    existing_bakery = db.query(Building).filter(
-        Building.building_type == "bakery"
-    ).first()
-    if existing_bakery:
+    existing = db.query(Building).filter(Building.building_type == 'bakery').count()
+    if existing > 0:
         return
-
-    bakery = Building(
-        name="Bakery",
+    
+    db.add(Building(
+        name="Town Bakery",
         building_type="bakery",
         x=18,
         y=18,
         capacity=10
-    )
-    db.add(bakery)
+    ))
     db.commit()
 
 
@@ -209,7 +207,12 @@ def process_work(db: Session) -> None:
 
 
 def produce_resources(db: Session, weather: str = None) -> None:
-    """Produce resources for buildings of type 'food'."""
+    """Produce resources for buildings of type 'food' and 'bakery'.
+    
+    Food buildings produce Food resource.
+    Bakery buildings convert Wheat into Bread (5 Bread per tick if Wheat available).
+    """
+    # Food production (existing logic)
     food_buildings = db.query(Building).filter(Building.building_type == 'food').all()
     
     # Determine production amount based on weather
@@ -232,29 +235,24 @@ def produce_resources(db: Session, weather: str = None) -> None:
                 building_id=building.id
             )
             db.add(new_resource)
-
-
-def produce_bakery_resources(db: Session) -> None:
-    """Produce resources for buildings of type 'bakery'.
     
-    Bakery converts Wheat into Bread.
-    Produces 5 Bread per tick if Wheat resource available.
-    """
+    # Bakery production (converts Wheat to Bread)
     bakery_buildings = db.query(Building).filter(Building.building_type == 'bakery').all()
     
     for building in bakery_buildings:
-        # Check if Wheat resource is available at this building
+        # Check for Wheat resource at this building
         wheat_resource = db.query(Resource).filter(
             Resource.name == 'Wheat',
             Resource.building_id == building.id
         ).first()
         
-        # Only produce if Wheat is available (quantity > 0)
-        if wheat_resource and wheat_resource.quantity > 0:
-            # Consume 1 Wheat to produce 5 Bread
+        if wheat_resource and wheat_resource.quantity >= 1:
+            # Consume 1 Wheat, produce 5 Bread
             wheat_resource.quantity -= 1
+            if wheat_resource.quantity == 0:
+                db.delete(wheat_resource)
             
-            # Check if Bread resource exists at this building
+            # Add or update Bread resource
             bread_resource = db.query(Resource).filter(
                 Resource.name == 'Bread',
                 Resource.building_id == building.id
@@ -328,98 +326,126 @@ def update_weather(db: Session) -> None:
     weights = [40, 25, 10, 10, 15]
     
     new_weather = random.choices(weather_options, weights=weights, k=1)[0]
+    world_state.weather = new_weather
     
-    # Only update if weather changed
-    if new_weather != world_state.weather:
-        world_state.weather = new_weather
-        db.commit()
+    db.commit()
 
 
 def apply_weather_effects(db: Session) -> None:
-    """Apply weather effects on NPC movement and production."""
+    """Apply weather-specific effects to the simulation.
+    
+    Rain: farms produce +20% (12 instead of 10)
+    Storm: random building takes damage (create damage Event)
+    Snow: NPC movement halved (move every other tick)
+    """
     world_state = db.query(WorldState).first()
     if not world_state:
         return
     
     weather = world_state.weather
+    tick = world_state.tick
     
-    # Snow reduces movement speed (handled in movement by checking tick % 2)
-    # Rain increases food production (handled in produce_resources)
-    # Storm temporarily stops all NPC movement (handled in movement)
+    if weather == 'rain':
+        # Rain effect is handled in produce_resources by passing weather parameter
+        pass
+    
+    elif weather == 'storm':
+        # Storm: random building takes damage (create damage Event)
+        buildings = db.query(Building).all()
+        if buildings:
+            damaged_building = random.choice(buildings)
+            damage_event = Event(
+                event_type='damage',
+                description=f"Building {damaged_building.name} took damage from storm",
+                tick=tick,
+                severity='warning',
+                affected_building_id=damaged_building.id
+            )
+            db.add(damage_event)
+            db.commit()
+    
+    elif weather == 'snow':
+        # Snow: NPC movement halved (move every other tick)
+        # This is handled in process_tick by checking tick parity before moving NPCs
+        pass
 
 
-def calculate_happiness(db: Session, npc_id: int) -> None:
+def calculate_happiness(db: Session, npc_id: int) -> int:
     """Calculate and update happiness for an NPC.
     
-    Happiness is affected by:
-    - Hunger: -10 if hunger > 50
-    - Energy: -10 if energy < 30
-    - Gold: +5 if gold > 20
-    - Has home: +10 if home_building_id is set
-    - Has work: +10 if work_building_id is set
-    Base happiness is 50.
+    Formula: happiness = 100 - hunger + (energy/2) + min(gold, 50)/2
+    Clamped to range 0-100.
+    
+    Returns the calculated happiness value.
     """
     npc = db.query(NPC).filter(NPC.id == npc_id).first()
     if not npc:
-        return
+        return 50
     
-    # Calculate happiness based on conditions
-    happiness = 50
+    # Calculate happiness using the formula
+    happiness = 100 - npc.hunger + (npc.energy // 2) + min(npc.gold, 50) // 2
     
-    if npc.hunger > 50:
-        happiness -= 10
-    if npc.energy < 30:
-        happiness -= 10
-    if npc.gold > 20:
-        happiness += 5
-    if npc.home_building_id is not None:
-        happiness += 10
-    if npc.work_building_id is not None:
-        happiness += 10
+    # Clamp to 0-100
+    happiness = max(0, min(100, happiness))
     
-    # Clamp happiness between 0 and 100
-    npc.happiness = max(0, min(100, happiness))
+    # Update the NPC's happiness field
+    npc.happiness = happiness
     db.commit()
-
-
-def get_npc_decision(db: Session, npc_id: int) -> str:
-    """Return the action an NPC should take based on needs.
     
-    Priority order:
-    1. eat (if hunger > 50)
-    2. sleep (if energy < 30)
-    3. work (if has work_building and not at work)
-    4. rest (otherwise)
+    return happiness
+
+
+def get_npc_decision(db: Session, npc: NPC) -> dict:
+    """Determine what action an NPC should take based on needs and personality.
+    
+    Decision priority:
+    1. hunger > 70 -> eat
+    2. energy < 20 (or < 40 if lazy) -> sleep
+    3. has work_building_id -> work
+    4. else -> wander
+    
+    Returns dict with 'action' key: {'action': 'eat'|'sleep'|'work'|'wander'}
     """
-    npc = db.query(NPC).filter(NPC.id == npc_id).first()
-    if not npc:
-        return "rest"
+    # Parse personality to check for lazy trait
+    personality = {}
+    if npc.personality:
+        try:
+            personality = json.loads(npc.personality)
+        except (json.JSONDecodeError, TypeError):
+            personality = {}
     
-    if npc.hunger > 50:
-        return "eat"
-    elif npc.energy < 30:
-        return "sleep"
-    elif npc.work_building_id is not None:
-        work_building = db.query(Building).filter(Building.id == npc.work_building_id).first()
-        if work_building and (npc.x != work_building.x or npc.y != work_building.y):
-            return "work"
+    is_lazy = personality.get('lazy', False)
     
-    return "rest"
+    # Decision logic with personality-modified thresholds
+    if npc.hunger > 70:
+        return {'action': 'eat'}
+    
+    # Lazy NPCs sleep at energy < 40, others at energy < 20
+    sleep_threshold = 40 if is_lazy else 20
+    if npc.energy < sleep_threshold:
+        return {'action': 'sleep'}
+    
+    # Check if NPC has a work building assigned
+    if npc.work_building_id is not None:
+        return {'action': 'work'}
+    
+    # Default action
+    return {'action': 'wander'}
 
 
 def process_tick(db: Session) -> None:
     """Advance the simulation by one tick.
     
-    Processes all systems in the correct order:
-    1. World State — increment tick counter, advance time of day, change day
-    2. Weather — update weather, apply weather effects
-    3. Needs Decay — hunger increases, energy decreases for all NPCs
-    4. NPC Decisions — each NPC decides what to do based on needs + utility
-    5. Movement — NPCs move toward their targets
-    6. Production — buildings produce resources
-    7. Economy — wages, trades, tax collection
-    8. Population — births, deaths, aging
-    9. Events — log notable events that occurred this tick
+    Processes systems in order:
+    1. Update world state (time, weather)
+    2. Process weather
+    3. Process NPC needs (hunger, energy decay)
+    4. Process NPC decisions (eat, sleep, work, move)
+    5. Process movement
+    6. Process production
+    7. Process economy (wages, trades, tax collection)
+    8. Process population (births, deaths, aging)
+    9. Log events
     """
     # 1. Update world state (time, weather)
     world_state = db.query(WorldState).first()
@@ -470,7 +496,6 @@ def process_tick(db: Session) -> None:
     
     # 6. Process production
     produce_resources(db, weather)
-    produce_bakery_resources(db)  # New: bakery production
     
     # 7. Process economy (wages, trades, tax collection)
     process_work(db)
