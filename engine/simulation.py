@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session, joinedload
 from engine.models import NPC, Building, WorldState, Tile, Resource, Treasury, Transaction, Event
 
 # Building types available in the simulation
-BUILDING_TYPES = ["civic", "food", "residential", "bakery", "blacksmith", "farm", "church", "school", "hospital", "tavern"]
+BUILDING_TYPES = ["civic", "food", "residential", "bakery", "blacksmith", "farm", "church", "school", "hospital", "tavern", "library"]
 
 
 def _generate_personality() -> str:
@@ -232,6 +232,20 @@ def seed_tavern(db: Session) -> None:
         capacity=10
     )
     db.add(tavern)
+    db.commit()
+
+
+def seed_library(db: Session) -> None:
+    """Seed a library building into the town.
+
+    Creates 1 library building at coordinates (20, 20).
+    Idempotent: calling twice will not duplicate the library.
+    """
+    existing_library = db.query(Building).filter(Building.building_type == "library").first()
+    if existing_library:
+        return
+
+    db.add(Building(name="Library", building_type="library", x=20, y=20))
     db.commit()
 
 
@@ -476,6 +490,31 @@ def produce_farm_resources(db: Session) -> None:
                 building_id=building.id
             )
             db.add(new_food)
+
+
+def produce_library_resources(db: Session) -> None:
+    """Produce resources for buildings of type 'library'.
+    
+    Library produces 2 Books per tick.
+    """
+    library_buildings = db.query(Building).filter(Building.building_type == 'library').all()
+    
+    for building in library_buildings:
+        # Produce Books
+        books_resource = db.query(Resource).filter(
+            Resource.name == 'Books',
+            Resource.building_id == building.id
+        ).first()
+        
+        if books_resource:
+            books_resource.quantity += 2
+        else:
+            new_books = Resource(
+                name='Books',
+                quantity=2,
+                building_id=building.id
+            )
+            db.add(new_books)
 
 
 def collect_taxes(db: Session) -> None:
@@ -766,6 +805,7 @@ def process_tick(db: Session) -> None:
     produce_bakery_resources(db)  # Bakery production
     produce_blacksmith_resources(db)  # Blacksmith production
     produce_farm_resources(db)  # Farm production
+    produce_library_resources(db)  # Library production
     process_hospital(db)  # Hospital healing
     process_tavern(db)  # Tavern effects
     

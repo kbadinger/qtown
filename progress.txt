@@ -296,3 +296,8 @@
 - **Non-obvious state coupling**: Adding a new building type required updating the `BuildingType` enum in three separate locations (data layer, UI renderer, and logic validator) to prevent runtime deserialization errors, which wasn't immediately apparent from the initial schema.
 - **Codebase convention**: The project strictly enforces that all new entity types must define a `defaultStats` constant object before being registered in the factory, ensuring consistent initialization across different game modes.
 - **Correction**: Initially attempted to hardcode tavern-specific logic inside the generic `BuildingManager`, but refactored it into a dedicated `TavernBehavior` class to align with the existing strategy pattern used for other building types.
+
+--- Story 053: Add library building type (attempts: 1, 2026-03-04 11:34) ---
+- **Non-obvious constraint**: The `BuildingType` enum requires explicit `is_residential` and `is_commercial` flags; simply adding a new enum value without these defaults breaks the zoning logic in `CityZoningService`.
+- **Codebase pattern**: New building types must be registered in `BuildingRegistry` *and* added to the `BuildingTemplate` factory map; missing the factory registration causes runtime `ClassCastException` during city generation.
+- **Correction**: Initially omitted the `render_icon` configuration for the library, causing a blank tile in the UI; fixed by adding the missing SVG asset reference in `BuildingIcons` enum.
