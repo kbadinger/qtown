@@ -120,7 +120,7 @@
   const textureCache = {};
   const failedTextures = new Set();
   const loadingTextures = new Set();
-  const ASSET_VERSION = "v14";  // Cache-buster for CDN/Cloudflare
+  const ASSET_VERSION = "v15";  // Cache-buster for CDN/Cloudflare
 
   function tryLoadTexture(url) {
     if (textureCache[url]) return textureCache[url];
@@ -215,6 +215,21 @@
       const bType = (b.building_type || b.type || "civic").toLowerCase();
       const name = b.name || bType;
       const spriteUrl = `/static/assets/buildings/${bType}.png`;
+
+      // DEBUG: draw 2x2 footprint diamond
+      const topPt    = toScreen(b.x, b.y);
+      const rightPt  = toScreen(b.x + 2, b.y);
+      const bottomPt = toScreen(b.x + 2, b.y + 2);
+      const leftPt   = toScreen(b.x, b.y + 2);
+      const dbg = new PIXI.Graphics();
+      dbg.beginFill(0xFF0000, 0.25);
+      dbg.moveTo(topPt.x,    topPt.y);
+      dbg.lineTo(rightPt.x,  rightPt.y);
+      dbg.lineTo(bottomPt.x, bottomPt.y);
+      dbg.lineTo(leftPt.x,   leftPt.y);
+      dbg.closePath();
+      dbg.endFill();
+      buildingLayer.addChild(dbg);
 
       let sprite = null;
       const tex = tryLoadTexture(spriteUrl);
