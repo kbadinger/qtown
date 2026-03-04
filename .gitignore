@@ -38,6 +38,11 @@ proposed_stories.json
 # Ralph runtime state
 .ralph-paused
 ralph.log
+ralph/debug_responses/
+
+# Windows reserved names (git creates these on some operations)
+NUL
+test_debug.db
 
 # Common ignores
 node_modules/
