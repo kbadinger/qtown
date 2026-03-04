@@ -469,7 +469,7 @@ def run_story(story: dict) -> bool:
                     break
             if post_error_sig:
                 recent_errors.append(post_error_sig)
-                if len(recent_errors) >= 3 and len(set(recent_errors[-3:])) == 1:
+                if len(recent_errors) >= 5 and len(set(recent_errors[-5:])) == 1:
                     alert("loop", f"Story {story_id}: same error 3x in a row — giving up\n`{post_error_sig}`")
                     return False
             print(f"  FAILED — will retry")
