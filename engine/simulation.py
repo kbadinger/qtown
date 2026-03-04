@@ -13,33 +13,34 @@ Tile, NPC, Building, Resource, WorldState, Treasury, Event, Transaction
 
 # Building types available in the simulation
 BUILDING_TYPES = [
-    "residential",
-    "food",
-    "guard",
-    "market",
-    "religious",
-    "school",
-    "hospital",
-    "tavern",
-    "library",
-    "bakery",
-    "blacksmith",
-    "farm",
-    "church",
-    "mine",
-    "lumber_mill",
-    "fishing_dock",
-    "guard_tower",
-    "wall",
-    "gate",
-    "fountain",
-    "well",
-    "warehouse",
-    "bank",
-    "theater",
-    "arena",
-    "prison",
-    "graveyard"
+    'residential',
+    'food',
+    'guard',
+    'market',
+    'religious',
+    'school',
+    'hospital',
+    'tavern',
+    'library',
+    'bakery',
+    'blacksmith',
+    'farm',
+    'church',
+    'mine',
+    'lumber_mill',
+    'fishing_dock',
+    'guard_tower',
+    'wall',
+    'gate',
+    'fountain',
+    'well',
+    'warehouse',
+    'bank',
+    'theater',
+    'arena',
+    'prison',
+    'graveyard',
+    'garden',
 ]
 
 
@@ -1704,3 +1705,50 @@ def seed_graveyard(db: Session) -> None:
     )
     db.add(graveyard)
     db.commit()
+
+
+def seed_garden(db: Session) -> None:
+    """Seed a garden building into the town.
+
+    Creates 1 garden building at coordinates (56, 56).
+    Idempotent - will not create if one already exists.
+    """
+    existing_gardens = db.query(Building).filter(Building.building_type == 'garden').count()
+    if existing_gardens > 0:
+        return
+    
+    # Create garden at (56, 56)
+    garden = Building(
+        name="Town Garden",
+        building_type="garden",
+        x=56,
+        y=56,
+        capacity=5
+    )
+    db.add(garden)
+    db.commit()
+
+
+def produce_garden_resources(db: Session) -> None:
+    """Produce resources for buildings of type 'garden'.
+    
+    Garden produces 4 Herbs per tick.
+    """
+    garden_buildings = db.query(Building).filter(Building.building_type == 'garden').all()
+    
+    for building in garden_buildings:
+        # Check if Herbs resource exists at this building
+        herbs_resource = db.query(Resource).filter(
+            Resource.name == 'Herbs',
+            Resource.building_id == building.id
+        ).first()
+        
+        if herbs_resource:
+            herbs_resource.quantity += 4
+        else:
+            new_herbs = Resource(
+                name='Herbs',
+                quantity=4,
+                building_id=building.id
+            )
+            db.add(new_herbs)
