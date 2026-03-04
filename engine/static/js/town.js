@@ -221,8 +221,10 @@
       if (tex && !failedTextures.has(spriteUrl)) {
         sprite = new PIXI.Sprite(tex);
         sprite.anchor.set(0.5, 1.0);
-        sprite.x = pos.x;
-        sprite.y = pos.y + TILE_H * 1.0;
+        // Building at (x,y) occupies 2x2 block: position at center of that block
+        var center2x2 = toScreen(b.x + 1, b.y + 1);
+        sprite.x = center2x2.x;
+        sprite.y = center2x2.y + TILE_H / 2;
         sprite.width = TILE_W * 2.0;
         sprite.height = TILE_W * 2.0;
       }
