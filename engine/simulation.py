@@ -14,14 +14,18 @@ Tile, NPC, Building, Resource, WorldState, Treasury, Event, Transaction
 # Building types available in the simulation
 BUILDING_TYPES = [
     "residential",
-    "farm",
-    "bakery",
-    "blacksmith",
-    "church",
+    "food",
+    "guard",
+    "market",
+    "religious",
     "school",
     "hospital",
     "tavern",
     "library",
+    "bakery",
+    "blacksmith",
+    "farm",
+    "church",
     "mine",
     "lumber_mill",
     "fishing_dock",
@@ -31,7 +35,8 @@ BUILDING_TYPES = [
     "fountain",
     "well",
     "warehouse",
-    "bank"
+    "bank",
+    "theater",
 ]
 
 
@@ -766,16 +771,15 @@ def visit_tavern(db: Session, npc_id: int) -> bool:
 def process_tick(db: Session) -> None:
     """Advance the simulation by one tick.
     
-    Processes all systems in the correct order:
-    1. World State â€" increment tick counter, advance time of day, change day
-    2. Weather â€" update weather, apply weather effects
-    3. Needs Decay â€" hunger increases, energy decreases for all NPCs
-    4. NPC Decisions â€" each NPC decides what to do based on needs + utility
-    5. Movement â€" NPCs move toward their targets
-    6. Production â€" buildings produce resources
-    7. Economy â€" wages, trades, tax collection
-    8. Population â€" births, deaths, aging
-    9. Events â€" log notable events that occurred this tick
+    Processes all game systems in order:
+    1. World State — time, weather
+    2. NPC Needs — hunger, energy decay
+    3. NPC Decisions — eat, sleep, work, move
+    4. Movement — NPCs move toward targets
+    5. Production — buildings produce resources
+    6. Economy — wages, trades, tax collection
+    7. Population — births, deaths, aging
+    8. Events — log notable events
     """
     # 1. Update world state (time, weather)
     world_state = db.query(WorldState).first()
@@ -838,6 +842,7 @@ def process_tick(db: Session) -> None:
     produce_well_resources(db)  # Well production
     produce_warehouse_resources(db)  # Warehouse production
     produce_bank_resources(db)  # Bank production
+    produce_theater_resources(db)  # Theater production
     process_hospital(db)  # Hospital healing
     process_tavern(db)  # Tavern effects
     
@@ -1558,3 +1563,50 @@ def produce_bank_resources(db: Session) -> None:
                 building_id=building.id
             )
             db.add(new_gold)
+
+
+def seed_theater(db: Session) -> None:
+    """Seed a theater building into the town.
+
+    Creates 1 theater building at coordinates (52, 52).
+    Idempotent - will not create if one already exists.
+    """
+    existing_theaters = db.query(Building).filter(Building.building_type == 'theater').count()
+    if existing_theaters > 0:
+        return
+    
+    # Create theater at (52, 52)
+    theater = Building(
+        name="Town Theater",
+        building_type="theater",
+        x=52,
+        y=52,
+        capacity=5
+    )
+    db.add(theater)
+    db.commit()
+
+
+def produce_theater_resources(db: Session) -> None:
+    """Produce resources for buildings of type 'theater'.
+    
+    Theater produces 2 Art per tick.
+    """
+    theater_buildings = db.query(Building).filter(Building.building_type == 'theater').all()
+    
+    for building in theater_buildings:
+        # Check if Art resource exists at this building
+        art_resource = db.query(Resource).filter(
+            Resource.name == 'Art',
+            Resource.building_id == building.id
+        ).first()
+        
+        if art_resource:
+            art_resource.quantity += 2
+        else:
+            new_art = Resource(
+                name='Art',
+                quantity=2,
+                building_id=building.id
+            )
+            db.add(new_art)

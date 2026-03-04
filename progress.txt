@@ -341,3 +341,8 @@
 - **Tricky**: The `BuildingType` enum required a specific `render_priority` field to ensure banks appear above generic structures in the UI, which wasn't immediately obvious from the existing enum definitions.
 - **Patterns**: New building types must implement the `IHasEconomyImpact` interface to automatically hook into the tax calculation pipeline; omitting this causes silent failures in revenue reporting.
 - **Correction**: Initially placed the bank's visual asset in the shared `assets/` folder, but corrected it to `assets/buildings/` to align with the asset loader's directory-based filtering logic.
+
+--- Story 064: Add theater building type (attempts: 1, 2026-03-04 17:53) ---
+- **Non-obvious constraint**: The `Building` entity requires a specific `type` enum value to trigger the correct rendering pipeline; simply adding the geometry wasn't enough without updating the `BuildingFactory` switch statement.
+- **Codebase pattern**: New building types must be registered in `config/buildings.json` first, then the corresponding logic added to `services/building-service.ts` to maintain the separation of data and logic.
+- **Correction**: Initially attempted to hardcode the theater's capacity in the component, but realized the codebase enforces dynamic capacity calculation based on `area` and `type` in the service layer to ensure consistency across reports.
