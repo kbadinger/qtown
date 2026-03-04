@@ -330,6 +330,7 @@ def run_story(story: dict) -> bool:
 
     # Loop detection — track recent error signatures
     recent_errors: list[str] = []
+    prev_test_output: str | None = None  # Post-write test output from previous attempt
     attempt = 0
     consecutive_infra_failures = 0
     regression_feedback: str | None = None  # Fed back to Qwen after regression revert
@@ -348,16 +349,26 @@ def run_story(story: dict) -> bool:
             warn("story_fail", f"Story {story_id} struggling — attempt 5/{MAX_ATTEMPTS}\n{story['title']}")
 
         # 0. Reset to clean state — undo any changes from prior attempt (or crash)
-        #    Each attempt starts from committed code. Qwen outputs complete files,
-        #    so there's no benefit to keeping partial changes from a failed attempt.
+        #    Each attempt starts from committed code. Patch mode applies surgical
+        #    changes, so we need a clean base each time.
         #    Runs on ALL attempts including attempt 1 to handle Ralph crash recovery.
         subprocess.run(["git", "checkout", "engine/"], capture_output=True)
         subprocess.run(["git", "checkout", "assets/"], capture_output=True)
 
-        # 1. Run tests (expect failure on first attempt)
-        print(f"  [{_ts()}] Running tests...")
-        test_passed, test_output = run_tests(test_file, story_id)
-        print(f"  [{_ts()}] Tests {'PASSED' if test_passed else 'FAILED'}")
+        # 1. Get test output for Qwen
+        #    On retries: use the POST-WRITE test output from the previous attempt
+        #    so Qwen sees its actual mistakes (e.g. "assert 8 == 6") instead of
+        #    the same ImportError every time.
+        if prev_test_output is not None:
+            test_output = prev_test_output
+            test_passed = False
+            print(f"  [{_ts()}] Using post-write test output from previous attempt")
+            prev_test_output = None
+        else:
+            print(f"  [{_ts()}] Running tests...")
+            test_passed, test_output = run_tests(test_file, story_id)
+            print(f"  [{_ts()}] Tests {'PASSED' if test_passed else 'FAILED'}")
+
         if test_passed and attempt == 1:
             print("  Tests already pass — skipping to deploy")
             passed = True
@@ -436,6 +447,7 @@ def run_story(story: dict) -> bool:
             log_metric(story_id, attempt, False, gpu_time, "No files written", tokens_in, tokens_out)
             # Track consecutive empty outputs — 3 in a row means Qwen can't parse the story
             recent_errors.append("NO_FILES_WRITTEN")
+            prev_test_output = None  # No code written, fall back to fresh test run
             if len(recent_errors) >= 3 and all(e == "NO_FILES_WRITTEN" for e in recent_errors[-3:]):
                 alert("loop", f"Story {story_id}: Qwen returned empty/unparseable output 3x in a row — giving up")
                 return False
@@ -455,6 +467,7 @@ def run_story(story: dict) -> bool:
                 subprocess.run(["git", "checkout", "assets/"], capture_output=True)
                 log_metric(story_id, attempt, False, gpu_time, f"REGRESSION: {reg_output[:300]}", tokens_in, tokens_out)
                 regression_feedback = reg_output  # Feed back to Qwen on next attempt
+                prev_test_output = None  # Regression feedback takes priority
                 recent_errors.clear()  # Reset loop detection — regression is a different problem
                 continue  # Retry — Qwen will get the regression error in next prompt
             print(f"  PASSED on attempt {attempt} (no regressions)")
@@ -470,8 +483,10 @@ def run_story(story: dict) -> bool:
             if post_error_sig:
                 recent_errors.append(post_error_sig)
                 if len(recent_errors) >= 5 and len(set(recent_errors[-5:])) == 1:
-                    alert("loop", f"Story {story_id}: same error 3x in a row — giving up\n`{post_error_sig}`")
+                    alert("loop", f"Story {story_id}: same error 5x in a row — giving up\n`{post_error_sig}`")
                     return False
+            # Save post-write output so next attempt sees the REAL error
+            prev_test_output = test_output
             print(f"  FAILED — will retry")
 
     if not passed:
