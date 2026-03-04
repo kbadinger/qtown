@@ -286,3 +286,8 @@
 - **Tricky**: The `School` building type requires a distinct `capacity` calculation logic that overrides the default `Building` formula, which was not immediately obvious from the base class interface.
 - **Pattern**: New building types follow a strict convention: define the enum in `BuildingType`, implement the specific logic in a dedicated `*Builder` class, and register it in the central `Factory` registry.
 - **Correction**: Initially attempted to pass `capacity` as a constructor argument to the base `Building` class; corrected by moving this specific logic into the `SchoolBuilder` to maintain the open/closed principle.
+
+--- Story 051: Add hospital building type (attempts: 1, 2026-03-04 11:17) ---
+*   **Non-obvious coupling**: Adding a new building type required updating the `BuildingFactory` switch statement in three separate locations (logic, rendering, and data persistence), which wasn't immediately apparent from the initial interface definition.
+*   **Codebase convention**: The project strictly enforces that all new building types must implement the `IHasCapacity` interface, even if the capacity is zero, to ensure uniformity in the simulation loop.
+*   **Correction**: Initially missed registering the new `Hospital` enum value in the `BuildingSerializer`, causing a runtime deserialization error on reload; fixed by ensuring the JSON enum mapping is updated alongside the code changes.

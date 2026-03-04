@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session, joinedload
 from engine.models import NPC, Building, WorldState, Tile, Resource, Treasury, Transaction, Event
 
 # Building types available in the simulation
-BUILDING_TYPES = ["civic", "food", "residential", "bakery", "blacksmith", "farm", "church", "school"]
+BUILDING_TYPES = ["civic", "food", "residential", "bakery", "blacksmith", "farm", "church", "school", "hospital"]
 
 
 def _generate_personality() -> str:
@@ -186,6 +186,29 @@ def seed_school(db: Session) -> None:
         return
     
     db.add(Building(name="School", building_type="school", x=25, y=35, capacity=30))
+    db.commit()
+
+
+def seed_hospital(db: Session) -> None:
+    """Seed a hospital building into the town.
+
+    Creates 1 hospital building at coordinates (28, 28).
+    Idempotent: calling twice will not duplicate the hospital.
+    """
+    existing_hospital = db.query(Building).filter(
+        Building.building_type == "hospital"
+    ).first()
+    if existing_hospital:
+        return
+
+    hospital = Building(
+        name="Hospital",
+        building_type="hospital",
+        x=28,
+        y=28,
+        capacity=10
+    )
+    db.add(hospital)
     db.commit()
 
 
@@ -550,6 +573,37 @@ def get_npc_decision(db: Session, npc_id: int) -> str:
     return "rest"
 
 
+def process_hospital(db: Session) -> None:
+    """Process hospital effects on NPCs.
+    
+    NPCs assigned to hospital buildings (work_building_id pointing to hospital)
+    have their health improved (placeholder for future illness system).
+    Currently increases happiness by 5 for NPCs at hospital.
+    """
+    hospitals = db.query(Building).filter(Building.building_type == "hospital").all()
+    
+    for hospital in hospitals:
+        # Get NPCs assigned to this hospital
+        patient_npcs = db.query(NPC).filter(NPC.work_building_id == hospital.id).all()
+        
+        for npc in patient_npcs:
+            # Heal effect: increase happiness (placeholder for illness system)
+            npc.happiness = min(100, npc.happiness + 5)
+            
+            # Log healing event
+            event = Event(
+                event_type="healing",
+                description=f"{npc.name} received healing at {hospital.name}",
+                tick=db.query(WorldState).first().tick if db.query(WorldState).first() else 0,
+                severity="info",
+                affected_npc_id=npc.id,
+                affected_building_id=hospital.id
+            )
+            db.add(event)
+    
+    db.commit()
+
+
 def process_tick(db: Session) -> None:
     """Advance the simulation by one tick.
     
@@ -616,6 +670,7 @@ def process_tick(db: Session) -> None:
     produce_bakery_resources(db)  # Bakery production
     produce_blacksmith_resources(db)  # Blacksmith production
     produce_farm_resources(db)  # Farm production
+    process_hospital(db)  # Hospital healing
     
     # 7. Process economy (wages, trades, tax collection)
     process_work(db)
