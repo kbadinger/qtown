@@ -38,6 +38,7 @@ BUILDING_TYPES = [
     'bank',
     'theater',
     'arena',
+    'prison',
 ]
 
 
@@ -1658,3 +1659,25 @@ def produce_arena_resources(db: Session) -> None:
                 building_id=building.id
             )
             db.add(new_entertainment)
+
+
+def seed_prison(db: Session) -> None:
+    """Seed a prison building into the town.
+
+    Creates 1 prison building at coordinates (54, 54).
+    Idempotent - will not create if one already exists.
+    """
+    existing_prisons = db.query(Building).filter(Building.building_type == 'prison').count()
+    if existing_prisons > 0:
+        return
+    
+    # Create prison at (54, 54)
+    prison = Building(
+        name="Town Prison",
+        building_type="prison",
+        x=54,
+        y=54,
+        capacity=5
+    )
+    db.add(prison)
+    db.commit()
