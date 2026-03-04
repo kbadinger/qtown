@@ -331,3 +331,8 @@
 - **Non-obvious enum handling**: The `BuildingType` enum required explicit mapping in the GraphQL resolver layer; simply adding the enum to the schema didn't automatically propagate to the database migration or the UI dropdowns without manual updates in three separate files.
 - **Codebase convention**: New domain entities follow a strict "Schema -> Migration -> Entity -> DTO -> Resolver" flow, where the DTO layer is the single source of truth for validation logic before hitting the database.
 - **Correction**: Initially attempted to reuse the generic `Entity` base class for `WellBuilding`, but realized the `well_id` foreign key required a custom join strategy; switched to extending `BaseEntity` directly to avoid circular dependency errors in the ORM.
+
+--- Story 062: Add warehouse building type (attempts: 1, 2026-03-04 16:27) ---
+- **Non-obvious constraint**: The `BuildingType` enum is strictly tied to the `TaxRate` calculation logic; adding a new type required updating the `calculateTax` switch statement in `FinanceService`, not just the data model.
+- **Codebase pattern**: All new building types follow a "factory + config" pattern where the UI registration happens in `BuildingRegistry.ts` while default attributes are defined in a separate JSON schema file (`buildings.json`).
+- **Correction**: Initially forgot to register the new warehouse type in the `InventoryCapacity` validator, causing validation failures for users with zero stock; added the missing case to the `validateCapacity` helper.

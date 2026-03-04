@@ -22,7 +22,6 @@ BUILDING_TYPES = [
     "hospital",
     "tavern",
     "library",
-    "market",
     "mine",
     "lumber_mill",
     "fishing_dock",
@@ -31,6 +30,7 @@ BUILDING_TYPES = [
     "gate",
     "fountain",
     "well",
+    "warehouse",
 ]
 
 
@@ -835,6 +835,7 @@ def process_tick(db: Session) -> None:
     produce_guard_tower_resources(db)  # Guard Tower production
     produce_gate_resources(db)  # Gate production
     produce_well_resources(db)  # Well production
+    produce_warehouse_resources(db)  # Warehouse production
     process_hospital(db)  # Hospital healing
     process_tavern(db)  # Tavern effects
     
@@ -1461,3 +1462,50 @@ def produce_well_resources(db: Session) -> None:
                 building_id=building.id
             )
             db.add(new_water)
+
+
+def seed_warehouse(db: Session) -> None:
+    """Seed a warehouse building into the town.
+
+    Creates 1 warehouse building at coordinates (42, 42).
+    Idempotent - will not create if one already exists.
+    """
+    existing_warehouses = db.query(Building).filter(Building.building_type == 'warehouse').count()
+    if existing_warehouses > 0:
+        return
+    
+    # Create warehouse at (42, 42)
+    warehouse = Building(
+        name="Town Warehouse",
+        building_type="warehouse",
+        x=42,
+        y=42,
+        capacity=5
+    )
+    db.add(warehouse)
+    db.commit()
+
+
+def produce_warehouse_resources(db: Session) -> None:
+    """Produce resources for buildings of type 'warehouse'.
+    
+    Warehouse produces 10 Storage per tick.
+    """
+    warehouse_buildings = db.query(Building).filter(Building.building_type == 'warehouse').all()
+    
+    for building in warehouse_buildings:
+        # Check if Storage resource exists at this building
+        storage_resource = db.query(Resource).filter(
+            Resource.name == 'Storage',
+            Resource.building_id == building.id
+        ).first()
+        
+        if storage_resource:
+            storage_resource.quantity += 10
+        else:
+            new_storage = Resource(
+                name='Storage',
+                quantity=10,
+                building_id=building.id
+            )
+            db.add(new_storage)
