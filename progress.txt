@@ -451,3 +451,8 @@
 - **Non-obvious State Coupling**: The thief's "steal" action required checking the `target.isLocked` flag *after* the movement calculation, not before; failing to do so caused the agent to stop at locked doors instead of bypassing them.
 - **Codebase Convention**: Role behaviors strictly extend `BaseRole` and must implement the `onTurnStart()` hook to inject logic, rather than modifying the main `GameLoop` directly.
 - **Correction**: Initially attempted to share the "sneak" movement logic with the `Ninja` class via a mixin, but realized the thief's pathfinding needs to ignore `visionRange` constraints, requiring a dedicated `ThiefPathfinder` class instead.
+
+--- Story 086: Relationship model (attempts: 1, 2026-03-05 01:31) ---
+- **Tricky**: The `Relationship` entity required a bidirectional cascade configuration that wasn't immediately obvious; omitting `orphanRemoval` caused orphaned records to persist in the database after a parent was deleted.
+- **Patterns**: The codebase consistently uses a `DomainEvent` pattern for relationship state changes (e.g., `RelationshipCreated`, `RelationshipTerminated`) rather than direct database updates, ensuring audit logs are always populated.
+- **Mistake**: Initially modeled the `status` field as a simple enum string, which broke existing validation logic expecting a `Status` value object; corrected by wrapping the enum in a dedicated class to enforce invariants.

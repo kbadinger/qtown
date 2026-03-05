@@ -1548,7 +1548,7 @@
         "npc"
       ],
       "priority": 85,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
@@ -1566,8 +1566,8 @@
         "npc"
       ],
       "priority": 86,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "087",

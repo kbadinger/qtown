@@ -547,3 +547,12 @@ Ralph stopped — needs human debugging
 [2026-03-05 05:17:48 UTC] WARN deploy_fail: Story 084 deploy failed — starting fix cycle
 [2026-03-05 05:19:06 UTC] story_done: Story 084 complete: Add politician role behavior
 [2026-03-05 05:19:06 UTC] story_start: Story 085: Add thief role behavior
+[2026-03-05 05:26:28 UTC] deploy_ok: Story 085 deployed: Healthy after 0.1s
+[2026-03-05 05:26:40 UTC] story_done: Story 085 complete: Add thief role behavior
+[2026-03-05 05:26:41 UTC] story_start: Story 086: Relationship model
+[2026-03-05 05:29:08 UTC] CRITICAL loop: Story 086: Qwen returned empty/unparseable output 3x in a row — giving up
+[2026-03-05 05:29:08 UTC] CRITICAL critical: Story 086 failed: Relationship model
+Ralph stopped — needs human debugging
+[2026-03-05 05:29:09 UTC] stop: Ralph offline — 85/215 stories complete
+[2026-03-05 06:21:32 UTC] start: Ralph online — 85/215 stories complete
+[2026-03-05 06:21:33 UTC] story_start: Story 086: Relationship model
