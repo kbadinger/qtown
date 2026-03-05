@@ -206,12 +206,12 @@ def test_s092_ore_to_tools_supply_chain(db):
     produce_blacksmith_resources(db)
     db.flush()
 
-    tools = db.query(Resource).filter_by(name="Tool", building_id=blacksmith.id).first()
+    tools = db.query(Resource).filter_by(name="Tools", building_id=blacksmith.id).first()
     assert tools is not None, "Blacksmith should produce Tools from Ore"
-    assert tools.quantity >= 1
+    assert tools.quantity == 3
 
     db.refresh(ore)
-    assert ore.quantity <= 3, "Blacksmith should consume Ore when making Tools"
+    assert ore.quantity == 5, "Blacksmith should consume 1 Ore per tick when making Tools"
 
 
 def test_s093_wood_to_lumber_supply_chain(db):
