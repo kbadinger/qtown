@@ -42,6 +42,11 @@ BUILDING_TYPES = [
     'graveyard',
     'garden',
     'watchtower',
+    'health',
+    'entertainment',
+    'economic',
+    'infrastructure',
+    'windmill',
 ]
 
 
@@ -1818,3 +1823,61 @@ def produce_watchtower_resources(db: Session) -> None:
                 building_id=building.id
             )
             db.add(new_defense)
+
+
+def seed_windmill(db: Session) -> None:
+    """Seed a windmill building into the town.
+
+    Creates 1 windmill building at coordinates (58, 58).
+    Idempotent - will not create if one already exists.
+    """
+    existing_windmills = db.query(Building).filter(Building.building_type == 'windmill').count()
+    if existing_windmills > 0:
+        return
+    
+    # Create windmill at (58, 58)
+    windmill = Building(
+        name="Town Windmill",
+        building_type="windmill",
+        x=58,
+        y=58,
+        capacity=5
+    )
+    db.add(windmill)
+    db.commit()
+
+
+def produce_windmill_resources(db: Session) -> None:
+    """Produce resources for buildings of type 'windmill'.
+    
+    Windmill converts 1 Wheat to 8 Flour per tick if Wheat available.
+    """
+    windmill_buildings = db.query(Building).filter(Building.building_type == 'windmill').all()
+    
+    for building in windmill_buildings:
+        # Check if Wheat resource exists at this building
+        wheat_resource = db.query(Resource).filter(
+            Resource.name == 'Wheat',
+            Resource.building_id == building.id
+        ).first()
+        
+        # Only produce if Wheat is available
+        if wheat_resource and wheat_resource.quantity >= 1:
+            # Consume 1 Wheat
+            wheat_resource.quantity -= 1
+            
+            # Check if Flour resource exists at this building
+            flour_resource = db.query(Resource).filter(
+                Resource.name == 'Flour',
+                Resource.building_id == building.id
+            ).first()
+            
+            if flour_resource:
+                flour_resource.quantity += 8
+            else:
+                new_flour = Resource(
+                    name='Flour',
+                    quantity=8,
+                    building_id=building.id
+                )
+                db.add(new_flour)

@@ -49,6 +49,47 @@ def _extract_function_inventory(filepath: str, content: str) -> str | None:
     return None
 
 
+def _extract_story_tests(test_file: str, story_id: str) -> str | None:
+    """Extract test functions for a specific story from the test file.
+
+    Finds all functions matching test_s{story_id}_* and returns their source.
+    This lets Qwen see exactly what the tests assert without modifying them.
+    """
+    p = Path(test_file)
+    if not p.exists():
+        return None
+
+    content = p.read_text(encoding="utf-8")
+    prefix = f"test_s{story_id}_"
+
+    # Split into top-level functions and extract matching ones
+    lines = content.split("\n")
+    tests = []
+    current = []
+    in_test = False
+
+    for line in lines:
+        if line.startswith("def "):
+            if in_test and current:
+                tests.append("\n".join(current))
+            if prefix in line:
+                in_test = True
+                current = [line]
+            else:
+                in_test = False
+                current = []
+        elif in_test:
+            current.append(line)
+
+    if in_test and current:
+        tests.append("\n".join(current))
+
+    if not tests:
+        return None
+
+    return "\n\n".join(tests)
+
+
 def build_prompt(
     story: dict,
     test_output: str,
@@ -154,12 +195,19 @@ def build_prompt(
         for inv in inventories:
             parts.append(inv)
 
-    # 7. Failing test output
+    # 7. Test source code — show Qwen exactly what the tests do
+    test_source = _extract_story_tests(story["test_file"], story["id"])
+    if test_source:
+        parts.append("=== TEST SOURCE CODE (read-only — DO NOT modify) ===")
+        parts.append(test_source)
+        parts.append("")
+
+    # 8. Failing test output
     parts.append("=== FAILING TEST OUTPUT ===")
     parts.append(test_output)
     parts.append("")
 
-    # 8. Instructions
+    # 9. Instructions
     parts.append("=== YOUR TASK ===")
     parts.append(
         "Write the code to make the failing tests pass. "
