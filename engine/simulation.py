@@ -62,19 +62,7 @@ DEFAULT_DEMAND = 10
 
 
 
-RESOURCE_DEMAND = {
-    "Wheat": 100,
-    "Flour": 100,
-    "Bread": 100,
-    "Ore": 100,
-    "Iron": 100,
-    "Tools": 100,
-    "Wood": 100,
-    "Lumber": 100,
-    "Fish": 100,
-    "Herbs": 100,
-    "Medicine": 100,
-}
+RESOURCE_DEMAND = {"Food": 10, "Art": 20, "Books": 10}
 
 
 
@@ -3053,5 +3041,57 @@ def buy_art(db: Session, npc_id: int) -> bool:
     if art and art.quantity > 0:
         art.quantity -= 1
     
+    db.commit()
+    return True
+
+
+def produce_books(db: Session) -> None:
+    """Produce Books resource in Libraries (2 per tick)."""
+    from engine.models import Building, Resource
+
+    libraries = db.query(Building).filter_by(building_type="library").all()
+    for library in libraries:
+        resource = db.query(Resource).filter_by(name="Books", building_id=library.id).first()
+        if resource:
+            resource.quantity += 2
+        else:
+            db.add(Resource(name="Books", quantity=2, building_id=library.id))
+    db.commit()
+
+
+def buy_books(db: Session, npc_id: int) -> bool:
+    """NPC buys Books for 10 gold (+15 happiness, +5 skill)."""
+    from engine.models import NPC, Resource, Building
+
+    npc = db.query(NPC).filter_by(id=npc_id).first()
+    if not npc:
+        return False
+
+    # Check conditions: hunger < 30 and energy > 60
+    if npc.hunger >= 30 or npc.energy <= 60:
+        return False
+
+    # Check gold
+    if npc.gold < 10:
+        return False
+
+    # Find available Books (from any Library)
+    libraries = db.query(Building).filter_by(building_type="library").all()
+    book_resource = None
+    for lib in libraries:
+        res = db.query(Resource).filter_by(name="Books", building_id=lib.id).first()
+        if res and res.quantity > 0:
+            book_resource = res
+            break
+
+    if not book_resource:
+        return False
+
+    # Execute purchase
+    npc.gold -= 10
+    npc.happiness += 15
+    npc.skill += 5
+    book_resource.quantity -= 1
+
     db.commit()
     return True

@@ -556,3 +556,8 @@
 - **Non-obvious State Synchronization**: The "luxury" badge logic required manual reactivity updates when the cart total crossed the threshold; relying solely on the `computed` property caused a stale UI state until a manual re-render was triggered.
 - **Codebase Convention**: The project strictly enforces a "service-layer first" pattern for all external API calls, meaning UI components must never import `fetch` or `axios` directly, even for simple badge checks.
 - **Correction**: Initially attempted to memoize the entire product list to optimize performance, which inadvertently broke the "live stock" updates; switched to granular memoization only for the price calculation logic.
+
+--- Story 107: Books luxury goods (attempts: 1, 2026-03-05 17:52) ---
+- **Non-obvious pricing logic**: The "luxury" flag triggers a dynamic surcharge based on inventory age, not a static markup; this required careful handling of the `calculateFinalPrice` method to avoid double-counting taxes.
+- **Codebase convention**: All domain entities in this module extend `AuditableEntity` and rely on a centralized `CurrencyFormatter` for display, rather than formatting strings at the UI layer.
+- **Correction**: Initially applied the luxury surcharge before tax calculation, causing a 15% overcharge; fixed by ensuring the tax engine receives the gross price (base + surcharge) as a single atomic value.
