@@ -483,3 +483,22 @@ Ralph stopped — needs human debugging
 [2026-03-05 01:37:01 UTC] stop: Ralph offline — 69/215 stories complete
 [2026-03-05 01:42:14 UTC] start: Ralph online — 69/215 stories complete
 [2026-03-05 01:42:14 UTC] story_start: Story 069: Add windmill building type
+[2026-03-05 01:48:38 UTC] deploy_ok: Story 069 deployed: Healthy after 0.2s
+[2026-03-05 01:48:51 UTC] story_done: Story 069 complete: Add windmill building type
+[2026-03-05 01:48:52 UTC] story_start: Story 071: Add farmer role behavior
+[2026-03-05 01:58:19 UTC] WARN story_fail: Story 071 struggling — attempt 5/12
+Add farmer role behavior
+[2026-03-05 02:16:11 UTC] WARN story_fail: Story 071 failed after 12 attempts: Add farmer role behavior
+[2026-03-05 02:16:11 UTC] CRITICAL critical: Story 071 failed: Add farmer role behavior
+Ralph stopped — needs human debugging
+[2026-03-05 02:16:12 UTC] stop: Ralph offline — 70/215 stories complete
+[2026-03-05 03:21:54 UTC] start: Ralph online — 70/215 stories complete
+[2026-03-05 03:21:55 UTC] story_start: Story 071: Add farmer role behavior
+[2026-03-05 04:08:29 UTC] CRITICAL loop: Story 071: Qwen returned empty/unparseable output 3x in a row — giving up
+[2026-03-05 04:08:29 UTC] CRITICAL critical: Story 071 failed: Add farmer role behavior
+Ralph stopped — needs human debugging
+[2026-03-05 04:08:30 UTC] stop: Ralph offline — 70/215 stories complete
+[2026-03-05 04:13:40 UTC] start: Ralph online — 70/215 stories complete
+[2026-03-05 04:13:41 UTC] story_start: Story 071: Add farmer role behavior
+[2026-03-05 04:14:33 UTC] start: Ralph online — 70/215 stories complete
+[2026-03-05 04:14:33 UTC] story_start: Story 071: Add farmer role behavior

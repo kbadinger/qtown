@@ -376,3 +376,8 @@
 - **Non-obvious**: The windmill's energy output logic requires checking the `wind_speed` variable from the global weather system, not just the building's static stats, which wasn't immediately clear from the initial schema.
 - **Patterns**: New building types must implement the `IBuilding` interface and register their specific `render()` method in the `BuildingRegistry` singleton to appear in the UI.
 - **Correction**: Initially placed the windmill logic in the generic `Farm` class; corrected by creating a dedicated `Windmill` class to avoid coupling unrelated agricultural and energy mechanics.
+
+--- Story 071: Add farmer role behavior (attempts: 2, 2026-03-04 23:20) ---
+- **Tricky Logic**: The farmer's decision loop required careful handling of the `has_tools` state; failing to check this before attempting to harvest caused the agent to get stuck in an infinite "try-to-harvest" loop when resources were unavailable.
+- **Codebase Pattern**: This project strictly separates *state mutation* (in `actions/`) from *decision logic* (in `behaviors/`); the farmer role simply returns an intent, while the execution engine handles the actual world updates.
+- **Correction**: Initially, I implemented the "planting" behavior as a synchronous block, which froze the simulation thread; refactored to use the existing `async/await` queue pattern to ensure the farmer yields control back to the main loop between actions.

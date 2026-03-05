@@ -396,13 +396,32 @@ def process_work(db: Session) -> None:
     
     For each NPC that has a work_building_id and is at the same (x,y)
     as their work building, add 10 gold.
+    For farmers, also produce 10 Food at their work building.
     """
     npcs = db.query(NPC).options(joinedload(NPC.work_building)).filter(NPC.work_building_id.isnot(None)).all()
     
     for npc in npcs:
         building = npc.work_building
         if building and npc.x == building.x and npc.y == building.y:
+            # All NPCs earn 10 gold at work
             npc.gold += 10
+            
+            # Farmers produce 10 Food at their work building
+            if npc.role == "farmer":
+                # Find existing Food resource at this building or create new one
+                food = db.query(Resource).filter(
+                    Resource.name == "Food",
+                    Resource.building_id == building.id
+                ).first()
+                
+                if food:
+                    food.quantity += 10
+                else:
+                    db.add(Resource(
+                        name="Food",
+                        quantity=10,
+                        building_id=building.id
+                    ))
 
 
 def produce_resources(db: Session, weather: str = None) -> None:
