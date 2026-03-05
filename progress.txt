@@ -486,3 +486,8 @@
 *   **Non-obvious coupling**: The `Ore` entity's `process()` method implicitly depended on the `ToolRegistry` being pre-loaded in the global context; failing to initialize the registry first caused silent failures in downstream supply chain calculations.
 *   **Convention discovery**: This codebase strictly separates "domain logic" (Ore/Tool definitions) from "orchestration" (SupplyChainService), meaning all external I/O and state mutations must happen in the service layer, never inside the entity methods.
 *   **Correction made**: Initially attempted to pass `Tool` instances directly to the `Ore` constructor, which violated the factory pattern used elsewhere; corrected to inject a `ToolProvider` interface instead to allow for mockable dependencies in unit tests.
+
+--- Story 093: Wood to lumber supply chain (attempts: 1, 2026-03-05 12:03) ---
+- **Non-obvious coupling**: The `LumberProcessor` tightly couples with `WoodSource` via a private factory method, making it difficult to inject mock suppliers for unit tests without refactoring the constructor.
+- **Convention discovery**: The codebase consistently uses `Result<T, E>` for domain operations to avoid exceptions, but relies on `Option<T>` for optional supply chain nodes; mixing these two patterns in the same function caused initial type-mismatch errors.
+- **Correction made**: Initially attempted to handle out-of-stock scenarios by throwing a custom exception, which violated the project's "no-exception" flow control rule; corrected by returning an `Err(StockError)` to align with the existing `Result` pattern.

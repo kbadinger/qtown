@@ -2318,3 +2318,42 @@ def process_inheritance(db: Session) -> None:
         dead_npc.gold = 0
     
     db.commit()
+
+
+def produce_lumber(db: Session) -> None:
+    """Lumber Mills convert 2 Wood -> 1 Lumber."""
+    from engine.models import Building, Resource
+    
+    lumber_mills = db.query(Building).filter(Building.building_type == 'lumber_mill').all()
+    
+    for mill in lumber_mills:
+        # Find Wood resource at this mill
+        wood = db.query(Resource).filter(
+            Resource.name == 'Wood',
+            Resource.building_id == mill.id
+        ).first()
+        
+        if wood and wood.quantity >= 2:
+            # Calculate how much lumber we can produce (2 Wood = 1 Lumber)
+            lumber_produced = wood.quantity // 2
+            
+            # Consume wood (2 per lumber)
+            wood.quantity -= lumber_produced * 2
+            
+            # Create or update Lumber resource
+            lumber = db.query(Resource).filter(
+                Resource.name == 'Lumber',
+                Resource.building_id == mill.id
+            ).first()
+            
+            if lumber:
+                lumber.quantity += lumber_produced
+            else:
+                new_lumber = Resource(
+                    name='Lumber',
+                    quantity=lumber_produced,
+                    building_id=mill.id
+                )
+                db.add(new_lumber)
+            
+            db.commit()
