@@ -416,3 +416,8 @@
 - **Non-obvious State Management**: The `tavern_keeper` role relies on a hidden `last_interaction` timestamp in the session store to prevent spamming; failing to initialize this field caused the bot to repeat the same greeting indefinitely on the first visit.
 - **Codebase Pattern**: Role behaviors are consistently implemented as isolated `check_condition()` and `execute_action()` pairs within the `roles/` directory, rather than embedding logic directly into the main event loop.
 - **Correction**: Initially attempted to pass the full `user_context` object to the role handler, which caused serialization errors in the logging middleware; switched to extracting only the `user_id` and `current_mood` as primitive arguments.
+
+--- Story 079: Add miner role behavior (attempts: 1, 2026-03-04 23:52) ---
+- **State Transition Complexity**: The trickiest part was ensuring the miner's `idle` → `mining` → `returning` state machine handled edge cases where the target ore node was destroyed mid-action, requiring explicit null-checks before every state transition.
+- **Behavior Tree Pattern**: Discovered the codebase relies heavily on a custom `BehaviorTree` pattern where leaf nodes return `Status` enums; I initially tried using standard callbacks but corrected this to align with the existing `Execute/Complete/Fail` lifecycle for better debugging.
+- **Vector Math Convention**: Made a mistake using `Vector3` for 2D movement logic, which caused minor drift; corrected by strictly using `Vector2` and the project's `Math2D` utility extensions for distance and direction calculations.

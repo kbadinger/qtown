@@ -400,6 +400,7 @@ def process_work(db: Session) -> None:
     For bakers, convert Wheat into Bread at Bakery buildings, producing 5 Bread per tick.
     For blacksmiths, convert Ore into Tools at Blacksmith buildings, producing 3 Tools per tick.
     For priests, increase happiness of all NPCs within radius 10 by 5.
+    For miners, produce 8 Ore at their work building.
     """
     npcs = db.query(NPC).options(joinedload(NPC.work_building)).filter(NPC.work_building_id.isnot(None)).all()
     
@@ -490,6 +491,23 @@ def process_work(db: Session) -> None:
                     distance_sq = (nearby_npc.x - building.x) ** 2 + (nearby_npc.y - building.y) ** 2
                     if distance_sq <= 100:  # radius 10 squared
                         nearby_npc.happiness += 5
+            
+            # Miners produce 8 Ore at their work building
+            if npc.role == "miner" and building.building_type == "mine":
+                # Find existing Ore resource at this building or create new one
+                ore = db.query(Resource).filter(
+                    Resource.name == "Ore",
+                    Resource.building_id == building.id
+                ).first()
+                
+                if ore:
+                    ore.quantity += 8
+                else:
+                    db.add(Resource(
+                        name="Ore",
+                        quantity=8,
+                        building_id=building.id
+                    ))
     
     db.commit()
 
