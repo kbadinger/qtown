@@ -207,3 +207,7 @@ class PriceHistory(Base):
     demand = Column(Integer, nullable=False)
     tick = Column(Integer, nullable=False)
     created_at = Column(DateTime, default=_utcnow)
+
+    __table_args__ = (
+        UniqueConstraint("resource_name", "tick", name="uq_price_history_resource_tick"),
+    )

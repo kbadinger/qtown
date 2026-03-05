@@ -620,7 +620,7 @@ def process_work(db: Session) -> None:
 
 
 def produce_resources(db: Session, weather: str = None) -> None:
-    """Produce resources for buildings of type 'food'."""
+    """Produce resources for buildings of type 'food' and record price history."""
     food_buildings = db.query(Building).filter(Building.building_type == 'food').all()
     
     # Determine production amount based on weather
@@ -628,6 +628,9 @@ def produce_resources(db: Session, weather: str = None) -> None:
     if weather == 'rain':
         base_production = 12  # +20% bonus
     
+    # Track resources for price history
+    resource_stats = {}
+
     for building in food_buildings:
         resource = db.query(Resource).filter(
             Resource.name == 'Food',
@@ -636,6 +639,11 @@ def produce_resources(db: Session, weather: str = None) -> None:
         
         if resource:
             resource.quantity += base_production
+            # Aggregate stats for this resource type
+            if 'Food' not in resource_stats:
+                resource_stats['Food'] = {'total_supply': 0, 'count': 0}
+            resource_stats['Food']['total_supply'] += resource.quantity
+            resource_stats['Food']['count'] += 1
         else:
             new_resource = Resource(
                 name='Food',
@@ -643,6 +651,27 @@ def produce_resources(db: Session, weather: str = None) -> None:
                 building_id=building.id
             )
             db.add(new_resource)
+            if 'Food' not in resource_stats:
+                resource_stats['Food'] = {'total_supply': 0, 'count': 0}
+            resource_stats['Food']['total_supply'] += base_production
+            resource_stats['Food']['count'] += 1
+
+    # Record price history for all tracked resources
+    current_tick = db.query(WorldState).first().tick if db.query(WorldState).first() else 0
+    
+    for resource_name, stats in resource_stats.items():
+        avg_supply = stats['total_supply'] / stats['count'] if stats['count'] > 0 else 0
+        demand = DEFAULT_DEMAND
+        price = calculate_price(resource_name, avg_supply, demand)
+        
+        history_entry = PriceHistory(
+            resource_name=resource_name,
+            price=price,
+            supply=int(avg_supply),
+            demand=demand,
+            tick=current_tick
+        )
+        db.add(history_entry)
 
 
 def produce_bakery_resources(db: Session) -> None:
