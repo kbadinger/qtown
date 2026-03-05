@@ -505,3 +505,6 @@ Ralph stopped — needs human debugging
 [2026-03-05 04:22:59 UTC] deploy_ok: Story 071 deployed: Healthy after 0.2s
 [2026-03-05 04:23:13 UTC] story_done: Story 071 complete: Add farmer role behavior
 [2026-03-05 04:23:13 UTC] story_start: Story 072: Add baker role behavior
+[2026-03-05 04:28:03 UTC] deploy_ok: Story 072 deployed: Healthy after 0.2s
+[2026-03-05 04:28:08 UTC] story_done: Story 072 complete: Add baker role behavior
+[2026-03-05 04:28:09 UTC] story_start: Story 073: Add blacksmith role behavior

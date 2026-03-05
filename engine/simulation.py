@@ -398,6 +398,7 @@ def process_work(db: Session) -> None:
     as their work building, add 10 gold.
     For farmers, also produce 10 Food at their work building.
     For bakers, convert Wheat into Bread at Bakery buildings, producing 5 Bread per tick.
+    For blacksmiths, convert Ore into Tools at Blacksmith buildings, producing 3 Tools per tick.
     """
     npcs = db.query(NPC).options(joinedload(NPC.work_building)).filter(NPC.work_building_id.isnot(None)).all()
     
@@ -448,6 +449,33 @@ def process_work(db: Session) -> None:
                         db.add(Resource(
                             name="Bread",
                             quantity=5,
+                            building_id=building.id
+                        ))
+            
+            # Blacksmiths convert Ore into Tools at Blacksmith buildings
+            if npc.role == "blacksmith" and building.building_type == "blacksmith":
+                # Check if there's Ore available at the blacksmith
+                ore = db.query(Resource).filter(
+                    Resource.name == "Ore",
+                    Resource.building_id == building.id
+                ).first()
+                
+                if ore and ore.quantity >= 1:
+                    # Consume 1 Ore to produce 3 Tools
+                    ore.quantity -= 1
+                    
+                    # Find existing Tools resource at this building or create new one
+                    tools = db.query(Resource).filter(
+                        Resource.name == "Tools",
+                        Resource.building_id == building.id
+                    ).first()
+                    
+                    if tools:
+                        tools.quantity += 3
+                    else:
+                        db.add(Resource(
+                            name="Tools",
+                            quantity=3,
                             building_id=building.id
                         ))
     

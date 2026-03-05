@@ -386,3 +386,8 @@
 - **Tricky Aspect**: The baker's inventory logic required handling race conditions where multiple orders could attempt to claim the same ingredient batch simultaneously, necessitating explicit transactional locks rather than relying on optimistic updates.
 - **Pattern Discovered**: The codebase consistently uses a "Command-Query Separation" pattern where role-specific behaviors are encapsulated in dedicated service classes that return domain events, rather than mutating state directly within the controller layer.
 - **Correction Made**: Initially, I attempted to validate ingredient freshness inside the `BakerRole` class itself; I corrected this by delegating the check to the shared `InventoryService` to maintain a single source of truth and avoid duplicating validation logic across roles.
+
+--- Story 073: Add blacksmith role behavior (attempts: 1, 2026-03-04 23:32) ---
+- **Non-obvious State Coupling**: The blacksmith's ability to craft was tightly coupled with the `Inventory` system's internal validation logic, requiring a refactor to expose a dedicated `canCraft()` method rather than attempting direct state mutation.
+- **Codebase Convention**: This project strictly separates role *capabilities* (defined in `RoleCapabilities` interfaces) from role *execution* (handled by `RoleBehavior` classes), a pattern that prevents business logic from leaking into the entity layer.
+- **Correction**: Initially attempted to handle cooldowns via a global static timer, which broke parallel simulation tests; corrected by moving cooldown state into the individual `BlacksmithRole` instance to ensure thread safety and test isolation.
