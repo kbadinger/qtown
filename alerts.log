@@ -508,3 +508,4 @@ Ralph stopped — needs human debugging
 [2026-03-05 04:28:03 UTC] deploy_ok: Story 072 deployed: Healthy after 0.2s
 [2026-03-05 04:28:08 UTC] story_done: Story 072 complete: Add baker role behavior
 [2026-03-05 04:28:09 UTC] story_start: Story 073: Add blacksmith role behavior
+[2026-03-05 04:32:07 UTC] WARN deploy_fail: Story 073 deploy failed — starting fix cycle
