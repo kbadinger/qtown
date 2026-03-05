@@ -608,3 +608,6 @@ Herbs to medicine supply chain
 [2026-03-05 17:49:52 UTC] deploy_ok: Story 095 deployed: Healthy after 0.2s
 [2026-03-05 17:50:05 UTC] story_done: Story 095 complete: Herbs to medicine supply chain
 [2026-03-05 17:50:05 UTC] story_start: Story 096: Supply and demand pricing
+[2026-03-05 17:56:52 UTC] deploy_ok: Story 096 deployed: Healthy after 0.1s
+[2026-03-05 17:57:04 UTC] story_done: Story 096 complete: Supply and demand pricing
+[2026-03-05 17:57:05 UTC] story_start: Story 097: Price history model

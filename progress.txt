@@ -506,3 +506,8 @@
 - **Non-obvious pricing logic**: The final price isn't just `base_price + demand_modifier`; it requires clamping the result between `min_threshold` and `max_cap` *after* applying the dynamic multiplier, which initially caused edge-case overflows.
 - **Codebase convention**: The domain layer strictly separates calculation logic (`PricingCalculator`) from data access (`InventoryRepository`), avoiding direct entity mutations in favor of returning immutable value objects for price adjustments.
 - **Correction**: Initially attempted to cache the demand multiplier globally; corrected to calculate it per-transaction within the request scope to ensure real-time inventory levels are reflected, preventing stale pricing during high-concurrency sales.
+
+--- Story 097: Price history model (attempts: 1, 2026-03-05 12:57) ---
+- **Non-obvious Timezone Handling**: The price history model required explicit normalization to UTC before aggregation; relying on the database's default `TIMESTAMP` behavior led to inconsistent daily rollups during DST transitions.
+- **Convention for Backfilling**: The codebase consistently uses a "seed script" pattern (located in `scripts/backfill/`) rather than database migrations for historical data reconstruction, ensuring the logic remains testable and idempotent.
+- **Correction on Indexing**: Initially created a composite index on `(asset_id, created_at)`, but realized the query pattern filters by `date` (a derived column); corrected this by adding a functional index on `DATE(created_at)` to optimize the `GROUP BY` performance.
