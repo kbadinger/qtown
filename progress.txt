@@ -436,3 +436,8 @@
 *   **Non-obvious permission scoping**: The artist role's `can_edit` logic was tightly coupled to `owner_id` checks in the base controller, requiring a custom policy override rather than a simple role flag to prevent artists from editing non-owned assets.
 *   **Codebase pattern**: The project consistently uses `role_based_authorization` middleware before action execution, meaning role-specific behaviors must be defined in `ApplicationPolicy` subclasses rather than inline `if` statements.
 *   **Correction**: Initially placed the artist validation in the controller's `before_action`, which caused race conditions during bulk uploads; moved the logic to the model's `validate` scope to ensure atomicity.
+
+--- Story 083: Add bard role behavior (attempts: 1, 2026-03-05 00:15) ---
+*   **Non-obvious state coupling**: The Bard's "perform" action unexpectedly relies on the `Party` aggregate's internal `mood` state rather than just the actor's stats, requiring a read of the shared context before triggering the effect.
+*   **Command pattern consistency**: The codebase strictly separates command execution (via `BardCommandHandler`) from domain logic; I initially tried to inject behavior directly into the `Bard` entity but corrected it to use a dedicated command to maintain testability.
+*   **Event emission order**: I initially emitted the `SongPerformed` event before validating the `audience` count, causing the `GameLoop` to process invalid states; moved validation to the pre-command phase to ensure events only fire on success.

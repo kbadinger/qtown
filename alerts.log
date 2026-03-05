@@ -537,3 +537,6 @@ Ralph stopped — needs human debugging
 [2026-03-05 05:07:49 UTC] deploy_ok: Story 081 deployed: Healthy after 0.1s
 [2026-03-05 05:08:01 UTC] story_done: Story 081 complete: Add fisherman role behavior
 [2026-03-05 05:08:02 UTC] story_start: Story 082: Add artist role behavior
+[2026-03-05 05:14:43 UTC] deploy_ok: Story 082 deployed: Healthy after 0.1s
+[2026-03-05 05:14:56 UTC] story_done: Story 082 complete: Add artist role behavior
+[2026-03-05 05:14:56 UTC] story_start: Story 083: Add bard role behavior
