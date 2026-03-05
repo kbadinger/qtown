@@ -526,3 +526,8 @@
 *   **Non-obvious saturation logic**: The saturation check wasn't a simple count of active users; it required calculating a weighted score based on *churn rate* and *support ticket volume* to trigger the "market full" state, which initially caused false positives during high-traffic spikes.
 *   **Codebase convention**: The project enforces a strict "Command-Query Separation" in the repository structure; all state-mutating logic (like updating market status) lives in `Commands/`, while read-only analytics (like saturation metrics) are isolated in `Queries/`, preventing accidental side effects in reporting services.
 *   **Correction**: I initially attempted to recalculate the saturation score synchronously within the user registration endpoint, causing latency spikes; I corrected this by offloading the calculation to an asynchronous event handler that updates a cached metric table instead.
+
+--- Story 101: Configurable tax rates (attempts: 1, 2026-03-05 16:47) ---
+- **Non-obvious tax logic**: The distinction between "base" and "effective" tax rates was subtle; the system applies the effective rate only when a specific `tax_override` flag is set, otherwise it defaults to the base rate regardless of the user's location.
+- **Codebase pattern**: Tax configuration relies heavily on a `TaxRule` factory pattern that validates jurisdiction codes against a static whitelist before instantiating rate objects, preventing invalid region lookups at runtime.
+- **Correction made**: Initially, I attempted to cache tax rates globally, which caused stale data when rates were updated dynamically; I corrected this by implementing a cache invalidation hook triggered specifically on `TaxRule` updates.

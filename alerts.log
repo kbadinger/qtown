@@ -660,3 +660,6 @@ Trade between buildings
 [2026-03-05 21:32:25 UTC] WARN story_fail: Story 100 struggling — attempt 5/12
 Market saturation
 [2026-03-05 21:37:35 UTC] WARN deploy_fail: Story 100 deploy failed — starting fix cycle
+[2026-03-05 21:43:44 UTC] deploy_ok: Story 100 deploy fixed on retry
+[2026-03-05 21:43:57 UTC] story_done: Story 100 complete: Market saturation
+[2026-03-05 21:43:57 UTC] story_start: Story 101: Configurable tax rates
