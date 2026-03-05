@@ -195,3 +195,15 @@ class Relationship(Base):
     __table_args__ = (
         UniqueConstraint('npc_id', 'target_npc_id', name='unique_relationship_pair'),
     )
+
+
+class PriceHistory(Base):
+    __tablename__ = "price_history"
+
+    id = Column(Integer, primary_key=True, index=True)
+    resource_name = Column(String(64), nullable=False, index=True)
+    price = Column(Float, nullable=False)
+    supply = Column(Integer, nullable=False)
+    demand = Column(Integer, nullable=False)
+    tick = Column(Integer, nullable=False)
+    created_at = Column(DateTime, default=_utcnow)

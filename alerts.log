@@ -605,3 +605,6 @@ Ralph stopped — needs human debugging
 [2026-03-05 17:10:19 UTC] story_start: Story 095: Herbs to medicine supply chain
 [2026-03-05 17:26:30 UTC] WARN story_fail: Story 095 struggling — attempt 5/12
 Herbs to medicine supply chain
+[2026-03-05 17:49:52 UTC] deploy_ok: Story 095 deployed: Healthy after 0.2s
+[2026-03-05 17:50:05 UTC] story_done: Story 095 complete: Herbs to medicine supply chain
+[2026-03-05 17:50:05 UTC] story_start: Story 096: Supply and demand pricing

@@ -501,3 +501,8 @@
 - **Tricky/Non-Obvious**: The "freshness" logic for herbs required a multi-stage state transition (Harvested → Cured → Ready) rather than a simple timestamp check, making the initial inventory filtering queries complex.
 - **Patterns/Conventions**: The codebase strictly enforces a `DomainEvent` pattern for supply chain movements; all stock updates must trigger an event handler rather than modifying the database directly in the service layer.
 - **Mistakes/Corrections**: Initially attempted to validate batch expiration synchronously during order creation, which caused race conditions; corrected by moving validation to an asynchronous background job that processes pending orders.
+
+--- Story 096: Supply and demand pricing (attempts: 1, 2026-03-05 12:55) ---
+- **Non-obvious pricing logic**: The final price isn't just `base_price + demand_modifier`; it requires clamping the result between `min_threshold` and `max_cap` *after* applying the dynamic multiplier, which initially caused edge-case overflows.
+- **Codebase convention**: The domain layer strictly separates calculation logic (`PricingCalculator`) from data access (`InventoryRepository`), avoiding direct entity mutations in favor of returning immutable value objects for price adjustments.
+- **Correction**: Initially attempted to cache the demand multiplier globally; corrected to calculate it per-transaction within the request scope to ensure real-time inventory levels are reflected, preventing stale pricing during high-concurrency sales.

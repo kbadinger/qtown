@@ -11,6 +11,7 @@ from engine.models import (
 Tile, NPC, Building, Resource, WorldState, Treasury, Event, Transaction
 )
 from engine.models import Relationship
+from engine.models import PriceHistory
 
 # Building types available in the simulation
 BUILDING_TYPES = [
@@ -49,6 +50,12 @@ BUILDING_TYPES = [
     'infrastructure',
     'windmill',
 ]
+
+
+
+
+DEFAULT_BASE_PRICE = 100
+DEFAULT_DEMAND = 10
 
 
 def _generate_personality() -> str:
@@ -2452,3 +2459,39 @@ def produce_medicine(db: Session) -> None:
                 db.add(new_medicine)
             
             herbs.quantity -= (batches * 3)
+
+
+def calculate_price(db: Session, resource_name: str) -> float:
+    """Calculate price based on supply and demand."""
+    from engine.models import Resource, WorldState
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Get supply (total quantity of this resource)
+    resources = db.query(Resource).filter(Resource.name == resource_name).all()
+    total_supply = sum(r.quantity for r in resources)
+    
+    # Get demand (buy attempts per tick - simplified for now)
+    demand = DEFAULT_DEMAND
+    
+    # Calculate price using formula: price = base_price * (demand / max(supply, 1))
+    base_price = DEFAULT_BASE_PRICE
+    price = base_price * (demand / max(total_supply, 1))
+    
+    # Ensure price never goes below 1
+    price = max(price, 1)
+    
+    # Store in PriceHistory
+    price_record = PriceHistory(
+        resource_name=resource_name,
+        price=price,
+        supply=total_supply,
+        demand=demand,
+        tick=current_tick
+    )
+    db.add(price_record)
+    db.commit()
+    
+    return price
