@@ -371,3 +371,8 @@
 - **Tricky/Non-obvious**: The watchtower's line-of-sight logic required handling edge cases where the building sits exactly on a map boundary, which initially caused null-pointer exceptions in the visibility calculation.
 - **Patterns/Conventions**: This codebase consistently uses a `BuildingType` enum paired with a `BuildingConfig` data class to separate static rules (cost, stats) from dynamic state (current health, owner).
 - **Mistakes/Corrections**: I initially hardcoded the watchtower's range in the UI renderer; I corrected this by pulling the value from the shared `BuildingConfig` to ensure the UI and game logic stay in sync.
+
+--- Story 069: Add windmill building type (attempts: 1, 2026-03-04 20:46) ---
+- **Non-obvious**: The windmill's energy output logic requires checking the `wind_speed` variable from the global weather system, not just the building's static stats, which wasn't immediately clear from the initial schema.
+- **Patterns**: New building types must implement the `IBuilding` interface and register their specific `render()` method in the `BuildingRegistry` singleton to appear in the UI.
+- **Correction**: Initially placed the windmill logic in the generic `Farm` class; corrected by creating a dedicated `Windmill` class to avoid coupling unrelated agricultural and energy mechanics.

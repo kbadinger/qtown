@@ -1259,7 +1259,7 @@
         "asset"
       ],
       "priority": 69,
-      "status": "skipped",
+      "status": "in_progress",
       "attempts": 1
     },
     {
@@ -1278,7 +1278,7 @@
         "asset"
       ],
       "priority": 70,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
