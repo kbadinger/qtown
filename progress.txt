@@ -516,3 +516,8 @@
 - **Non-obvious coupling**: The `Building` class implicitly relies on a shared `GlobalTradeRegistry` for state, making isolated unit testing difficult without mocking the entire registry context.
 - **Codebase convention**: Trade logic strictly separates "validation" (checking inventory/capacity) from "execution" (moving goods), always wrapped in a `try/finally` block to ensure partial trades never leave the system in an inconsistent state.
 - **Correction made**: Initially attempted to return a boolean success flag from the trade method; corrected to return a `TradeResult` object containing the actual quantity moved, as partial trades are valid and common in this system.
+
+--- Story 099: Merchant NPC routes (attempts: 1, 2026-03-05 16:10) ---
+*   **Non-obvious Route Logic**: Merchant pathing relies on a hidden `waypoint_priority` flag that overrides standard distance calculations; ignoring this causes NPCs to get stuck in loops at map edges.
+*   **Codebase Convention**: The project strictly separates route definition (static JSON) from execution (C++ `Pathfinder` class), meaning any dynamic changes must update the JSON and trigger a hot-reload event rather than modifying the runtime state directly.
+*   **Correction Made**: Initially attempted to hardcode fallback routes in the C++ logic, which broke the hot-reload cycle; corrected by moving all conditional logic into the JSON schema and updating the parser to handle `fallback` keys.

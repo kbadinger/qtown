@@ -651,3 +651,6 @@ Reset to 'pending' in prd.json to retry
 [2026-03-05 20:44:51 UTC] story_start: Story 098: Trade between buildings
 [2026-03-05 20:56:36 UTC] WARN story_fail: Story 098 struggling — attempt 5/12
 Trade between buildings
+[2026-03-05 21:05:15 UTC] deploy_ok: Story 098 deployed: Healthy after 0.2s
+[2026-03-05 21:05:38 UTC] story_done: Story 098 complete: Trade between buildings
+[2026-03-05 21:05:44 UTC] story_start: Story 099: Merchant NPC routes

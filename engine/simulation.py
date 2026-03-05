@@ -12,6 +12,7 @@ Tile, NPC, Building, Resource, WorldState, Treasury, Event, Transaction
 )
 from engine.models import Relationship
 from engine.models import PriceHistory
+from math import sqrt
 
 # Building types available in the simulation
 BUILDING_TYPES = [
@@ -2584,3 +2585,37 @@ def process_trade(db: Session) -> None:
                             db.add(new_resource)
     
     db.commit()
+
+
+def get_merchant_route(db: Session, npc: NPC) -> list[Building]:
+    """Get a route for a merchant NPC to travel between buildings.
+    
+    Merchant picks up from producers and delivers to consumers.
+    Returns a list of building stops ordered by distance from current position.
+    """
+    from engine.models import Building
+    
+    # Producer buildings (create resources)
+    producer_types = ["farm", "mine", "lumber_mill", "fishing_dock", "bakery", "blacksmith"]
+    
+    # Consumer buildings (need resources)
+    consumer_types = ["market", "tavern", "residential"]
+    
+    # Get all relevant buildings
+    buildings = db.query(Building).filter(
+        Building.building_type.in_(producer_types + consumer_types)
+    ).all()
+    
+    # Filter out the merchant's work building if they have one
+    if npc.work_building_id:
+        buildings = [b for b in buildings if b.id != npc.work_building_id]
+    
+    # Calculate distance from merchant to each building
+    def distance_sq(building: Building) -> float:
+        return (building.x - npc.x) ** 2 + (building.y - npc.y) ** 2
+    
+    # Sort by distance (ascending)
+    buildings.sort(key=distance_sq)
+    
+    # Return the route (list of buildings to visit)
+    return buildings
