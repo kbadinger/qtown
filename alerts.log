@@ -527,3 +527,4 @@ Ralph stopped — needs human debugging
 [2026-03-05 04:48:19 UTC] deploy_ok: Story 078 deployed: Healthy after 0.1s
 [2026-03-05 04:48:24 UTC] story_done: Story 078 complete: Add tavern_keeper role behavior
 [2026-03-05 04:48:25 UTC] story_start: Story 079: Add miner role behavior
+[2026-03-05 04:53:02 UTC] WARN deploy_fail: Story 079 deploy failed — starting fix cycle
