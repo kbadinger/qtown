@@ -2357,3 +2357,67 @@ def produce_lumber(db: Session) -> None:
                 db.add(new_lumber)
             
             db.commit()
+
+
+def produce_fish(db: Session) -> None:
+    """Produce Fish resources for fishing_dock buildings."""
+    from engine.models import Building, Resource
+    
+    fishing_docks = db.query(Building).filter(Building.building_type == 'fishing_dock').all()
+    
+    for building in fishing_docks:
+        resource = db.query(Resource).filter(
+            Resource.name == 'Fish',
+            Resource.building_id == building.id
+        ).first()
+        
+        if resource:
+            resource.quantity += 10
+        else:
+            new_resource = Resource(
+                name='Fish',
+                quantity=10,
+                building_id=building.id
+            )
+            db.add(new_resource)
+    
+    db.commit()
+
+
+def buy_fish(db: Session, npc_id: int) -> bool:
+    """Allow an NPC to buy Fish, reducing hunger by 25 and gold by 3."""
+    from engine.models import NPC, Resource, Building
+    
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return False
+    
+    # Check if NPC has enough gold
+    if npc.gold < 3:
+        return False
+    
+    # Find available Fish resources (from any fishing dock)
+    fish_resources = db.query(Resource).filter(
+        Resource.name == 'Fish',
+        Resource.quantity > 0
+    ).all()
+    
+    if not fish_resources:
+        return False
+    
+    # Find the first available fish resource
+    fish = fish_resources[0]
+    
+    # Deduct gold from NPC
+    npc.gold -= 3
+    
+    # Reduce hunger by 25 (but not below 0)
+    npc.hunger = max(0, npc.hunger - 25)
+    
+    # Reduce fish quantity by 1
+    fish.quantity -= 1
+    if fish.quantity <= 0:
+        db.delete(fish)
+    
+    db.commit()
+    return True

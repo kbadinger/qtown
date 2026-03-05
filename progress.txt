@@ -491,3 +491,8 @@
 - **Non-obvious coupling**: The `LumberProcessor` tightly couples with `WoodSource` via a private factory method, making it difficult to inject mock suppliers for unit tests without refactoring the constructor.
 - **Convention discovery**: The codebase consistently uses `Result<T, E>` for domain operations to avoid exceptions, but relies on `Option<T>` for optional supply chain nodes; mixing these two patterns in the same function caused initial type-mismatch errors.
 - **Correction made**: Initially attempted to handle out-of-stock scenarios by throwing a custom exception, which violated the project's "no-exception" flow control rule; corrected by returning an `Err(StockError)` to align with the existing `Result` pattern.
+
+--- Story 094: Fish to market supply chain (attempts: 1, 2026-03-05 12:09) ---
+- **Tricky**: Handling the non-linear state transitions for "partial shipments" required careful validation to prevent inventory drift when a shipment is split across multiple logistics providers.
+- **Patterns**: The codebase consistently uses a `DomainEvent` pattern for audit logging, where every state change in the supply chain triggers a specific event handler rather than direct database updates.
+- **Mistakes**: Initially over-engineered the pricing logic with a generic strategy pattern; corrected by simplifying to a direct calculation method since the current business rules are static and don't require dynamic swapping.
