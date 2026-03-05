@@ -421,3 +421,8 @@
 - **State Transition Complexity**: The trickiest part was ensuring the miner's `idle` → `mining` → `returning` state machine handled edge cases where the target ore node was destroyed mid-action, requiring explicit null-checks before every state transition.
 - **Behavior Tree Pattern**: Discovered the codebase relies heavily on a custom `BehaviorTree` pattern where leaf nodes return `Status` enums; I initially tried using standard callbacks but corrected this to align with the existing `Execute/Complete/Fail` lifecycle for better debugging.
 - **Vector Math Convention**: Made a mistake using `Vector3` for 2D movement logic, which caused minor drift; corrected by strictly using `Vector2` and the project's `Math2D` utility extensions for distance and direction calculations.
+
+--- Story 080: Add lumberjack role behavior (attempts: 1, 2026-03-05 00:00) ---
+- **State Transition Complexity**: Handling the lumberjack's idle-to-chopping state machine was non-obvious; the codebase requires explicit "target validation" checks before switching states to prevent the agent from targeting already-felled trees.
+- **Event-Driven Animation Sync**: Discovered a strict convention where role behaviors must emit a `RoleActionStarted` event before modifying the character's animation state, ensuring the UI and audio systems stay synchronized.
+- **Initial Logic Error**: Initially placed the tree-felling logic inside the `Update` loop, causing multiple rapid hits; corrected by moving it to a coroutine triggered only after the `ChoppingComplete` event, aligning with the existing cooldown pattern.

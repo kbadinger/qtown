@@ -401,6 +401,7 @@ def process_work(db: Session) -> None:
     For blacksmiths, convert Ore into Tools at Blacksmith buildings, producing 3 Tools per tick.
     For priests, increase happiness of all NPCs within radius 10 by 5.
     For miners, produce 8 Ore at their work building.
+    For lumberjacks, produce 8 Wood at their work building.
     """
     npcs = db.query(NPC).options(joinedload(NPC.work_building)).filter(NPC.work_building_id.isnot(None)).all()
     
@@ -505,6 +506,23 @@ def process_work(db: Session) -> None:
                 else:
                     db.add(Resource(
                         name="Ore",
+                        quantity=8,
+                        building_id=building.id
+                    ))
+            
+            # Lumberjacks produce 8 Wood at their work building
+            if npc.role == "lumberjack" and building.building_type == "lumber_mill":
+                # Find existing Wood resource at this building or create new one
+                wood = db.query(Resource).filter(
+                    Resource.name == "Wood",
+                    Resource.building_id == building.id
+                ).first()
+                
+                if wood:
+                    wood.quantity += 8
+                else:
+                    db.add(Resource(
+                        name="Wood",
                         quantity=8,
                         building_id=building.id
                     ))
