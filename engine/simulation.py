@@ -1139,6 +1139,7 @@ def process_tick(db: Session) -> None:
     produce_warehouse_resources(db)  # Warehouse production
     produce_bank_resources(db)  # Bank production
     produce_theater_resources(db)  # Theater production
+    produce_art(db)  # Art production from Theater
     process_hospital(db)  # Hospital healing
     process_tavern(db)  # Tavern effects
     
@@ -2977,3 +2978,80 @@ def apply_stimulus(db: Session) -> dict:
         "total_gold_given": total_gold_given,
         "production_boost": production_boost
     }
+
+
+def produce_art(db: Session) -> None:
+    """Theater produces Art resource (2 per tick)."""
+    from engine.models import Building, Resource
+    
+    theaters = db.query(Building).filter(Building.building_type == "theater").all()
+    
+    for theater in theaters:
+        # Find existing Art resource for this theater or create new one
+        art = db.query(Resource).filter(
+            Resource.name == "Art",
+            Resource.building_id == theater.id
+        ).first()
+        
+        if art:
+            art.quantity += 2
+        else:
+            db.add(Resource(
+                name="Art",
+                quantity=2,
+                building_id=theater.id
+            ))
+    
+    db.commit()
+
+
+def buy_art(db: Session, npc_id: int) -> bool:
+    """NPC buys Art for 15 gold, gaining +20 happiness.
+    
+    Art is a luxury: only bought when hunger < 30 and energy > 60.
+    Returns True if purchase succeeded, False otherwise.
+    """
+    from engine.models import NPC, Resource, Building
+    
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return False
+    
+    # Luxury condition: only buy when hunger < 30 and energy > 60
+    if npc.hunger >= 30 or npc.energy <= 60:
+        return False
+    
+    # Check if NPC can afford Art (15 gold)
+    if npc.gold < 15:
+        return False
+    
+    # Find available Art resources (any theater with Art in stock)
+    art_resources = db.query(Resource).filter(
+        Resource.name == "Art",
+        Resource.quantity > 0
+    ).all()
+    
+    if not art_resources:
+        return False
+    
+    # Find the first theater with Art
+    theater_id = art_resources[0].building_id
+    theater = db.query(Building).filter(Building.id == theater_id).first()
+    if not theater:
+        return False
+    
+    # Complete the transaction
+    npc.gold -= 15
+    npc.happiness = min(100, npc.happiness + 20)
+    
+    # Reduce Art quantity
+    art = db.query(Resource).filter(
+        Resource.name == "Art",
+        Resource.building_id == theater_id
+    ).first()
+    
+    if art and art.quantity > 0:
+        art.quantity -= 1
+    
+    db.commit()
+    return True

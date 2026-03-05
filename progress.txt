@@ -551,3 +551,8 @@
 *   **Non-obvious complexity**: The interaction between the stimulus multiplier and the debt ceiling check was subtle; the logic failed silently when the projected debt exceeded the limit *during* the iterative calculation, requiring an early-exit validation step rather than a post-calculation check.
 *   **Codebase pattern**: All economic modifiers in this module follow a strict "base value + percentage delta" structure stored in a shared configuration map, meaning new stimulus types must inherit from the `EconomicEvent` base class to ensure automatic logging and audit trail generation.
 *   **Correction made**: Initially, I applied the stimulus to the raw GDP figure before accounting for inflation adjustments, which skewed the final output; I corrected this by moving the inflation normalization step to occur immediately before the stimulus injection in the calculation pipeline.
+
+--- Story 106: Art luxury goods (attempts: 1, 2026-03-05 17:42) ---
+- **Non-obvious State Synchronization**: The "luxury" badge logic required manual reactivity updates when the cart total crossed the threshold; relying solely on the `computed` property caused a stale UI state until a manual re-render was triggered.
+- **Codebase Convention**: The project strictly enforces a "service-layer first" pattern for all external API calls, meaning UI components must never import `fetch` or `axios` directly, even for simple badge checks.
+- **Correction**: Initially attempted to memoize the entire product list to optimize performance, which inadvertently broke the "live stock" updates; switched to granular memoization only for the price calculation logic.
