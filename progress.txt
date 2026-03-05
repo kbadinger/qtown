@@ -401,3 +401,8 @@
 - **State Transition Complexity**: The trickiest part was ensuring the `Priest` role correctly handled the `is_blessed` state flag during the `perform_ritual` action, as the original logic failed to reset the flag if the ritual was interrupted mid-execution.
 - **Event-Driven Conventions**: Discovered that this codebase strictly separates "role logic" from "world effects" by emitting a `RoleActionEvent` rather than directly modifying entity stats, requiring me to refactor the initial direct mutation approach.
 - **Correction on Role Inheritance**: Initially attempted to override the base `Character` constructor to inject priest-specific items, but corrected this to use the `RoleDecorator` pattern to avoid breaking the shared inventory system used by other classes.
+
+--- Story 076: Add teacher role behavior (attempts: 1, 2026-03-04 23:44) ---
+- **Non-obvious permission scoping**: The `TeacherRole` logic required explicit checks against `course_enrollment` status before allowing grade modifications, not just a simple role flag, to prevent cross-course data leaks.
+- **Codebase pattern for role guards**: Discovered a consistent convention of using `authorize_action(user, resource, action)` helper methods in controllers rather than inline `if` statements, ensuring audit logs are automatically triggered.
+- **Correction on state mutation**: Initially attempted to update grades directly on the `Grade` model; corrected to use the `GradeService` to ensure the `history_log` table is updated atomically with the grade change.
