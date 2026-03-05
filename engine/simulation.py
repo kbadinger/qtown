@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from engine.models import (
 Tile, NPC, Building, Resource, WorldState, Treasury, Event, Transaction
 )
+from engine.models import Relationship
 
 # Building types available in the simulation
 BUILDING_TYPES = [
@@ -1103,6 +1104,9 @@ def process_tick(db: Session) -> None:
     # Apply fountain effects
     apply_fountain_effects(db)
     
+    # Update relationships
+    update_relationships(db)
+    
     db.commit()
 
 
@@ -2087,3 +2091,117 @@ def produce_windmill_resources(db: Session) -> None:
                     building_id=building.id
                 )
                 db.add(new_flour)
+
+
+def update_relationships(db: Session) -> None:
+    """Update relationships between NPCs based on proximity and competition."""
+    from engine.models import NPC, Building
+    
+    # Get all NPCs with their work buildings
+    npcs = db.query(NPC).all()
+    
+    # Group NPCs by work building
+    building_npcs: dict[int, list[NPC]] = {}
+    for npc in npcs:
+        if npc.work_building_id:
+            if npc.work_building_id not in building_npcs:
+                building_npcs[npc.work_building_id] = []
+            building_npcs[npc.work_building_id].append(npc)
+    
+    # Process friendships (same building)
+    for building_id, building_npc_list in building_npcs.items():
+        for i, npc1 in enumerate(building_npc_list):
+            for npc2 in building_npc_list[i+1:]:
+                # Create or update friendship
+                rel = db.query(Relationship).filter(
+                    Relationship.npc_id == npc1.id,
+                    Relationship.target_npc_id == npc2.id
+                ).first()
+                
+                if not rel:
+                    rel = Relationship(
+                        npc_id=npc1.id,
+                        target_npc_id=npc2.id,
+                        relationship_type="friend",
+                        strength=5
+                    )
+                    db.add(rel)
+                else:
+                    rel.strength = min(100, rel.strength + 5)
+                
+                # Also create reverse relationship
+                rel_reverse = db.query(Relationship).filter(
+                    Relationship.npc_id == npc2.id,
+                    Relationship.target_npc_id == npc1.id
+                ).first()
+                
+                if not rel_reverse:
+                    rel_reverse = Relationship(
+                        npc_id=npc2.id,
+                        target_npc_id=npc1.id,
+                        relationship_type="friend",
+                        strength=5
+                    )
+                    db.add(rel_reverse)
+                else:
+                    rel_reverse.strength = min(100, rel_reverse.strength + 5)
+    
+    # Process rivalries (competing for same resource)
+    # Group NPCs by building type
+    building_type_npcs: dict[str, list[NPC]] = {}
+    for npc in npcs:
+        if npc.work_building_id:
+            building = db.query(Building).filter(Building.id == npc.work_building_id).first()
+            if building:
+                building_type = building.building_type
+                if building_type not in building_type_npcs:
+                    building_type_npcs[building_type] = []
+                building_type_npcs[building_type].append(npc)
+    
+    # Process rivalries for resource-producing buildings
+    resource_buildings = ['mine', 'lumber_mill', 'fishing_dock', 'farm']
+    
+    for building_type in resource_buildings:
+        if building_type in building_type_npcs:
+            npc_list = building_type_npcs[building_type]
+            for i, npc1 in enumerate(npc_list):
+                for npc2 in npc_list[i+1:]:
+                    # Skip if they're at the same building (already friends)
+                    if npc1.work_building_id == npc2.work_building_id:
+                        continue
+                    
+                    # Create or update rivalry
+                    rel = db.query(Relationship).filter(
+                        Relationship.npc_id == npc1.id,
+                        Relationship.target_npc_id == npc2.id
+                    ).first()
+                    
+                    if not rel:
+                        rel = Relationship(
+                            npc_id=npc1.id,
+                            target_npc_id=npc2.id,
+                            relationship_type="rival",
+                            strength=5
+                        )
+                        db.add(rel)
+                    else:
+                        rel.strength = min(100, rel.strength + 5)
+                    
+                    # Also create reverse relationship
+                    rel_reverse = db.query(Relationship).filter(
+                        Relationship.npc_id == npc2.id,
+                        Relationship.target_npc_id == npc1.id
+                    ).first()
+                    
+                    if not rel_reverse:
+                        rel_reverse = Relationship(
+                            npc_id=npc2.id,
+                            target_npc_id=npc1.id,
+                            relationship_type="rival",
+                            strength=5
+                        )
+                        db.add(rel_reverse)
+                    else:
+                        rel_reverse.strength = min(100, rel_reverse.strength + 5)
+    
+    db.commit()

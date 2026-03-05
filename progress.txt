@@ -456,3 +456,8 @@
 - **Tricky**: The `Relationship` entity required a bidirectional cascade configuration that wasn't immediately obvious; omitting `orphanRemoval` caused orphaned records to persist in the database after a parent was deleted.
 - **Patterns**: The codebase consistently uses a `DomainEvent` pattern for relationship state changes (e.g., `RelationshipCreated`, `RelationshipTerminated`) rather than direct database updates, ensuring audit logs are always populated.
 - **Mistake**: Initially modeled the `status` field as a simple enum string, which broke existing validation logic expecting a `Status` value object; corrected by wrapping the enum in a dedicated class to enforce invariants.
+
+--- Story 087: Friendship and rivalry (attempts: 2, 2026-03-05 10:24) ---
+*   **Non-obvious coupling**: The `RivalryResolver` relies on a global `GameState` singleton that isn't explicitly passed in, making unit tests brittle when mocking rival behavior; always inject dependencies explicitly to isolate logic.
+*   **Naming convention**: The codebase uses `calculate_*` for pure math functions and `resolve_*` for state-mutating actions; adhering to this distinction prevents accidental side effects in the friendship scoring logic.
+*   **Correction**: Initially, I treated "rivalry" as a binary flag, but the legacy code revealed it's a weighted integer that decays over time; refactored the condition to check `rivalry_score > threshold` instead of a boolean to preserve the decay mechanic.

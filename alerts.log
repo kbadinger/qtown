@@ -557,3 +557,16 @@ Ralph stopped — needs human debugging
 [2026-03-05 06:21:32 UTC] start: Ralph online — 85/215 stories complete
 [2026-03-05 06:21:33 UTC] story_start: Story 086: Relationship model
 [2026-03-05 06:31:50 UTC] WARN deploy_fail: Story 086 deploy failed — starting fix cycle
+[2026-03-05 06:33:31 UTC] deploy_ok: Story 086 deploy fixed on retry
+[2026-03-05 06:33:44 UTC] story_done: Story 086 complete: Relationship model
+[2026-03-05 06:33:45 UTC] story_start: Story 087: Friendship and rivalry
+[2026-03-05 06:42:01 UTC] WARN story_fail: Story 087 struggling — attempt 5/12
+Friendship and rivalry
+[2026-03-05 07:17:48 UTC] WARN story_fail: Story 087 failed after 12 attempts: Friendship and rivalry
+[2026-03-05 07:17:49 UTC] CRITICAL critical: Story 087 failed: Friendship and rivalry
+Ralph stopped — needs human debugging
+[2026-03-05 07:17:49 UTC] stop: Ralph offline — 86/215 stories complete
+[2026-03-05 13:11:49 UTC] start: Ralph online — 86/215 stories complete
+[2026-03-05 13:11:49 UTC] story_start: Story 087: Friendship and rivalry
+[2026-03-05 15:16:13 UTC] start: Ralph online — 86/215 stories complete
+[2026-03-05 15:16:13 UTC] story_start: Story 087: Friendship and rivalry
