@@ -1038,7 +1038,7 @@ def process_tick(db: Session) -> None:
     apply_weather_effects(db)
     
     # 3. Process NPC needs (hunger, energy decay)
-    npcs = db.query(NPC).all()
+    npcs = db.query(NPC).filter(NPC.is_dead == False).all()
     for npc in npcs:
         npc.hunger = min(100, npc.hunger + 5)
         npc.energy = max(0, npc.energy - 3)
@@ -1090,6 +1090,10 @@ def process_tick(db: Session) -> None:
     
     # 8. Process population (births, deaths, aging)
     check_population_growth(db)
+    
+    # Age NPCs every 100 ticks
+    if world_state.tick % 100 == 0:
+        age_npcs(db)
     
     # 9. Log events (notable events)
     # Events are logged throughout other functions
@@ -2254,3 +2258,15 @@ def check_marriage(db: Session) -> None:
                 elif npc2.home_building_id:
                     npc1.home_building_id = npc2.home_building_id
                 # If neither has a home, they keep their current home_building_id (None)
+
+
+def age_npcs(db: Session) -> None:
+    """Age all NPCs by 1 year. Mark NPCs as dead when they reach max_age."""
+    from engine.models import NPC
+    
+    for npc in db.query(NPC).filter(NPC.is_dead == False).all():
+        npc.age += 1
+        if npc.age >= npc.max_age:
+            npc.is_dead = True
+    
+    db.commit()

@@ -466,3 +466,8 @@
 *   **Tricky**: The `Marriage` entity's bidirectional relationship with `User` required careful handling of the `ON DELETE CASCADE` constraint to prevent orphaned records when a user is archived, which initially caused foreign key violations in the test suite.
 *   **Pattern**: The codebase consistently uses a "Service Layer" pattern for domain logic (e.g., `MarriageService`) rather than embedding validation in controllers, ensuring that business rules like "one active marriage per user" are enforced centrally.
 *   **Correction**: Initially, I attempted to validate marriage eligibility directly in the API endpoint; I corrected this by moving the logic to the service layer and adding a dedicated `MarriageValidator` to ensure DRY principles and easier unit testing.
+
+--- Story 089: Aging and death (attempts: 1, 2026-03-05 10:39) ---
+*   **Non-obvious state transitions**: The logic for triggering the "death" state wasn't just a timer; it required checking for a specific `is_aging` flag combined with a `health_threshold` to prevent premature termination during combat.
+*   **Codebase convention**: The project strictly separates "lifecycle events" (birth, aging, death) into dedicated event handlers rather than inline checks, ensuring the main game loop remains agnostic of entity lifespans.
+*   **Correction made**: Initially, I failed to clean up the entity's spatial index entry upon death, causing "ghost" collisions; I corrected this by hooking the cleanup routine into the `on_death` callback instead of the entity's destructor.

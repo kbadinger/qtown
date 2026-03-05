@@ -573,3 +573,6 @@ Ralph stopped — needs human debugging
 [2026-03-05 15:27:23 UTC] deploy_ok: Story 087 deployed: Healthy after 0.2s
 [2026-03-05 15:27:47 UTC] story_done: Story 087 complete: Friendship and rivalry
 [2026-03-05 15:27:47 UTC] story_start: Story 088: Marriage system
+[2026-03-05 15:34:04 UTC] deploy_ok: Story 088 deployed: Healthy after 0.2s
+[2026-03-05 15:34:09 UTC] story_done: Story 088 complete: Marriage system
+[2026-03-05 15:34:09 UTC] story_start: Story 089: Aging and death
