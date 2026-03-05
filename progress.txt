@@ -521,3 +521,8 @@
 *   **Non-obvious Route Logic**: Merchant pathing relies on a hidden `waypoint_priority` flag that overrides standard distance calculations; ignoring this causes NPCs to get stuck in loops at map edges.
 *   **Codebase Convention**: The project strictly separates route definition (static JSON) from execution (C++ `Pathfinder` class), meaning any dynamic changes must update the JSON and trigger a hot-reload event rather than modifying the runtime state directly.
 *   **Correction Made**: Initially attempted to hardcode fallback routes in the C++ logic, which broke the hot-reload cycle; corrected by moving all conditional logic into the JSON schema and updating the parser to handle `fallback` keys.
+
+--- Story 100: Market saturation (attempts: 1, 2026-03-05 16:37) ---
+*   **Non-obvious saturation logic**: The saturation check wasn't a simple count of active users; it required calculating a weighted score based on *churn rate* and *support ticket volume* to trigger the "market full" state, which initially caused false positives during high-traffic spikes.
+*   **Codebase convention**: The project enforces a strict "Command-Query Separation" in the repository structure; all state-mutating logic (like updating market status) lives in `Commands/`, while read-only analytics (like saturation metrics) are isolated in `Queries/`, preventing accidental side effects in reporting services.
+*   **Correction**: I initially attempted to recalculate the saturation score synchronously within the user registration endpoint, causing latency spikes; I corrected this by offloading the calculation to an asynchronous event handler that updates a cached metric table instead.

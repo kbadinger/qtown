@@ -150,6 +150,8 @@ class Resource(Base):
     name = Column(String(64), nullable=False)
     quantity = Column(Integer, default=0)
     building_id = Column(Integer, ForeignKey("buildings.id"), nullable=True)
+    is_saturated = Column(Integer, default=0)
+    consecutive_oversupply_ticks = Column(Integer, default=0)
     created_at = Column(DateTime, default=_utcnow)
 
     building = relationship("Building", foreign_keys=[building_id])

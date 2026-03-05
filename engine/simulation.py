@@ -13,6 +13,7 @@ Tile, NPC, Building, Resource, WorldState, Treasury, Event, Transaction
 from engine.models import Relationship
 from engine.models import PriceHistory
 from math import sqrt
+from sqlalchemy import func
 
 # Building types available in the simulation
 BUILDING_TYPES = [
@@ -57,6 +58,28 @@ BUILDING_TYPES = [
 
 DEFAULT_BASE_PRICE = 100
 DEFAULT_DEMAND = 10
+
+
+
+
+RESOURCE_DEMAND = {
+    "Wheat": 100,
+    "Flour": 100,
+    "Bread": 100,
+    "Ore": 100,
+    "Iron": 100,
+    "Tools": 100,
+    "Wood": 100,
+    "Lumber": 100,
+    "Fish": 100,
+    "Herbs": 100,
+    "Medicine": 100,
+}
+
+
+
+
+SATURATION_TICK_THRESHOLD = 10
 
 
 def _generate_personality() -> str:
@@ -2619,3 +2642,76 @@ def get_merchant_route(db: Session, npc: NPC) -> list[Building]:
     
     # Return the route (list of buildings to visit)
     return buildings
+
+
+def check_market_saturation(db: Session) -> dict:
+    """Check market saturation for all resources.
+    
+    If total resource quantity exceeds 2x demand for 10 consecutive ticks,
+    price drops to minimum and producers slow output by 50%.
+    
+    Returns dict with saturation status per resource.
+    """
+    from engine.models import Resource
+    
+    saturation_info = {}
+    
+    # Get all unique resource names
+    resource_names = db.query(Resource.name).distinct().all()
+    
+    for (name,) in resource_names:
+        # Get total quantity for this resource
+        total_qty = db.query(func.sum(Resource.quantity)).filter(
+            Resource.name == name
+        ).scalar() or 0
+        
+        # Get demand for this resource
+        demand = RESOURCE_DEMAND.get(name, 100)
+        
+        # Check if oversupplied (2x demand)
+        is_oversupplied = total_qty > 2 * demand
+        
+        # Get all resources of this type
+        resources = db.query(Resource).filter(Resource.name == name).all()
+        
+        if not resources:
+            continue
+        
+        # Calculate current consecutive ticks from first resource
+        current_consecutive = resources[0].consecutive_oversupply_ticks
+        
+        if is_oversupplied:
+            # Increment consecutive ticks
+            new_consecutive = current_consecutive + 1
+            
+            # Check if should become saturated
+            should_saturate = new_consecutive >= SATURATION_TICK_THRESHOLD
+            
+            for r in resources:
+                r.consecutive_oversupply_ticks = new_consecutive
+                if should_saturate and not r.is_saturated:
+                    r.is_saturated = 1
+                db.add(r)
+            
+            saturation_info[name] = {
+                "is_saturated": should_saturate,
+                "quantity": total_qty,
+                "demand": demand,
+                "consecutive_ticks": new_consecutive
+            }
+        else:
+            # Reset counters when supply is back to normal
+            for r in resources:
+                r.consecutive_oversupply_ticks = 0
+                r.is_saturated = 0
+                db.add(r)
+            
+            saturation_info[name] = {
+                "is_saturated": False,
+                "quantity": total_qty,
+                "demand": demand,
+                "consecutive_ticks": 0
+            }
+    
+    db.commit()
+    return saturation_info
