@@ -411,3 +411,8 @@
 - **Tricky**: Handling the `role` enum in the auth middleware was non-obvious; the logic required explicit checks for `doctor` vs. `admin` rather than a simple "is authenticated" flag, as the base `User` model lacks specific permission scopes.
 - **Patterns**: The codebase consistently uses factory methods (e.g., `UserFactory.create_as_doctor()`) to set up role-specific test data, ensuring the `role` column is populated correctly before running feature specs.
 - **Correction**: Initially, I attempted to add doctor-specific behavior by modifying the global `User` controller, which broke existing admin routes; I corrected this by extracting the logic into a dedicated `DoctorsController` and updating the route map to scope `/doctors/*` paths.
+
+--- Story 078: Add tavern_keeper role behavior (attempts: 1, 2026-03-04 23:47) ---
+- **Non-obvious State Management**: The `tavern_keeper` role relies on a hidden `last_interaction` timestamp in the session store to prevent spamming; failing to initialize this field caused the bot to repeat the same greeting indefinitely on the first visit.
+- **Codebase Pattern**: Role behaviors are consistently implemented as isolated `check_condition()` and `execute_action()` pairs within the `roles/` directory, rather than embedding logic directly into the main event loop.
+- **Correction**: Initially attempted to pass the full `user_context` object to the role handler, which caused serialization errors in the logging middleware; switched to extracting only the `user_id` and `current_mood` as primitive arguments.

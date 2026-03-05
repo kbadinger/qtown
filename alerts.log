@@ -521,3 +521,6 @@ Ralph stopped — needs human debugging
 [2026-03-05 04:45:36 UTC] deploy_ok: Story 076 deployed: Healthy after 0.1s
 [2026-03-05 04:45:41 UTC] story_done: Story 076 complete: Add teacher role behavior
 [2026-03-05 04:45:42 UTC] story_start: Story 077: Add doctor role behavior
+[2026-03-05 04:46:58 UTC] deploy_ok: Story 077 deployed: Healthy after 0.1s
+[2026-03-05 04:47:03 UTC] story_done: Story 077 complete: Add doctor role behavior
+[2026-03-05 04:47:03 UTC] story_start: Story 078: Add tavern_keeper role behavior
