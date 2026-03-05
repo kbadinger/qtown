@@ -509,3 +509,6 @@ Ralph stopped — needs human debugging
 [2026-03-05 04:28:08 UTC] story_done: Story 072 complete: Add baker role behavior
 [2026-03-05 04:28:09 UTC] story_start: Story 073: Add blacksmith role behavior
 [2026-03-05 04:32:07 UTC] WARN deploy_fail: Story 073 deploy failed — starting fix cycle
+[2026-03-05 04:35:57 UTC] deploy_ok: Story 073 deploy fixed on retry
+[2026-03-05 04:36:02 UTC] story_done: Story 073 complete: Add blacksmith role behavior
+[2026-03-05 04:36:02 UTC] story_start: Story 074: Add guard role behavior

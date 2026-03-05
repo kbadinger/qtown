@@ -391,3 +391,8 @@
 - **Non-obvious State Coupling**: The blacksmith's ability to craft was tightly coupled with the `Inventory` system's internal validation logic, requiring a refactor to expose a dedicated `canCraft()` method rather than attempting direct state mutation.
 - **Codebase Convention**: This project strictly separates role *capabilities* (defined in `RoleCapabilities` interfaces) from role *execution* (handled by `RoleBehavior` classes), a pattern that prevents business logic from leaking into the entity layer.
 - **Correction**: Initially attempted to handle cooldowns via a global static timer, which broke parallel simulation tests; corrected by moving cooldown state into the individual `BlacksmithRole` instance to ensure thread safety and test isolation.
+
+--- Story 074: Add guard role behavior (attempts: 1, 2026-03-04 23:36) ---
+- **Tricky Logic**: The distinction between "blocking" and "redirecting" guard behavior was non-obvious; the system requires a specific `action` enum rather than a simple boolean flag to determine the next step.
+- **Codebase Pattern**: Role-based checks are consistently centralized in `auth.middleware.ts` using a `hasRole` utility, avoiding inline permission logic in controllers.
+- **Correction**: Initially implemented the guard check as a synchronous function, causing the request to hang; corrected by wrapping the role validation in a `Promise` to align with the async middleware pipeline.
