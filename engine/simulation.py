@@ -427,7 +427,7 @@ def process_work(db: Session) -> None:
     """Process work earnings for NPCs at their work building.
     
     For each NPC that has a work_building_id and is at the same (x,y)
-    as their work building, add 10 gold.
+    as their work building, add base_wage gold from WorldState.
     For farmers, also produce 10 Food at their work building.
     For bakers, convert Wheat into Bread at Bakery buildings, producing 5 Bread per tick.
     For blacksmiths, convert Ore into Tools at Blacksmith buildings, producing 3 Tools per tick.
@@ -439,17 +439,18 @@ def process_work(db: Session) -> None:
     For bards, wander between Tavern and Theater, boosting happiness of nearby NPCs by 8 per tick.
     For thieves, steal 5-15 gold from random NPCs at night.
     """
-    # Get current time of day
+    # Get current time of day and base wage
     world_state = db.query(WorldState).first()
     is_night = world_state.time_of_day == "night" if world_state else False
+    base_wage = world_state.base_wage if world_state else 10
     
     npcs = db.query(NPC).options(joinedload(NPC.work_building)).filter(NPC.work_building_id.isnot(None)).all()
     
     for npc in npcs:
         building = npc.work_building
         if building and npc.x == building.x and npc.y == building.y:
-            # All NPCs earn 10 gold at work
-            npc.gold += 10
+            # All NPCs earn base_wage gold at work
+            npc.gold += base_wage
             
             # Thieves steal gold at night
             if npc.role == "thief" and is_night:
@@ -2714,3 +2715,27 @@ def check_market_saturation(db: Session) -> dict:
     
     db.commit()
     return saturation_info
+
+
+def adjust_wages_for_inflation(db: Session) -> None:
+    """Auto-adjust base_wage based on inflation every 100 ticks.
+    
+    Checks if 100 ticks have passed since last adjustment.
+    If so, increases base_wage by 5% (rounded to nearest integer).
+    """
+    world_state = db.query(WorldState).first()
+    
+    if not world_state:
+        return
+    
+    ticks_since_last_adjustment = world_state.tick - world_state.last_wage_adjustment_tick
+    
+    if ticks_since_last_adjustment >= 100:
+        # Calculate 5% inflation increase
+        inflation_increase = int(world_state.base_wage * 0.05)
+        if inflation_increase > 0:
+            world_state.base_wage += inflation_increase
+        
+        # Update the last adjustment tick
+        world_state.last_wage_adjustment_tick = world_state.tick
+        db.commit()

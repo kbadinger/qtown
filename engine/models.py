@@ -50,6 +50,8 @@ class WorldState(Base):
     day = Column(Integer, default=1)
     time_of_day = Column(String(32), default="morning")
     weather = Column(String(32), nullable=True)
+    base_wage = Column(Integer, default=10)
+    last_wage_adjustment_tick = Column(Integer, default=0)
     created_at = Column(DateTime, default=_utcnow)
 
 

@@ -663,3 +663,6 @@ Market saturation
 [2026-03-05 21:43:44 UTC] deploy_ok: Story 100 deploy fixed on retry
 [2026-03-05 21:43:57 UTC] story_done: Story 100 complete: Market saturation
 [2026-03-05 21:43:57 UTC] story_start: Story 101: Configurable tax rates
+[2026-03-05 21:48:58 UTC] deploy_ok: Story 101 deployed: Healthy after 0.1s
+[2026-03-05 21:49:03 UTC] story_done: Story 101 complete: Configurable tax rates
+[2026-03-05 21:49:03 UTC] story_start: Story 102: Wage adjustments

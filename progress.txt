@@ -531,3 +531,8 @@
 - **Non-obvious tax logic**: The distinction between "base" and "effective" tax rates was subtle; the system applies the effective rate only when a specific `tax_override` flag is set, otherwise it defaults to the base rate regardless of the user's location.
 - **Codebase pattern**: Tax configuration relies heavily on a `TaxRule` factory pattern that validates jurisdiction codes against a static whitelist before instantiating rate objects, preventing invalid region lookups at runtime.
 - **Correction made**: Initially, I attempted to cache tax rates globally, which caused stale data when rates were updated dynamically; I corrected this by implementing a cache invalidation hook triggered specifically on `TaxRule` updates.
+
+--- Story 102: Wage adjustments (attempts: 1, 2026-03-05 16:54) ---
+*   **Tricky Logic**: The interaction between `currency` and `precision` in the rounding logic was non-obvious; standard floating-point math caused off-by-one errors for specific salary bands, requiring a switch to integer-based calculations (cents) before final formatting.
+*   **Codebase Pattern**: This project consistently separates "calculation" from "persistence" in the service layer, where the domain model handles the math but the repository strictly manages the audit trail for every wage change.
+*   **Correction**: Initially applied the new rate to the entire `effective_date` range, which incorrectly backdated changes for mid-month hires; corrected by calculating the prorated amount based on the exact start date of the adjustment.
