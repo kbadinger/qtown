@@ -2270,3 +2270,51 @@ def age_npcs(db: Session) -> None:
             npc.is_dead = True
     
     db.commit()
+
+
+def process_inheritance(db: Session) -> None:
+    """Process inheritance for all dead NPCs."""
+    from engine.models import NPC, Relationship, Treasury
+    
+    # Get all dead NPCs who still have gold
+    dead_npcs = db.query(NPC).filter(NPC.is_dead == 1).filter(NPC.gold > 0).all()
+    
+    for dead_npc in dead_npcs:
+        gold = dead_npc.gold
+        
+        # Find children (Relationship where npc_id is dead_npc and target_npc_id is child)
+        children = db.query(NPC).join(
+            Relationship, Relationship.target_npc_id == NPC.id
+        ).filter(
+            Relationship.npc_id == dead_npc.id,
+            Relationship.relationship_type == "child"
+        ).all()
+        
+        if children:
+            # Split gold equally among children
+            share = gold // len(children)
+            remainder = gold % len(children)
+            for i, child in enumerate(children):
+                child.gold += share + (1 if i < remainder else 0)
+        else:
+            # Find spouse
+            spouse = db.query(NPC).join(
+                Relationship, Relationship.target_npc_id == NPC.id
+            ).filter(
+                Relationship.npc_id == dead_npc.id,
+                Relationship.relationship_type == "spouse"
+            ).first()
+            
+            if spouse:
+                # Spouse gets all gold
+                spouse.gold += gold
+            else:
+                # Treasury gets all gold
+                treasury = db.query(Treasury).first()
+                if treasury:
+                    treasury.gold_stored += gold
+        
+        # Clear dead NPC's gold
+        dead_npc.gold = 0
+    
+    db.commit()

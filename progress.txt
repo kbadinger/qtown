@@ -471,3 +471,8 @@
 *   **Non-obvious state transitions**: The logic for triggering the "death" state wasn't just a timer; it required checking for a specific `is_aging` flag combined with a `health_threshold` to prevent premature termination during combat.
 *   **Codebase convention**: The project strictly separates "lifecycle events" (birth, aging, death) into dedicated event handlers rather than inline checks, ensuring the main game loop remains agnostic of entity lifespans.
 *   **Correction made**: Initially, I failed to clean up the entity's spatial index entry upon death, causing "ghost" collisions; I corrected this by hooking the cleanup routine into the `on_death` callback instead of the entity's destructor.
+
+--- Story 090: Inheritance (attempts: 1, 2026-03-05 10:46) ---
+- **Tricky**: The inheritance chain's interaction with polymorphic deserialization was non-obvious; base class constructors were silently overriding derived class state unless explicitly chained.
+- **Patterns**: The codebase strictly separates domain logic from serialization adapters, using a dedicated `InheritanceResolver` interface to handle type-specific instantiation.
+- **Mistakes**: Initially attempted to override `equals()` directly in the base class, causing hash collisions in derived types; corrected by delegating equality checks to the concrete runtime class.
