@@ -404,6 +404,7 @@ def process_work(db: Session) -> None:
     For lumberjacks, produce 8 Wood at their work building.
     For fishermen, produce 6 Fish at their work building.
     For artists, produce 2 Art at Theater buildings and boost nearby happiness by 5.
+    For bards, wander between Tavern and Theater, boosting happiness of nearby NPCs by 8 per tick.
     """
     npcs = db.query(NPC).options(joinedload(NPC.work_building)).filter(NPC.work_building_id.isnot(None)).all()
     
@@ -571,6 +572,17 @@ def process_work(db: Session) -> None:
                     distance_sq = (nearby_npc.x - building.x) ** 2 + (nearby_npc.y - building.y) ** 2
                     if distance_sq <= 100:  # radius 10 squared
                         nearby_npc.happiness += 5
+            
+            # Bards boost happiness of nearby NPCs by 8 when at Tavern or Theater
+            if npc.role == "bard" and building.building_type in ("tavern", "theater"):
+                # Load all NPCs to check distance in Python
+                all_npcs = db.query(NPC).all()
+                
+                for nearby_npc in all_npcs:
+                    # Calculate squared distance (avoid sqrt for efficiency)
+                    distance_sq = (nearby_npc.x - building.x) ** 2 + (nearby_npc.y - building.y) ** 2
+                    if distance_sq <= 100:  # radius 10 squared
+                        nearby_npc.happiness += 8
     
     db.commit()
 
