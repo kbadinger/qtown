@@ -396,3 +396,8 @@
 - **Tricky Logic**: The distinction between "blocking" and "redirecting" guard behavior was non-obvious; the system requires a specific `action` enum rather than a simple boolean flag to determine the next step.
 - **Codebase Pattern**: Role-based checks are consistently centralized in `auth.middleware.ts` using a `hasRole` utility, avoiding inline permission logic in controllers.
 - **Correction**: Initially implemented the guard check as a synchronous function, causing the request to hang; corrected by wrapping the role validation in a `Promise` to align with the async middleware pipeline.
+
+--- Story 075: Add priest role behavior (attempts: 1, 2026-03-04 23:43) ---
+- **State Transition Complexity**: The trickiest part was ensuring the `Priest` role correctly handled the `is_blessed` state flag during the `perform_ritual` action, as the original logic failed to reset the flag if the ritual was interrupted mid-execution.
+- **Event-Driven Conventions**: Discovered that this codebase strictly separates "role logic" from "world effects" by emitting a `RoleActionEvent` rather than directly modifying entity stats, requiring me to refactor the initial direct mutation approach.
+- **Correction on Role Inheritance**: Initially attempted to override the base `Character` constructor to inject priest-specific items, but corrected this to use the `RoleDecorator` pattern to avoid breaking the shared inventory system used by other classes.

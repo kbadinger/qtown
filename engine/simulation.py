@@ -399,6 +399,7 @@ def process_work(db: Session) -> None:
     For farmers, also produce 10 Food at their work building.
     For bakers, convert Wheat into Bread at Bakery buildings, producing 5 Bread per tick.
     For blacksmiths, convert Ore into Tools at Blacksmith buildings, producing 3 Tools per tick.
+    For priests, increase happiness of all NPCs within radius 10 by 5.
     """
     npcs = db.query(NPC).options(joinedload(NPC.work_building)).filter(NPC.work_building_id.isnot(None)).all()
     
@@ -478,6 +479,17 @@ def process_work(db: Session) -> None:
                             quantity=3,
                             building_id=building.id
                         ))
+            
+            # Priests increase happiness of all NPCs within radius 10
+            if npc.role == "priest" and building.building_type == "church":
+                # Load all NPCs to check distance in Python (SQLAlchemy doesn't support ** operator in filters)
+                all_npcs = db.query(NPC).all()
+                
+                for nearby_npc in all_npcs:
+                    # Calculate squared distance (avoid sqrt for efficiency)
+                    distance_sq = (nearby_npc.x - building.x) ** 2 + (nearby_npc.y - building.y) ** 2
+                    if distance_sq <= 100:  # radius 10 squared
+                        nearby_npc.happiness += 5
     
     db.commit()
 
