@@ -544,3 +544,6 @@ Ralph stopped — needs human debugging
 [2026-03-05 05:17:31 UTC] deploy_ok: Story 083 deploy fixed on retry
 [2026-03-05 05:17:36 UTC] story_done: Story 083 complete: Add bard role behavior
 [2026-03-05 05:17:37 UTC] story_start: Story 084: Add politician role behavior
+[2026-03-05 05:17:48 UTC] WARN deploy_fail: Story 084 deploy failed — starting fix cycle
+[2026-03-05 05:19:06 UTC] story_done: Story 084 complete: Add politician role behavior
+[2026-03-05 05:19:06 UTC] story_start: Story 085: Add thief role behavior

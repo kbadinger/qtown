@@ -405,7 +405,12 @@ def process_work(db: Session) -> None:
     For fishermen, produce 6 Fish at their work building.
     For artists, produce 2 Art at Theater buildings and boost nearby happiness by 5.
     For bards, wander between Tavern and Theater, boosting happiness of nearby NPCs by 8 per tick.
+    For thieves, steal 5-15 gold from random NPCs at night.
     """
+    # Get current time of day
+    world_state = db.query(WorldState).first()
+    is_night = world_state.time_of_day == "night" if world_state else False
+    
     npcs = db.query(NPC).options(joinedload(NPC.work_building)).filter(NPC.work_building_id.isnot(None)).all()
     
     for npc in npcs:
@@ -413,6 +418,25 @@ def process_work(db: Session) -> None:
         if building and npc.x == building.x and npc.y == building.y:
             # All NPCs earn 10 gold at work
             npc.gold += 10
+            
+            # Thieves steal gold at night
+            if npc.role == "thief" and is_night:
+                # Find potential victims with gold (excluding the thief themselves)
+                victims = db.query(NPC).filter(
+                    NPC.id != npc.id,
+                    NPC.gold > 0
+                ).all()
+                
+                if victims:
+                    # Pick a random victim
+                    victim = random.choice(victims)
+                    # Steal 5-15 gold (capped by victim's available gold)
+                    steal_amount = random.randint(5, 15)
+                    steal_amount = min(steal_amount, victim.gold)
+                    
+                    if steal_amount > 0:
+                        victim.gold -= steal_amount
+                        npc.gold += steal_amount
             
             # Farmers produce 10 Food at their work building
             if npc.role == "farmer":

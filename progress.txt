@@ -446,3 +446,8 @@
 - **Tricky Logic**: Determining the correct scope for the `Politician` role's `vote` method was non-obvious; it required distinguishing between public legislative votes and internal committee actions to avoid unintended side effects on the global state.
 - **Codebase Pattern**: The project consistently uses a "Role Strategy" pattern where specific behaviors are injected via a `RoleBehavior` interface rather than hardcoded in the `User` class, ensuring strict separation of concerns.
 - **Correction**: Initially attempted to override the base `User` class directly, which violated the Open/Closed principle; refactored to use composition with a dedicated `PoliticianBehavior` class to align with existing conventions.
+
+--- Story 085: Add thief role behavior (attempts: 1, 2026-03-05 00:25) ---
+- **Non-obvious State Coupling**: The thief's "steal" action required checking the `target.isLocked` flag *after* the movement calculation, not before; failing to do so caused the agent to stop at locked doors instead of bypassing them.
+- **Codebase Convention**: Role behaviors strictly extend `BaseRole` and must implement the `onTurnStart()` hook to inject logic, rather than modifying the main `GameLoop` directly.
+- **Correction**: Initially attempted to share the "sneak" movement logic with the `Ninja` class via a mixin, but realized the thief's pathfinding needs to ignore `visionRange` constraints, requiring a dedicated `ThiefPathfinder` class instead.
