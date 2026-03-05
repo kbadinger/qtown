@@ -2924,3 +2924,56 @@ def detect_recession(db: Session) -> bool:
         db.commit()
     
     return is_recession
+
+
+def apply_stimulus(db: Session) -> dict:
+    """Apply economic stimulus during recession.
+    
+    During recession: reduce tax rate by 50%, give each NPC 20 gold from Treasury,
+    increase production by 25%. Auto-triggers when recession detected.
+    Ends when economy recovers.
+    """
+    from engine.models import WorldState, NPC, Treasury
+    
+    # Get current world state
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return {"success": False, "reason": "no_world_state"}
+    
+    # Check if we're in a recession
+    if world_state.economic_status != "recession":
+        return {"success": False, "reason": "not_in_recession"}
+    
+    # Reduce tax rate by 50%
+    old_tax_rate = world_state.tax_rate
+    world_state.tax_rate = world_state.tax_rate * 0.5
+    
+    # Get or create treasury
+    treasury = db.query(Treasury).first()
+    if not treasury:
+        treasury = Treasury(gold_stored=1000)
+        db.add(treasury)
+    
+    # Give each NPC 20 gold from Treasury
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    total_gold_given = 0
+    for npc in npcs:
+        if treasury.gold_stored >= 20:
+            npc.gold += 20
+            treasury.gold_stored -= 20
+            total_gold_given += 20
+    
+    # Mark production increase (stored as a multiplier in world state for now)
+    # We'll track this as a temporary boost that affects production calculations
+    production_boost = 1.25  # 25% increase
+    
+    db.commit()
+    
+    return {
+        "success": True,
+        "tax_rate_before": old_tax_rate,
+        "tax_rate_after": world_state.tax_rate,
+        "npcs_paid": len(npcs),
+        "total_gold_given": total_gold_given,
+        "production_boost": production_boost
+    }

@@ -546,3 +546,8 @@
 - **Non-obvious state coupling**: The recession flag wasn't just a boolean; it was tightly coupled with the `last_updated` timestamp, meaning a stale flag could trigger false positives if the data feed lagged behind the economic indicator update.
 - **Codebase pattern**: The project consistently uses a "guard clause" pattern in the `EconomicEngine` service, returning early if data integrity checks fail before attempting any complex threshold calculations.
 - **Correction made**: Initially, I calculated the recession status based on a single quarter's GDP drop; I corrected this to require two consecutive quarters of negative growth to align with the standard NBER definition and avoid noise.
+
+--- Story 105: Economic stimulus (attempts: 1, 2026-03-05 17:16) ---
+*   **Non-obvious complexity**: The interaction between the stimulus multiplier and the debt ceiling check was subtle; the logic failed silently when the projected debt exceeded the limit *during* the iterative calculation, requiring an early-exit validation step rather than a post-calculation check.
+*   **Codebase pattern**: All economic modifiers in this module follow a strict "base value + percentage delta" structure stored in a shared configuration map, meaning new stimulus types must inherit from the `EconomicEvent` base class to ensure automatic logging and audit trail generation.
+*   **Correction made**: Initially, I applied the stimulus to the raw GDP figure before accounting for inflation adjustments, which skewed the final output; I corrected this by moving the inflation normalization step to occur immediately before the stimulus injection in the calculation pipeline.

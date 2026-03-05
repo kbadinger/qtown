@@ -54,6 +54,7 @@ class WorldState(Base):
     last_wage_adjustment_tick = Column(Integer, default=0)
     inflation_rate = Column(Float, default=0.0)
     economic_status = Column(String(32), default="normal")
+    tax_rate = Column(Float, default=0.10)
     created_at = Column(DateTime, default=_utcnow)
 
 
