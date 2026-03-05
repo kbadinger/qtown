@@ -612,3 +612,42 @@ Herbs to medicine supply chain
 [2026-03-05 17:57:04 UTC] story_done: Story 096 complete: Supply and demand pricing
 [2026-03-05 17:57:05 UTC] story_start: Story 097: Price history model
 [2026-03-05 17:57:18 UTC] WARN deploy_fail: Story 097 deploy failed — starting fix cycle
+[2026-03-05 18:00:50 UTC] deploy_ok: Story 097 deploy fixed on retry
+[2026-03-05 18:00:55 UTC] story_done: Story 097 complete: Price history model
+[2026-03-05 18:00:56 UTC] story_start: Story 098: Trade between buildings
+[2026-03-05 18:20:45 UTC] WARN story_fail: Story 098 struggling — attempt 5/12
+Trade between buildings
+[2026-03-05 18:52:48 UTC] WARN story_fail: Story 098 failed after 12 attempts: Trade between buildings
+[2026-03-05 18:52:49 UTC] CRITICAL critical: Story 098 failed: Trade between buildings
+Ralph stopped — needs human debugging
+[2026-03-05 18:52:49 UTC] stop: Ralph offline — 97/215 stories complete
+[2026-03-05 19:29:30 UTC] start: Ralph online — 97/215 stories complete
+[2026-03-05 19:29:30 UTC] story_start: Story 098: Trade between buildings
+[2026-03-05 19:47:34 UTC] WARN story_fail: Story 098 struggling — attempt 5/12
+Trade between buildings
+[2026-03-05 19:49:22 UTC] start: Ralph online — 97/215 stories complete
+[2026-03-05 19:49:22 UTC] story_start: Story 098: Trade between buildings
+[2026-03-05 19:55:25 UTC] WARN story_fail: Story 098 struggling — attempt 5/12
+Trade between buildings
+[2026-03-05 20:18:56 UTC] WARN story_fail: Story 098 failed after 12 attempts: Trade between buildings
+[2026-03-05 20:18:56 UTC] CRITICAL critical: Story 098 failed: Trade between buildings
+Ralph stopped — needs human debugging
+[2026-03-05 20:18:57 UTC] stop: Ralph offline — 97/215 stories complete
+[2026-03-05 20:19:04 UTC] start: Ralph online — 97/215 stories complete
+[2026-03-05 20:19:04 UTC] CRITICAL critical: Blocked by failed stories: 098
+Reset to 'pending' in prd.json to retry
+[2026-03-05 20:19:05 UTC] stop: Ralph offline — 97/215 stories complete
+[2026-03-05 20:19:14 UTC] start: Ralph online — 97/215 stories complete
+[2026-03-05 20:19:15 UTC] CRITICAL critical: Blocked by failed stories: 098
+Reset to 'pending' in prd.json to retry
+[2026-03-05 20:19:15 UTC] stop: Ralph offline — 97/215 stories complete
+[2026-03-05 20:19:33 UTC] start: Ralph online — 97/215 stories complete
+[2026-03-05 20:19:33 UTC] CRITICAL critical: Blocked by failed stories: 098
+Reset to 'pending' in prd.json to retry
+[2026-03-05 20:19:34 UTC] stop: Ralph offline — 97/215 stories complete
+[2026-03-05 20:39:57 UTC] start: Ralph online — 97/215 stories complete
+[2026-03-05 20:39:58 UTC] story_start: Story 098: Trade between buildings
+[2026-03-05 20:44:51 UTC] start: Ralph online — 97/215 stories complete
+[2026-03-05 20:44:51 UTC] story_start: Story 098: Trade between buildings
+[2026-03-05 20:56:36 UTC] WARN story_fail: Story 098 struggling — attempt 5/12
+Trade between buildings

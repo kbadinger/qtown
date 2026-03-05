@@ -2513,3 +2513,74 @@ def calculate_price(db: Session, resource_name: str) -> float:
     price = max(price, 1)
 
     return price
+
+
+def process_trade(db: Session) -> None:
+    """Process trade between buildings based on resource needs."""
+    from engine.models import Building, Resource
+    
+    # Define which building types need which resources
+    resource_needs = {
+        "bakery": ["Wheat"],
+        "blacksmith": ["Iron"],
+        "lumber_mill": ["Wood"],
+        "fishing_dock": ["Fish"],
+        "hospital": ["Medicine"],
+    }
+    
+    # Define capacity thresholds
+    EXCESS_THRESHOLD = 15
+    MIN_STOCK = 5
+    
+    # Find all resources with excess
+    excess_resources = db.query(Resource).filter(
+        Resource.quantity > EXCESS_THRESHOLD
+    ).all()
+    
+    for resource in excess_resources:
+        # Find buildings that need this resource
+        for building_type, needed_resources in resource_needs.items():
+            if resource.name not in needed_resources:
+                continue
+                
+            # Find buildings of this type
+            buyers = db.query(Building).filter(
+                Building.building_type == building_type
+            ).all()
+            
+            for buyer in buyers:
+                # Skip if buyer is the seller
+                if buyer.id == resource.building_id:
+                    continue
+                    
+                # Check buyer's current stock
+                buyer_resource = db.query(Resource).filter(
+                    Resource.name == resource.name,
+                    Resource.building_id == buyer.id
+                ).first()
+                
+                buyer_qty = buyer_resource.quantity if buyer_resource else 0
+                
+                # If buyer needs more, transfer
+                if buyer_qty < MIN_STOCK:
+                    transfer_amount = min(
+                        resource.quantity - EXCESS_THRESHOLD,
+                        MIN_STOCK - buyer_qty
+                    )
+                    
+                    if transfer_amount > 0:
+                        # Deduct from seller
+                        resource.quantity -= transfer_amount
+                        
+                        # Add to buyer
+                        if buyer_resource:
+                            buyer_resource.quantity += transfer_amount
+                        else:
+                            new_resource = Resource(
+                                name=resource.name,
+                                quantity=transfer_amount,
+                                building_id=buyer.id
+                            )
+                            db.add(new_resource)
+    
+    db.commit()

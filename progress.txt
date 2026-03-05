@@ -511,3 +511,8 @@
 - **Non-obvious Timezone Handling**: The price history model required explicit normalization to UTC before aggregation; relying on the database's default `TIMESTAMP` behavior led to inconsistent daily rollups during DST transitions.
 - **Convention for Backfilling**: The codebase consistently uses a "seed script" pattern (located in `scripts/backfill/`) rather than database migrations for historical data reconstruction, ensuring the logic remains testable and idempotent.
 - **Correction on Indexing**: Initially created a composite index on `(asset_id, created_at)`, but realized the query pattern filters by `date` (a derived column); corrected this by adding a functional index on `DATE(created_at)` to optimize the `GROUP BY` performance.
+
+--- Story 098: Trade between buildings (attempts: 2, 2026-03-05 16:01) ---
+- **Non-obvious coupling**: The `Building` class implicitly relies on a shared `GlobalTradeRegistry` for state, making isolated unit testing difficult without mocking the entire registry context.
+- **Codebase convention**: Trade logic strictly separates "validation" (checking inventory/capacity) from "execution" (moving goods), always wrapped in a `try/finally` block to ensure partial trades never leave the system in an inconsistent state.
+- **Correction made**: Initially attempted to return a boolean success flag from the trade method; corrected to return a `TradeResult` object containing the actual quantity moved, as partial trades are valid and common in this system.
