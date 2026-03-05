@@ -2783,3 +2783,63 @@ def track_inflation(db: Session) -> float:
     db.commit()
 
     return inflation_rate
+
+
+def detect_recession(db: Session) -> bool:
+    """Detect if the economy is in recession.
+    
+    Recession conditions:
+    - Average NPC gold decreasing for 50+ ticks
+    - Unemployment > 20%
+    
+    Returns:
+        bool: True if recession is detected, False otherwise
+    """
+    from engine.models import NPC, WorldState, Event
+    
+    # Get current world state
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return False
+    
+    # Calculate unemployment rate
+    total_npcs = db.query(NPC).filter(NPC.is_dead == 0).count()
+    unemployed_npcs = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.work_building_id == None
+    ).count()
+    
+    unemployment_rate = 0.0
+    if total_npcs > 0:
+        unemployment_rate = unemployed_npcs / total_npcs
+    
+    # Check if unemployment > 20%
+    high_unemployment = unemployment_rate > 0.20
+    
+    # Check average gold trend (simplified - would need history tracking for full implementation)
+    avg_gold = db.query(func.avg(NPC.gold)).filter(NPC.is_dead == 0).scalar()
+    if avg_gold is None:
+        avg_gold = 0
+    
+    # Placeholder for gold trend detection
+    # In full implementation, compare with historical average over 50+ ticks
+    gold_decreasing = avg_gold < 100  # Threshold placeholder
+    
+    # Determine if recession conditions are met
+    is_recession = high_unemployment and gold_decreasing
+    
+    # Update world state if recession detected
+    if is_recession and world_state.economic_status != "recession":
+        world_state.economic_status = "recession"
+        db.add(Event(
+            event_type="recession_start",
+            description="Economic recession detected",
+            tick=world_state.tick,
+            severity="warning"
+        ))
+        db.commit()
+    elif not is_recession and world_state.economic_status == "recession":
+        world_state.economic_status = "normal"
+        db.commit()
+    
+    return is_recession

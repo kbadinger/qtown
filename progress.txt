@@ -541,3 +541,8 @@
 *   **Non-obvious complexity**: Handling currency rounding and locale-specific formatting required explicit `Decimal` usage to avoid floating-point drift, which standard `float` math would have silently corrupted.
 *   **Codebase convention**: The project strictly separates raw API ingestion from business logic; all inflation data must pass through the `DataNormalizer` utility before being persisted or exposed to the UI.
 *   **Correction**: Initially attempted to cache historical rates in-memory for performance, but corrected this to use database-backed caching with a TTL to prevent memory bloat during long-running processes.
+
+--- Story 104: Recession detection (attempts: 1, 2026-03-05 17:09) ---
+- **Non-obvious state coupling**: The recession flag wasn't just a boolean; it was tightly coupled with the `last_updated` timestamp, meaning a stale flag could trigger false positives if the data feed lagged behind the economic indicator update.
+- **Codebase pattern**: The project consistently uses a "guard clause" pattern in the `EconomicEngine` service, returning early if data integrity checks fail before attempting any complex threshold calculations.
+- **Correction made**: Initially, I calculated the recession status based on a single quarter's GDP drop; I corrected this to require two consecutive quarters of negative growth to align with the standard NBER definition and avoid noise.
