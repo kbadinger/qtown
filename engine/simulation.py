@@ -2511,16 +2511,5 @@ def calculate_price(db: Session, resource_name: str) -> float:
     
     # Ensure price never goes below 1
     price = max(price, 1)
-    
-    # Store in PriceHistory
-    price_record = PriceHistory(
-        resource_name=resource_name,
-        price=price,
-        supply=total_supply,
-        demand=demand,
-        tick=current_tick
-    )
-    db.add(price_record)
-    db.commit()
-    
+
     return price

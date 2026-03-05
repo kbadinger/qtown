@@ -306,23 +306,20 @@ async def ensure_default_assets():
         logger.warning("Cannot import engine.db — skipping ensure_default_assets")
         return
 
+    # Read building types from the canonical list in simulation.py
+    # (NOT from the DB, which may be empty in dev)
+    building_types = set()
+    try:
+        from engine.simulation import BUILDING_TYPES
+        building_types = {bt.lower().replace(" ", "_") for bt in BUILDING_TYPES}
+    except ImportError:
+        logger.info("Cannot import BUILDING_TYPES — using defaults")
+        building_types = {"civic", "market", "residential", "tavern", "smithy"}
+
+    # Read NPC roles from the DB (these are dynamic, created by simulation)
+    npc_roles = set()
     db = SessionLocal()
     try:
-        # Gather building types
-        building_types = set()
-        try:
-            from engine.models import Building
-            buildings = db.query(Building).all()
-            for b in buildings:
-                bt = getattr(b, "building_type", None) or getattr(b, "type", None)
-                if bt:
-                    building_types.add(bt.lower())
-        except Exception:
-            logger.info("Building model not available yet — using defaults")
-            building_types = {"civic", "market", "residential", "tavern", "smithy"}
-
-        # Gather NPC roles
-        npc_roles = set()
         try:
             from engine.models import NPC
             npcs = db.query(NPC).all()
@@ -333,7 +330,6 @@ async def ensure_default_assets():
         except Exception:
             logger.info("NPC model not available yet — using defaults")
             npc_roles = {"villager", "merchant", "guard", "farmer", "blacksmith"}
-
     finally:
         db.close()
 

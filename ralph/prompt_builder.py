@@ -49,6 +49,65 @@ def _extract_function_inventory(filepath: str, content: str) -> str | None:
     return None
 
 
+def _extract_relevant_code(filepath: str, content: str, story: dict, test_source: str | None) -> str | None:
+    """For large files, extract only the functions/constants relevant to this story.
+
+    Looks at function names mentioned in the story description, test source,
+    and always includes imports + constants like BUILDING_TYPES.
+    """
+    import ast
+
+    # Collect function names referenced in story description + test source
+    desc = story.get("description", "") + " " + story.get("acceptance", "")
+    if test_source:
+        desc += " " + test_source
+
+    # Find all identifiers that look like function calls or imports from this file
+    referenced = set(re.findall(r'\b([a-z_][a-z_0-9]+)\b', desc))
+
+    try:
+        tree = ast.parse(content)
+    except SyntaxError:
+        return None
+
+    lines = content.split("\n")
+    sections = []
+
+    # Always include: imports (top of file), module-level constants
+    # Find where imports end
+    last_import = 0
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith("import ") or stripped.startswith("from "):
+            last_import = i
+
+    # Include imports + constants block (up to first function)
+    first_func = None
+    for node in ast.iter_child_nodes(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            first_func = node.lineno - 1
+            break
+
+    header_end = first_func if first_func else last_import + 1
+    if header_end > 0:
+        sections.append("\n".join(lines[:header_end]))
+
+    # Extract matching functions
+    for node in ast.iter_child_nodes(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if node.name in referenced:
+                start = node.lineno - 1
+                if node.decorator_list:
+                    start = min(d.lineno for d in node.decorator_list) - 1
+                end = node.end_lineno
+                sections.append("\n".join(lines[start:end]))
+
+    if len(sections) <= 1:
+        return None  # Only header, no relevant functions found
+
+    return "\n\n\n".join(sections)
+
+
 def _extract_story_tests(test_file: str, story_id: str) -> str | None:
     """Extract test functions for a specific story from the test file.
 
@@ -169,14 +228,42 @@ def build_prompt(
         except (json.JSONDecodeError, KeyError):
             pass
 
+    # Pre-extract test source (needed by _extract_relevant_code below)
+    test_source = _extract_story_tests(story["test_file"], story["id"])
+
     # Load context files within budget
+    # For large files (>10K), send inventory + only relevant functions
     total_chars = 0
     inventories = []
+    LARGE_FILE_THRESHOLD = 10_000
+
     for filepath in context_files:
         p = Path(filepath)
         if not p.exists():
             continue
         content = p.read_text(encoding="utf-8")
+
+        # Build function inventory for Python files
+        if filepath.endswith(".py"):
+            inv = _extract_function_inventory(filepath, content)
+            if inv:
+                inventories.append(inv)
+
+        # For large Python files, extract only relevant functions
+        if filepath.endswith(".py") and len(content) > LARGE_FILE_THRESHOLD:
+            trimmed = _extract_relevant_code(filepath, content, story, test_source)
+            if trimmed and total_chars + len(trimmed) <= CHAR_BUDGET:
+                parts.append(f"=== {filepath} (relevant sections — full file has {len(content)} chars) ===")
+                parts.append(trimmed)
+                parts.append("")
+                total_chars += len(trimmed)
+                continue
+            # If trimming returned None or over budget, skip the full file —
+            # the function inventory (already collected above) is enough context.
+            # Sending the full 64K file would overflow Qwen's 16K token context.
+            parts.append(f"=== {filepath} (SKIPPED — too large, see inventory above) ===")
+            continue
+
         if total_chars + len(content) > CHAR_BUDGET:
             parts.append(f"=== {filepath} (SKIPPED — budget exceeded) ===")
             continue
@@ -184,11 +271,6 @@ def build_prompt(
         parts.append(content)
         parts.append("")
         total_chars += len(content)
-        # Build function inventory for Python files
-        if filepath.endswith(".py"):
-            inv = _extract_function_inventory(filepath, content)
-            if inv:
-                inventories.append(inv)
 
     # Inject function inventories as warnings
     if inventories:
@@ -196,7 +278,6 @@ def build_prompt(
             parts.append(inv)
 
     # 7. Test source code — show Qwen exactly what the tests do
-    test_source = _extract_story_tests(story["test_file"], story["id"])
     if test_source:
         parts.append("=== TEST SOURCE CODE (read-only — DO NOT modify) ===")
         parts.append(test_source)
@@ -211,10 +292,66 @@ def build_prompt(
     parts.append("=== YOUR TASK ===")
     parts.append(
         "Write the code to make the failing tests pass. "
-        "For EXISTING files, use ### PATCH: path/to/file.py with ADD IMPORT / ADD FUNCTION / "
-        "UPDATE FUNCTION: name / UPDATE CONSTANT: name sections — output ONLY new or changed code. "
+        "For EXISTING files, use ### PATCH: path/to/file.py with these sections:\n"
+        "  ADD IMPORT — new import lines\n"
+        "  ADD FUNCTION — new function or class definition\n"
+        "  ADD CLASS — new SQLAlchemy model class\n"
+        "  UPDATE FUNCTION: name — replace an existing function (include COMPLETE body)\n"
+        "  UPDATE CLASS: name — replace an existing class\n"
+        "  UPDATE CONSTANT: name — add items to a list constant\n"
+        "Output ONLY new or changed code. "
         "For NEW files, use ### FILE: path/to/file.py with complete contents. "
-        "Do NOT modify any files on the blocklist (see AGENTS.md)."
+        "Do NOT modify any files on the blocklist (see AGENTS.md).\n\n"
+        "CRITICAL: When using UPDATE FUNCTION, you MUST include the COMPLETE function body — "
+        "including ALL existing logic. Do NOT remove or shorten existing code. "
+        "Dropping existing code causes regressions."
     )
 
     return "\n".join(parts)
+
+
+def build_conflict_prompt(
+    current_story: dict,
+    current_test_source: str,
+    reg_story_id: str,
+    reg_test_source: str,
+    test_file: str,
+) -> str:
+    """Build a focused prompt asking Qwen to fix a test conflict.
+
+    When the current story's test contradicts a regression test (e.g. different
+    naming conventions), this prompt shows both tests and asks Qwen to fix
+    only the current story's test to be consistent with the regression test.
+    """
+    story_id = current_story["id"]
+    title = current_story["title"]
+    desc = current_story.get("description", "")
+
+    return f"""=== TEST CONFLICT DETECTED ===
+Your code for Story {story_id} passes its own test but breaks Story {reg_story_id}.
+This has happened multiple times — the tests contradict each other.
+
+The regression test (Story {reg_story_id}) is CORRECT — it passed when that story was completed.
+You must fix the CURRENT story's test (Story {story_id}) to be consistent.
+
+=== CURRENT STORY ===
+Story {story_id}: {title}
+Description: {desc}
+
+=== CURRENT STORY TEST (needs fixing) ===
+{current_test_source}
+
+=== REGRESSION TEST (correct, do not change) ===
+{reg_test_source}
+
+=== YOUR TASK ===
+Fix the current story's test function(s) so they are consistent with the regression test.
+Do NOT change the test's intent — only fix naming/format mismatches.
+
+Output your fix as:
+### PATCH: {test_file}
+
+For each function that needs fixing, use:
+### UPDATE FUNCTION: function_name
+(complete fixed function body)
+"""

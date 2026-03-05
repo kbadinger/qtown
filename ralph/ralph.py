@@ -27,9 +27,9 @@ from ralph.alerter import notify, warn, alert
 from ralph.changelog import log_human_intervention
 from ralph.cost_tracker import log_cost
 from ralph.deployer import push_and_wait
-from ralph.file_writer import apply_files
+from ralph.file_writer import apply_files, parse_file_blocks, apply_patch
 from ralph.metrics import log_metric
-from ralph.prompt_builder import build_prompt
+from ralph.prompt_builder import build_prompt, build_conflict_prompt, _extract_story_tests
 from ralph.snapshot import take_all_snapshots
 from ralph.story_generator import (
     import_approved,
@@ -314,6 +314,116 @@ def get_next_story(prd: dict) -> dict | None:
     return sorted(pending, key=lambda s: s.get("priority", 999))[0]
 
 
+def resolve_test_conflict(story: dict, reg_output: str, test_file: str) -> bool:
+    """Attempt to resolve a test conflict by asking Qwen to fix the current story's test.
+
+    When the current story's test contradicts a regression test (e.g. "Tool" vs "Tools"),
+    this sends both tests to Qwen and asks it to fix the current story's test.
+
+    Returns True if the fix was applied and validated, False otherwise.
+    """
+    import re as _re
+
+    story_id = story["id"]
+
+    # Parse regression story ID from output: "REGRESSION in Story 071: ..."
+    m = _re.match(r"REGRESSION in Story (\d+):", reg_output)
+    if not m:
+        print("  [CONFLICT] Could not parse regression story ID — skipping")
+        return False
+    reg_story_id = m.group(1)
+
+    # Determine which test file the regression story lives in
+    prd = load_prd()
+    reg_story = None
+    for s in prd["stories"]:
+        if s["id"] == reg_story_id:
+            reg_story = s
+            break
+    if not reg_story:
+        print(f"  [CONFLICT] Regression story {reg_story_id} not found in PRD — skipping")
+        return False
+    reg_test_file = reg_story["test_file"]
+
+    # Extract test sources
+    current_test_source = _extract_story_tests(test_file, story_id)
+    reg_test_source = _extract_story_tests(reg_test_file, reg_story_id)
+
+    if not current_test_source or not reg_test_source:
+        print(f"  [CONFLICT] Could not extract test sources — skipping")
+        return False
+
+    print(f"  [CONFLICT] Detected repeated regression failure against Story {reg_story_id}")
+    print(f"  [CONFLICT] Asking Qwen to fix Story {story_id}'s test to match Story {reg_story_id}")
+
+    # Build and send the conflict prompt
+    prompt = build_conflict_prompt(story, current_test_source, reg_story_id, reg_test_source, test_file)
+    response, tokens_in, tokens_out, gpu_time = call_qwen(prompt, label=f"conflict {story_id} vs {reg_story_id}")
+    log_cost(tokens_in=tokens_in, tokens_out=tokens_out, gpu_time_sec=gpu_time)
+
+    if not response:
+        print(f"  [CONFLICT] Qwen returned empty response — skipping")
+        return False
+
+    # Debug: save conflict response
+    try:
+        debug_dir = Path("ralph/debug_responses")
+        debug_dir.mkdir(exist_ok=True)
+        debug_file = debug_dir / f"{story_id}_conflict_vs_{reg_story_id}.txt"
+        debug_file.write_text(response, encoding="utf-8")
+    except Exception:
+        pass
+
+    # Parse the response for test file patches
+    file_blocks = parse_file_blocks(response)
+    if not file_blocks:
+        print(f"  [CONFLICT] No file blocks in Qwen's response — skipping")
+        return False
+
+    # Apply ONLY patches targeting the current story's test file
+    applied = False
+    for block in file_blocks:
+        norm_path = block.filepath.replace("\\", "/")
+        norm_test = test_file.replace("\\", "/")
+        if norm_path != norm_test:
+            print(f"  [CONFLICT] Ignoring patch for {block.filepath} (expected {test_file})")
+            continue
+        if block.mode == "patch" and block.sections:
+            try:
+                new_content = apply_patch(test_file, block.sections)
+                Path(test_file).write_text(new_content, encoding="utf-8")
+                applied = True
+                print(f"  [CONFLICT] Applied test fix to {test_file}")
+            except Exception as e:
+                print(f"  [CONFLICT] Failed to apply patch: {e}")
+                return False
+
+    if not applied:
+        print(f"  [CONFLICT] No applicable patches found — skipping")
+        return False
+
+    # Validate: run both the current story's test and the regression test
+    from ralph.test_runner import run_tests as _run_tests
+
+    current_ok, _ = _run_tests(test_file, story_id)
+    if not current_ok:
+        print(f"  [CONFLICT] Fixed test doesn't pass for current story — reverting")
+        subprocess.run(["git", "checkout", test_file], capture_output=True)
+        return False
+
+    reg_ok, _ = _run_tests(reg_test_file, reg_story_id)
+    if not reg_ok:
+        print(f"  [CONFLICT] Fixed test breaks regression story {reg_story_id} — reverting")
+        subprocess.run(["git", "checkout", test_file], capture_output=True)
+        return False
+
+    # Success — stage the test fix
+    subprocess.run(["git", "add", test_file], capture_output=True)
+    print(f"  [CONFLICT] Test conflict resolved! Staged {test_file}")
+    notify("conflict_resolved", f"Story {story_id}: Auto-resolved test conflict with Story {reg_story_id}")
+    return True
+
+
 def run_story(story: dict) -> bool:
     """Run a single story through the full pipeline.
 
@@ -342,6 +452,7 @@ def run_story(story: dict) -> bool:
     attempt = 0
     consecutive_infra_failures = 0
     regression_feedback: str | None = None  # Fed back to Qwen after regression revert
+    regression_fail_counts: dict[str, int] = {}  # {reg_story_id: consecutive_fail_count}
     passed = False
 
     while attempt < MAX_ATTEMPTS:
@@ -470,7 +581,32 @@ def run_story(story: dict) -> bool:
             print(f"  [{_ts()}] Story tests passed — running regression check...")
             reg_passed, reg_output = run_regression_tests()
             if not reg_passed:
-                print(f"  REGRESSION detected — undoing changes, will retry")
+                print(f"  REGRESSION detected — {reg_output[:200]}")
+
+                # Track which regression story keeps failing
+                import re as _re
+                reg_match = _re.match(r"REGRESSION in Story (\d+):", reg_output)
+                if reg_match:
+                    reg_sid = reg_match.group(1)
+                    regression_fail_counts[reg_sid] = regression_fail_counts.get(reg_sid, 0) + 1
+
+                    # If same regression story failed 2+ times, try auto-resolving
+                    if regression_fail_counts[reg_sid] >= 2:
+                        print(f"  [CONFLICT] Same regression (Story {reg_sid}) failed {regression_fail_counts[reg_sid]}x — attempting auto-resolve")
+                        # Revert engine changes first (test file stays for conflict resolver to read)
+                        subprocess.run(["git", "checkout", "engine/"], capture_output=True)
+                        subprocess.run(["git", "checkout", "assets/"], capture_output=True)
+                        resolved = resolve_test_conflict(story, reg_output, test_file)
+                        if resolved:
+                            regression_fail_counts.clear()
+                            regression_feedback = None
+                            prev_test_output = None
+                            recent_errors.clear()
+                            attempt = 0  # Reset attempts — fresh start with fixed test
+                            print(f"  [CONFLICT] Resolved — restarting story with fixed test")
+                            continue
+
+                print(f"  Undoing changes, will retry")
                 subprocess.run(["git", "checkout", "engine/"], capture_output=True)
                 subprocess.run(["git", "checkout", "assets/"], capture_output=True)
                 log_metric(story_id, attempt, False, gpu_time, f"REGRESSION: {reg_output[:300]}", tokens_in, tokens_out)
