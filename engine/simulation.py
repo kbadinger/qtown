@@ -2653,6 +2653,7 @@ def check_market_saturation(db: Session) -> dict:
     Returns dict with saturation status per resource.
     """
     from engine.models import Resource
+    from sqlalchemy import func
     
     saturation_info = {}
     
@@ -2677,8 +2678,8 @@ def check_market_saturation(db: Session) -> dict:
         if not resources:
             continue
         
-        # Calculate current consecutive ticks from first resource
-        current_consecutive = resources[0].consecutive_oversupply_ticks
+        # Determine the current consecutive ticks (use max to be safe against inconsistency)
+        current_consecutive = max((r.consecutive_oversupply_ticks for r in resources), default=0)
         
         if is_oversupplied:
             # Increment consecutive ticks
@@ -2691,7 +2692,6 @@ def check_market_saturation(db: Session) -> dict:
                 r.consecutive_oversupply_ticks = new_consecutive
                 if should_saturate and not r.is_saturated:
                     r.is_saturated = 1
-                db.add(r)
             
             saturation_info[name] = {
                 "is_saturated": should_saturate,
@@ -2704,7 +2704,6 @@ def check_market_saturation(db: Session) -> dict:
             for r in resources:
                 r.consecutive_oversupply_ticks = 0
                 r.is_saturated = 0
-                db.add(r)
             
             saturation_info[name] = {
                 "is_saturated": False,
