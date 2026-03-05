@@ -450,3 +450,16 @@ Add theater building type
 [2026-03-04 23:35:40 UTC] deploy_ok: Story 067 deployed: Healthy after 0.1s
 [2026-03-04 23:35:45 UTC] story_done: Story 067 complete: Add graveyard building type
 [2026-03-04 23:35:46 UTC] story_start: Story 068: Add garden building type
+[2026-03-04 23:45:33 UTC] deploy_ok: Story 068 deployed: Healthy after 0.2s
+[2026-03-04 23:45:46 UTC] story_done: Story 068 complete: Add garden building type
+[2026-03-04 23:45:47 UTC] story_start: Story 069: Add windmill building type
+[2026-03-05 00:01:48 UTC] WARN story_fail: Story 069 struggling — attempt 5/12
+Add windmill building type
+[2026-03-05 00:16:42 UTC] WARN story_fail: Story 069 failed after 12 attempts: Add windmill building type
+[2026-03-05 00:16:42 UTC] CRITICAL critical: Story 069 failed: Add windmill building type
+Ralph stopped — needs human debugging
+[2026-03-05 00:16:43 UTC] stop: Ralph offline — 68/215 stories complete
+[2026-03-05 00:26:17 UTC] start: Ralph online — 68/215 stories complete
+[2026-03-05 00:26:18 UTC] story_start: Story 069: Add windmill building type
+[2026-03-05 00:30:50 UTC] start: Ralph online — 68/215 stories complete
+[2026-03-05 00:30:51 UTC] story_start: Story 070: Add watchtower building type

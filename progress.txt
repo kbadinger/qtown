@@ -366,3 +366,8 @@
 - **Non-obvious Type Coupling**: Adding a new `BuildingType` required updating not just the enum, but also the `BuildingFactory` switch statement and the `GardenLayoutValidator` logic; missing the validator update caused silent failures in layout generation.
 - **Codebase Convention**: The project strictly separates data definitions (enums/DTOs) from logic (factories/validators), and all new domain entities must be registered in the central `Registry` to be discoverable by the UI.
 - **Correction**: Initially, I hardcoded the new building's resource cost directly in the factory; I corrected this by extracting the cost into the `BuildingConfig` map to maintain consistency with other building types.
+
+--- Story 070: Add watchtower building type (attempts: 1, 2026-03-04 19:36) ---
+- **Tricky/Non-obvious**: The watchtower's line-of-sight logic required handling edge cases where the building sits exactly on a map boundary, which initially caused null-pointer exceptions in the visibility calculation.
+- **Patterns/Conventions**: This codebase consistently uses a `BuildingType` enum paired with a `BuildingConfig` data class to separate static rules (cost, stats) from dynamic state (current health, owner).
+- **Mistakes/Corrections**: I initially hardcoded the watchtower's range in the UI renderer; I corrected this by pulling the value from the shared `BuildingConfig` to ensure the UI and game logic stay in sync.

@@ -41,6 +41,7 @@ BUILDING_TYPES = [
     'prison',
     'graveyard',
     'garden',
+    'watchtower',
 ]
 
 
@@ -1770,3 +1771,50 @@ def produce_garden_resources(db: Session) -> None:
                 building_id=building.id
             )
             db.add(new_herbs)
+
+
+def seed_watchtower(db: Session) -> None:
+    """Seed a watchtower building into the town.
+
+    Creates 1 watchtower building at coordinates (57, 57).
+    Idempotent - will not create if one already exists.
+    """
+    existing_watchtowers = db.query(Building).filter(Building.building_type == 'watchtower').count()
+    if existing_watchtowers > 0:
+        return
+    
+    # Create watchtower at (57, 57)
+    watchtower = Building(
+        name="Town Watchtower",
+        building_type="watchtower",
+        x=57,
+        y=57,
+        capacity=5
+    )
+    db.add(watchtower)
+    db.commit()
+
+
+def produce_watchtower_resources(db: Session) -> None:
+    """Produce resources for buildings of type 'watchtower'.
+    
+    Watchtower produces 4 Defense per tick.
+    """
+    watchtower_buildings = db.query(Building).filter(Building.building_type == 'watchtower').all()
+    
+    for building in watchtower_buildings:
+        # Check if Defense resource exists at this building
+        defense_resource = db.query(Resource).filter(
+            Resource.name == 'Defense',
+            Resource.building_id == building.id
+        ).first()
+        
+        if defense_resource:
+            defense_resource.quantity += 4
+        else:
+            new_defense = Resource(
+                name='Defense',
+                quantity=4,
+                building_id=building.id
+            )
+            db.add(new_defense)
