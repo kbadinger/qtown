@@ -1107,6 +1107,10 @@ def process_tick(db: Session) -> None:
     # Update relationships
     update_relationships(db)
     
+    # Check for marriages every 50 ticks
+    if world_state.tick % 50 == 0:
+        check_marriage(db)
+    
     db.commit()
 
 
@@ -2205,3 +2209,48 @@ def update_relationships(db: Session) -> None:
                         rel_reverse.strength = min(100, rel_reverse.strength + 5)
     
     db.commit()
+
+
+def check_marriage(db: Session) -> None:
+    """Check for NPCs that can marry and process marriages.
+    
+    Two NPCs with friendship strength > 80 and no existing spouse may marry.
+    They move to the same home.
+    """
+    from engine.models import Relationship, NPC
+    
+    # Find all friend relationships with strength > 80
+    friend_relationships = db.query(Relationship).filter(
+        Relationship.relationship_type == 'friend',
+        Relationship.strength > 80
+    ).all()
+    
+    for rel in friend_relationships:
+        # Check if npc1 already has a spouse
+        npc1_has_spouse = db.query(Relationship).filter(
+            ((Relationship.npc_id == rel.npc_id) | (Relationship.target_npc_id == rel.npc_id)) &
+            (Relationship.relationship_type == 'spouse')
+        ).first()
+        
+        # Check if npc2 already has a spouse
+        npc2_has_spouse = db.query(Relationship).filter(
+            ((Relationship.npc_id == rel.target_npc_id) | (Relationship.target_npc_id == rel.target_npc_id)) &
+            (Relationship.relationship_type == 'spouse')
+        ).first()
+        
+        # Only marry if neither has a spouse
+        if not npc1_has_spouse and not npc2_has_spouse:
+            # Update relationship to spouse
+            rel.relationship_type = 'spouse'
+            
+            # Get both NPCs
+            npc1 = db.query(NPC).filter(NPC.id == rel.npc_id).first()
+            npc2 = db.query(NPC).filter(NPC.id == rel.target_npc_id).first()
+            
+            if npc1 and npc2:
+                # Move to the same home
+                if npc1.home_building_id:
+                    npc2.home_building_id = npc1.home_building_id
+                elif npc2.home_building_id:
+                    npc1.home_building_id = npc2.home_building_id
+                # If neither has a home, they keep their current home_building_id (None)

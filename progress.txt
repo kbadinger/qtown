@@ -461,3 +461,8 @@
 *   **Non-obvious coupling**: The `RivalryResolver` relies on a global `GameState` singleton that isn't explicitly passed in, making unit tests brittle when mocking rival behavior; always inject dependencies explicitly to isolate logic.
 *   **Naming convention**: The codebase uses `calculate_*` for pure math functions and `resolve_*` for state-mutating actions; adhering to this distinction prevents accidental side effects in the friendship scoring logic.
 *   **Correction**: Initially, I treated "rivalry" as a binary flag, but the legacy code revealed it's a weighted integer that decays over time; refactored the condition to check `rivalry_score > threshold` instead of a boolean to preserve the decay mechanic.
+
+--- Story 088: Marriage system (attempts: 1, 2026-03-05 10:32) ---
+*   **Tricky**: The `Marriage` entity's bidirectional relationship with `User` required careful handling of the `ON DELETE CASCADE` constraint to prevent orphaned records when a user is archived, which initially caused foreign key violations in the test suite.
+*   **Pattern**: The codebase consistently uses a "Service Layer" pattern for domain logic (e.g., `MarriageService`) rather than embedding validation in controllers, ensuring that business rules like "one active marriage per user" are enforced centrally.
+*   **Correction**: Initially, I attempted to validate marriage eligibility directly in the API endpoint; I corrected this by moving the logic to the service layer and adding a dedicated `MarriageValidator` to ensure DRY principles and easier unit testing.
