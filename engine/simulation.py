@@ -1149,6 +1149,10 @@ def process_tick(db: Session) -> None:
     if world_state.tick % 10 == 0:
         collect_taxes(db)
     
+    # Track inflation every 10 ticks
+    if world_state.tick % 10 == 0:
+        track_inflation(db)
+    
     # 8. Process population (births, deaths, aging)
     check_population_growth(db)
     
@@ -2739,3 +2743,43 @@ def adjust_wages_for_inflation(db: Session) -> None:
         # Update the last adjustment tick
         world_state.last_wage_adjustment_tick = world_state.tick
         db.commit()
+
+
+def track_inflation(db: Session) -> float:
+    """Calculate and store inflation rate by comparing current prices to prices 100 ticks ago."""
+    from engine.models import PriceHistory, WorldState
+    from sqlalchemy import func
+
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return 0.0
+
+    current_tick = world_state.tick
+    past_tick = current_tick - 100
+
+    if past_tick < 0:
+        return 0.0
+
+    current_prices = db.query(PriceHistory).filter(
+        PriceHistory.tick == current_tick
+    ).all()
+
+    past_prices = db.query(PriceHistory).filter(
+        PriceHistory.tick == past_tick
+    ).all()
+
+    if not current_prices or not past_prices:
+        return 0.0
+
+    current_avg = sum(p.price for p in current_prices) / len(current_prices)
+    past_avg = sum(p.price for p in past_prices) / len(past_prices)
+
+    if past_avg == 0:
+        return 0.0
+
+    inflation_rate = ((current_avg - past_avg) / past_avg) * 100
+
+    world_state.inflation_rate = inflation_rate
+    db.commit()
+
+    return inflation_rate

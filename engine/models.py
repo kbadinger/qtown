@@ -52,6 +52,7 @@ class WorldState(Base):
     weather = Column(String(32), nullable=True)
     base_wage = Column(Integer, default=10)
     last_wage_adjustment_tick = Column(Integer, default=0)
+    inflation_rate = Column(Float, default=0.0)
     created_at = Column(DateTime, default=_utcnow)
 
 

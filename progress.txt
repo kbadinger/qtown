@@ -536,3 +536,8 @@
 *   **Tricky Logic**: The interaction between `currency` and `precision` in the rounding logic was non-obvious; standard floating-point math caused off-by-one errors for specific salary bands, requiring a switch to integer-based calculations (cents) before final formatting.
 *   **Codebase Pattern**: This project consistently separates "calculation" from "persistence" in the service layer, where the domain model handles the math but the repository strictly manages the audit trail for every wage change.
 *   **Correction**: Initially applied the new rate to the entire `effective_date` range, which incorrectly backdated changes for mid-month hires; corrected by calculating the prorated amount based on the exact start date of the adjustment.
+
+--- Story 103: Inflation tracking (attempts: 1, 2026-03-05 17:01) ---
+*   **Non-obvious complexity**: Handling currency rounding and locale-specific formatting required explicit `Decimal` usage to avoid floating-point drift, which standard `float` math would have silently corrupted.
+*   **Codebase convention**: The project strictly separates raw API ingestion from business logic; all inflation data must pass through the `DataNormalizer` utility before being persisted or exposed to the UI.
+*   **Correction**: Initially attempted to cache historical rates in-memory for performance, but corrected this to use database-backed caching with a TTL to prevent memory bloat during long-running processes.
