@@ -662,7 +662,7 @@ def produce_resources(db: Session, weather: str = None) -> None:
     for resource_name, stats in resource_stats.items():
         avg_supply = stats['total_supply'] / stats['count'] if stats['count'] > 0 else 0
         demand = DEFAULT_DEMAND
-        price = calculate_price(resource_name, avg_supply, demand)
+        price = calculate_price(db, resource_name)
         
         history_entry = PriceHistory(
             resource_name=resource_name,
