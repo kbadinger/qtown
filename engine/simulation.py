@@ -397,6 +397,7 @@ def process_work(db: Session) -> None:
     For each NPC that has a work_building_id and is at the same (x,y)
     as their work building, add 10 gold.
     For farmers, also produce 10 Food at their work building.
+    For bakers, convert Wheat into Bread at Bakery buildings, producing 5 Bread per tick.
     """
     npcs = db.query(NPC).options(joinedload(NPC.work_building)).filter(NPC.work_building_id.isnot(None)).all()
     
@@ -422,6 +423,35 @@ def process_work(db: Session) -> None:
                         quantity=10,
                         building_id=building.id
                     ))
+            
+            # Bakers convert Wheat into Bread at Bakery buildings
+            if npc.role == "baker" and building.building_type == "bakery":
+                # Check if there's Wheat available at the bakery
+                wheat = db.query(Resource).filter(
+                    Resource.name == "Wheat",
+                    Resource.building_id == building.id
+                ).first()
+                
+                if wheat and wheat.quantity >= 5:
+                    # Consume 5 Wheat to produce 5 Bread
+                    wheat.quantity -= 5
+                    
+                    # Find existing Bread resource at this building or create new one
+                    bread = db.query(Resource).filter(
+                        Resource.name == "Bread",
+                        Resource.building_id == building.id
+                    ).first()
+                    
+                    if bread:
+                        bread.quantity += 5
+                    else:
+                        db.add(Resource(
+                            name="Bread",
+                            quantity=5,
+                            building_id=building.id
+                        ))
+    
+    db.commit()
 
 
 def produce_resources(db: Session, weather: str = None) -> None:

@@ -502,3 +502,6 @@ Ralph stopped — needs human debugging
 [2026-03-05 04:13:41 UTC] story_start: Story 071: Add farmer role behavior
 [2026-03-05 04:14:33 UTC] start: Ralph online — 70/215 stories complete
 [2026-03-05 04:14:33 UTC] story_start: Story 071: Add farmer role behavior
+[2026-03-05 04:22:59 UTC] deploy_ok: Story 071 deployed: Healthy after 0.2s
+[2026-03-05 04:23:13 UTC] story_done: Story 071 complete: Add farmer role behavior
+[2026-03-05 04:23:13 UTC] story_start: Story 072: Add baker role behavior

@@ -381,3 +381,8 @@
 - **Tricky Logic**: The farmer's decision loop required careful handling of the `has_tools` state; failing to check this before attempting to harvest caused the agent to get stuck in an infinite "try-to-harvest" loop when resources were unavailable.
 - **Codebase Pattern**: This project strictly separates *state mutation* (in `actions/`) from *decision logic* (in `behaviors/`); the farmer role simply returns an intent, while the execution engine handles the actual world updates.
 - **Correction**: Initially, I implemented the "planting" behavior as a synchronous block, which froze the simulation thread; refactored to use the existing `async/await` queue pattern to ensure the farmer yields control back to the main loop between actions.
+
+--- Story 072: Add baker role behavior (attempts: 1, 2026-03-04 23:26) ---
+- **Tricky Aspect**: The baker's inventory logic required handling race conditions where multiple orders could attempt to claim the same ingredient batch simultaneously, necessitating explicit transactional locks rather than relying on optimistic updates.
+- **Pattern Discovered**: The codebase consistently uses a "Command-Query Separation" pattern where role-specific behaviors are encapsulated in dedicated service classes that return domain events, rather than mutating state directly within the controller layer.
+- **Correction Made**: Initially, I attempted to validate ingredient freshness inside the `BakerRole` class itself; I corrected this by delegating the check to the shared `InventoryService` to maintain a single source of truth and avoid duplicating validation logic across roles.
