@@ -148,6 +148,16 @@ async def _is_comfy_running() -> bool:
         return False
 
 
+def check_comfyui_health() -> bool:
+    """Synchronous ComfyUI health check for use in Ralph's main loop."""
+    import requests as _requests
+    try:
+        resp = _requests.get(f"{COMFY_URL}/system_stats", timeout=5)
+        return resp.status_code == 200
+    except Exception:
+        return False
+
+
 # ---------------------------------------------------------------------------
 # Image post-processing
 # ---------------------------------------------------------------------------
@@ -216,81 +226,67 @@ NPC_NEGATIVE = (
 # ---------------------------------------------------------------------------
 
 
-async def generate_building_sprite(building_type: str) -> str | None:
+async def generate_building_sprite(building_type: str) -> str:
     """Generate an isometric building sprite via ComfyUI.
 
-    Returns the destination path (str) under assets/buildings/ on success,
-    or None if ComfyUI is unavailable or generation failed.
+    Returns the destination path (str) under assets/buildings/ on success.
+    Raises RuntimeError if ComfyUI is unavailable or generation failed.
     """
     if not await _is_comfy_running():
-        logger.warning("ComfyUI is not running — skipping building sprite for '%s'", building_type)
-        return None
+        raise RuntimeError(f"ComfyUI is not running — cannot generate building sprite for '{building_type}'")
 
     prompt_text = BUILDING_POSITIVE.format(type=building_type)
 
-    try:
-        flow = _load_workflow(BUILDING_WORKFLOW)
-        flow = _patch_workflow(flow, prompt_text, BUILDING_NEGATIVE)
-        prompt_id = await _submit_prompt(flow)
-        logger.info("ComfyUI building prompt queued: %s (prompt_id=%s)", building_type, prompt_id)
+    flow = _load_workflow(BUILDING_WORKFLOW)
+    flow = _patch_workflow(flow, prompt_text, BUILDING_NEGATIVE)
+    prompt_id = await _submit_prompt(flow)
+    logger.info("ComfyUI building prompt queued: %s (prompt_id=%s)", building_type, prompt_id)
 
-        raw_bytes = await _poll_and_download(prompt_id)
-        if raw_bytes is None:
-            logger.warning("Building sprite generation failed for '%s'", building_type)
-            return None
+    raw_bytes = await _poll_and_download(prompt_id)
+    if raw_bytes is None:
+        raise RuntimeError(f"Building sprite generation failed for '{building_type}' — no image returned")
 
-        # Post-process: rembg + resize
-        processed = _process_sprite(raw_bytes, BUILDING_SIZE)
+    # Post-process: rembg + resize
+    processed = _process_sprite(raw_bytes, BUILDING_SIZE)
 
-        BUILDINGS_DIR.mkdir(parents=True, exist_ok=True)
-        dest = BUILDINGS_DIR / f"{building_type}.png"
-        dest.write_bytes(processed)
-        logger.info("Building sprite saved: %s", dest)
-        return str(dest)
-
-    except Exception:
-        logger.exception("Error generating building sprite for '%s'", building_type)
-        return None
+    BUILDINGS_DIR.mkdir(parents=True, exist_ok=True)
+    dest = BUILDINGS_DIR / f"{building_type}.png"
+    dest.write_bytes(processed)
+    logger.info("Building sprite saved: %s", dest)
+    return str(dest)
 
 
-async def generate_npc_sprite(role: str) -> str | None:
+async def generate_npc_sprite(role: str) -> str:
     """Generate a chibi NPC sprite via ComfyUI.
 
     Generates a standalone character (no isometric base/ground plate),
     removes background with rembg, and saves as a clean transparent PNG.
 
-    Returns the destination path (str) under assets/npcs/ on success,
-    or None if ComfyUI is unavailable or generation failed.
+    Returns the destination path (str) under assets/npcs/ on success.
+    Raises RuntimeError if ComfyUI is unavailable or generation failed.
     """
     if not await _is_comfy_running():
-        logger.warning("ComfyUI is not running — skipping NPC sprite for '%s'", role)
-        return None
+        raise RuntimeError(f"ComfyUI is not running — cannot generate NPC sprite for '{role}'")
 
     prompt_text = NPC_POSITIVE.format(role=role)
 
-    try:
-        flow = _load_workflow(BUILDING_WORKFLOW)
-        flow = _patch_workflow(flow, prompt_text, NPC_NEGATIVE)
-        prompt_id = await _submit_prompt(flow)
-        logger.info("ComfyUI NPC prompt queued: %s (prompt_id=%s)", role, prompt_id)
+    flow = _load_workflow(BUILDING_WORKFLOW)
+    flow = _patch_workflow(flow, prompt_text, NPC_NEGATIVE)
+    prompt_id = await _submit_prompt(flow)
+    logger.info("ComfyUI NPC prompt queued: %s (prompt_id=%s)", role, prompt_id)
 
-        raw_bytes = await _poll_and_download(prompt_id)
-        if raw_bytes is None:
-            logger.warning("NPC sprite generation failed for '%s'", role)
-            return None
+    raw_bytes = await _poll_and_download(prompt_id)
+    if raw_bytes is None:
+        raise RuntimeError(f"NPC sprite generation failed for '{role}' — no image returned")
 
-        # Post-process: rembg + resize
-        processed = _process_sprite(raw_bytes, NPC_SIZE)
+    # Post-process: rembg + resize
+    processed = _process_sprite(raw_bytes, NPC_SIZE)
 
-        NPCS_DIR.mkdir(parents=True, exist_ok=True)
-        dest = NPCS_DIR / f"{role}.png"
-        dest.write_bytes(processed)
-        logger.info("NPC sprite saved: %s", dest)
-        return str(dest)
-
-    except Exception:
-        logger.exception("Error generating NPC sprite for '%s'", role)
-        return None
+    NPCS_DIR.mkdir(parents=True, exist_ok=True)
+    dest = NPCS_DIR / f"{role}.png"
+    dest.write_bytes(processed)
+    logger.info("NPC sprite saved: %s", dest)
+    return str(dest)
 
 
 async def ensure_default_assets():
@@ -298,12 +294,10 @@ async def ensure_default_assets():
     then generate sprites for any that are missing on disk.
 
     This is designed to be called after Ralph completes building-type stories.
-    It degrades gracefully if the models haven't been created yet or if
-    ComfyUI isn't running.
+    Raises RuntimeError if ComfyUI is down or sprite generation fails.
     """
     if not await _is_comfy_running():
-        logger.warning("ComfyUI is not running — skipping asset generation")
-        return
+        raise RuntimeError("ComfyUI is not running — cannot generate assets")
 
     # Import DB models lazily to avoid circular imports
     try:
@@ -343,6 +337,8 @@ async def ensure_default_assets():
     finally:
         db.close()
 
+    generated = 0
+
     # Generate missing building sprites
     BUILDINGS_DIR.mkdir(parents=True, exist_ok=True)
     for bt in sorted(building_types):
@@ -350,6 +346,7 @@ async def ensure_default_assets():
         if not dest.exists():
             logger.info("Generating missing building sprite: %s", bt)
             await generate_building_sprite(bt)
+            generated += 1
 
     # Generate missing NPC sprites
     NPCS_DIR.mkdir(parents=True, exist_ok=True)
@@ -358,5 +355,7 @@ async def ensure_default_assets():
         if not dest.exists():
             logger.info("Generating missing NPC sprite: %s", role)
             await generate_npc_sprite(role)
+            generated += 1
 
-    logger.info("Asset generation sweep complete")
+    logger.info("Asset generation sweep complete — %d new sprites generated", generated)
+    return generated

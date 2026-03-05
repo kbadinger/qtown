@@ -40,6 +40,7 @@ from ralph.story_generator import (
 )
 from ralph.learnings import append_learning, build_learning_prompt
 from ralph.test_runner import run_tests, run_regression_tests
+from ralph.asset_gen import check_comfyui_health
 
 PRD_FILE = Path("prd.json")
 HUMAN_MD = Path("HUMAN.md")
@@ -246,6 +247,13 @@ def preflight() -> bool:
             ok = False
     except Exception as e:
         print(f"[PREFLIGHT FAIL] git not available: {e}")
+        ok = False
+
+    # 5. ComfyUI is reachable (sprite generation is mandatory)
+    if check_comfyui_health():
+        print("[PREFLIGHT OK] ComfyUI reachable")
+    else:
+        print("[PREFLIGHT FAIL] ComfyUI not reachable — cannot generate sprites")
         ok = False
 
     return ok
@@ -513,14 +521,39 @@ def run_story(story: dict) -> bool:
         print(f"  [{_ts()}] Git commit failed: {e}")
         warn("git_fail", f"Story {story_id}: git commit failed: {e}\nContinuing without commit.")
 
-    # 9. Deploy pipeline
+    # 9. Generate sprites for any new building/NPC types added by this story
+    print(f"  [{_ts()}] Generating sprites for new assets...")
+    try:
+        import asyncio
+        from ralph.asset_gen import ensure_default_assets
+        generated = asyncio.run(ensure_default_assets())
+        if generated:
+            print(f"  [{_ts()}] Generated {generated} new sprites")
+            # Stage and commit new sprites
+            subprocess.run(["git", "add", "assets/"], capture_output=True)
+            try:
+                subprocess.run(
+                    ["git", "commit", "-m", f"[Ralph] Sprites for Story {story_id}"],
+                    check=True, capture_output=True,
+                )
+            except subprocess.CalledProcessError:
+                pass  # Nothing to commit if no new sprites
+        else:
+            print(f"  [{_ts()}] No new sprites needed")
+    except Exception as e:
+        print(f"  [{_ts()}] Sprite generation FAILED: {e}")
+        alert("critical", f"Story {story_id}: Sprite generation failed — Ralph pausing\n{e}")
+        Path(".ralph-paused").touch()
+        return False
+
+    # 10. Deploy pipeline
     print(f"  [{_ts()}] Deploying...")
     deploy_ok, deploy_msg = push_and_wait()
 
     if deploy_ok:
         print(f"  [{_ts()}] Deploy healthy: {deploy_msg}")
         notify("deploy_ok", f"Story {story_id} deployed: {deploy_msg}")
-        # 10. Take snapshots
+        # 11. Take snapshots
         print(f"  [{_ts()}] Taking snapshots...")
         snapshot_files = take_all_snapshots(story_id)
         if snapshot_files:

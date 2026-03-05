@@ -117,6 +117,21 @@ def seed_buildings(db: Session) -> None:
     db.commit()
 
 
+def seed_all_buildings(db: Session) -> None:
+    """Call every seed_* function in this module. All are idempotent.
+
+    Auto-discovers functions matching seed_*(db) so new building types
+    added by Qwen are picked up without editing this function.
+    """
+    import sys
+    module = sys.modules[__name__]
+    for name in sorted(dir(module)):
+        if name.startswith("seed_") and name != "seed_all_buildings":
+            fn = getattr(module, name)
+            if callable(fn):
+                fn(db)
+
+
 def seed_bakery(db: Session) -> None:
     """Seed a bakery building into the town.
 
@@ -785,6 +800,9 @@ def process_tick(db: Session) -> None:
     7. Population — births, deaths, aging
     8. Events — log notable events
     """
+    # 0. Ensure all building types are seeded (idempotent)
+    seed_all_buildings(db)
+
     # 1. Update world state (time, weather)
     world_state = db.query(WorldState).first()
     if not world_state:

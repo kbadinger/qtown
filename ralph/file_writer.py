@@ -425,6 +425,81 @@ def _find_constant_range(source: str, const_name: str) -> tuple[int, int] | None
     return None
 
 
+def _smart_update_constant(source: str, name: str, new_body: str, rng: tuple[int, int]) -> str:
+    """Update a constant, with special handling for list constants.
+
+    Qwen often sends just the new item(s) instead of the full list.
+    This detects that case and appends to the existing list instead of replacing.
+    """
+    lines = source.split("\n")
+    old_text = "\n".join(lines[rng[0]:rng[1]])
+    body = new_body.strip()
+
+    # Case 1: Qwen sent a complete assignment (NAME = [...])
+    if re.match(rf"^{re.escape(name)}\s*=\s*", body):
+        try:
+            old_val = ast.literal_eval(old_text.split("=", 1)[1].strip())
+            new_val = ast.literal_eval(body.split("=", 1)[1].strip())
+            if isinstance(old_val, list) and isinstance(new_val, list):
+                # If new is a superset, use it directly
+                if set(old_val).issubset(set(new_val)):
+                    lines[rng[0]:rng[1]] = body.split("\n")
+                    added = set(new_val) - set(old_val)
+                    print(f"  [PATCH] Updated constant {name}: added {added}")
+                    return "\n".join(lines)
+                # If new is a subset or disjoint, it's likely corruption — append new items
+                added = [item for item in new_val if item not in old_val]
+                if added:
+                    merged = old_val + added
+                    new_list_str = _format_list_constant(name, merged)
+                    lines[rng[0]:rng[1]] = new_list_str.split("\n")
+                    print(f"  [PATCH] Updated constant {name}: appended {added} (protected existing items)")
+                    return "\n".join(lines)
+                # No new items — no-op
+                print(f"  [PATCH] Constant {name}: no new items to add")
+                return source
+        except (ValueError, SyntaxError):
+            pass
+        # Non-list or unparseable — direct replacement
+        lines[rng[0]:rng[1]] = body.split("\n")
+        print(f"  [PATCH] Updated constant {name}")
+        return "\n".join(lines)
+
+    # Case 2: Qwen sent just the new items (e.g. `"theater",`)
+    # — no NAME = prefix, looks like list items
+    try:
+        old_val = ast.literal_eval(old_text.split("=", 1)[1].strip())
+        if isinstance(old_val, list):
+            # Parse bare items: wrap in list brackets and eval
+            items_str = body.rstrip(",").strip()
+            new_items = ast.literal_eval(f"[{items_str}]")
+            added = [item for item in new_items if item not in old_val]
+            if added:
+                merged = old_val + added
+                new_list_str = _format_list_constant(name, merged)
+                lines[rng[0]:rng[1]] = new_list_str.split("\n")
+                print(f"  [PATCH] Updated constant {name}: appended {added} (from bare items)")
+                return "\n".join(lines)
+            print(f"  [PATCH] Constant {name}: items already present")
+            return source
+    except (ValueError, SyntaxError, IndexError):
+        pass
+
+    # Case 3: Fallback — direct replacement
+    lines[rng[0]:rng[1]] = body.split("\n")
+    print(f"  [PATCH] Updated constant {name}")
+    return "\n".join(lines)
+
+
+def _format_list_constant(name: str, items: list) -> str:
+    """Format a list constant as a multi-line Python assignment."""
+    lines = [f"{name} = ["]
+    for item in items:
+        lines.append(f"    {item!r},")
+    lines.append("]")
+    return "\n".join(lines)
+
+
 def apply_patch(filepath: str, sections: list[PatchSection]) -> str:
     """Apply patch sections to an existing file. Returns the patched content."""
     if not Path(filepath).exists():
@@ -447,11 +522,7 @@ def apply_patch(filepath: str, sections: list[PatchSection]) -> str:
         if s.action == "update_constant":
             rng = _find_constant_range(source, s.target)
             if rng:
-                lines = source.split("\n")
-                new_lines = s.body.strip().split("\n")
-                lines[rng[0]:rng[1]] = new_lines
-                source = "\n".join(lines)
-                print(f"  [PATCH] Updated constant {s.target}")
+                source = _smart_update_constant(source, s.target, s.body, rng)
             else:
                 # Constant not found — insert before first function def
                 lines = source.split("\n")
