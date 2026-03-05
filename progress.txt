@@ -431,3 +431,8 @@
 *   **Tricky Aspect**: Determining the exact lifecycle hook for spawning the fisherman was non-obvious; it required overriding the `OnStart` method rather than using a standard event listener to ensure the behavior initializes before the first game tick.
 *   **Codebase Pattern**: The project consistently uses a `RoleBehavior` base class that injects the `GameContext` via constructor injection, meaning all role-specific logic must rely on this context for accessing global state like the `FishPool`.
 *   **Correction**: Initially, I attempted to manually manage the fisherman's movement vector, which caused desync issues with the physics engine; I corrected this by delegating all movement logic to the existing `NavMeshAgent` wrapper used by other NPC roles.
+
+--- Story 082: Add artist role behavior (attempts: 1, 2026-03-05 00:13) ---
+*   **Non-obvious permission scoping**: The artist role's `can_edit` logic was tightly coupled to `owner_id` checks in the base controller, requiring a custom policy override rather than a simple role flag to prevent artists from editing non-owned assets.
+*   **Codebase pattern**: The project consistently uses `role_based_authorization` middleware before action execution, meaning role-specific behaviors must be defined in `ApplicationPolicy` subclasses rather than inline `if` statements.
+*   **Correction**: Initially placed the artist validation in the controller's `before_action`, which caused race conditions during bulk uploads; moved the logic to the model's `validate` scope to ensure atomicity.

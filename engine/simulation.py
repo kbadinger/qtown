@@ -403,6 +403,7 @@ def process_work(db: Session) -> None:
     For miners, produce 8 Ore at their work building.
     For lumberjacks, produce 8 Wood at their work building.
     For fishermen, produce 6 Fish at their work building.
+    For artists, produce 2 Art at Theater buildings and boost nearby happiness by 5.
     """
     npcs = db.query(NPC).options(joinedload(NPC.work_building)).filter(NPC.work_building_id.isnot(None)).all()
     
@@ -544,6 +545,32 @@ def process_work(db: Session) -> None:
                         quantity=6,
                         building_id=building.id
                     ))
+            
+            # Artists produce 2 Art at Theater buildings and boost nearby happiness by 5
+            if npc.role == "artist" and building.building_type == "theater":
+                # Produce 2 Art at the theater
+                art = db.query(Resource).filter(
+                    Resource.name == "Art",
+                    Resource.building_id == building.id
+                ).first()
+                
+                if art:
+                    art.quantity += 2
+                else:
+                    db.add(Resource(
+                        name="Art",
+                        quantity=2,
+                        building_id=building.id
+                    ))
+                
+                # Boost happiness of all NPCs within radius 10
+                all_npcs = db.query(NPC).all()
+                
+                for nearby_npc in all_npcs:
+                    # Calculate squared distance (avoid sqrt for efficiency)
+                    distance_sq = (nearby_npc.x - building.x) ** 2 + (nearby_npc.y - building.y) ** 2
+                    if distance_sq <= 100:  # radius 10 squared
+                        nearby_npc.happiness += 5
     
     db.commit()
 
