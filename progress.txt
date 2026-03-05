@@ -561,3 +561,8 @@
 - **Non-obvious pricing logic**: The "luxury" flag triggers a dynamic surcharge based on inventory age, not a static markup; this required careful handling of the `calculateFinalPrice` method to avoid double-counting taxes.
 - **Codebase convention**: All domain entities in this module extend `AuditableEntity` and rely on a centralized `CurrencyFormatter` for display, rather than formatting strings at the UI layer.
 - **Correction**: Initially applied the luxury surcharge before tax calculation, causing a 15% overcharge; fixed by ensuring the tax engine receives the gross price (base + surcharge) as a single atomic value.
+
+--- Story 108: Medicine goods (attempts: 1, 2026-03-05 18:00) ---
+*   **Tricky Logic**: The "medicine goods" domain required careful handling of expiration date validation; the non-obvious part was ensuring the `is_expired` check runs *before* inventory deduction to prevent selling invalid stock during high-concurrency transactions.
+*   **Codebase Patterns**: This story reinforced the repository's strict separation of concerns: domain entities remain pure (no DB logic), while all persistence and side-effect logic is strictly delegated to the `MedicineService` layer.
+*   **Correction**: Initially, I attempted to handle stock updates within the controller; I corrected this by moving the transactional block into the service layer to ensure atomicity and consistent error handling across all entry points.

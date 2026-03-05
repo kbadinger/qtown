@@ -3095,3 +3095,33 @@ def buy_books(db: Session, npc_id: int) -> bool:
 
     db.commit()
     return True
+
+
+def buy_medicine(db: Session, npc_id: int) -> bool:
+    """NPC buys Medicine for 8 gold if available."""
+    from engine.models import Resource, Building, NPC
+    
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return False
+    
+    if npc.gold < 8:
+        return False
+    
+    hospitals = db.query(Building).filter(Building.building_type == 'hospital').all()
+    
+    for hospital in hospitals:
+        medicine = db.query(Resource).filter(
+            Resource.name == 'Medicine',
+            Resource.building_id == hospital.id,
+            Resource.quantity > 0
+        ).first()
+        
+        if medicine:
+            medicine.quantity -= 1
+            npc.gold -= 8
+            npc.illness_severity = 0
+            db.commit()
+            return True
+    
+    return False
