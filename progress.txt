@@ -426,3 +426,8 @@
 - **State Transition Complexity**: Handling the lumberjack's idle-to-chopping state machine was non-obvious; the codebase requires explicit "target validation" checks before switching states to prevent the agent from targeting already-felled trees.
 - **Event-Driven Animation Sync**: Discovered a strict convention where role behaviors must emit a `RoleActionStarted` event before modifying the character's animation state, ensuring the UI and audio systems stay synchronized.
 - **Initial Logic Error**: Initially placed the tree-felling logic inside the `Update` loop, causing multiple rapid hits; corrected by moving it to a coroutine triggered only after the `ChoppingComplete` event, aligning with the existing cooldown pattern.
+
+--- Story 081: Add fisherman role behavior (attempts: 1, 2026-03-05 00:06) ---
+*   **Tricky Aspect**: Determining the exact lifecycle hook for spawning the fisherman was non-obvious; it required overriding the `OnStart` method rather than using a standard event listener to ensure the behavior initializes before the first game tick.
+*   **Codebase Pattern**: The project consistently uses a `RoleBehavior` base class that injects the `GameContext` via constructor injection, meaning all role-specific logic must rely on this context for accessing global state like the `FishPool`.
+*   **Correction**: Initially, I attempted to manually manage the fisherman's movement vector, which caused desync issues with the physics engine; I corrected this by delegating all movement logic to the existing `NavMeshAgent` wrapper used by other NPC roles.

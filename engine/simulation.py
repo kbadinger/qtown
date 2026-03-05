@@ -402,6 +402,7 @@ def process_work(db: Session) -> None:
     For priests, increase happiness of all NPCs within radius 10 by 5.
     For miners, produce 8 Ore at their work building.
     For lumberjacks, produce 8 Wood at their work building.
+    For fishermen, produce 6 Fish at their work building.
     """
     npcs = db.query(NPC).options(joinedload(NPC.work_building)).filter(NPC.work_building_id.isnot(None)).all()
     
@@ -524,6 +525,23 @@ def process_work(db: Session) -> None:
                     db.add(Resource(
                         name="Wood",
                         quantity=8,
+                        building_id=building.id
+                    ))
+            
+            # Fishermen produce 6 Fish at their work building
+            if npc.role == "fisherman" and building.building_type == "fishing_dock":
+                # Find existing Fish resource at this building or create new one
+                fish = db.query(Resource).filter(
+                    Resource.name == "Fish",
+                    Resource.building_id == building.id
+                ).first()
+                
+                if fish:
+                    fish.quantity += 6
+                else:
+                    db.add(Resource(
+                        name="Fish",
+                        quantity=6,
                         building_id=building.id
                     ))
     
