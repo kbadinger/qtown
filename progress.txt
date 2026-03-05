@@ -441,3 +441,8 @@
 *   **Non-obvious state coupling**: The Bard's "perform" action unexpectedly relies on the `Party` aggregate's internal `mood` state rather than just the actor's stats, requiring a read of the shared context before triggering the effect.
 *   **Command pattern consistency**: The codebase strictly separates command execution (via `BardCommandHandler`) from domain logic; I initially tried to inject behavior directly into the `Bard` entity but corrected it to use a dedicated command to maintain testability.
 *   **Event emission order**: I initially emitted the `SongPerformed` event before validating the `audience` count, causing the `GameLoop` to process invalid states; moved validation to the pre-command phase to ensure events only fire on success.
+
+--- Story 084: Add politician role behavior (attempts: 1, 2026-03-05 00:17) ---
+- **Tricky Logic**: Determining the correct scope for the `Politician` role's `vote` method was non-obvious; it required distinguishing between public legislative votes and internal committee actions to avoid unintended side effects on the global state.
+- **Codebase Pattern**: The project consistently uses a "Role Strategy" pattern where specific behaviors are injected via a `RoleBehavior` interface rather than hardcoded in the `User` class, ensuring strict separation of concerns.
+- **Correction**: Initially attempted to override the base `User` class directly, which violated the Open/Closed principle; refactored to use composition with a dedicated `PoliticianBehavior` class to align with existing conventions.
