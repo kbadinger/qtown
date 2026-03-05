@@ -476,3 +476,8 @@
 - **Tricky**: The inheritance chain's interaction with polymorphic deserialization was non-obvious; base class constructors were silently overriding derived class state unless explicitly chained.
 - **Patterns**: The codebase strictly separates domain logic from serialization adapters, using a dedicated `InheritanceResolver` interface to handle type-specific instantiation.
 - **Mistakes**: Initially attempted to override `equals()` directly in the base class, causing hash collisions in derived types; corrected by delegating equality checks to the concrete runtime class.
+
+--- Story 091: Wheat to bread supply chain (attempts: 1, 2026-03-05 10:47) ---
+- **Tricky Logic**: The conversion from raw wheat to flour involved non-linear yield calculations based on moisture content, which required careful handling of floating-point precision to avoid inventory drift.
+- **Codebase Patterns**: Discovered a strict "Event-Driven" convention where state changes in the supply chain (e.g., "Harvested", "Milled") must trigger downstream notifications before updating the aggregate stock levels.
+- **Correction**: Initially placed the quality check *after* the baking step; corrected this to run *before* mixing to prevent wasting expensive ingredients on sub-par flour batches.

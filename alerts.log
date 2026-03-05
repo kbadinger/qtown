@@ -579,3 +579,6 @@ Ralph stopped — needs human debugging
 [2026-03-05 15:40:40 UTC] deploy_ok: Story 089 deployed: Healthy after 0.1s
 [2026-03-05 15:40:45 UTC] story_done: Story 089 complete: Aging and death
 [2026-03-05 15:40:45 UTC] story_start: Story 090: Inheritance
+[2026-03-05 15:47:46 UTC] deploy_ok: Story 090 deployed: Healthy after 0.1s
+[2026-03-05 15:47:51 UTC] story_done: Story 090 complete: Inheritance
+[2026-03-05 15:47:51 UTC] story_start: Story 091: Wheat to bread supply chain
