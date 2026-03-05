@@ -185,13 +185,10 @@ class Relationship(Base):
     id = Column(Integer, primary_key=True, index=True)
     npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=False, index=True)
     target_npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=False, index=True)
-    relationship_type = Column(String(32), nullable=False)
-    strength = Column(Integer, default=0)
+    relationship_type = Column(String(20), nullable=False)  # e.g., "friend", "rival", "family"
+    strength = Column(Integer, default=0)  # 0 to 100
     
-    # Unique constraint to prevent duplicate relationships between same NPC pair
+    # Unique constraint to prevent duplicate relationships between the same pair
     __table_args__ = (
-        UniqueConstraint('npc_id', 'target_npc_id', name='unique_npc_relationship'),
+        UniqueConstraint('npc_id', 'target_npc_id', name='unique_relationship_pair'),
     )
-    
-    npc = relationship("NPC", foreign_keys=[npc_id], backref="relationships_from")
-    target_npc = relationship("NPC", foreign_keys=[target_npc_id], backref="relationships_to")

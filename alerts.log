@@ -556,3 +556,4 @@ Ralph stopped — needs human debugging
 [2026-03-05 05:29:09 UTC] stop: Ralph offline — 85/215 stories complete
 [2026-03-05 06:21:32 UTC] start: Ralph online — 85/215 stories complete
 [2026-03-05 06:21:33 UTC] story_start: Story 086: Relationship model
+[2026-03-05 06:31:50 UTC] WARN deploy_fail: Story 086 deploy failed — starting fix cycle
