@@ -600,3 +600,8 @@ Ralph stopped — needs human debugging
 [2026-03-05 17:04:41 UTC] deploy_ok: Story 093 deployed: Healthy after 0.1s
 [2026-03-05 17:04:46 UTC] story_done: Story 093 complete: Wood to lumber supply chain
 [2026-03-05 17:04:46 UTC] story_start: Story 094: Fish to market supply chain
+[2026-03-05 17:10:13 UTC] deploy_ok: Story 094 deployed: Healthy after 0.1s
+[2026-03-05 17:10:18 UTC] story_done: Story 094 complete: Fish to market supply chain
+[2026-03-05 17:10:19 UTC] story_start: Story 095: Herbs to medicine supply chain
+[2026-03-05 17:26:30 UTC] WARN story_fail: Story 095 struggling — attempt 5/12
+Herbs to medicine supply chain

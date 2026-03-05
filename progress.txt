@@ -496,3 +496,8 @@
 - **Tricky**: Handling the non-linear state transitions for "partial shipments" required careful validation to prevent inventory drift when a shipment is split across multiple logistics providers.
 - **Patterns**: The codebase consistently uses a `DomainEvent` pattern for audit logging, where every state change in the supply chain triggers a specific event handler rather than direct database updates.
 - **Mistakes**: Initially over-engineered the pricing logic with a generic strategy pattern; corrected by simplifying to a direct calculation method since the current business rules are static and don't require dynamic swapping.
+
+--- Story 095: Herbs to medicine supply chain (attempts: 1, 2026-03-05 12:46) ---
+- **Tricky/Non-Obvious**: The "freshness" logic for herbs required a multi-stage state transition (Harvested → Cured → Ready) rather than a simple timestamp check, making the initial inventory filtering queries complex.
+- **Patterns/Conventions**: The codebase strictly enforces a `DomainEvent` pattern for supply chain movements; all stock updates must trigger an event handler rather than modifying the database directly in the service layer.
+- **Mistakes/Corrections**: Initially attempted to validate batch expiration synchronously during order creation, which caused race conditions; corrected by moving validation to an asynchronous background job that processes pending orders.

@@ -2421,3 +2421,34 @@ def buy_fish(db: Session, npc_id: int) -> bool:
     
     db.commit()
     return True
+
+
+def produce_medicine(db: Session) -> None:
+    """Hospital converts 3 Herbs to 1 Medicine."""
+    hospitals = db.query(Building).filter(Building.building_type == 'hospital').all()
+    
+    for hospital in hospitals:
+        herbs = db.query(Resource).filter(
+            Resource.name == 'Herbs',
+            Resource.building_id == hospital.id
+        ).first()
+        
+        if herbs and herbs.quantity >= 3:
+            medicine = db.query(Resource).filter(
+                Resource.name == 'Medicine',
+                Resource.building_id == hospital.id
+            ).first()
+            
+            batches = herbs.quantity // 3
+            
+            if medicine:
+                medicine.quantity += batches
+            else:
+                new_medicine = Resource(
+                    name='Medicine',
+                    quantity=batches,
+                    building_id=hospital.id
+                )
+                db.add(new_medicine)
+            
+            herbs.quantity -= (batches * 3)
