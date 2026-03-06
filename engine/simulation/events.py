@@ -105,3 +105,28 @@ def trigger_plague(db: Session) -> None:
             npc.is_dead = 1
     
     db.commit()
+
+
+def trigger_harvest_festival(db: Session) -> None:
+    """Trigger a harvest festival event that increases NPC happiness."""
+    from engine.models import NPC, WorldState
+    
+    # Get world state for tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Create harvest festival event
+    festival_event = Event(
+        event_type="harvest_festival",
+        description="A harvest festival has begun, boosting town happiness",
+        tick=current_tick,
+        severity="low"
+    )
+    db.add(festival_event)
+    
+    # Increase happiness for all NPCs (capped at 100)
+    npcs = db.query(NPC).all()
+    for npc in npcs:
+        npc.happiness = min(100, npc.happiness + 20)
+    
+    db.commit()

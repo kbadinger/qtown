@@ -591,3 +591,8 @@
 - **Tricky Aspect**: The plague event required a non-linear state transition where the "active" status persists across multiple turns until a specific cure condition is met, rather than resolving immediately upon triggering.
 - **Pattern Discovered**: Event handlers follow a strict `check_preconditions -> apply_effects -> schedule_next_trigger` pattern, and all global state mutations must go through the `GameState` facade to ensure deterministic replayability.
 - **Correction Made**: Initially, I applied the population reduction effect before checking if the player had the "Quarantine" buff, causing a race condition; fixed by moving the buff check to the pre-condition phase to short-circuit the damage logic.
+
+--- Story 113: Add harvest_festival event type (attempts: 1, 2026-03-06 00:21) ---
+- **Event Dispatching Logic**: It was non-obvious that new event types require updating both the `EventFactory` enum and the `EventDispatcher` switch statement; missing the dispatcher update causes silent failures where the event is created but never processed.
+- **State Mutation Pattern**: The codebase strictly avoids direct state mutation in event handlers; instead, events must return a `StateDelta` object that the core loop applies, a convention I initially missed by trying to modify the game state directly.
+- **Correction on Date Handling**: I initially hardcoded the festival date in the event logic, but corrected it to use the `CalendarService` to ensure the event respects the dynamic game year and leap year rules already established in the system.

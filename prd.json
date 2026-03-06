@@ -2035,13 +2035,13 @@
         "simulation"
       ],
       "priority": 112,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
       "id": "113",
       "title": "Add harvest_festival event type",
-      "description": "Create trigger_harvest_festival(db) in engine/simulation.py. Harvest festival occurs when food surplus > 200. All NPCs gain +30 happiness, -20 hunger. Consumes 100 food. Lasts 3 ticks. Log Event with event_type='harvest_festival' and appropriate severity. Check trigger conditions in process_tick.",
+      "description": "Create trigger_harvest_festival(db) in engine/simulation/events.py. The function must: 1) Create an Event with event_type=\"harvest_festival\" and severity=\"low\". 2) Add +20 happiness to ALL NPCs (capped at 100). Use: from engine.models import NPC, then loop all NPCs and set npc.happiness = min(100, npc.happiness + 20). 3) db.commit() at the end. That is all -- keep it simple like trigger_drought.",
       "acceptance": "Test: harvest_festival triggers under correct conditions. Test: effects apply correctly. Test: Event row created with type='harvest_festival'. Test: event ends after duration.",
       "test_file": "tests/test_events.py",
       "context_files": [
@@ -2053,8 +2053,8 @@
         "simulation"
       ],
       "priority": 113,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "114",
