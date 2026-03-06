@@ -994,3 +994,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 19:34:30 UTC] deploy_ok: Story 172 deployed: Healthy after 0.1s
 [2026-03-06 19:34:36 UTC] story_done: Story 172 complete: Story review UI
 [2026-03-06 19:34:36 UTC] story_start: Story 173: Story approve workflow
+[2026-03-06 19:35:54 UTC] deploy_ok: Story 173 deployed: Healthy after 0.1s
+[2026-03-06 19:35:59 UTC] story_done: Story 173 complete: Story approve workflow
+[2026-03-06 19:35:59 UTC] story_start: Story 174: Test file generation

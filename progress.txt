@@ -922,3 +922,8 @@
 - **Tricky**: The approval state machine required handling concurrent updates; using optimistic locking was necessary to prevent race conditions when multiple approvers acted simultaneously.
 - **Patterns**: The codebase consistently separates domain logic (approval rules) from infrastructure (email notifications) using explicit event listeners, keeping the core workflow clean.
 - **Correction**: Initially, I validated the approver's role at the API entry point, but corrected this to validate within the service layer to ensure the check is enforced regardless of the entry method (CLI, API, or background job).
+
+--- Story 174: Test file generation (attempts: 1, 2026-03-06 14:36) ---
+- **Non-obvious fixture isolation**: Test file generation failed silently when fixtures weren't explicitly cleared between runs; the codebase relies on `beforeEach` teardowns rather than global state resets.
+- **Naming convention**: All generated test files must follow the `*.test.ts` suffix and be placed in `__tests__` directories to be picked up by the runner; placing them alongside source files causes them to be ignored.
+- **Correction on mocking**: Initially mocked the entire module, but the codebase expects partial mocking via `jest.spyOn` to preserve real implementation details for shared utilities.
