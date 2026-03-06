@@ -13,6 +13,12 @@ def produce_resources(db: Session, weather: str = None) -> None:
     
     # Determine production amount based on weather
     base_production = 10
+    
+    # Check for drought - halve production if active
+    world_state = db.query(WorldState).first()
+    if world_state and world_state.drought_active:
+        base_production = 5
+    
     if weather == 'rain':
         base_production = 12  # +20% bonus
     
@@ -52,14 +58,29 @@ def produce_resources(db: Session, weather: str = None) -> None:
         demand = DEFAULT_DEMAND
         price = calculate_price(db, resource_name)
         
-        history_entry = PriceHistory(
-            resource_name=resource_name,
-            price=price,
-            supply=int(avg_supply),
-            demand=demand,
-            tick=current_tick
-        )
-        db.add(history_entry)
+        # Check if entry already exists for this tick to avoid UNIQUE constraint violation
+        existing_history = db.query(PriceHistory).filter(
+            PriceHistory.resource_name == resource_name,
+            PriceHistory.tick == current_tick
+        ).first()
+        
+        if existing_history:
+            # Update existing entry
+            existing_history.price = price
+            existing_history.supply = int(avg_supply)
+            existing_history.demand = demand
+        else:
+            # Insert new entry
+            history_entry = PriceHistory(
+                resource_name=resource_name,
+                price=price,
+                supply=int(avg_supply),
+                demand=demand,
+                tick=current_tick
+            )
+            db.add(history_entry)
+    
+    db.commit()
 
 
 def produce_bakery_resources(db: Session) -> None:

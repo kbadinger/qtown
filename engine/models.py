@@ -55,6 +55,7 @@ class WorldState(Base):
     inflation_rate = Column(Float, default=0.0)
     economic_status = Column(String(32), default="normal")
     tax_rate = Column(Float, default=0.10)
+    drought_active = Column(Integer, default=0)
     created_at = Column(DateTime, default=_utcnow)
 
 

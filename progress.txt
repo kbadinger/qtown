@@ -566,3 +566,8 @@
 *   **Tricky Logic**: The "medicine goods" domain required careful handling of expiration date validation; the non-obvious part was ensuring the `is_expired` check runs *before* inventory deduction to prevent selling invalid stock during high-concurrency transactions.
 *   **Codebase Patterns**: This story reinforced the repository's strict separation of concerns: domain entities remain pure (no DB logic), while all persistence and side-effect logic is strictly delegated to the `MedicineService` layer.
 *   **Correction**: Initially, I attempted to handle stock updates within the controller; I corrected this by moving the transactional block into the service layer to ensure atomicity and consistent error handling across all entry points.
+
+--- Story 109: Add drought event type (attempts: 1, 2026-03-05 22:38) ---
+- **Non-obvious Event Lifecycle**: The `DroughtEvent` requires explicit handling of the "recovery" phase; unlike simple status toggles, the system expects a separate `resolveDrought` trigger to reset soil moisture levels, which is not auto-handled by the base event class.
+- **Codebase Pattern**: New event types must implement the `IEventEffect` interface and register their logic in `EventRegistry` using the `@Event` decorator; failing to register the type causes the simulator to silently ignore the event during the daily tick.
+- **Correction**: Initially, I applied the drought penalty directly in the `trigger()` method, but the tests failed because the system expects side effects to be queued in `applyEffects()` to maintain transactional integrity across the simulation step.
