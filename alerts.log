@@ -711,3 +711,10 @@ Ralph stopped — needs human debugging
 [2026-03-06 03:09:31 UTC] story_start: Story 109: Add drought event type
 [2026-03-06 03:21:02 UTC] WARN story_fail: Story 109 struggling — attempt 5/12
 Add drought event type
+[2026-03-06 03:39:01 UTC] CRITICAL critical: Story 109: Sprite generation failed — Ralph pausing
+ComfyUI is not running — cannot generate assets
+[2026-03-06 03:39:01 UTC] CRITICAL critical: Story 109 failed: Add drought event type
+Ralph stopped — needs human debugging
+[2026-03-06 03:39:02 UTC] stop: Ralph offline — 108/215 stories complete
+[2026-03-06 03:43:12 UTC] start: Ralph online — 108/215 stories complete
+[2026-03-06 03:43:12 UTC] story_start: Story 109: Add drought event type

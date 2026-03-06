@@ -571,3 +571,8 @@
 - **Non-obvious Event Lifecycle**: The `DroughtEvent` requires explicit handling of the "recovery" phase; unlike simple status toggles, the system expects a separate `resolveDrought` trigger to reset soil moisture levels, which is not auto-handled by the base event class.
 - **Codebase Pattern**: New event types must implement the `IEventEffect` interface and register their logic in `EventRegistry` using the `@Event` decorator; failing to register the type causes the simulator to silently ignore the event during the daily tick.
 - **Correction**: Initially, I applied the drought penalty directly in the `trigger()` method, but the tests failed because the system expects side effects to be queued in `applyEffects()` to maintain transactional integrity across the simulation step.
+
+--- Story 109: Add drought event type (attempts: 1, 2026-03-05 22:43) ---
+- **Tricky**: The drought logic required handling a "duration" state that persists across multiple simulation ticks, unlike other instantaneous events; ensuring the `is_active` flag correctly toggled based on the counter was non-obvious.
+- **Patterns**: Event handlers consistently use a factory pattern returning an `Event` object with a `process()` method, and all state mutations flow through the `GameState` singleton rather than direct model access.
+- **Correction**: Initially, I applied the drought penalty every tick regardless of the event's start date, causing double-penalties; fixed by adding a check for `current_tick >= start_tick` before applying effects.
