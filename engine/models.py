@@ -28,6 +28,7 @@ class Tile(Base):
     x = Column(Integer, nullable=False)
     y = Column(Integer, nullable=False)
     terrain = Column(String(32), nullable=False, default="grass")
+    zone = Column(String(32), nullable=True)
     last_modified = Column(Integer, default=0)
 
     __table_args__ = (UniqueConstraint("x", "y", name="uq_tile_xy"),)

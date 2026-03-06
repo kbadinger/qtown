@@ -967,3 +967,8 @@
 - **Tricky/Non-obvious**: The `RecommendationEngine` relies on a cached dependency graph that must be manually invalidated when `ConstructionConfig` changes; failing to clear the cache causes stale recommendations even after config updates.
 - **Patterns/Conventions**: The codebase strictly separates "domain logic" (pure functions in `services/`) from "infrastructure" (database calls in `repositories/`), and all new recommendation strategies must implement the `IRecommendationStrategy` interface to be dynamically loaded.
 - **Mistakes & Corrections**: Initially, I passed the raw `ConstructionPlan` object directly to the strategy, causing serialization errors in the async worker; corrected by extracting only the required immutable fields into a DTO before processing.
+
+--- Story 184: Zoning system (attempts: 1, 2026-03-06 17:52) ---
+- **Non-obvious coupling**: The zoning logic was tightly coupled with the map rendering engine; I initially tried to decouple them by passing raw coordinates, but realized the engine expects pre-validated zone objects to handle collision boundaries efficiently.
+- **Convention discovery**: This codebase consistently uses a "Strategy" pattern for zone types (e.g., `Residential`, `Industrial`), where each zone implements a `calculateTax()` and `validateZoning()` interface rather than using a large `switch` statement.
+- **Correction made**: I initially calculated zone overlap using simple bounding boxes, which failed for diagonal adjacencies; I corrected this by switching to the existing `SpatialIndex` utility that handles polygon intersection checks.

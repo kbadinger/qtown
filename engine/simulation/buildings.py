@@ -752,3 +752,21 @@ def recommend_construction(db: Session) -> dict:
         'suggested_x': suggested_x,
         'suggested_y': suggested_y
     }
+
+
+def zone_grid(db: Session) -> None:
+    """Divide the 50x50 grid into zones: residential (NW), commercial (NE), industrial (SW), civic (SE)."""
+    from engine.models import Tile
+    
+    tiles = db.query(Tile).all()
+    for tile in tiles:
+        if tile.x < 25 and tile.y < 25:
+            tile.zone = "residential"
+        elif tile.x >= 25 and tile.y < 25:
+            tile.zone = "commercial"
+        elif tile.x < 25 and tile.y >= 25:
+            tile.zone = "industrial"
+        else:
+            tile.zone = "civic"
+    
+    db.commit()
