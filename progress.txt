@@ -737,3 +737,8 @@
 - **Tricky**: Handling the conditional rendering of the "Approve" button based on the user's role and the current workflow state required careful validation to prevent unauthorized actions.
 - **Pattern**: The codebase consistently uses a centralized `useWorkflowStatus` hook to manage state transitions, rather than managing status directly within individual component logic.
 - **Correction**: Initially attempted to trigger the API call directly on button click; corrected to use a confirmation modal first to prevent accidental approvals and ensure user intent.
+
+--- Story 142: Cost dashboard page (attempts: 1, 2026-03-06 08:53) ---
+- **Tricky Aspect**: The dynamic aggregation of cost data across multiple dimensions (project, service, time-range) required careful handling of null values and timezone offsets to prevent skewed totals in the summary cards.
+- **Pattern Discovered**: The codebase consistently uses a "Memoized Data Fetcher" pattern for dashboard widgets, where data is cached by query parameters to prevent redundant API calls during rapid filter changes.
+- **Correction Made**: Initially implemented the "last 30 days" default range using client-side date math, which caused discrepancies for users in different timezones; corrected by delegating range calculation to the backend API to ensure consistency.
