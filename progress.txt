@@ -887,3 +887,8 @@
 - **State Synchronization**: Updating the counter required careful handling of the `localStorage` read/write cycle to prevent race conditions where the UI displays stale data before the new value persists.
 - **Convention Discovery**: The codebase strictly separates "data fetching" (API calls) from "state mutation" (local updates), meaning UI updates for local-only features must manually trigger the render cycle rather than relying on automatic reactivity.
 - **Correction**: Initially, I attempted to increment the stored value directly in the template; I corrected this by fetching the current count first, performing the math in the controller, and then saving, ensuring atomicity and preventing duplicate increments on rapid clicks.
+
+--- Story 168: Live stories completed counter (attempts: 2, 2026-03-06 14:23) ---
+- **State Persistence Nuance**: Updating the live counter required careful handling of the `useEffect` dependency array to avoid infinite loops while ensuring the value persists across page reloads via `localStorage`.
+- **Codebase Convention**: The project strictly enforces a "container/presentational" component pattern, where all state logic (including the counter hook) lives in the container, keeping the UI component purely declarative.
+- **Correction on Edge Cases**: Initially failed to handle the case where `localStorage` is disabled or returns `null`; corrected by adding a default fallback value to prevent the counter from rendering as `NaN` or breaking the UI.
