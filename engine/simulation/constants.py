@@ -63,3 +63,12 @@ DROUGHT_FAMINE_THRESHOLD = 5
 PLAGUE_OVERWHELM_THRESHOLD = 0.5
 """Threshold of sick NPCs (50%) that triggers hospital_overwhelmed cascade."""
 
+
+
+
+FLOOD_PRICE_SPIKE_DURATION = 30
+"""Number of ticks food price remains tripled after flood."""
+
+FLOOD_PRICE_MULTIPLIER = 3
+"""Food price multiplier during flood cascade."""
+

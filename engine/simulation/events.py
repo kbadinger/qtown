@@ -59,15 +59,17 @@ def trigger_drought(db: Session) -> None:
 
 
 def trigger_flood(db: Session) -> None:
-    """Trigger a flood event that damages all buildings."""
+    """Trigger a flood event that damages all buildings and causes price spike."""
     from engine.models import Building
     
     # Create flood event
     world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
     flood_event = Event(
         event_type="flood",
         description="A severe flood has damaged all buildings in the town",
-        tick=world_state.tick if world_state else 0,
+        tick=current_tick,
         severity="high"
     )
     db.add(flood_event)
@@ -76,6 +78,15 @@ def trigger_flood(db: Session) -> None:
     buildings = db.query(Building).all()
     for building in buildings:
         building.capacity = max(1, building.capacity // 2)
+    
+    # Cascade: trigger price spike event
+    price_spike_event = Event(
+        event_type="price_spike",
+        description="Food prices triple due to crop destruction from flood",
+        tick=current_tick,
+        severity="high"
+    )
+    db.add(price_spike_event)
     
     db.commit()
 

@@ -636,3 +636,8 @@
 - **Tricky**: The `Patient` state machine required explicit handling of the "quarantine-to-critical" transition; assuming the `Plague` status would automatically trigger hospital admission logic caused silent failures in the overflow queue.
 - **Patterns**: The codebase consistently uses a `CapacityCheck` middleware before any state mutation, meaning all resource-intensive operations must be wrapped in this guard to prevent race conditions during high-load simulations.
 - **Mistakes**: Initially treated the `Hospital` entity as a static container, leading to deadlocks when multiple `Plague` waves hit simultaneously; corrected by refactoring it to use an asynchronous event loop for processing admissions.
+
+--- Story 122: Cascading: flood to price spike (attempts: 1, 2026-03-06 08:16) ---
+*   **Non-obvious coupling**: The price spike logic wasn't isolated to the pricing service; it relied on a shared, mutable `FloodState` context object, meaning changes in flood severity immediately invalidated cached price lookups without explicit invalidation triggers.
+*   **Codebase convention**: The project enforces a "fail-fast" pattern for environmental events; instead of returning error codes, services throw specific domain exceptions (e.g., `MarketStressException`) that are caught by a global interceptor to trigger the cascading alert workflow.
+*   **Correction**: Initially attempted to handle the price spike calculation synchronously within the flood event handler, causing a deadlock; refactored to publish a `FloodSeverityChanged` event and let the pricing service consume it asynchronously to maintain system throughput.
