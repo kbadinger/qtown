@@ -882,3 +882,8 @@
 - **Tricky/Non-obvious**: The counter logic required careful handling of state persistence; simply incrementing a variable wasn't enough without explicitly syncing it to the local storage layer to survive page reloads.
 - **Patterns/Conventions**: The codebase consistently separates UI rendering from state management, using a dedicated `store` module for all counter operations rather than embedding logic directly in the view components.
 - **Mistakes/Corrections**: Initially, I attempted to update the DOM directly after a state change, which caused a race condition with the hydration process; I corrected this by strictly relying on the framework's reactivity system to trigger the UI update.
+
+--- Story 168: Live stories completed counter (attempts: 1, 2026-03-06 14:22) ---
+- **State Synchronization**: Updating the counter required careful handling of the `localStorage` read/write cycle to prevent race conditions where the UI displays stale data before the new value persists.
+- **Convention Discovery**: The codebase strictly separates "data fetching" (API calls) from "state mutation" (local updates), meaning UI updates for local-only features must manually trigger the render cycle rather than relying on automatic reactivity.
+- **Correction**: Initially, I attempted to increment the stored value directly in the template; I corrected this by fetching the current count first, performing the math in the controller, and then saving, ensuring atomicity and preventing duplicate increments on rapid clicks.
