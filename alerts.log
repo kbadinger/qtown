@@ -854,3 +854,4 @@ Add gold_rush event type
 [2026-03-06 13:54:29 UTC] deploy_ok: Story 142 deployed: Healthy after 0.1s
 [2026-03-06 13:54:34 UTC] story_done: Story 142 complete: Cost dashboard page
 [2026-03-06 13:54:35 UTC] story_start: Story 143: About page
+[2026-03-06 13:54:47 UTC] WARN deploy_fail: Story 143 deploy failed — starting fix cycle

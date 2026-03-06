@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}About Qwen Town{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold text-gray-800 mb-6">About Qwen Town</h1>
+    
+    <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">What is Qwen Town?</h2>
+        <p class="text-gray-600 leading-relaxed">
+            Qwen Town is a 2D town simulation built with Python and FastAPI. It simulates a living, breathing community 
+            where NPCs (Non-Player Characters) work, trade, build, and interact with each other. The simulation runs on a 
+            tick-based system, updating the world state, economy, and NPC behaviors in real-time.
+        </p>
+    </section>
+
+    <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">How It Works</h2>
+        <p class="text-gray-600 leading-relaxed mb-4">
+            The simulation is driven by a central tick loop that orchestrates various subsystems:
+        </p>
+        <ul class="list-disc list-inside text-gray-600 space-y-2">
+            <li><strong>NPC Lifecycle:</strong> NPCs have needs (hunger, energy, happiness) and make decisions based on their state.</li>
+            <li><strong>Economy:</strong> Resources are produced, traded, and priced dynamically based on supply and demand.</li>
+            <li><strong>Buildings:</strong> Different building types provide services, production, or effects to the town.</li>
+            <li><strong>Events:</strong> Random events like weather changes, disasters, or festivals impact the simulation.</li>
+        </ul>
+    </section>
+
+    <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">Tech Stack</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h3 class="font-semibold text-gray-800 mb-2">Backend</h3>
+                <ul class="list-disc list-inside text-gray-600">
+                    <li>Python 3.11+</li>
+                    <li>FastAPI (Web Framework)</li>
+                    <li>SQLAlchemy 2.0 (ORM)</li>
+                    <li>SQLite / PostgreSQL (Database)</li>
+                </ul>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h3 class="font-semibold text-gray-800 mb-2">Frontend</h3>
+                <ul class="list-disc list-inside text-gray-600">
+                    <li>Jinja2 (HTML Templates)</li>
+                    <li>HTMX (Dynamic Updates)</li>
+                    <li>Tailwind CSS (Styling)</li>
+                    <li>PixiJS (2D Rendering)</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">Contribute</h2>
+        <p class="text-gray-600 leading-relaxed mb-4">
+            Qwen Town is an open-source project. You can view the source code, report issues, or submit pull requests on GitHub.
+        </p>
+        <a href="https://github.com/kbadinger/qtown" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-200">
+            View on GitHub
+        </a>
+    </section>
+</div>
+{% endblock %}
