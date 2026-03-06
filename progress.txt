@@ -782,3 +782,8 @@
 *   **Non-obvious pagination**: The export endpoint requires manual cursor-based pagination logic rather than relying on the standard query builder, as the underlying data source does not support `OFFSET/LIMIT` for large result sets.
 *   **Codebase convention**: All external-facing data transformations must implement the `SerializableData` interface to ensure consistent JSON serialization and automatic null-handling across the API layer.
 *   **Correction**: Initially attempted to stream the response directly to the client without buffering, which caused connection timeouts for large datasets; switched to a temporary file-based approach with chunked reading to handle memory constraints.
+
+--- Story 150: Import data endpoint (attempts: 1, 2026-03-06 09:21) ---
+- **Non-obvious constraint**: The import parser fails silently on malformed CSV rows unless `strict_mode` is explicitly enabled; default behavior drops rows without logging, requiring custom error handling middleware.
+- **Codebase pattern**: All data ingestion endpoints follow the `validate -> transform -> batch-insert` flow, utilizing the shared `DataPipeline` service to ensure transactional consistency across related tables.
+- **Correction**: Initially attempted to stream the entire file into memory before processing, causing OOM errors on large datasets; refactored to use chunked iterators and `async` database writes to maintain constant memory usage.
