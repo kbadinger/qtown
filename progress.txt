@@ -857,3 +857,8 @@
 - **Tricky/Non-obvious**: The interaction between `Content-Encoding` headers and the underlying stream lifecycle was subtle; forgetting to close the `GzipStream` explicitly before closing the response can leave the connection in a half-written state, causing downstream clients to hang waiting for the trailer.
 - **Patterns/Conventions**: The codebase consistently wraps compression logic in a dedicated middleware layer that checks `Accept-Encoding` before wrapping the `res` object, rather than handling it inline within route handlers, ensuring consistent header management across all endpoints.
 - **Mistakes/Corrections**: Initially, I attempted to compress the entire response body into memory before sending it, which caused high memory usage for large payloads; I corrected this by switching to a streaming approach that pipes data directly from the source to the gzip stream and then to the client.
+
+--- Story 165: Detailed health check (attempts: 1, 2026-03-06 09:46) ---
+- **Non-obvious dependency**: The health check endpoint relies on a shared `HealthAggregator` singleton that isn't explicitly injected in the controller, making unit testing require manual context mocking.
+- **Convention discovered**: All health checks follow a `ComponentHealth` pattern where they return a specific `Status` enum (UP, DOWN, DEGRADED) rather than simple booleans, allowing for granular alerting logic downstream.
+- **Correction made**: Initially treated the database connection check as synchronous, causing thread blocking; corrected by switching to an async `await` pattern to align with the non-blocking I/O architecture of the service.
