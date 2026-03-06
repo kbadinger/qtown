@@ -712,3 +712,8 @@
 - **Async Data Handling**: The trickiest part was managing the race condition between the initial fetch and the 10-minute auto-refresh interval; I had to ensure the `useEffect` cleanup function properly aborts pending requests to prevent stale data overwrites.
 - **State Normalization**: Discovered a strong convention in this codebase of normalizing API responses into a flat `weatherData` object before passing it to components, rather than passing raw JSON, which simplifies downstream rendering logic.
 - **Error Boundary Scope**: Initially wrapped the entire app in an error boundary for the weather widget, but corrected it to scope the boundary only to the `WeatherDisplay` component to prevent a single widget failure from crashing the whole dashboard.
+
+--- Story 137: Happiness metrics display (attempts: 1, 2026-03-06 08:46) ---
+- **Tricky Aspect**: Handling the asynchronous nature of metric updates required careful state management to prevent race conditions between the data fetch and the UI render cycle.
+- **Pattern Discovered**: The codebase consistently uses a `useEffect` dependency array that includes the entire data object, necessitating deep equality checks to avoid unnecessary re-renders.
+- **Correction Made**: Initially, I hardcoded the threshold values for the happiness score; I corrected this by extracting them into the shared `config` module to ensure consistency across the dashboard.
