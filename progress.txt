@@ -576,3 +576,8 @@
 - **Tricky**: The drought logic required handling a "duration" state that persists across multiple simulation ticks, unlike other instantaneous events; ensuring the `is_active` flag correctly toggled based on the counter was non-obvious.
 - **Patterns**: Event handlers consistently use a factory pattern returning an `Event` object with a `process()` method, and all state mutations flow through the `GameState` singleton rather than direct model access.
 - **Correction**: Initially, I applied the drought penalty every tick regardless of the event's start date, causing double-penalties; fixed by adding a check for `current_tick >= start_tick` before applying effects.
+
+--- Story 110: Add flood event type (attempts: 1, 2026-03-05 23:16) ---
+- **Tricky/Non-obvious**: The flood event logic required a distinct `severity_threshold` calculation that differed from standard precipitation events, necessitating a separate validation branch in the `EventProcessor` rather than reusing the generic threshold logic.
+- **Patterns/Conventions**: The codebase strictly enforces a "command object" pattern for event creation; new event types must implement the `EventCommand` interface and register their factory in the central `EventRegistry` to be discoverable by the scheduler.
+- **Mistakes/Corrections**: Initially attempted to inject the flood-specific logic directly into the base `Event` class, which violated the Open/Closed Principle; corrected by extracting the logic into a dedicated `FloodEvent` subclass and updating the factory registration.

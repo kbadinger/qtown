@@ -718,3 +718,19 @@ Ralph stopped — needs human debugging
 [2026-03-06 03:39:02 UTC] stop: Ralph offline — 108/215 stories complete
 [2026-03-06 03:43:12 UTC] start: Ralph online — 108/215 stories complete
 [2026-03-06 03:43:12 UTC] story_start: Story 109: Add drought event type
+[2026-03-06 03:43:23 UTC] WARN sprite_skip: Story 109: Sprite generation skipped — ComfyUI is not running — cannot generate assets
+[2026-03-06 03:44:50 UTC] deploy_ok: Story 109 deployed: Healthy after 0.2s
+[2026-03-06 03:45:05 UTC] story_done: Story 109 complete: Add drought event type
+[2026-03-06 03:45:05 UTC] story_start: Story 110: Add flood event type
+[2026-03-06 03:48:11 UTC] WARN story_fail: Story 110 struggling — attempt 5/12
+Add flood event type
+[2026-03-06 04:06:47 UTC] WARN story_fail: Story 110 failed after 12 attempts: Add flood event type
+[2026-03-06 04:06:48 UTC] CRITICAL critical: Story 110 failed: Add flood event type
+Ralph stopped — needs human debugging
+[2026-03-06 04:06:48 UTC] stop: Ralph offline — 109/215 stories complete
+[2026-03-06 04:09:29 UTC] start: Ralph online — 109/215 stories complete
+[2026-03-06 04:09:30 UTC] CRITICAL critical: Blocked by failed stories: 110
+Reset to 'pending' in prd.json to retry
+[2026-03-06 04:09:30 UTC] stop: Ralph offline — 109/215 stories complete
+[2026-03-06 04:09:59 UTC] start: Ralph online — 109/215 stories complete
+[2026-03-06 04:09:59 UTC] story_start: Story 110: Add flood event type

@@ -21,3 +21,25 @@ def trigger_drought(db: Session) -> None:
     )
     db.add(drought_event)
     db.commit()
+
+
+def trigger_flood(db: Session) -> None:
+    """Trigger a flood event that damages all buildings."""
+    from engine.models import Building
+    
+    # Create flood event
+    world_state = db.query(WorldState).first()
+    flood_event = Event(
+        event_type="flood",
+        description="A severe flood has damaged all buildings in the town",
+        tick=world_state.tick if world_state else 0,
+        severity="high"
+    )
+    db.add(flood_event)
+    
+    # Damage all buildings by reducing their capacity
+    buildings = db.query(Building).all()
+    for building in buildings:
+        building.capacity = max(1, building.capacity // 2)
+    
+    db.commit()
