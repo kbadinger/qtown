@@ -743,3 +743,15 @@ def mark_dangerous_area(db: Session, npc_id: int, x: int, y: int) -> None:
     # Save back to NPC
     npc.avoided_areas = json.dumps(avoided_list)
     db.commit()
+
+
+def get_friends(db: Session, npc_id: int) -> list[int]:
+    """Return list of NPC IDs with friendship strength > 60."""
+    from engine.models import Relationship
+
+    relationships = db.query(Relationship).filter(
+        Relationship.npc_id == npc_id,
+        Relationship.strength > 60
+    ).all()
+    
+    return [rel.target_npc_id for rel in relationships]

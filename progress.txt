@@ -942,3 +942,8 @@
 - **Tricky Logic**: Determining "danger" requires checking both the target tile's properties and the NPC's current pathfinding state; simply checking the destination isn't enough if the path *to* it is blocked by hazards.
 - **Codebase Convention**: The `Map` class exposes a `get_tile(x, y)` method that returns a `Tile` object with a `is_hazardous` boolean, which is the canonical way to evaluate terrain safety rather than parsing raw grid data.
 - **Correction**: Initially, I updated the NPC's destination immediately upon detecting danger, causing jittery movement; I corrected this by forcing a full path recalculation only when the current path is invalidated, ensuring smoother behavior.
+
+--- Story 179: NPC memory - remember friends (attempts: 1, 2026-03-06 17:01) ---
+- **Tricky**: Determining the exact scope of "friend" memory was non-obvious; the system requires explicit relationship tagging rather than inferring it from mere proximity or interaction frequency.
+- **Pattern**: The codebase consistently uses a centralized `MemoryRegistry` singleton for all NPC state persistence, avoiding direct database calls within individual NPC logic classes.
+- **Correction**: Initially attempted to store full conversation transcripts in memory, which caused serialization bloat; corrected by storing only a summarized "relationship score" and key event IDs.
