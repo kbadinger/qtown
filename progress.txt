@@ -847,3 +847,8 @@
 - **Tricky**: The `N+1` query issue was masked by the ORM's lazy loading; it only surfaced under high concurrency, requiring explicit `JOIN` logic in the repository layer rather than relying on default behavior.
 - **Pattern**: This codebase consistently uses `SelectMany` with `AsNoTracking()` for read-heavy endpoints, but the convention for handling pagination with complex joins is inconsistent across modules.
 - **Correction**: Initially attempted to cache the entire result set at the controller level, which caused memory spikes; corrected by moving the caching strategy to the repository with a granular key based on query parameters.
+
+--- Story 163: Response caching (attempts: 1, 2026-03-06 09:44) ---
+- **Non-obvious cache invalidation**: Realized that `Response` objects are immutable; modifying headers or body requires creating a new instance, making the cache key logic (based on request fingerprinting) critical rather than just storing the object reference.
+- **Middleware placement pattern**: Discovered the convention of wrapping caching logic in a `before` hook to intercept requests early, ensuring the cache check happens before expensive database queries or external API calls are triggered.
+- **Corrected key collision bug**: Initially used only the URL as the cache key, ignoring query parameters and headers; fixed this by hashing the full normalized request signature to prevent serving stale data for distinct user contexts.
