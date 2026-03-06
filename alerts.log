@@ -908,3 +908,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 14:28:48 UTC] deploy_ok: Story 155 deployed: Healthy after 0.1s
 [2026-03-06 14:28:53 UTC] story_done: Story 155 complete: Bulk operations
 [2026-03-06 14:28:53 UTC] story_start: Story 156: Input validation on all endpoints
+[2026-03-06 14:30:08 UTC] deploy_ok: Story 156 deployed: Healthy after 0.1s
+[2026-03-06 14:30:13 UTC] story_done: Story 156 complete: Input validation on all endpoints
+[2026-03-06 14:30:13 UTC] story_start: Story 157: Error message improvements
