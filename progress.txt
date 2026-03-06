@@ -827,3 +827,8 @@
 - **Tricky**: The non-obvious requirement was ensuring the 404 page itself returns a `404` status code rather than `200` to prevent search engines from indexing it as a valid page, requiring explicit status code handling in the route definition.
 - **Patterns**: The codebase consistently separates layout logic from content components, using a dedicated `Layout` wrapper for the 404 page to maintain consistent navigation and footer styling without duplicating code.
 - **Mistakes**: Initially, I hardcoded the error message text directly in the component; I corrected this by extracting it into the shared `i18n` translation file to align with the project's localization strategy.
+
+--- Story 159: Rate limit feedback page (attempts: 1, 2026-03-06 09:33) ---
+- **Non-obvious behavior**: The rate limit middleware triggers before the controller logic, so error handling must occur in the middleware layer or a global exception handler to avoid bypassing the feedback UI.
+- **Codebase pattern**: The project consistently uses a `ResponseFactory` service for all error responses to ensure standardized JSON structures and HTTP status codes across different failure scenarios.
+- **Correction**: Initially, I attempted to render the feedback page directly in the controller; I corrected this by moving the logic to the middleware to ensure the rate limit counter is incremented before any business logic executes.
