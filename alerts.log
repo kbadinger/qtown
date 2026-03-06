@@ -920,3 +920,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 14:34:17 UTC] deploy_ok: Story 159 deployed: Healthy after 0.1s
 [2026-03-06 14:34:22 UTC] story_done: Story 159 complete: Rate limit feedback page
 [2026-03-06 14:34:23 UTC] story_start: Story 160: CORS preflight handling
+[2026-03-06 14:35:49 UTC] deploy_ok: Story 160 deployed: Healthy after 0.1s
+[2026-03-06 14:35:54 UTC] story_done: Story 160 complete: CORS preflight handling
+[2026-03-06 14:35:55 UTC] story_start: Story 161: DB indexes on hot queries

@@ -837,3 +837,8 @@
 *   **Non-obvious behavior**: The browser automatically includes `Origin` and `Access-Control-Request-Method` headers in the preflight `OPTIONS` request, but the server must explicitly echo back `Access-Control-Allow-Origin` and `Access-Control-Allow-Methods` in the response headers to proceed; missing the `Vary: Origin` header caused caching issues for dynamic origins.
 *   **Codebase pattern**: The middleware stack uses a centralized `cors_handler` function that checks the `origin` against an allowlist before setting response headers, rather than scattering logic across individual route handlers.
 *   **Correction**: Initially, I returned a 200 OK for all `OPTIONS` requests without validating the `Origin` header, which bypassed security checks; I corrected this by ensuring the handler validates the origin first and returns a 403 Forbidden if the request is disallowed.
+
+--- Story 161: DB indexes on hot queries (attempts: 1, 2026-03-06 09:36) ---
+- **Non-obvious selectivity**: Learned that adding an index on a column with low cardinality (e.g., `status`) can actually degrade performance if the query filters for a highly common value, causing the optimizer to prefer a full table scan.
+- **Composite index ordering**: Discovered the codebase convention of placing the most selective column first in composite indexes, but realized this must be balanced against the specific `WHERE` clause order to avoid index bypass.
+- **Correction on `EXPLAIN`**: Initially misinterpreted the `cost` estimate as a direct runtime metric; corrected this by verifying actual execution times and row counts, as the planner's estimates were skewed by stale statistics.
