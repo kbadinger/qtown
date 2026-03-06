@@ -643,3 +643,22 @@ def check_population_growth(db: Session) -> None:
             
             db.add(new_npc)
             db.commit()
+
+
+def remember_event(db: Session, npc_id: int, event: str) -> None:
+    """Store an event in NPC's memory_events JSON, keeping max 10."""
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return
+
+    try:
+        events = json.loads(npc.memory_events) if npc.memory_events else []
+    except (json.JSONDecodeError, TypeError):
+        events = []
+
+    events.append(event)
+    if len(events) > 10:
+        events = events[-10:]
+
+    npc.memory_events = json.dumps(events)
+    db.commit()

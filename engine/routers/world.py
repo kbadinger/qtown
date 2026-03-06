@@ -103,7 +103,7 @@ def get_world_state(
     }
 
 
-@router.post("/")
+@router.post("/tick")
 def tick(
     db: Session = Depends(get_db),
     _admin: str = Depends(require_admin),
