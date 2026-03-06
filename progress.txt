@@ -611,3 +611,8 @@
 - **Non-obvious Event Propagation**: The `market_crash` event requires manually triggering a cascade of `asset_revaluation` events; it does not automatically propagate through the standard event bus, necessitating an explicit loop over all active portfolios.
 - **Codebase Convention for State Mutability**: New event handlers must follow the "snapshot-then-mutate" pattern (copying the current state to a temporary buffer before applying changes) to ensure the audit log captures the pre-event state accurately.
 - **Correction on Float Precision**: Initially used standard floating-point arithmetic for crash calculations, which caused minor discrepancies in the total market cap; corrected by switching to `Decimal` types for all financial aggregations to match the existing ledger precision.
+
+--- Story 117: Add baby_boom event type (attempts: 1, 2026-03-06 01:09) ---
+- **Event Schema Consistency**: It was non-obvious that `baby_boom` required a specific `target_population` field in the payload, which is distinct from the generic `population` used in other demographic events; missing this caused silent failures in the simulation engine.
+- **State Mutation Pattern**: Discovered that this codebase strictly avoids direct state mutation in event handlers; instead, events must return a `StateDelta` object that is merged by the central `SimulationEngine`, a pattern I initially bypassed with direct assignment.
+- **Correction on Trigger Logic**: Initially implemented the event trigger based on a simple population threshold, but corrected it to use the `is_stable` flag from the previous tick to prevent the event from firing repeatedly in a single simulation cycle.

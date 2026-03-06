@@ -242,3 +242,46 @@ def trigger_market_crash(db: Session) -> None:
             resource.price = max(1, int(resource.price * 0.4))  # Reduce by 60%
     
     db.commit()
+
+
+def trigger_baby_boom(db: Session) -> None:
+    """Trigger a baby boom event that spawns 5-10 new NPCs."""
+    from engine.models import NPC, Event, WorldState
+    import random
+    
+    # Get world state for tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Determine number of babies to spawn (5-10)
+    num_babies = random.randint(5, 10)
+    
+    # Spawn new NPCs
+    roles = ['farmer', 'merchant', 'guard', 'builder', 'healer', 'scholar']
+    for i in range(num_babies):
+        baby = NPC(
+            name=f"Baby {i+1}",
+            role=random.choice(roles),
+            x=random.randint(0, 49),
+            y=random.randint(0, 49),
+            gold=0,
+            hunger=50,
+            energy=100,
+            happiness=100,
+            age=0,
+            max_age=80,
+            is_dead=0,
+            illness_severity=0,
+            illness=0
+        )
+        db.add(baby)
+    
+    # Create baby boom event
+    baby_boom_event = Event(
+        event_type="baby_boom",
+        description=f"A baby boom has occurred, {num_babies} new citizens have been born",
+        tick=current_tick,
+        severity="low"
+    )
+    db.add(baby_boom_event)
+    db.commit()
