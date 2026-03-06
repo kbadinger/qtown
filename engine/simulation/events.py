@@ -216,3 +216,29 @@ def trigger_earthquake(db: Session) -> None:
         building.capacity = max(1, new_capacity)  # Ensure capacity stays at least 1
     
     db.commit()
+
+
+def trigger_market_crash(db: Session) -> None:
+    """Trigger a market crash event that reduces all resource prices by 60%."""
+    from engine.models import Resource, WorldState
+    
+    # Get world state for tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Create market crash event
+    market_crash_event = Event(
+        event_type="market_crash",
+        description="A market crash has occurred, reducing all resource prices by 60%",
+        tick=current_tick,
+        severity="high"
+    )
+    db.add(market_crash_event)
+    
+    # Reduce all resource prices by 60%
+    resources = db.query(Resource).all()
+    for resource in resources:
+        if hasattr(resource, 'price') and resource.price is not None:
+            resource.price = max(1, int(resource.price * 0.4))  # Reduce by 60%
+    
+    db.commit()

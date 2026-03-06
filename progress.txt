@@ -606,3 +606,8 @@
 - **Non-obvious Event Dispatching**: The earthquake event type required explicit handling of the `severity` enum in the `EventDispatcher` to prevent default fallback logic from treating all seismic events as minor tremors; this distinction was not documented in the base `Event` interface.
 - **Codebase Convention**: All new event types must implement the `HasTimestamp` trait and register a corresponding factory method in `EventRegistry` before being usable by the simulation engine; omitting the registry entry causes silent failures during event deserialization.
 - **Correction**: Initially placed the magnitude calculation inside the event constructor, which caused issues with time-based decay logic; moved the calculation to the `process()` method to ensure it respects the simulation's current `tick` state.
+
+--- Story 116: Add market_crash event type (attempts: 1, 2026-03-06 01:03) ---
+- **Non-obvious Event Propagation**: The `market_crash` event requires manually triggering a cascade of `asset_revaluation` events; it does not automatically propagate through the standard event bus, necessitating an explicit loop over all active portfolios.
+- **Codebase Convention for State Mutability**: New event handlers must follow the "snapshot-then-mutate" pattern (copying the current state to a temporary buffer before applying changes) to ensure the audit log captures the pre-event state accurately.
+- **Correction on Float Precision**: Initially used standard floating-point arithmetic for crash calculations, which caused minor discrepancies in the total market cap; corrected by switching to `Decimal` types for all financial aggregations to match the existing ledger precision.
