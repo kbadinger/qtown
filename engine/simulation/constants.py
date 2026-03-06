@@ -1,3 +1,5 @@
+# Drought to famine cascade threshold
+DROUGHT_FAMINE_THRESHOLD = 5
 """Simulation constants."""
 
 # Building types available in the simulation
@@ -53,3 +55,5 @@ RESOURCE_DEMAND = {"Food": 10, "Art": 20, "Books": 10}
 
 
 SATURATION_TICK_THRESHOLD = 10
+
+DROUGHT_FAMINE_THRESHOLD = 5

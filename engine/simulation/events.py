@@ -8,19 +8,52 @@ import random
 
 def trigger_drought(db: Session) -> None:
     """Trigger a drought event that reduces resource production."""
-    # Set drought active flag in WorldState
+    from engine.models import Event, WorldState
+    from engine.simulation.constants import DROUGHT_FAMINE_THRESHOLD
+    
+    # Get world state
     world_state = db.query(WorldState).first()
-    if world_state:
-        world_state.drought_active = 1
+    if not world_state:
+        world_state = WorldState(tick=0, day=1, time_of_day="morning", weather="clear")
+        db.add(world_state)
+        db.commit()
+    
+    current_tick = world_state.tick
+    
+    # Set drought active flag in WorldState
+    world_state.drought_active = 1
+    
+    # Check for prolonged drought (cascading to famine)
+    drought_events = db.query(Event).filter(
+        Event.event_type == "drought"
+    ).all()
+    
+    # Count drought events in the last DROUGHT_FAMINE_THRESHOLD ticks
+    recent_drought_count = sum(
+        1 for evt in drought_events 
+        if current_tick - evt.tick < DROUGHT_FAMINE_THRESHOLD
+    )
     
     # Create drought event
     drought_event = Event(
         event_type="drought",
         description="A severe drought has begun, reducing resource production by 50%",
-        tick=world_state.tick if world_state else 0,
+        tick=current_tick,
         severity="high"
     )
     db.add(drought_event)
+    
+    # Check if drought has lasted long enough to trigger famine
+    if recent_drought_count >= DROUGHT_FAMINE_THRESHOLD:
+        # Create famine event (cascading effect)
+        famine_event = Event(
+            event_type="famine",
+            description="Drought has cascaded into famine! NPC hunger increases by 15 per tick",
+            tick=current_tick,
+            severity="critical"
+        )
+        db.add(famine_event)
+    
     db.commit()
 
 

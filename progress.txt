@@ -621,3 +621,8 @@
 *   **Event Dispatching Logic**: It was non-obvious that `gold_rush` requires a separate `trigger` method in the `EventManager` to handle the dynamic duration, unlike static events that rely solely on the `tick` loop.
 *   **State Mutation Pattern**: The codebase consistently uses `EventContext` to pass mutable state between the event definition and the world, rather than relying on global state or direct world access within the event class.
 *   **Correction on Reward Calculation**: Initially, I hardcoded the gold multiplier; I corrected this to pull the `base_gold` and `multiplier` from the `EventConfig` to ensure it respects the difficulty scaling already present in the system.
+
+--- Story 119: Cascading: drought to famine (attempts: 1, 2026-03-06 07:31) ---
+- **Non-obvious dependency**: The `famine` state logic relies on a hidden `water_reserves` threshold that isn't explicitly checked in the drought handler; missing this caused the cascade to fail silently until the final assertion.
+- **Codebase pattern**: Event-driven state transitions in this module strictly follow the `Event -> Validator -> StateMutator -> Observer` chain; deviating from this order (e.g., mutating before validating) breaks the audit trail.
+- **Correction**: Initially treated `drought` and `famine` as independent flags, but corrected to a strict linear progression where `famine` can only be triggered if `drought` duration exceeds the configured `critical_days` window.

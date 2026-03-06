@@ -779,3 +779,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 12:03:41 UTC] story_start: Story 118: Add gold_rush event type
 [2026-03-06 12:12:29 UTC] WARN story_fail: Story 118 struggling — attempt 5/12
 Add gold_rush event type
+[2026-03-06 12:26:25 UTC] deploy_ok: Story 118 deployed: Healthy after 0.2s
+[2026-03-06 12:26:39 UTC] story_done: Story 118 complete: Add gold_rush event type
+[2026-03-06 12:26:40 UTC] story_start: Story 119: Cascading: drought to famine
