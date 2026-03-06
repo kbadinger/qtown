@@ -896,3 +896,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 14:23:36 UTC] deploy_ok: Story 151 deployed: Healthy after 0.1s
 [2026-03-06 14:23:42 UTC] story_done: Story 151 complete: Pagination on all list endpoints
 [2026-03-06 14:23:42 UTC] story_start: Story 152: Filtering support
+[2026-03-06 14:25:00 UTC] deploy_ok: Story 152 deployed: Healthy after 0.1s
+[2026-03-06 14:25:05 UTC] story_done: Story 152 complete: Filtering support
+[2026-03-06 14:25:05 UTC] story_start: Story 153: Sorting support

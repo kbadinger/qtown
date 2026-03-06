@@ -797,3 +797,8 @@
 - **Non-obvious filter composition**: The `filter` function expects a predicate that returns a boolean, but the initial implementation incorrectly passed the raw filter object; wrapping it in a dynamic `evaluate` helper was necessary to handle nested logic.
 - **Codebase convention**: Filtering logic is consistently separated from data retrieval; the repository layer provides raw streams, while the service layer applies `filter` chains before pagination, ensuring type safety at the boundary.
 - **Correction on null handling**: Initially assumed `null` fields would be ignored by the filter engine, but this caused crashes; added explicit `coalesce` checks in the predicate generator to treat missing values as empty strings.
+
+--- Story 153: Sorting support (attempts: 1, 2026-03-06 09:25) ---
+*   **Non-obvious sorting semantics**: The existing sort implementation relied on a custom comparator that treated `null` and `undefined` as distinct types rather than grouping them, requiring explicit handling to match the new "nulls-last" requirement without breaking legacy data.
+*   **Codebase pattern**: Sorting logic is consistently abstracted into a `SortStrategy` interface with factory methods in the `utils` folder, rather than being inline; adhering to this pattern ensured the new feature integrated cleanly with the existing pipeline.
+*   **Correction**: Initially applied the sort mutation directly on the input array, which caused side effects in the parent component; corrected this by cloning the array before processing to maintain immutability.
