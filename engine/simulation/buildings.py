@@ -701,3 +701,54 @@ def detect_resource_gaps(db: Session) -> list[dict]:
         })
     
     return gaps
+
+
+def recommend_construction(db: Session) -> dict:
+    """Recommend next building to construct based on resource gaps and population."""
+    from engine.models import Building, NPC, Resource, WorldState
+    
+    # Detect resource gaps
+    gaps = detect_resource_gaps(db)
+    
+    # Check population growth needs
+    npcs = db.query(NPC).filter_by(is_dead=0).all()
+    population = len(npcs)
+    
+    # Determine priority building
+    building_type = None
+    reason = None
+    priority = 1
+    
+    # Check for food gap first (highest priority)
+    if gaps and any(g.get('resource') == 'food' for g in gaps):
+        building_type = 'farm'
+        reason = 'Food shortage detected'
+        priority = 1
+    # Check for housing needs based on population
+    elif population > 50:
+        building_type = 'residential'
+        reason = 'Growing population needs housing'
+        priority = 2
+    # Default to something useful
+    else:
+        building_type = 'farm'
+        reason = 'Build farm for food production'
+        priority = 3
+    
+    # Get suggested placement
+    placement = suggest_building_placement(db, building_type)
+    
+    # Handle tuple vs dict return from suggest_building_placement
+    if isinstance(placement, tuple):
+        suggested_x, suggested_y = placement
+    else:
+        suggested_x = placement.get('x', 0)
+        suggested_y = placement.get('y', 0)
+    
+    return {
+        'building_type': building_type,
+        'reason': reason,
+        'priority': priority,
+        'suggested_x': suggested_x,
+        'suggested_y': suggested_y
+    }

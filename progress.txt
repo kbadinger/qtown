@@ -962,3 +962,8 @@
 - **Non-obvious constraint**: The "resource gap" logic wasn't just about current availability; it required projecting future demand based on pending queue depth, which wasn't immediately clear from the initial schema.
 - **Codebase pattern**: Discovered a consistent `ResourceAllocator` abstraction where all gap calculations must return a `GapReport` object containing both `deficit` and `recovery_time` fields, rather than simple boolean flags.
 - **Correction**: Initially calculated gaps using static thresholds, which caused false positives during peak load; corrected by switching to dynamic thresholds based on the last 15-minute rolling average.
+
+--- Story 183: Recommend construction (attempts: 1, 2026-03-06 17:42) ---
+- **Tricky/Non-obvious**: The `RecommendationEngine` relies on a cached dependency graph that must be manually invalidated when `ConstructionConfig` changes; failing to clear the cache causes stale recommendations even after config updates.
+- **Patterns/Conventions**: The codebase strictly separates "domain logic" (pure functions in `services/`) from "infrastructure" (database calls in `repositories/`), and all new recommendation strategies must implement the `IRecommendationStrategy` interface to be dynamically loaded.
+- **Mistakes & Corrections**: Initially, I passed the raw `ConstructionPlan` object directly to the strategy, causing serialization errors in the async worker; corrected by extracting only the required immutable fields into a DTO before processing.
