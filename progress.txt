@@ -652,3 +652,8 @@
 - **Character encoding consistency**: Discovered that explicitly setting `<meta charset="UTF-8">` is the modern standard; relying on the legacy `Content-Type` HTTP header alone is insufficient for local file testing.
 - **Viewport meta tag necessity**: Realized that without `<meta name="viewport" ...>`, mobile browsers default to a desktop-width rendering, breaking responsive layouts before any CSS is even applied.
 - **Correction on script placement**: Initially placed `<script>` tags in the `<head>` without `defer`, causing render-blocking; moved them to the end of `<body>` or added `defer` to ensure the DOM is parsed first.
+
+--- Story 125: Navigation bar (attempts: 1, 2026-03-06 08:29) ---
+- **Non-obvious state synchronization**: The navigation bar's active state relies on URL path matching rather than simple component props; failing to normalize the current path against the route definitions caused intermittent highlighting issues.
+- **Pattern discovery**: The codebase consistently uses a centralized `useNavigation` hook to manage both routing and UI state, avoiding direct `react-router` usage within presentational components.
+- **Correction made**: Initially attempted to handle mobile menu toggling via inline style changes, which broke the transition animation; corrected by switching to a CSS class-based toggle strategy managed by the hook to preserve the defined animation curves.
