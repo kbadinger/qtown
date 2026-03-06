@@ -5,16 +5,13 @@ from sqlalchemy.orm import Session
 from engine.auth import require_admin
 from engine.db import get_db
 
-router = APIRouter(tags=["costs"])
+router = APIRouter(prefix="/api/costs", tags=["costs"])
+
 templates = Jinja2Templates(directory="engine/templates")
 
-@router_page.get("")
-def cost_page(request: Request, db: Session = Depends(get_db)):
-    return templates.TemplateResponse("costs.html", {"request": request})
-
-@router.get("/")
+@router.get("")
 def get_costs(db: Session = Depends(get_db)):
-    """Return cost data for the comparison table."""
+    """Return all cost records for the comparison table."""
     from engine.models import Cost
     costs = db.query(Cost).order_by(Cost.created_at.desc()).all()
     return [
@@ -28,3 +25,13 @@ def get_costs(db: Session = Depends(get_db)):
         }
         for c in costs
     ]
+
+@router.get("/page")
+def costs_page(request: Request, db: Session = Depends(get_db)):
+    """Render the cost comparison page."""
+    return templates.TemplateResponse("costs.html", {"request": request})
+
+
+@router_page.get("")
+def cost_page(request: Request, db: Session = Depends(get_db)):
+    return templates.TemplateResponse("costs.html", {"request": request})
