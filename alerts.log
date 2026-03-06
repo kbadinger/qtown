@@ -902,3 +902,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 14:26:22 UTC] deploy_ok: Story 153 deployed: Healthy after 0.1s
 [2026-03-06 14:26:27 UTC] story_done: Story 153 complete: Sorting support
 [2026-03-06 14:26:28 UTC] story_start: Story 154: Search support
+[2026-03-06 14:27:42 UTC] deploy_ok: Story 154 deployed: Healthy after 0.1s
+[2026-03-06 14:27:47 UTC] story_done: Story 154 complete: Search support
+[2026-03-06 14:27:48 UTC] story_start: Story 155: Bulk operations
