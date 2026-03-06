@@ -581,3 +581,8 @@
 - **Tricky/Non-obvious**: The flood event logic required a distinct `severity_threshold` calculation that differed from standard precipitation events, necessitating a separate validation branch in the `EventProcessor` rather than reusing the generic threshold logic.
 - **Patterns/Conventions**: The codebase strictly enforces a "command object" pattern for event creation; new event types must implement the `EventCommand` interface and register their factory in the central `EventRegistry` to be discoverable by the scheduler.
 - **Mistakes/Corrections**: Initially attempted to inject the flood-specific logic directly into the base `Event` class, which violated the Open/Closed Principle; corrected by extracting the logic into a dedicated `FloodEvent` subclass and updating the factory registration.
+
+--- Story 111: Add fire event type (attempts: 1, 2026-03-05 23:24) ---
+- **Event Dispatching Nuance**: It was non-obvious that `fire` events require a distinct `EventType` enum value rather than reusing existing generic event types; the dispatcher strictly checks the enum for routing, causing silent failures if the type is missing.
+- **Repository Pattern Consistency**: The codebase strictly enforces a "Command-Query Separation" pattern where event creation happens in the service layer, but the actual persistence and dispatching are delegated entirely to the `EventRepository`, which must be injected as an interface.
+- **Correction on Event Sourcing**: Initially, I attempted to mutate the aggregate state before emitting the event, which broke the audit trail; I corrected this by ensuring the event is constructed first, then applied to the state, guaranteeing the event is the single source of truth for state changes.

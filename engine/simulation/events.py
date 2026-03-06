@@ -43,3 +43,30 @@ def trigger_flood(db: Session) -> None:
         building.capacity = max(1, building.capacity // 2)
     
     db.commit()
+
+
+def trigger_fire(db: Session) -> None:
+    """Trigger a fire event that destroys a random building."""
+    from engine.models import Building
+    import random
+    
+    # Get world state for tick
+    world_state = db.query(WorldState).first()
+    
+    # Select a random building to destroy
+    buildings = db.query(Building).all()
+    if not buildings:
+        return  # No buildings to destroy
+    
+    affected_building = random.choice(buildings)
+    
+    # Create fire event
+    fire_event = Event(
+        event_type="fire",
+        description=f"A fire has destroyed {affected_building.name}",
+        tick=world_state.tick if world_state else 0,
+        severity="high",
+        affected_building_id=affected_building.id
+    )
+    db.add(fire_event)
+    db.commit()
