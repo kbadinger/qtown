@@ -722,3 +722,8 @@
 - **Form Validation Edge Case**: Handling the "submit" button state (disabled/loading) was non-obvious; the initial implementation didn't account for rapid double-clicks, requiring a `useEffect` guard to prevent duplicate API calls.
 - **Codebase Convention**: Discovered that this project enforces a strict "container/presenter" pattern where all form logic lives in the container component, while the view component only handles UI rendering and `onChange` delegation.
 - **Correction on Error Handling**: Initially returned generic error messages from the API; corrected to map specific HTTP status codes to user-friendly messages in the `handleSubmit` reducer before displaying them in the UI.
+
+--- Story 139: Feature list with vote buttons (attempts: 1, 2026-03-06 08:49) ---
+*   **State Synchronization**: The trickiest part was ensuring the vote count updates optimistically in the UI while handling the asynchronous API response; I initially forgot to revert the state on failure, which required adding a rollback mechanism in the error handler.
+*   **Component Composition**: Discovered the codebase prefers lifting shared logic (like the `useVote` hook) into a separate custom hook rather than duplicating `fetch` calls inside multiple components, ensuring consistent error handling and loading states.
+*   **Optimistic Updates**: Initially implemented a "loading" spinner that blocked interaction, but corrected it to allow immediate visual feedback (optimistic update) to improve perceived performance, only showing a spinner during the actual network request.
