@@ -897,3 +897,8 @@
 - **Tricky**: Calculating the exact pixel width for progress bars required handling edge cases where the timeline duration was zero or negative, which initially caused division-by-zero errors in the rendering loop.
 - **Patterns**: The codebase consistently separates data transformation (converting raw dates to chart coordinates) from the SVG rendering logic, ensuring the view layer remains pure and testable.
 - **Correction**: I initially used `innerHTML` to inject dynamic SVG elements, which stripped out event listeners; switching to `document.createElementNS` with proper namespace handling preserved interactivity.
+
+--- Story 169: Build progress timeline chart (attempts: 2, 2026-03-06 14:25) ---
+*   **Non-Obvious Date Handling**: The timeline required converting raw ISO strings to local time objects before rendering; failing to account for the timezone offset caused misalignment between the chart markers and the actual calendar days.
+*   **Codebase Pattern**: Discovered a strict separation of concerns where data transformation (normalizing progress percentages) happens in a dedicated `useTimelineData` hook, while the component only handles rendering and user interaction.
+*   **Correction**: Initially hardcoded the color scale for milestones, which broke when the number of phases exceeded the palette; corrected by implementing a dynamic color generator based on the `theme` config object to ensure scalability.
