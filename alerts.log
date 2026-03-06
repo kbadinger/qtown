@@ -987,3 +987,4 @@ Ralph stopped — needs human debugging
 [2026-03-06 19:28:10 UTC] deploy_ok: Story 170 deployed: Healthy after 0.1s
 [2026-03-06 19:28:14 UTC] story_done: Story 170 complete: GET /api/metrics endpoint
 [2026-03-06 19:28:15 UTC] story_start: Story 171: Propose stories endpoint
+[2026-03-06 19:28:28 UTC] WARN deploy_fail: Story 171 deploy failed — starting fix cycle
