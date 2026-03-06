@@ -824,3 +824,6 @@ Add gold_rush event type
 [2026-03-06 13:41:08 UTC] deploy_ok: Story 132 deployed: Healthy after 0.1s
 [2026-03-06 13:41:13 UTC] story_done: Story 132 complete: Building grid page
 [2026-03-06 13:41:13 UTC] story_start: Story 133: Economy dashboard
+[2026-03-06 13:42:31 UTC] deploy_ok: Story 133 deployed: Healthy after 0.1s
+[2026-03-06 13:42:36 UTC] story_done: Story 133 complete: Economy dashboard
+[2026-03-06 13:42:36 UTC] story_start: Story 134: Population charts

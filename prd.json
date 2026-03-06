@@ -2409,7 +2409,7 @@
         "htmx"
       ],
       "priority": 133,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
@@ -2427,8 +2427,8 @@
         "htmx"
       ],
       "priority": 134,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "135",

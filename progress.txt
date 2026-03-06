@@ -697,3 +697,8 @@
 *   **Non-obvious data aggregation**: The dashboard's "projected revenue" metric required a custom SQL window function to handle fiscal year boundaries correctly; standard `GROUP BY` logic failed when transactions spanned two fiscal periods.
 *   **Codebase convention**: This project enforces a strict separation where all currency formatting and localization logic must reside in the `utils/currency` module, never inside React components or API response handlers.
 *   **Correction on caching**: Initially, I implemented client-side caching for the dashboard widget, which caused stale data issues during high-frequency updates; I corrected this by switching to a server-side cache with a 30-second TTL and `stale-while-revalidate` headers.
+
+--- Story 134: Population charts (attempts: 1, 2026-03-06 08:42) ---
+*   **Non-obvious state synchronization**: Realized that chart data updates must trigger a re-render of the legend *and* the tooltip simultaneously; relying solely on the chart library's internal event loop caused a 200ms lag in tooltip updates during rapid filtering.
+*   **Convention for data normalization**: Discovered the codebase enforces a strict "flat array" structure for population data before passing it to the visualization component, requiring a dedicated `transformPopulationData` utility to handle nested regional hierarchies.
+*   **Corrected axis scaling bug**: Initially hardcoded the Y-axis max value, which broke when datasets with different scales were compared; fixed by switching to `auto` scaling with a dynamic `paddingTop` to ensure the highest bar is never clipped.
