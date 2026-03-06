@@ -2234,7 +2234,7 @@
         "simulation"
       ],
       "priority": 123,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
@@ -2251,8 +2251,8 @@
         "htmx"
       ],
       "priority": 124,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "125",

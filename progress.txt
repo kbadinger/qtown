@@ -646,3 +646,9 @@
 - **Tricky**: The "Cascading" logic for the raid event required careful sequencing of state transitions; failing to clear the `active_raid` flag before triggering the `justice` reward caused a race condition where the reward was skipped.
 - **Patterns**: This codebase consistently uses a `Result`-based error propagation pattern for domain events, avoiding global error handlers in favor of local recovery within the event chain.
 - **Correction**: Initially attempted to mutate the `bandit` entity directly during the raid resolution; corrected to use immutable state updates and a dedicated `RaidResolution` event to maintain audit trail integrity.
+
+--- Story 124: Base HTML template (attempts: 1, 2026-03-06 08:28) ---
+- **Non-obvious HTML5 boilerplate requirements**: Remembered that `<!DOCTYPE html>` is mandatory for standards mode, and the `lang` attribute on `<html>` is critical for accessibility and SEO, not just a formality.
+- **Character encoding consistency**: Discovered that explicitly setting `<meta charset="UTF-8">` is the modern standard; relying on the legacy `Content-Type` HTTP header alone is insufficient for local file testing.
+- **Viewport meta tag necessity**: Realized that without `<meta name="viewport" ...>`, mobile browsers default to a desktop-width rendering, breaking responsive layouts before any CSS is even applied.
+- **Correction on script placement**: Initially placed `<script>` tags in the `<head>` without `defer`, causing render-blocking; moved them to the end of `<body>` or added `defer` to ensure the DOM is parsed first.
