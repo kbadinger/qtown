@@ -1,0 +1,33 @@
+The prompt says "Output ONLY new or changed code".
+If I output the whole file, it's "changed code".
+
+Let's stick to the `FILE` for `world.py` and `PATCH` for `models.py`.
+
+One more thing: The `engine/models.py` patch.
+I need to add `last_modified` to `Tile`.
+I will use `UPDATE CLASS: Tile`.
+
+Final check on `engine/routers/world.py`:
+- Imports: `Response` added.
+- `router` prefix changed to `/api`.
+- `get_world_state` added.
+- `tick` function preserved (with `Depends(require_admin)`).
+
+The `tick` function in the prompt's `world.py` is:
+```python
+@router.post("/")
+def tick(
+    db: Session = Depends(get_db),
+    _admin: str = Depends(require_admin),
+):
+    """Process one simulation tick.
+    
+    Requires admin authentication. Increments the world tick counter
+    and returns the new tick number.
+    """
+    tick_num = process_tick(db)
+    return {"tick": tick_num, "status": "ok"}
+```
+I will keep this exactly as is, but change the route to `/tick` because of the prefix change.
+
+Let's go.

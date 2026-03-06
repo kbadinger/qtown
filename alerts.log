@@ -926,3 +926,4 @@ Ralph stopped — needs human debugging
 [2026-03-06 14:37:13 UTC] deploy_ok: Story 161 deployed: Healthy after 0.1s
 [2026-03-06 14:37:18 UTC] story_done: Story 161 complete: DB indexes on hot queries
 [2026-03-06 14:37:19 UTC] story_start: Story 162: Query optimization for /api/world
+[2026-03-06 14:37:32 UTC] WARN deploy_fail: Story 162 deploy failed — starting fix cycle
