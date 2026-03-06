@@ -677,3 +677,8 @@
 *   **Non-obvious state synchronization**: The detail page requires explicit handling of the "optimistic UI" update when a user toggles a status; failing to sync the local component state with the global store immediately caused a brief visual flicker before the server response.
 *   **Codebase convention for data fetching**: This project enforces a strict pattern where all API calls for detail views must use the `useAsync` hook with a `staleTime` of 0 to prevent caching stale data, rather than relying on default React Query behavior.
 *   **Correction on error boundaries**: Initially, I wrapped the entire page in a generic error boundary, which hid specific 404 states; I corrected this by moving the boundary down to the specific data-fetching component and implementing a dedicated `NotFound` fallback UI.
+
+--- Story 130: NPC list page (attempts: 1, 2026-03-06 08:37) ---
+- **Non-obvious React Query caching**: The `useQuery` hook requires explicit `staleTime` configuration to prevent the NPC list from refetching on every route change, as the default behavior treats list data as immediately stale.
+- **Codebase convention for table rendering**: The project enforces a strict separation where `Table` components only handle layout, while `useTableData` hooks manage all sorting, filtering, and pagination logic before passing clean arrays down.
+- **Correction on ID handling**: Initially attempted to use NPC names as unique keys for list rendering, which caused hydration mismatches; corrected to strictly use the database-generated `uuid` for React keys.

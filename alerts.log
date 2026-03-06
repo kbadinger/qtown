@@ -812,3 +812,6 @@ Add gold_rush event type
 [2026-03-06 13:36:09 UTC] deploy_ok: Story 128 deployed: Healthy after 0.1s
 [2026-03-06 13:36:14 UTC] story_done: Story 128 complete: Buildings list page
 [2026-03-06 13:36:15 UTC] story_start: Story 129: Building detail page
+[2026-03-06 13:37:33 UTC] deploy_ok: Story 129 deployed: Healthy after 0.1s
+[2026-03-06 13:37:38 UTC] story_done: Story 129 complete: Building detail page
+[2026-03-06 13:37:38 UTC] story_start: Story 130: NPC list page
