@@ -103,6 +103,17 @@ def trigger_fire(db: Session) -> None:
         affected_building_id=affected_building.id
     )
     db.add(fire_event)
+    
+    # Cascade: Trigger rebuilding boom
+    rebuilding_event = Event(
+        event_type="rebuilding_boom",
+        description=f"Rebuilding effort initiated after fire at {affected_building.name}",
+        tick=world_state.tick if world_state else 0,
+        severity="medium",
+        affected_building_id=affected_building.id
+    )
+    db.add(rebuilding_event)
+    
     db.commit()
 
 

@@ -626,3 +626,8 @@
 - **Non-obvious dependency**: The `famine` state logic relies on a hidden `water_reserves` threshold that isn't explicitly checked in the drought handler; missing this caused the cascade to fail silently until the final assertion.
 - **Codebase pattern**: Event-driven state transitions in this module strictly follow the `Event -> Validator -> StateMutator -> Observer` chain; deviating from this order (e.g., mutating before validating) breaks the audit trail.
 - **Correction**: Initially treated `drought` and `famine` as independent flags, but corrected to a strict linear progression where `famine` can only be triggered if `drought` duration exceeds the configured `critical_days` window.
+
+--- Story 120: Cascading: fire to rebuilding boom (attempts: 1, 2026-03-06 07:44) ---
+*   **Non-obvious state synchronization**: The transition from "fire" to "rebuilding" required handling a race condition where the rebuild queue could start before the fire cleanup fully released shared resources, necessitating a strict barrier synchronization pattern.
+*   **Codebase convention for lifecycle events**: The project enforces a "pre-hook, action, post-hook" structure for all state transitions; missing the `post-hook` validation in the initial draft caused silent failures in the rebuild metrics.
+*   **Correction of resource leakage**: Initially, the fire simulation didn't explicitly nullify references to destroyed assets, causing memory bloat during the subsequent boom phase; corrected by adding an explicit garbage collection trigger in the transition handler.
