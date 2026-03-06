@@ -1015,3 +1015,4 @@ Ralph stopped — needs human debugging
 [2026-03-06 21:33:22 UTC] deploy_ok: Story 177 deployed: Healthy after 0.1s
 [2026-03-06 21:33:44 UTC] story_done: Story 177 complete: NPC memory - favorite buildings
 [2026-03-06 21:33:45 UTC] story_start: Story 178: NPC memory - avoid dangerous areas
+[2026-03-06 21:41:48 UTC] WARN deploy_fail: Story 178 deploy failed — starting fix cycle
