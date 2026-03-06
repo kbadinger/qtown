@@ -752,3 +752,8 @@
 - **Non-obvious state synchronization**: The `About` component relies on a global theme context that isn't explicitly passed down; forgetting to wrap the component in the provider caused the dark mode toggle to fail silently.
 - **Codebase convention for content**: Static text is strictly separated into `content/` markdown files rather than hardcoded strings, requiring the use of the `mdx` loader to render dynamic components within the text.
 - **Correction on SEO metadata**: Initially placed `next/head` directly in the component body, which caused hydration mismatches; corrected by moving metadata definitions to the `generateMetadata` function in the route handler.
+
+--- Story 144: API docs page (attempts: 1, 2026-03-06 09:10) ---
+*   **Tricky Aspect**: Determining the correct routing strategy for versioned API docs was non-obvious; the existing `docs` route was hardcoded, requiring a refactor to support dynamic version slugs without breaking legacy links.
+*   **Pattern Discovered**: The codebase consistently uses a "content-first" architecture where markdown files drive both the UI rendering and the OpenAPI schema generation, meaning changes to the UI often require updating the source markdown rather than the view layer.
+*   **Mistake & Correction**: Initially attempted to parse the OpenAPI spec at runtime for every page load, causing significant latency; corrected by pre-compiling the schema into a static JSON bundle during the build step and caching it in the client.

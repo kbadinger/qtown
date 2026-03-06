@@ -868,3 +868,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 13:55:40 UTC] stop: Ralph offline — 142/215 stories complete
 [2026-03-06 14:08:47 UTC] start: Ralph online — 142/215 stories complete
 [2026-03-06 14:08:47 UTC] story_start: Story 143: About page
+[2026-03-06 14:10:20 UTC] deploy_ok: Story 143 deployed: Healthy after 0.1s
+[2026-03-06 14:10:33 UTC] story_done: Story 143 complete: About page
+[2026-03-06 14:10:33 UTC] story_start: Story 144: API docs page

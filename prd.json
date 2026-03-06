@@ -2591,7 +2591,7 @@
         "htmx"
       ],
       "priority": 143,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
@@ -2609,8 +2609,8 @@
         "htmx"
       ],
       "priority": 144,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "145",
