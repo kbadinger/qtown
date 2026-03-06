@@ -755,3 +755,41 @@ def get_friends(db: Session, npc_id: int) -> list[int]:
     ).all()
     
     return [rel.target_npc_id for rel in relationships]
+
+
+def learn(db: Session, npc_id: int, lesson: str) -> None:
+    """Store a lesson in the NPC's experience field.
+    
+    Args:
+        db: Database session
+        npc_id: ID of the NPC to update
+        lesson: Text description of the lesson learned
+    """
+    import json
+    from engine.models import NPC
+    
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return
+    
+    # Load existing experience
+    experience = npc.experience
+    if isinstance(experience, str):
+        try:
+            experience_list = json.loads(experience)
+        except (json.JSONDecodeError, TypeError):
+            experience_list = []
+    else:
+        experience_list = []
+    
+    # Ensure it's a list
+    if not isinstance(experience_list, list):
+        experience_list = []
+    
+    # Add the new lesson if not already present
+    if lesson not in experience_list:
+        experience_list.append(lesson)
+    
+    # Save back to database
+    npc.experience = json.dumps(experience_list)
+    db.commit()

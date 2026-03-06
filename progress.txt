@@ -947,3 +947,8 @@
 - **Tricky**: Determining the exact scope of "friend" memory was non-obvious; the system requires explicit relationship tagging rather than inferring it from mere proximity or interaction frequency.
 - **Pattern**: The codebase consistently uses a centralized `MemoryRegistry` singleton for all NPC state persistence, avoiding direct database calls within individual NPC logic classes.
 - **Correction**: Initially attempted to store full conversation transcripts in memory, which caused serialization bloat; corrected by storing only a summarized "relationship score" and key event IDs.
+
+--- Story 180: NPC learning from experience (attempts: 1, 2026-03-06 17:12) ---
+- **Non-obvious state mutation**: The NPC's "experience" wasn't a simple flag but a weighted probability distribution updated via a recursive decay function, requiring careful handling of floating-point precision to prevent drift.
+- **Convention for persistence**: The codebase strictly separates "runtime memory" (ephemeral) from "learned traits" (persistent) using a `MemoryBuffer` class that only flushes to disk after a `StabilityThreshold` is met.
+- **Correction on initialization**: Initially, I reset the learning rate to zero on reload, causing the NPC to "forget" past lessons; corrected by ensuring the `LearningRate` is derived from the total `ExperienceCount` rather than being a static config value.
