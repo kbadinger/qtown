@@ -822,3 +822,8 @@
 - **Tricky**: Determining the exact hierarchy of error propagation between the UI layer and the API client was non-obvious; some errors were swallowed by the global handler before reaching the component-level logic.
 - **Pattern**: The codebase consistently uses a centralized `ErrorMapper` service to translate raw HTTP status codes into user-friendly messages, rather than hardcoding strings in components.
 - **Correction**: Initially attempted to add new error messages directly in the view files, which broke the existing translation system; corrected by adding entries to the `ErrorMapper` and updating the locale files instead.
+
+--- Story 158: Custom 404 page (attempts: 1, 2026-03-06 09:31) ---
+- **Tricky**: The non-obvious requirement was ensuring the 404 page itself returns a `404` status code rather than `200` to prevent search engines from indexing it as a valid page, requiring explicit status code handling in the route definition.
+- **Patterns**: The codebase consistently separates layout logic from content components, using a dedicated `Layout` wrapper for the 404 page to maintain consistent navigation and footer styling without duplicating code.
+- **Mistakes**: Initially, I hardcoded the error message text directly in the component; I corrected this by extracting it into the shared `i18n` translation file to align with the project's localization strategy.

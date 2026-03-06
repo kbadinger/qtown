@@ -911,3 +911,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 14:30:08 UTC] deploy_ok: Story 156 deployed: Healthy after 0.1s
 [2026-03-06 14:30:13 UTC] story_done: Story 156 complete: Input validation on all endpoints
 [2026-03-06 14:30:13 UTC] story_start: Story 157: Error message improvements
+[2026-03-06 14:31:31 UTC] deploy_ok: Story 157 deployed: Healthy after 0.1s
+[2026-03-06 14:31:36 UTC] story_done: Story 157 complete: Error message improvements
+[2026-03-06 14:31:37 UTC] story_start: Story 158: Custom 404 page
