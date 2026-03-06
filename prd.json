@@ -3,7 +3,7 @@
     {
       "id": "001",
       "title": "Initialize 50x50 grid",
-      "description": "Create init_grid(db) in engine/simulation.py that creates 2500 Tile rows with x=0..49, y=0..49, terrain='grass'. Must be idempotent â€” calling twice should not duplicate rows. Uses the Tile model from engine/models.py.",
+      "description": "Create init_grid(db) in engine/simulation.py that creates 2500 Tile rows with x=0..49, y=0..49, terrain='grass'. Must be idempotent — calling twice should not duplicate rows. Uses the Tile model from engine/models.py.",
       "acceptance": "Test creates a fresh DB, calls init_grid twice, asserts exactly 2500 Tile rows exist. Asserts tile at (0,0) and (49,49) both have terrain='grass'.",
       "test_file": "tests/test_grid.py",
       "context_files": [
@@ -1968,20 +1968,21 @@
     {
       "id": "109",
       "title": "Add drought event type",
-      "description": "Create trigger_drought(db) in engine/simulation.py. Drought event reduces farm output by 75% for 10 ticks. Water resource depleted. Triggers when weather is 'clear' for 20+ consecutive ticks. Log Event with event_type='drought' and appropriate severity. Check trigger conditions in process_tick.",
+      "description": "Create trigger_drought(db) in engine/simulation/events.py. It must: (1) set WorldState.drought_active = 1 (add this Integer column, default=0, to the WorldState model if missing), (2) create an Event row with event_type=\"drought\" and severity=\"high\". Then UPDATE produce_resources in engine/simulation/production.py: at the top of the function, check db.query(WorldState).first().drought_active — if truthy, halve base_production (set it to 5 instead of 10). Do NOT rewrite produce_resources from scratch — only add the drought check at the top. Do NOT modify engine/simulation/__init__.py — new functions in events.py are auto-exported.",
       "acceptance": "Test: drought triggers under correct conditions. Test: effects apply correctly. Test: Event row created with type='drought'. Test: event ends after duration.",
       "test_file": "tests/test_events.py",
       "context_files": [
         "engine/models.py",
         "engine/simulation/events.py",
+        "engine/simulation/production.py",
         "engine/simulation/constants.py"
       ],
       "tags": [
         "simulation"
       ],
       "priority": 109,
-      "status": "failed",
-      "attempts": 1
+      "status": "pending",
+      "attempts": 0
     },
     {
       "id": "110",
@@ -2577,7 +2578,7 @@
     {
       "id": "143",
       "title": "About page",
-      "description": "Add /about page explaining Qwen Town â€” what it is, how it works, the tech stack, link to GitHub.",
+      "description": "Add /about page explaining Qwen Town — what it is, how it works, the tech stack, link to GitHub.",
       "acceptance": "Test: GET /about returns 200 with project description. Test: page contains 'Qwen Town'. Test: technologies mentioned.",
       "test_file": "tests/test_api.py",
       "context_files": [
