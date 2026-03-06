@@ -59,6 +59,7 @@ class WorldState(Base):
     tax_rate = Column(Float, default=0.10)
     drought_active = Column(Integer, default=0)
     gold_rush_active = Column(Integer, default=0)
+    infrastructure_score = Column(Float, default=0.0)
     created_at = Column(DateTime, default=_utcnow)
 
 

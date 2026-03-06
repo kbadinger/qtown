@@ -972,3 +972,8 @@
 - **Non-obvious coupling**: The zoning logic was tightly coupled with the map rendering engine; I initially tried to decouple them by passing raw coordinates, but realized the engine expects pre-validated zone objects to handle collision boundaries efficiently.
 - **Convention discovery**: This codebase consistently uses a "Strategy" pattern for zone types (e.g., `Residential`, `Industrial`), where each zone implements a `calculateTax()` and `validateZoning()` interface rather than using a large `switch` statement.
 - **Correction made**: I initially calculated zone overlap using simple bounding boxes, which failed for diagonal adjacencies; I corrected this by switching to the existing `SpatialIndex` utility that handles polygon intersection checks.
+
+--- Story 185: Infrastructure scoring (attempts: 1, 2026-03-06 18:04) ---
+- **Non-obvious coupling**: The scoring logic was tightly coupled to specific infrastructure providers via hardcoded thresholds; refactoring required introducing a provider-agnostic interface to handle dynamic rule evaluation.
+- **Convention discovery**: The codebase consistently uses a "command-query separation" pattern where scoring functions return immutable data structures, while side effects (like alerting) are handled by separate event listeners.
+- **Correction made**: Initially attempted to cache scores in memory for performance, but realized this violated the idempotency requirement for re-scoring; switched to a write-through cache with explicit invalidation triggers instead.

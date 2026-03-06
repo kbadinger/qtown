@@ -770,3 +770,57 @@ def zone_grid(db: Session) -> None:
             tile.zone = "civic"
     
     db.commit()
+
+
+def calculate_infrastructure_score(db: Session) -> float:
+    """Calculate infrastructure score 0-100 based on:
+    - Building diversity (25pts)
+    - Resource coverage (25pts)
+    - NPC housing rate (25pts)
+    - Defense coverage (25pts)
+    """
+    from sqlalchemy.orm import Session
+    from engine.models import Building, NPC, Resource, WorldState
+    from sqlalchemy import func
+    
+    score = 0.0
+    
+    # 1. Building diversity (25pts)
+    # Count unique building types
+    building_types = db.query(func.distinct(Building.building_type)).all()
+    unique_types = len(building_types)
+    # Max 10 unique types for full score
+    diversity_score = min(unique_types / 10.0, 1.0) * 25
+    score += diversity_score
+    
+    # 2. Resource coverage (25pts)
+    # Check if essential resources are present with quantity > 0
+    resources = db.query(Resource).all()
+    essential_resources = ["food", "wood", "stone", "metal"]
+    covered_resources = sum(1 for r in resources if r.name in essential_resources and r.quantity > 0)
+    resource_score = (covered_resources / len(essential_resources)) * 25
+    score += resource_score
+    
+    # 3. NPC housing rate (25pts)
+    # Percentage of living NPCs with a home building
+    total_npcs = db.query(NPC).filter(NPC.is_dead == 0).count()
+    housed_npcs = db.query(NPC).filter(NPC.is_dead == 0, NPC.home_building_id.isnot(None)).count()
+    housing_rate = housed_npcs / total_npcs if total_npcs > 0 else 0
+    housing_score = housing_rate * 25
+    score += housing_score
+    
+    # 4. Defense coverage (25pts)
+    # Count defensive buildings (guard towers, walls, gates, watchtowers)
+    defense_types = ["guard_tower", "wall", "gate", "watchtower"]
+    defense_buildings = db.query(Building).filter(Building.building_type.in_(defense_types)).count()
+    # Max 4 defense buildings for full score
+    defense_score = min(defense_buildings / 4.0, 1.0) * 25
+    score += defense_score
+    
+    # Store in WorldState
+    world_state = db.query(WorldState).first()
+    if world_state:
+        world_state.infrastructure_score = score
+        db.commit()
+    
+    return score

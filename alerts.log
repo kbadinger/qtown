@@ -1035,3 +1035,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 22:44:04 UTC] deploy_ok: Story 183 deploy fixed on retry
 [2026-03-06 22:44:16 UTC] story_done: Story 183 complete: Recommend construction
 [2026-03-06 22:44:16 UTC] story_start: Story 184: Zoning system
+[2026-03-06 22:53:45 UTC] deploy_ok: Story 184 deployed: Healthy after 0.1s
+[2026-03-06 22:53:56 UTC] story_done: Story 184 complete: Zoning system
+[2026-03-06 22:53:56 UTC] story_start: Story 185: Infrastructure scoring
