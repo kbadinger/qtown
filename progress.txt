@@ -767,3 +767,8 @@
 - **Non-obvious dependency**: The simulation loop's timing accuracy relied on `performance.now()` rather than `Date.now()`, and failing to account for variable frame rates caused the physics engine to drift when the tab was inactive.
 - **Codebase pattern**: The project consistently uses a centralized `GameClock` singleton to manage delta time, rather than passing `dt` through individual component constructors, ensuring all systems share a synchronized time source.
 - **Correction**: Initially, I applied the speed multiplier directly to the delta time, which broke the fixed-step physics integration; I corrected this by scaling the accumulator threshold instead, preserving the fixed-step logic while allowing variable simulation speeds.
+
+--- Story 147: Manual tick trigger UI (attempts: 1, 2026-03-06 09:16) ---
+*   **Non-obvious Timing**: The manual tick trigger required explicit `requestAnimationFrame` synchronization to avoid race conditions with the auto-tick loop; simply calling the logic function directly caused state desyncs.
+*   **Event Propagation Pattern**: Discovered the codebase convention of using a custom `TickEvent` class that bubbles up to a central `GameLoop` observer, rather than passing callbacks directly to UI components.
+*   **Correction on State Mutation**: Initially mutated the game state directly in the UI handler; corrected this by dispatching an immutable action to the store to ensure the UI re-rendered correctly and history tracking remained intact.

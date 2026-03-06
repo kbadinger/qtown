@@ -878,3 +878,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 14:14:31 UTC] deploy_ok: Story 145 deployed: Healthy after 0.1s
 [2026-03-06 14:14:36 UTC] story_done: Story 145 complete: Changelog page
 [2026-03-06 14:14:37 UTC] story_start: Story 146: Simulation speed control
+[2026-03-06 14:15:54 UTC] deploy_ok: Story 146 deployed: Healthy after 0.1s
+[2026-03-06 14:15:59 UTC] story_done: Story 146 complete: Simulation speed control
+[2026-03-06 14:16:00 UTC] story_start: Story 147: Manual tick trigger UI

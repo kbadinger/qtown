@@ -2644,7 +2644,7 @@
         "api"
       ],
       "priority": 146,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
@@ -2661,8 +2661,8 @@
         "api"
       ],
       "priority": 147,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "148",
