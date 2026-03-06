@@ -727,3 +727,8 @@
 *   **State Synchronization**: The trickiest part was ensuring the vote count updates optimistically in the UI while handling the asynchronous API response; I initially forgot to revert the state on failure, which required adding a rollback mechanism in the error handler.
 *   **Component Composition**: Discovered the codebase prefers lifting shared logic (like the `useVote` hook) into a separate custom hook rather than duplicating `fetch` calls inside multiple components, ensuring consistent error handling and loading states.
 *   **Optimistic Updates**: Initially implemented a "loading" spinner that blocked interaction, but corrected it to allow immediate visual feedback (optimistic update) to improve perceived performance, only showing a spinner during the actual network request.
+
+--- Story 140: Admin panel (attempts: 1, 2026-03-06 08:50) ---
+- **Role-Based Access Control (RBAC) Granularity**: Implementing permission checks at the controller level was trickier than expected; I initially relied on simple boolean flags but had to refactor to a middleware-based approach to cleanly separate authorization logic from business rules.
+- **Consistent Error Handling Pattern**: Discovered that this codebase strictly uses a centralized `ApiResponse` wrapper for all admin endpoints, ensuring uniform JSON structure and status codes across the API, which simplifies frontend consumption.
+- **Over-Engineering Data Fetching**: Initially attempted to load all user data into memory for the dashboard summary, causing performance bottlenecks; corrected this by switching to aggregated database queries with proper indexing to handle larger datasets efficiently.
