@@ -1981,13 +1981,13 @@
         "simulation"
       ],
       "priority": 109,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
       "id": "110",
       "title": "Add flood event type",
-      "description": "Create trigger_flood(db) in engine/simulation.py. Flood event damages buildings near water (y < 10). Destroys 50% of stored food. Triggers during heavy rain lasting 10+ ticks. Log Event with event_type='flood' and appropriate severity. Check trigger conditions in process_tick.",
+      "description": "Create trigger_flood(db) in engine/simulation/events.py. The function must: 1) Create an Event with event_type=\"flood\" and severity=\"high\". 2) Damage buildings by reducing their capacity (e.g. capacity = max(1, capacity // 2)) -- damage ALL buildings, do NOT filter by y coordinate. 3) Optionally destroy stored food. The test checks that at least one building has capacity < 10 after the flood. IMPORTANT: Do NOT filter buildings by position -- damage all of them.",
       "acceptance": "Test: flood triggers under correct conditions. Test: effects apply correctly. Test: Event row created with type='flood'. Test: event ends after duration.",
       "test_file": "tests/test_events.py",
       "context_files": [

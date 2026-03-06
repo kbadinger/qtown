@@ -2,8 +2,9 @@
 
 
 def _setup_world(db):
-    from engine.simulation import init_grid, seed_buildings, seed_npcs
+    from engine.simulation import init_world_state, init_grid, seed_buildings, seed_npcs
 
+    init_world_state(db)
     init_grid(db)
     seed_buildings(db)
     seed_npcs(db)
