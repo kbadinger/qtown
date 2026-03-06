@@ -867,3 +867,8 @@
 - **Non-obvious permission scoping**: Initially assumed `GET /api/costs` required full admin access, but discovered the codebase enforces row-level security based on the `organization_id` in the JWT, requiring explicit filtering in the query builder rather than relying on middleware alone.
 - **Consistent error handling pattern**: Reinforced the convention of returning `404` with a specific `NotFoundError` class for missing resources, rather than generic `500` errors, to ensure the frontend can distinguish between data absence and server failures.
 - **Date range default correction**: Mistakenly defaulted the `start_date` parameter to `null` in the controller, causing the query to return all historical data; corrected by enforcing a strict 30-day lookback default in the service layer to prevent performance degradation.
+
+--- Story 167: Cost comparison table component (attempts: 1, 2026-03-06 09:49) ---
+- **Non-obvious**: Handling dynamic column widths in the comparison table required explicit `min-width` constraints on cells to prevent content collapse, a behavior not handled automatically by the grid system.
+- **Pattern**: The codebase consistently uses a `useMemo` hook for derived table data calculations to avoid unnecessary re-renders when parent state changes, rather than computing on every render.
+- **Correction**: Initially applied inline styles for responsive breakpoints, which violated the project's "CSS-in-JS with atomic classes" convention; refactored to use the shared `ResponsiveTable` wrapper component instead.
