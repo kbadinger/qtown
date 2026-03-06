@@ -877,3 +877,8 @@
 - **Non-obvious behavior**: The table's dynamic row height calculation required explicit `min-height` overrides on cells to prevent collapsing when content was hidden by conditional rendering, a detail not immediately obvious from the initial mockup.
 - **Codebase pattern**: This project consistently uses a "compound component" pattern for tables (separating `Table`, `Row`, and `Cell`), where the parent manages the data state and children only handle presentation, avoiding prop drilling.
 - **Correction made**: Initially attempted to memoize the entire row component to optimize performance, which inadvertently broke the dynamic sorting feature; corrected by memoizing only the static cell content while keeping the row wrapper reactive.
+
+--- Story 168: Live stories completed counter (attempts: 1, 2026-03-06 12:13) ---
+- **Tricky/Non-obvious**: The counter logic required careful handling of state persistence; simply incrementing a variable wasn't enough without explicitly syncing it to the local storage layer to survive page reloads.
+- **Patterns/Conventions**: The codebase consistently separates UI rendering from state management, using a dedicated `store` module for all counter operations rather than embedding logic directly in the view components.
+- **Mistakes/Corrections**: Initially, I attempted to update the DOM directly after a state change, which caused a race condition with the hydration process; I corrected this by strictly relying on the framework's reactivity system to trigger the UI update.

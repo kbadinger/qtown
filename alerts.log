@@ -957,3 +957,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 17:09:41 UTC] start: Ralph online — 166/215 stories complete
 [2026-03-06 17:09:42 UTC] story_start: Story 167: Cost comparison table component
 [2026-03-06 17:10:21 UTC] WARN deploy_fail: Story 167 deploy failed — starting fix cycle
+[2026-03-06 17:12:48 UTC] deploy_ok: Story 167 deploy fixed on retry
+[2026-03-06 17:13:11 UTC] story_done: Story 167 complete: Cost comparison table component
+[2026-03-06 17:13:11 UTC] story_start: Story 168: Live stories completed counter
