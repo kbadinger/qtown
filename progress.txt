@@ -892,3 +892,8 @@
 - **State Persistence Nuance**: Updating the live counter required careful handling of the `useEffect` dependency array to avoid infinite loops while ensuring the value persists across page reloads via `localStorage`.
 - **Codebase Convention**: The project strictly enforces a "container/presentational" component pattern, where all state logic (including the counter hook) lives in the container, keeping the UI component purely declarative.
 - **Correction on Edge Cases**: Initially failed to handle the case where `localStorage` is disabled or returns `null`; corrected by adding a default fallback value to prevent the counter from rendering as `NaN` or breaking the UI.
+
+--- Story 169: Build progress timeline chart (attempts: 1, 2026-03-06 14:24) ---
+- **Tricky**: Calculating the exact pixel width for progress bars required handling edge cases where the timeline duration was zero or negative, which initially caused division-by-zero errors in the rendering loop.
+- **Patterns**: The codebase consistently separates data transformation (converting raw dates to chart coordinates) from the SVG rendering logic, ensuring the view layer remains pure and testable.
+- **Correction**: I initially used `innerHTML` to inject dynamic SVG elements, which stripped out event listeners; switching to `document.createElementNS` with proper namespace handling preserved interactivity.
