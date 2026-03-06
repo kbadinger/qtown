@@ -927,3 +927,8 @@
 - **Non-obvious fixture isolation**: Test file generation failed silently when fixtures weren't explicitly cleared between runs; the codebase relies on `beforeEach` teardowns rather than global state resets.
 - **Naming convention**: All generated test files must follow the `*.test.ts` suffix and be placed in `__tests__` directories to be picked up by the runner; placing them alongside source files causes them to be ignored.
 - **Correction on mocking**: Initially mocked the entire module, but the codebase expects partial mocking via `jest.spyOn` to preserve real implementation details for shared utilities.
+
+--- Story 175: Backlog status display (attempts: 1, 2026-03-06 14:38) ---
+- **Tricky**: The backlog status calculation required handling circular dependencies between "In Progress" and "Blocked" states, which caused infinite loops in the initial recursive aggregation logic.
+- **Pattern**: The codebase consistently uses a `StatusContext` wrapper object to pass domain-specific rules into UI components, rather than passing raw status enums or strings directly.
+- **Correction**: Initially missed the requirement to exclude "Archived" items from the count; fixed by adding a filter predicate in the data provider layer before the aggregation step.
