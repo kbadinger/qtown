@@ -3086,7 +3086,7 @@
         "template"
       ],
       "priority": 172,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
@@ -3103,8 +3103,8 @@
         "template"
       ],
       "priority": 173,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "174",

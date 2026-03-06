@@ -917,3 +917,8 @@
 *   **Tricky Aspect**: Handling the conditional rendering of the "Review Pending" state required careful management of optimistic UI updates to prevent flash-of-content issues when the backend status lagged.
 *   **Pattern Discovered**: The codebase consistently uses a `useStatusPolling` custom hook for any asynchronous status checks, rather than ad-hoc `setInterval` implementations, ensuring unified cleanup and retry logic.
 *   **Correction Made**: Initially, I attempted to pass the entire `review` object directly to the child component; I refactored to pass only the necessary `reviewId` and `status` props to avoid unnecessary re-renders when unrelated data in the parent changed.
+
+--- Story 173: Story approve workflow (attempts: 1, 2026-03-06 14:34) ---
+- **Tricky**: The approval state machine required handling concurrent updates; using optimistic locking was necessary to prevent race conditions when multiple approvers acted simultaneously.
+- **Patterns**: The codebase consistently separates domain logic (approval rules) from infrastructure (email notifications) using explicit event listeners, keeping the core workflow clean.
+- **Correction**: Initially, I validated the approver's role at the API entry point, but corrected this to validate within the service layer to ensure the check is enforced regardless of the entry method (CLI, API, or background job).
