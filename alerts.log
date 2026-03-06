@@ -875,3 +875,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 14:13:08 UTC] deploy_ok: Story 144 deploy fixed on retry
 [2026-03-06 14:13:14 UTC] story_done: Story 144 complete: API docs page
 [2026-03-06 14:13:14 UTC] story_start: Story 145: Changelog page
+[2026-03-06 14:14:31 UTC] deploy_ok: Story 145 deployed: Healthy after 0.1s
+[2026-03-06 14:14:36 UTC] story_done: Story 145 complete: Changelog page
+[2026-03-06 14:14:37 UTC] story_start: Story 146: Simulation speed control

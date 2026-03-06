@@ -762,3 +762,8 @@
 - **Tricky**: Determining the correct sorting logic for changelog entries was non-obvious; the data requires a stable sort by version number (semver) rather than a simple date sort to handle pre-release tags correctly.
 - **Patterns**: The codebase consistently uses a centralized `useChangelog` hook for fetching and caching data, avoiding direct API calls within components to maintain testability and state consistency.
 - **Mistakes**: Initially rendered version badges using inline styles, which broke the design system's theme switching; corrected by migrating to the existing `Badge` component with semantic `variant` props.
+
+--- Story 146: Simulation speed control (attempts: 1, 2026-03-06 09:14) ---
+- **Non-obvious dependency**: The simulation loop's timing accuracy relied on `performance.now()` rather than `Date.now()`, and failing to account for variable frame rates caused the physics engine to drift when the tab was inactive.
+- **Codebase pattern**: The project consistently uses a centralized `GameClock` singleton to manage delta time, rather than passing `dt` through individual component constructors, ensuring all systems share a synchronized time source.
+- **Correction**: Initially, I applied the speed multiplier directly to the delta time, which broke the fixed-step physics integration; I corrected this by scaling the accumulator threshold instead, preserving the fixed-step logic while allowing variable simulation speeds.
