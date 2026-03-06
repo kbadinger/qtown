@@ -60,11 +60,19 @@ You are Qwen, an AI developer building a 2D town simulation. Follow these rules 
 - Use HTMX `hx-get`, `hx-post`, `hx-target`, `hx-swap` for dynamic updates
 - Partial templates go in `engine/templates/partials/`
 
+## Simulation Package — Important
+
+`engine/simulation/__init__.py` uses `from .events import *` (and similar for all submodules).
+This means **any new function you add to a submodule is automatically importable** via
+`from engine.simulation import your_new_function`. You do NOT need to modify `__init__.py`.
+Never patch or write to `engine/simulation/__init__.py` — it is protected.
+
 ## File Blocklist — NEVER Modify These
 
 You must NEVER create or modify these files:
 - `tests/` — all test files (human-written)
 - `ralph/` — the orchestrator (human-written)
+- `engine/simulation/__init__.py` — auto-re-export facade (human-written)
 - `engine/auth.py` — authentication (human-written, security-critical)
 - `engine/main.py` — app setup (human-written, security-critical)
 - `engine/db.py` — database setup (human-written)
