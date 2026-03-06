@@ -3,6 +3,7 @@
 from sqlalchemy.orm import Session
 
 from engine.models import WorldState, Event
+import random
 
 
 def trigger_drought(db: Session) -> None:
@@ -129,4 +130,53 @@ def trigger_harvest_festival(db: Session) -> None:
     for npc in npcs:
         npc.happiness = min(100, npc.happiness + 20)
     
+    db.commit()
+
+
+def trigger_bandit_raid(db: Session) -> None:
+    """Trigger a bandit raid that steals gold from Treasury and NPCs."""
+    from engine.models import Treasury, NPC, Building, Event, WorldState
+    
+    # Get world state for tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Count guards to reduce theft (5% reduction per guard)
+    guard_buildings = db.query(Building).filter(
+        Building.building_type.in_(['guard', 'guard_tower'])
+    ).all()
+    num_guards = len(guard_buildings)
+    
+    # Calculate theft reduction (5% per guard, capped at 100%)
+    theft_reduction = min(num_guards * 0.05, 1.0)
+    
+    # Steal from Treasury (20% base, reduced by guards)
+    treasuries = db.query(Treasury).all()
+    total_stolen_from_treasury = 0
+    for treasury in treasuries:
+        base_theft = treasury.gold_stored * 0.20
+        actual_theft = int(base_theft * (1 - theft_reduction))
+        treasury.gold_stored = max(0, treasury.gold_stored - actual_theft)
+        total_stolen_from_treasury += actual_theft
+    
+    # Steal from random NPCs (10% base, reduced by guards)
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    if npcs:
+        # Select random NPCs to steal from (up to 20% of population)
+        num_victims = max(1, len(npcs) // 5)
+        victims = random.sample(npcs, min(num_victims, len(npcs)))
+        
+        for npc in victims:
+            base_theft = npc.gold * 0.10
+            actual_theft = int(base_theft * (1 - theft_reduction))
+            npc.gold = max(0, npc.gold - actual_theft)
+    
+    # Create event log
+    event = Event(
+        event_type="bandit_raid",
+        description=f"Bandits raided the town, stealing gold from treasury and citizens",
+        tick=current_tick,
+        severity="high"
+    )
+    db.add(event)
     db.commit()

@@ -596,3 +596,8 @@
 - **Event Dispatching Logic**: It was non-obvious that new event types require updating both the `EventFactory` enum and the `EventDispatcher` switch statement; missing the dispatcher update causes silent failures where the event is created but never processed.
 - **State Mutation Pattern**: The codebase strictly avoids direct state mutation in event handlers; instead, events must return a `StateDelta` object that the core loop applies, a convention I initially missed by trying to modify the game state directly.
 - **Correction on Date Handling**: I initially hardcoded the festival date in the event logic, but corrected it to use the `CalendarService` to ensure the event respects the dynamic game year and leap year rules already established in the system.
+
+--- Story 114: Add bandit_raid event type (attempts: 1, 2026-03-06 00:44) ---
+- **Event Dispatching Nuance**: The `bandit_raid` logic required manually triggering the `EventQueue` within the combat loop rather than relying on the standard turn-based scheduler, as raids can interrupt mid-turn.
+- **State Mutation Convention**: Discovered that all event handlers must mutate the `WorldState` directly before returning; the framework does not support returning a delta or new state object for events.
+- **Correction on Loot Logic**: Initially attempted to calculate loot distribution after the event resolved, but corrected this to pre-calculate and attach loot to the `EventPayload` before dispatch to ensure atomicity during the raid resolution.
