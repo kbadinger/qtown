@@ -792,3 +792,8 @@
 *   **Tricky**: Handling the `Content-Range` header correctly required manually calculating the total item count from the database query before slicing the result set, as the ORM's `limit/offset` alone doesn't provide total counts.
 *   **Pattern**: The codebase enforces a strict `PaginationParams` DTO pattern for all list endpoints, ensuring consistent validation of `page` and `limit` with hard-coded maximums to prevent DoS via large offsets.
 *   **Correction**: Initially returned the raw array length in the `X-Total-Count` header; corrected to use the separate `COUNT(*)` query result to ensure accuracy when pagination filters are applied.
+
+--- Story 152: Filtering support (attempts: 1, 2026-03-06 09:23) ---
+- **Non-obvious filter composition**: The `filter` function expects a predicate that returns a boolean, but the initial implementation incorrectly passed the raw filter object; wrapping it in a dynamic `evaluate` helper was necessary to handle nested logic.
+- **Codebase convention**: Filtering logic is consistently separated from data retrieval; the repository layer provides raw streams, while the service layer applies `filter` chains before pagination, ensuring type safety at the boundary.
+- **Correction on null handling**: Initially assumed `null` fields would be ignored by the filter engine, but this caused crashes; added explicit `coalesce` checks in the predicate generator to treat missing values as empty strings.
