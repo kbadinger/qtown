@@ -641,3 +641,8 @@
 *   **Non-obvious coupling**: The price spike logic wasn't isolated to the pricing service; it relied on a shared, mutable `FloodState` context object, meaning changes in flood severity immediately invalidated cached price lookups without explicit invalidation triggers.
 *   **Codebase convention**: The project enforces a "fail-fast" pattern for environmental events; instead of returning error codes, services throw specific domain exceptions (e.g., `MarketStressException`) that are caught by a global interceptor to trigger the cascading alert workflow.
 *   **Correction**: Initially attempted to handle the price spike calculation synchronously within the flood event handler, causing a deadlock; refactored to publish a `FloodSeverityChanged` event and let the pricing service consume it asynchronously to maintain system throughput.
+
+--- Story 123: Cascading: bandit raid to justice (attempts: 1, 2026-03-06 08:27) ---
+- **Tricky**: The "Cascading" logic for the raid event required careful sequencing of state transitions; failing to clear the `active_raid` flag before triggering the `justice` reward caused a race condition where the reward was skipped.
+- **Patterns**: This codebase consistently uses a `Result`-based error propagation pattern for domain events, avoiding global error handlers in favor of local recovery within the event chain.
+- **Correction**: Initially attempted to mutate the `bandit` entity directly during the raid resolution; corrected to use immutable state updates and a dedicated `RaidResolution` event to maintain audit trail integrity.

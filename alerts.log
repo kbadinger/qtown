@@ -791,3 +791,6 @@ Add gold_rush event type
 [2026-03-06 12:52:35 UTC] deploy_ok: Story 121 deployed: Healthy after 0.1s
 [2026-03-06 12:52:40 UTC] story_done: Story 121 complete: Cascading: plague to hospital overwhelmed
 [2026-03-06 12:52:41 UTC] story_start: Story 122: Cascading: flood to price spike
+[2026-03-06 13:18:32 UTC] deploy_ok: Story 122 deployed: Healthy after 0.1s
+[2026-03-06 13:18:45 UTC] story_done: Story 122 complete: Cascading: flood to price spike
+[2026-03-06 13:18:45 UTC] story_start: Story 123: Cascading: bandit raid to justice

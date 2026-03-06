@@ -561,3 +561,4 @@
 {"story_id": "122", "attempt": 1, "passed": false, "duration_sec": 552.11, "error": "No files written", "tokens_in": 8989, "tokens_out": 15611, "timestamp": "2026-03-06T08:01:56"}
 {"story_id": "122", "attempt": 2, "passed": false, "duration_sec": 555.54, "error": "No files written", "tokens_in": 8989, "tokens_out": 15588, "timestamp": "2026-03-06T08:11:14"}
 {"story_id": "122", "attempt": 3, "passed": true, "duration_sec": 39.75, "error": null, "tokens_in": 8989, "tokens_out": 912, "timestamp": "2026-03-06T08:11:58"}
+{"story_id": "123", "attempt": 1, "passed": true, "duration_sec": 236.48, "error": null, "tokens_in": 9531, "tokens_out": 6733, "timestamp": "2026-03-06T08:22:47"}

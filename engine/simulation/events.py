@@ -225,6 +225,7 @@ def trigger_harvest_festival(db: Session) -> None:
 def trigger_bandit_raid(db: Session) -> None:
     """Trigger a bandit raid that steals gold from Treasury and NPCs."""
     from engine.models import Treasury, NPC, Building, Event, WorldState
+    from engine.simulation.constants import JUSTICE_RESPONSE_GUARD_THRESHOLD
     
     # Get world state for tick
     world_state = db.query(WorldState).first()
@@ -260,14 +261,31 @@ def trigger_bandit_raid(db: Session) -> None:
             actual_theft = int(base_theft * (1 - theft_reduction))
             npc.gold = max(0, npc.gold - actual_theft)
     
-    # Create event log
-    event = Event(
+    # Create bandit raid event log
+    raid_event = Event(
         event_type="bandit_raid",
         description=f"Bandits raided the town, stealing gold from treasury and citizens",
         tick=current_tick,
         severity="high"
     )
-    db.add(event)
+    db.add(raid_event)
+    
+    # Create justice response event (cascade effect)
+    if num_guards > JUSTICE_RESPONSE_GUARD_THRESHOLD:
+        justice_description = f"Guards ({num_guards}) pursue bandits. Bandits will be caught and imprisoned."
+        severity = "medium"
+    else:
+        justice_description = f"Guards ({num_guards}) pursue bandits. Bandits will escape and raid again in 50 ticks."
+        severity = "low"
+    
+    justice_event = Event(
+        event_type="justice_response",
+        description=justice_description,
+        tick=current_tick,
+        severity=severity
+    )
+    db.add(justice_event)
+    
     db.commit()
 
 

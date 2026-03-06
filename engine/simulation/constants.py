@@ -72,3 +72,15 @@ FLOOD_PRICE_SPIKE_DURATION = 30
 FLOOD_PRICE_MULTIPLIER = 3
 """Food price multiplier during flood cascade."""
 
+
+
+
+JUSTICE_RESPONSE_GUARD_THRESHOLD = 3
+"""Minimum guards needed to catch bandits."""
+
+JUSTICE_RESPONSE_PURSUIT_DURATION = 10
+"""Number of ticks guards pursue bandits."""
+
+JUSTICE_RESPONSE_RE_RAID_DELAY = 50
+"""Ticks before bandits raid again if they escape."""
+
