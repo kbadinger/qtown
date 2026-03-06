@@ -802,3 +802,8 @@
 *   **Non-obvious sorting semantics**: The existing sort implementation relied on a custom comparator that treated `null` and `undefined` as distinct types rather than grouping them, requiring explicit handling to match the new "nulls-last" requirement without breaking legacy data.
 *   **Codebase pattern**: Sorting logic is consistently abstracted into a `SortStrategy` interface with factory methods in the `utils` folder, rather than being inline; adhering to this pattern ensured the new feature integrated cleanly with the existing pipeline.
 *   **Correction**: Initially applied the sort mutation directly on the input array, which caused side effects in the parent component; corrected this by cloning the array before processing to maintain immutability.
+
+--- Story 154: Search support (attempts: 1, 2026-03-06 09:26) ---
+- **Non-obvious scope**: The search filter logic unexpectedly relied on a global state context rather than local props, requiring careful tracing of the `SearchProvider` to understand data flow.
+- **Codebase convention**: The project consistently uses `useMemo` for all derived search results to prevent unnecessary re-renders during input changes, even for simple string operations.
+- **Correction**: Initially missed handling the "no results" edge case, which caused a blank screen; fixed by adding a conditional UI component that triggers when the filtered array length is zero.
