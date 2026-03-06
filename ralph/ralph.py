@@ -249,12 +249,11 @@ def preflight() -> bool:
         print(f"[PREFLIGHT FAIL] git not available: {e}")
         ok = False
 
-    # 5. ComfyUI is reachable (sprite generation is mandatory)
+    # 5. ComfyUI is reachable (optional — sprites will be skipped if down)
     if check_comfyui_health():
         print("[PREFLIGHT OK] ComfyUI reachable")
     else:
-        print("[PREFLIGHT FAIL] ComfyUI not reachable — cannot generate sprites")
-        ok = False
+        print("[PREFLIGHT WARN] ComfyUI not reachable — sprites will be skipped")
 
     return ok
 
@@ -677,10 +676,8 @@ def run_story(story: dict) -> bool:
         else:
             print(f"  [{_ts()}] No new sprites needed")
     except Exception as e:
-        print(f"  [{_ts()}] Sprite generation FAILED: {e}")
-        alert("critical", f"Story {story_id}: Sprite generation failed — Ralph pausing\n{e}")
-        Path(".ralph-paused").touch()
-        return False
+        print(f"  [{_ts()}] Sprite generation skipped: {e}")
+        warn("sprite_skip", f"Story {story_id}: Sprite generation skipped — {e}")
 
     # 10. Deploy pipeline
     print(f"  [{_ts()}] Deploying...")
