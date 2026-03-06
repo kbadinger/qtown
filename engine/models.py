@@ -135,6 +135,7 @@ class NPC(Base):
     personality = Column(String(256), nullable=True, default='{}')
     skill = Column(Integer, default=0)
     memory_events = Column(Text, nullable=True, default='[]')
+    favorite_buildings = Column(Text, nullable=True, default='[]')
     created_at = Column(DateTime, default=_utcnow)
 
     home_building = relationship("Building", foreign_keys=[home_building_id])

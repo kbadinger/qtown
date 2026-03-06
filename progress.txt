@@ -932,3 +932,8 @@
 - **Tricky**: The backlog status calculation required handling circular dependencies between "In Progress" and "Blocked" states, which caused infinite loops in the initial recursive aggregation logic.
 - **Pattern**: The codebase consistently uses a `StatusContext` wrapper object to pass domain-specific rules into UI components, rather than passing raw status enums or strings directly.
 - **Correction**: Initially missed the requirement to exclude "Archived" items from the count; fixed by adding a filter predicate in the data provider layer before the aggregation step.
+
+--- Story 177: NPC memory - favorite buildings (attempts: 1, 2026-03-06 16:31) ---
+- **Non-obvious coupling**: NPC memory retrieval is tightly coupled with the `BuildingRegistry` singleton; favoring a building requires checking both the NPC's internal `memoryMap` and the global registry's `isAccessible` flag, which isn't immediately clear from the method signature.
+- **Convention for persistence**: The codebase uses a "dirty flag" pattern on the `NPC` entity rather than immediate database writes; changes to favorite buildings only persist when the `NPC` is serialized at the end of the tick cycle.
+- **Correction on edge cases**: Initially assumed `favoriteBuildingId` could be `null` for new NPCs, but the schema enforces a default "None" enum value; failing to handle this caused a null-pointer exception during the serialization check.

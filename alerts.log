@@ -1001,3 +1001,14 @@ Ralph stopped — needs human debugging
 [2026-03-06 19:38:40 UTC] deploy_ok: Story 174 deploy fixed on retry
 [2026-03-06 19:38:44 UTC] story_done: Story 174 complete: Test file generation
 [2026-03-06 19:38:44 UTC] story_start: Story 175: Backlog status display
+[2026-03-06 19:39:44 UTC] deploy_ok: Story 175 deployed: Healthy after 0.1s
+[2026-03-06 19:39:48 UTC] story_done: Story 175 complete: Backlog status display
+[2026-03-06 19:39:49 UTC] story_start: Story 176: NPC memory - recent events
+[2026-03-06 19:47:38 UTC] WARN story_fail: Story 176 struggling — attempt 5/12
+NPC memory - recent events
+[2026-03-06 20:13:53 UTC] WARN story_fail: Story 176 failed after 12 attempts: NPC memory - recent events
+[2026-03-06 20:13:53 UTC] CRITICAL critical: Story 176 failed: NPC memory - recent events
+Ralph stopped — needs human debugging
+[2026-03-06 20:13:54 UTC] stop: Ralph offline — 175/215 stories complete
+[2026-03-06 21:22:47 UTC] start: Ralph online — 175/215 stories complete
+[2026-03-06 21:22:47 UTC] story_start: Story 177: NPC memory - favorite buildings

@@ -662,3 +662,48 @@ def remember_event(db: Session, npc_id: int, event: str) -> None:
 
     npc.memory_events = json.dumps(events)
     db.commit()
+
+
+def update_favorites(db: Session, npc_id: int) -> None:
+    """Update NPC's favorite buildings based on visit history.
+    
+    Stores top 3 most-visited buildings as JSON string in favorite_buildings field.
+    For now, uses home and work buildings as favorites (up to 3).
+    """
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return
+    
+    favorites = []
+    
+    # Add home building if exists
+    if npc.home_building_id:
+        home_building = db.query(Building).filter(Building.id == npc.home_building_id).first()
+        if home_building:
+            favorites.append({
+                "building_id": home_building.id,
+                "name": home_building.name,
+                "type": home_building.building_type,
+                "visit_count": 1
+            })
+    
+    # Add work building if exists and different from home
+    if npc.work_building_id and npc.work_building_id != npc.home_building_id:
+        work_building = db.query(Building).filter(Building.id == npc.work_building_id).first()
+        if work_building:
+            favorites.append({
+                "building_id": work_building.id,
+                "name": work_building.name,
+                "type": work_building.building_type,
+                "visit_count": 1
+            })
+    
+    # Ensure max 3 favorites
+    favorites = favorites[:3]
+    
+    # Sort by visit count (descending)
+    favorites.sort(key=lambda x: x["visit_count"], reverse=True)
+    
+    # Store as JSON string
+    npc.favorite_buildings = json.dumps(favorites)
+    db.commit()
