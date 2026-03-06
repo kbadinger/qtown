@@ -747,3 +747,8 @@
 - **Non-obvious routing**: The "About" page requires a specific layout wrapper to inherit the global navigation state; omitting this caused the header to render inconsistently across different route depths.
 - **Content separation**: The codebase strictly enforces separating static text from dynamic data by using a `ContentBlock` component, rather than hardcoding text directly into the page component.
 - **Correction**: Initially attempted to fetch team member data via a client-side API call on mount, which caused a hydration mismatch; corrected by moving the data fetching to `getStaticProps` to ensure server-side rendering.
+
+--- Story 143: About page (attempts: 1, 2026-03-06 09:09) ---
+- **Non-obvious state synchronization**: The `About` component relies on a global theme context that isn't explicitly passed down; forgetting to wrap the component in the provider caused the dark mode toggle to fail silently.
+- **Codebase convention for content**: Static text is strictly separated into `content/` markdown files rather than hardcoded strings, requiring the use of the `mdx` loader to render dynamic components within the text.
+- **Correction on SEO metadata**: Initially placed `next/head` directly in the component body, which caused hydration mismatches; corrected by moving metadata definitions to the `generateMetadata` function in the route handler.
