@@ -1031,3 +1031,4 @@ Ralph stopped — needs human debugging
 [2026-03-06 22:32:30 UTC] deploy_ok: Story 182 deployed: Healthy after 0.1s
 [2026-03-06 22:32:42 UTC] story_done: Story 182 complete: Detect resource gaps
 [2026-03-06 22:32:42 UTC] story_start: Story 183: Recommend construction
+[2026-03-06 22:42:31 UTC] WARN deploy_fail: Story 183 deploy failed — starting fix cycle
