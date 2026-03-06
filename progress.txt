@@ -667,3 +667,8 @@
 - **Tricky aspect**: Handling the transition from fixed-width containers to fluid `minmax()` grids required careful tuning of `fr` units to prevent unwanted wrapping on medium-sized screens.
 - **Pattern discovered**: The codebase consistently uses `gap` for spacing instead of margins on individual items, simplifying responsive adjustments and ensuring consistent whitespace.
 - **Correction**: Initially applied `grid-template-columns` directly to the container without a media query fallback, causing layout breaks on mobile; fixed by establishing a mobile-first base and using `@media` for expansion.
+
+--- Story 128: Buildings list page (attempts: 1, 2026-03-06 08:35) ---
+- **Tricky/Non-Obvious**: The `buildings` collection requires a manual `reindex` call after bulk updates; relying on automatic background indexing causes a 2-3 second delay in UI visibility for new entries.
+- **Patterns/Conventions**: All list views follow the `fetch -> map -> render` pattern using the shared `DataTable` component, but filtering logic is strictly handled in the controller layer, never in the view.
+- **Mistakes/Corrections**: Initially omitted the `status` filter in the API query, causing the frontend to display archived buildings; fixed by ensuring the `status=active` param is always appended to the request.
