@@ -74,16 +74,17 @@ def trigger_fire(db: Session) -> None:
 
 def trigger_plague(db: Session) -> None:
     """Trigger a plague event that increases NPC illness severity."""
-    from engine.models import NPC
+    from engine.models import NPC, WorldState
     
     # Get world state for tick
     world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
     
     # Create plague event
     plague_event = Event(
         event_type="plague",
         description="A plague has spread through the town, increasing illness severity",
-        tick=world_state.tick if world_state else 0,
+        tick=current_tick,
         severity="high"
     )
     db.add(plague_event)
@@ -91,8 +92,15 @@ def trigger_plague(db: Session) -> None:
     # Increase illness for all NPCs
     npcs = db.query(NPC).all()
     for npc in npcs:
+        # Skip already dead NPCs
+        if npc.is_dead:
+            continue
+            
+        # Increase illness severity by 20
         npc.illness_severity = min(100, npc.illness_severity + 20)
         npc.illness = npc.illness_severity
+        
+        # Kill NPC if severity reaches 100
         if npc.illness_severity >= 100:
             npc.is_dead = 1
     
