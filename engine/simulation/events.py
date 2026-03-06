@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from engine.models import WorldState, Event
 import random
+from engine.simulation.constants import PLAGUE_OVERWHELM_THRESHOLD
 
 
 def trigger_drought(db: Session) -> None:
@@ -136,18 +137,51 @@ def trigger_plague(db: Session) -> None:
     
     # Increase illness for all NPCs
     npcs = db.query(NPC).all()
+    sick_count = 0
+    total_alive = 0
+    
     for npc in npcs:
         # Skip already dead NPCs
         if npc.is_dead:
             continue
             
+        total_alive += 1
+        
         # Increase illness severity by 20
         npc.illness_severity = min(100, npc.illness_severity + 20)
         npc.illness = npc.illness_severity
         
+        # Count as sick if illness_severity > 0
+        if npc.illness_severity > 0:
+            sick_count += 1
+        
         # Kill NPC if severity reaches 100
         if npc.illness_severity >= 100:
             npc.is_dead = 1
+    
+    # Check for hospital overwhelmed cascade (50%+ sick)
+    if total_alive > 0:
+        sick_ratio = sick_count / total_alive
+        if sick_ratio >= PLAGUE_OVERWHELM_THRESHOLD:
+            # Create hospital_overwhelmed event
+            overwhelmed_event = Event(
+                event_type="hospital_overwhelmed",
+                description=f"Hospital overwhelmed: {sick_count} of {total_alive} NPCs sick ({int(sick_ratio*100)}%)",
+                tick=current_tick,
+                severity="critical"
+            )
+            db.add(overwhelmed_event)
+            
+            # Reduce hospital healing by 75% - store in WorldState
+            # We'll track this via a new field or use existing fields
+            # For now, we create an event that can be read by effects system
+            healing_reduction_event = Event(
+                event_type="healing_reduced",
+                description="Hospital healing capacity reduced by 75% due to plague",
+                tick=current_tick,
+                severity="warning"
+            )
+            db.add(healing_reduction_event)
     
     db.commit()
 
@@ -351,4 +385,48 @@ def trigger_gold_rush(db: Session) -> None:
         severity="medium"
     )
     db.add(gold_rush_event)
+    db.commit()
+
+
+def apply_priest_healing(db: Session) -> None:
+    """Apply +5 healing to NPCs near priests at Church buildings."""
+    from engine.models import NPC, Building
+    
+    # Find all Church buildings
+    churches = db.query(Building).filter(
+        Building.building_type == "church"
+    ).all()
+    
+    # Find all priest NPCs
+    priests = db.query(NPC).filter(
+        NPC.role == "priest",
+        NPC.is_dead == 0
+    ).all()
+    
+    # For each priest, check if they're at a church
+    for priest in priests:
+        # Check if priest is at any church location
+        at_church = False
+        for church in churches:
+            if priest.x == church.x and priest.y == church.y:
+                at_church = True
+                break
+        
+        if not at_church:
+            continue
+        
+        # Find nearby NPCs (within 5 tiles)
+        nearby_npcs = db.query(NPC).filter(
+            NPC.is_dead == 0,
+            NPC.id != priest.id,
+            NPC.x.between(priest.x - 5, priest.x + 5),
+            NPC.y.between(priest.y - 5, priest.y + 5)
+        ).all()
+        
+        # Apply +5 healing to nearby NPCs
+        for npc in nearby_npcs:
+            # Reduce illness severity by 5 (healing effect)
+            npc.illness_severity = max(0, npc.illness_severity - 5)
+            npc.illness = npc.illness_severity
+    
     db.commit()

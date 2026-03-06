@@ -57,3 +57,9 @@ RESOURCE_DEMAND = {"Food": 10, "Art": 20, "Books": 10}
 SATURATION_TICK_THRESHOLD = 10
 
 DROUGHT_FAMINE_THRESHOLD = 5
+
+
+
+PLAGUE_OVERWHELM_THRESHOLD = 0.5
+"""Threshold of sick NPCs (50%) that triggers hospital_overwhelmed cascade."""
+

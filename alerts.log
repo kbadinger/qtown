@@ -785,3 +785,6 @@ Add gold_rush event type
 [2026-03-06 12:33:06 UTC] deploy_ok: Story 119 deployed: Healthy after 0.1s
 [2026-03-06 12:33:11 UTC] story_done: Story 119 complete: Cascading: drought to famine
 [2026-03-06 12:33:11 UTC] story_start: Story 120: Cascading: fire to rebuilding boom
+[2026-03-06 12:45:13 UTC] deploy_ok: Story 120 deployed: Healthy after 0.1s
+[2026-03-06 12:45:25 UTC] story_done: Story 120 complete: Cascading: fire to rebuilding boom
+[2026-03-06 12:45:26 UTC] story_start: Story 121: Cascading: plague to hospital overwhelmed
