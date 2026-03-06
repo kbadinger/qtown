@@ -224,3 +224,16 @@ class PriceHistory(Base):
     __table_args__ = (
         UniqueConstraint("resource_name", "tick", name="uq_price_history_resource_tick"),
     )
+
+
+class Cost(Base):
+    __tablename__ = "costs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    story_id = Column(String(20), nullable=False, index=True)
+    model = Column(String(64), nullable=False)
+    tokens_in = Column(Integer, nullable=False)
+    tokens_out = Column(Integer, nullable=False)
+    cost = Column(Float, nullable=False)
+    duration = Column(Integer, nullable=False)  # in seconds
+    created_at = Column(DateTime, default=_utcnow)

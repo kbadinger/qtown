@@ -942,3 +942,4 @@ Ralph stopped — needs human debugging
 [2026-03-06 14:49:35 UTC] deploy_ok: Story 166 deployed: Healthy after 0.1s
 [2026-03-06 14:49:41 UTC] story_done: Story 166 complete: GET /api/costs endpoint
 [2026-03-06 14:49:41 UTC] story_start: Story 167: Cost comparison table component
+[2026-03-06 14:49:56 UTC] WARN deploy_fail: Story 167 deploy failed — starting fix cycle
