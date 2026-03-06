@@ -907,3 +907,8 @@
 - **Non-obvious metric aggregation**: The endpoint requires manual aggregation of raw logs into time-bucketed summaries before serialization, as the underlying storage layer does not support native time-series queries.
 - **Codebase pattern**: Consistent use of the `MetricResponse` DTO with a standardized `timestamp` (ISO-8601) and `unit` field across all metric endpoints to ensure frontend compatibility.
 - **Correction**: Initially exposed raw database IDs in the response; corrected to use the business-level `metric_key` to prevent leaking internal schema details and improve API stability.
+
+--- Story 171: Propose stories endpoint (attempts: 1, 2026-03-06 14:28) ---
+- **Tricky**: The endpoint required strict adherence to the existing `Proposal` schema validation; initially, I overlooked that the `status` field must be derived from the `created_at` timestamp logic rather than passed directly in the payload.
+- **Pattern**: The codebase consistently uses the `Service` layer for all business logic (including permission checks and state transitions), keeping Controllers strictly for request/response mapping and input sanitization.
+- **Correction**: I initially returned a 200 OK for failed validations; corrected to return 422 Unprocessable Entity with the specific validation error details to match the API contract.
