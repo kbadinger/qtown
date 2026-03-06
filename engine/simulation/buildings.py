@@ -590,3 +590,74 @@ def seed_windmill(db: Session) -> None:
     )
     db.add(windmill)
     db.commit()
+
+
+def suggest_building_placement(db: Session, building_type: str) -> tuple[int, int] | None:
+    """Suggest optimal placement for a building based on type.
+    
+    Args:
+        db: Database session
+        building_type: Type of building ("food", "residential", "civic", "guard", etc.)
+    
+    Returns:
+        (x, y) tuple for placement, or None if no valid placement found
+    """
+    from engine.models import Building
+    
+    # Get all existing buildings to avoid overlap
+    existing_buildings = db.query(Building).all()
+    occupied_tiles = set((b.x, b.y) for b in existing_buildings)
+    
+    # Find Town Hall position for residential placement
+    town_hall = None
+    for b in existing_buildings:
+        if b.building_type == "civic":
+            town_hall = (b.x, b.y)
+            break
+    
+    # Grid dimensions
+    GRID_SIZE = 50
+    
+    if building_type == "food":
+        # Farms should be near water (y < 15)
+        for y in range(15):
+            for x in range(GRID_SIZE):
+                if (x, y) not in occupied_tiles:
+                    return (x, y)
+    
+    elif building_type == "residential":
+        # Near Town Hall (within 5 tiles)
+        if town_hall:
+            tx, ty = town_hall
+            for dy in range(-5, 6):
+                for dx in range(-5, 6):
+                    x, y = tx + dx, ty + dy
+                    if 0 <= x < GRID_SIZE and 0 <= y < GRID_SIZE and (x, y) not in occupied_tiles:
+                        return (x, y)
+        # Fallback: any available spot
+        for y in range(GRID_SIZE):
+            for x in range(GRID_SIZE):
+                if (x, y) not in occupied_tiles:
+                    return (x, y)
+    
+    elif building_type == "guard":
+        # Guard towers at grid edges
+        edge_positions = []
+        for x in range(GRID_SIZE):
+            edge_positions.append((x, 0))
+            edge_positions.append((x, GRID_SIZE - 1))
+        for y in range(GRID_SIZE):
+            edge_positions.append((0, y))
+            edge_positions.append((GRID_SIZE - 1, y))
+        
+        for x, y in edge_positions:
+            if (x, y) not in occupied_tiles:
+                return (x, y)
+    
+    # Default fallback: first available tile
+    for y in range(GRID_SIZE):
+        for x in range(GRID_SIZE):
+            if (x, y) not in occupied_tiles:
+                return (x, y)
+    
+    return None

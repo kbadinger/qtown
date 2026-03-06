@@ -952,3 +952,8 @@
 - **Non-obvious state mutation**: The NPC's "experience" wasn't a simple flag but a weighted probability distribution updated via a recursive decay function, requiring careful handling of floating-point precision to prevent drift.
 - **Convention for persistence**: The codebase strictly separates "runtime memory" (ephemeral) from "learned traits" (persistent) using a `MemoryBuffer` class that only flushes to disk after a `StabilityThreshold` is met.
 - **Correction on initialization**: Initially, I reset the learning rate to zero on reload, causing the NPC to "forget" past lessons; corrected by ensuring the `LearningRate` is derived from the total `ExperienceCount` rather than being a static config value.
+
+--- Story 181: Auto-suggest building placement (attempts: 1, 2026-03-06 17:22) ---
+- **Non-obvious dependency**: The auto-suggest logic relies on the `MapGrid` service's internal `_calculateValidTiles` method, which is not exported; wrapping it in a custom hook was necessary to avoid tight coupling.
+- **Codebase pattern**: All UI feedback for invalid placements follows the "flash-red-border" convention via the `PlacementValidator` component, rather than using toast notifications.
+- **Correction**: Initially calculated collision detection against the entire map bounds, causing lag; optimized by restricting checks to the immediate 5x5 viewport around the cursor.

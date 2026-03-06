@@ -1022,3 +1022,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 22:02:32 UTC] deploy_ok: Story 179 deployed: Healthy after 0.1s
 [2026-03-06 22:02:43 UTC] story_done: Story 179 complete: NPC memory - remember friends
 [2026-03-06 22:02:44 UTC] story_start: Story 180: NPC learning from experience
+[2026-03-06 22:13:51 UTC] deploy_ok: Story 180 deployed: Healthy after 0.1s
+[2026-03-06 22:14:02 UTC] story_done: Story 180 complete: NPC learning from experience
+[2026-03-06 22:14:03 UTC] story_start: Story 181: Auto-suggest building placement
