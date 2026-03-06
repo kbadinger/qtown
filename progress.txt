@@ -772,3 +772,8 @@
 *   **Non-obvious Timing**: The manual tick trigger required explicit `requestAnimationFrame` synchronization to avoid race conditions with the auto-tick loop; simply calling the logic function directly caused state desyncs.
 *   **Event Propagation Pattern**: Discovered the codebase convention of using a custom `TickEvent` class that bubbles up to a central `GameLoop` observer, rather than passing callbacks directly to UI components.
 *   **Correction on State Mutation**: Initially mutated the game state directly in the UI handler; corrected this by dispatching an immutable action to the store to ensure the UI re-rendered correctly and history tracking remained intact.
+
+--- Story 148: Reset world endpoint (attempts: 1, 2026-03-06 09:17) ---
+- **Non-obvious state propagation**: The `reset` endpoint required explicitly clearing the in-memory cache *before* re-seeding the database; doing it in reverse caused transient 404s during the seed operation.
+- **Codebase convention**: All global state resets follow the `clear -> seed -> notify` pattern, and the `notify` step must use the internal event bus, not direct API calls, to avoid triggering recursive reset loops.
+- **Correction**: Initially attempted to use a standard `DELETE` handler for the endpoint, but realized the codebase requires a dedicated `POST /reset` with admin auth to prevent accidental data loss via browser back-button caching.

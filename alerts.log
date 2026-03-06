@@ -881,3 +881,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 14:15:54 UTC] deploy_ok: Story 146 deployed: Healthy after 0.1s
 [2026-03-06 14:15:59 UTC] story_done: Story 146 complete: Simulation speed control
 [2026-03-06 14:16:00 UTC] story_start: Story 147: Manual tick trigger UI
+[2026-03-06 14:17:15 UTC] deploy_ok: Story 147 deployed: Healthy after 0.1s
+[2026-03-06 14:17:20 UTC] story_done: Story 147 complete: Manual tick trigger UI
+[2026-03-06 14:17:21 UTC] story_start: Story 148: Reset world endpoint
