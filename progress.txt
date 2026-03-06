@@ -682,3 +682,8 @@
 - **Non-obvious React Query caching**: The `useQuery` hook requires explicit `staleTime` configuration to prevent the NPC list from refetching on every route change, as the default behavior treats list data as immediately stale.
 - **Codebase convention for table rendering**: The project enforces a strict separation where `Table` components only handle layout, while `useTableData` hooks manage all sorting, filtering, and pagination logic before passing clean arrays down.
 - **Correction on ID handling**: Initially attempted to use NPC names as unique keys for list rendering, which caused hydration mismatches; corrected to strictly use the database-generated `uuid` for React keys.
+
+--- Story 131: NPC detail page (attempts: 1, 2026-03-06 08:38) ---
+*   **Non-obvious state synchronization**: Realized that the NPC detail page relies on a global `selectedEntity` store rather than local props; updating the store triggers a cascade of re-renders that must be debounced to avoid performance hiccups on rapid clicks.
+*   **Codebase convention for dynamic data**: Discovered the strict pattern of using `useAsyncData` hooks with a `staleTime` of 0 for NPC stats, ensuring the UI always reflects the latest server state without manual refetch logic.
+*   **Corrected conditional rendering bug**: Initially rendered the "Inventory" tab component unconditionally, causing a layout shift when the NPC had no items; fixed by moving the tab registration into the `if (hasInventory)` block within the tab factory function.
