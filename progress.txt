@@ -812,3 +812,8 @@
 - **Non-obvious concurrency handling**: The bulk operation logic required careful management of transaction boundaries; wrapping the entire loop in a single transaction caused lock contention, whereas batching into smaller sub-transactions with explicit commit points maintained performance without data inconsistency.
 - **Codebase pattern for bulk processing**: Discovered a recurring "BatchedProcessor" abstraction used throughout the module that handles pagination, error aggregation, and retry logic automatically, avoiding the need to reinvent loop structures for every new bulk feature.
 - **Correction on error propagation**: Initially returned a generic success status even when partial failures occurred; corrected this to aggregate specific item-level errors and return a detailed summary response, ensuring the calling service can handle retries granularly.
+
+--- Story 156: Input validation on all endpoints (attempts: 1, 2026-03-06 09:29) ---
+- **Non-obvious edge cases**: Realized that `null` vs. `undefined` handling in query parameters requires explicit coercion, as the framework treats missing keys differently than explicitly sent empty strings.
+- **Codebase pattern**: Discovered a consistent convention of defining validation schemas in a separate `validators/` module and reusing them across controller definitions to ensure DRY principles.
+- **Correction**: Initially forgot to validate nested object structures, leading to runtime errors; fixed by implementing recursive schema validation for complex payloads.
