@@ -917,3 +917,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 14:32:56 UTC] deploy_ok: Story 158 deployed: Healthy after 0.1s
 [2026-03-06 14:33:01 UTC] story_done: Story 158 complete: Custom 404 page
 [2026-03-06 14:33:02 UTC] story_start: Story 159: Rate limit feedback page
+[2026-03-06 14:34:17 UTC] deploy_ok: Story 159 deployed: Healthy after 0.1s
+[2026-03-06 14:34:22 UTC] story_done: Story 159 complete: Rate limit feedback page
+[2026-03-06 14:34:23 UTC] story_start: Story 160: CORS preflight handling

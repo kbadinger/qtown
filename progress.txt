@@ -832,3 +832,8 @@
 - **Non-obvious behavior**: The rate limit middleware triggers before the controller logic, so error handling must occur in the middleware layer or a global exception handler to avoid bypassing the feedback UI.
 - **Codebase pattern**: The project consistently uses a `ResponseFactory` service for all error responses to ensure standardized JSON structures and HTTP status codes across different failure scenarios.
 - **Correction**: Initially, I attempted to render the feedback page directly in the controller; I corrected this by moving the logic to the middleware to ensure the rate limit counter is incremented before any business logic executes.
+
+--- Story 160: CORS preflight handling (attempts: 1, 2026-03-06 09:34) ---
+*   **Non-obvious behavior**: The browser automatically includes `Origin` and `Access-Control-Request-Method` headers in the preflight `OPTIONS` request, but the server must explicitly echo back `Access-Control-Allow-Origin` and `Access-Control-Allow-Methods` in the response headers to proceed; missing the `Vary: Origin` header caused caching issues for dynamic origins.
+*   **Codebase pattern**: The middleware stack uses a centralized `cors_handler` function that checks the `origin` against an allowlist before setting response headers, rather than scattering logic across individual route handlers.
+*   **Correction**: Initially, I returned a 200 OK for all `OPTIONS` requests without validating the `Origin` header, which bypassed security checks; I corrected this by ensuring the handler validates the origin first and returns a 403 Forbidden if the request is disallowed.
