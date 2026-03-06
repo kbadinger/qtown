@@ -902,3 +902,8 @@
 *   **Non-Obvious Date Handling**: The timeline required converting raw ISO strings to local time objects before rendering; failing to account for the timezone offset caused misalignment between the chart markers and the actual calendar days.
 *   **Codebase Pattern**: Discovered a strict separation of concerns where data transformation (normalizing progress percentages) happens in a dedicated `useTimelineData` hook, while the component only handles rendering and user interaction.
 *   **Correction**: Initially hardcoded the color scale for milestones, which broke when the number of phases exceeded the palette; corrected by implementing a dynamic color generator based on the `theme` config object to ensure scalability.
+
+--- Story 170: GET /api/metrics endpoint (attempts: 1, 2026-03-06 14:27) ---
+- **Non-obvious metric aggregation**: The endpoint requires manual aggregation of raw logs into time-bucketed summaries before serialization, as the underlying storage layer does not support native time-series queries.
+- **Codebase pattern**: Consistent use of the `MetricResponse` DTO with a standardized `timestamp` (ISO-8601) and `unit` field across all metric endpoints to ensure frontend compatibility.
+- **Correction**: Initially exposed raw database IDs in the response; corrected to use the business-level `metric_key` to prevent leaking internal schema details and improve API stability.

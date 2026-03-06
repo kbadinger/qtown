@@ -981,3 +981,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 19:24:41 UTC] story_start: Story 169: Build progress timeline chart
 [2026-03-06 19:25:28 UTC] start: Ralph online — 168/215 stories complete
 [2026-03-06 19:25:29 UTC] story_start: Story 169: Build progress timeline chart
+[2026-03-06 19:26:48 UTC] deploy_ok: Story 169 deployed: Healthy after 0.1s
+[2026-03-06 19:26:52 UTC] story_done: Story 169 complete: Build progress timeline chart
+[2026-03-06 19:26:53 UTC] story_start: Story 170: GET /api/metrics endpoint
