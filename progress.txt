@@ -586,3 +586,8 @@
 - **Event Dispatching Nuance**: It was non-obvious that `fire` events require a distinct `EventType` enum value rather than reusing existing generic event types; the dispatcher strictly checks the enum for routing, causing silent failures if the type is missing.
 - **Repository Pattern Consistency**: The codebase strictly enforces a "Command-Query Separation" pattern where event creation happens in the service layer, but the actual persistence and dispatching are delegated entirely to the `EventRepository`, which must be injected as an interface.
 - **Correction on Event Sourcing**: Initially, I attempted to mutate the aggregate state before emitting the event, which broke the audit trail; I corrected this by ensuring the event is constructed first, then applied to the state, guaranteeing the event is the single source of truth for state changes.
+
+--- Story 112: Add plague event type (attempts: 1, 2026-03-05 23:32) ---
+- **Tricky Aspect**: The plague event required a non-linear state transition where the "active" status persists across multiple turns until a specific cure condition is met, rather than resolving immediately upon triggering.
+- **Pattern Discovered**: Event handlers follow a strict `check_preconditions -> apply_effects -> schedule_next_trigger` pattern, and all global state mutations must go through the `GameState` facade to ensure deterministic replayability.
+- **Correction Made**: Initially, I applied the population reduction effect before checking if the player had the "Quarantine" buff, causing a race condition; fixed by moving the buff check to the pre-condition phase to short-circuit the damage logic.

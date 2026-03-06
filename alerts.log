@@ -738,3 +738,7 @@ Reset to 'pending' in prd.json to retry
 [2026-03-06 04:18:37 UTC] deploy_ok: Story 110 deployed: Healthy after 0.2s
 [2026-03-06 04:18:51 UTC] story_done: Story 110 complete: Add flood event type
 [2026-03-06 04:18:51 UTC] story_start: Story 111: Add fire event type
+[2026-03-06 04:24:16 UTC] WARN sprite_skip: Story 111: Sprite generation skipped — ComfyUI is not running — cannot generate assets
+[2026-03-06 04:25:24 UTC] deploy_ok: Story 111 deployed: Healthy after 0.1s
+[2026-03-06 04:25:37 UTC] story_done: Story 111 complete: Add fire event type
+[2026-03-06 04:25:37 UTC] story_start: Story 112: Add plague event type
