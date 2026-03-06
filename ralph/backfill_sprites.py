@@ -1,6 +1,6 @@
 """One-time script to generate all missing building sprites.
 
-Reads BUILDING_TYPES from engine/simulation.py, checks which sprites
+Reads BUILDING_TYPES from engine/simulation/constants.py, checks which sprites
 exist in assets/buildings/, and generates any missing ones via ComfyUI.
 
 Usage:
@@ -23,7 +23,7 @@ from ralph.asset_gen import (
 
 
 def get_building_types() -> list[str]:
-    """Import BUILDING_TYPES from engine/simulation.py."""
+    """Import BUILDING_TYPES from engine/simulation."""
     from engine.simulation import BUILDING_TYPES
     return BUILDING_TYPES
 

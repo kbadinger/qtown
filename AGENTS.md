@@ -165,7 +165,7 @@ Use **`### PATCH:`** for existing files and **`### FILE:`** for new files.
 
 ### Patching existing files (preferred)
 
-For files that already exist (especially `engine/simulation.py`), output ONLY the new or changed
+For files that already exist (especially `engine/simulation/*.py`), output ONLY the new or changed
 sections — do NOT rewrite the entire file:
 
 ```

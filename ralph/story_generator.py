@@ -47,7 +47,7 @@ def build_generation_prompt() -> str:
 
     # Include current model/router files for awareness
     parts.append("\n## Current Codebase Files")
-    for pattern in ["engine/models.py", "engine/simulation.py", "engine/routers/*.py"]:
+    for pattern in ["engine/models.py", "engine/simulation/constants.py", "engine/simulation/tick.py", "engine/routers/*.py"]:
         for p in Path(".").glob(pattern):
             parts.append(f"\n### {p}")
             try:
