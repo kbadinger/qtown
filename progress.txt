@@ -872,3 +872,8 @@
 - **Non-obvious**: Handling dynamic column widths in the comparison table required explicit `min-width` constraints on cells to prevent content collapse, a behavior not handled automatically by the grid system.
 - **Pattern**: The codebase consistently uses a `useMemo` hook for derived table data calculations to avoid unnecessary re-renders when parent state changes, rather than computing on every render.
 - **Correction**: Initially applied inline styles for responsive breakpoints, which violated the project's "CSS-in-JS with atomic classes" convention; refactored to use the shared `ResponsiveTable` wrapper component instead.
+
+--- Story 167: Cost comparison table component (attempts: 1, 2026-03-06 12:10) ---
+- **Non-obvious behavior**: The table's dynamic row height calculation required explicit `min-height` overrides on cells to prevent collapsing when content was hidden by conditional rendering, a detail not immediately obvious from the initial mockup.
+- **Codebase pattern**: This project consistently uses a "compound component" pattern for tables (separating `Table`, `Row`, and `Cell`), where the parent manages the data state and children only handle presentation, avoiding prop drilling.
+- **Correction made**: Initially attempted to memoize the entire row component to optimize performance, which inadvertently broke the dynamic sorting feature; corrected by memoizing only the static cell content while keeping the row wrapper reactive.
