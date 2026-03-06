@@ -661,3 +661,43 @@ def suggest_building_placement(db: Session, building_type: str) -> tuple[int, in
                 return (x, y)
     
     return None
+
+
+def detect_resource_gaps(db: Session) -> list[dict]:
+    """Detect missing critical resources in the town.
+    
+    Returns a list of gap dictionaries with gap type, severity, and suggestion.
+    """
+    from sqlalchemy.orm import Session
+    from engine.models import Building
+    
+    gaps = []
+    
+    # Check for food production (farm)
+    farm = db.query(Building).filter(Building.building_type == "farm").first()
+    if not farm:
+        gaps.append({
+            "gap": "food",
+            "severity": "critical",
+            "suggestion": "Build a farm to produce food for NPCs"
+        })
+    
+    # Check for healing (hospital)
+    hospital = db.query(Building).filter(Building.building_type == "hospital").first()
+    if not hospital:
+        gaps.append({
+            "gap": "healing",
+            "severity": "high",
+            "suggestion": "Build a hospital to heal sick NPCs"
+        })
+    
+    # Check for defense (guard tower)
+    guard_tower = db.query(Building).filter(Building.building_type == "guard_tower").first()
+    if not guard_tower:
+        gaps.append({
+            "gap": "defense",
+            "severity": "medium",
+            "suggestion": "Build a guard tower to protect the town"
+        })
+    
+    return gaps

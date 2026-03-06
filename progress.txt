@@ -957,3 +957,8 @@
 - **Non-obvious dependency**: The auto-suggest logic relies on the `MapGrid` service's internal `_calculateValidTiles` method, which is not exported; wrapping it in a custom hook was necessary to avoid tight coupling.
 - **Codebase pattern**: All UI feedback for invalid placements follows the "flash-red-border" convention via the `PlacementValidator` component, rather than using toast notifications.
 - **Correction**: Initially calculated collision detection against the entire map bounds, causing lag; optimized by restricting checks to the immediate 5x5 viewport around the cursor.
+
+--- Story 182: Detect resource gaps (attempts: 1, 2026-03-06 17:31) ---
+- **Non-obvious constraint**: The "resource gap" logic wasn't just about current availability; it required projecting future demand based on pending queue depth, which wasn't immediately clear from the initial schema.
+- **Codebase pattern**: Discovered a consistent `ResourceAllocator` abstraction where all gap calculations must return a `GapReport` object containing both `deficit` and `recovery_time` fields, rather than simple boolean flags.
+- **Correction**: Initially calculated gaps using static thresholds, which caused false positives during peak load; corrected by switching to dynamic thresholds based on the last 15-minute rolling average.
