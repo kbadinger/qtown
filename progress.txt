@@ -742,3 +742,8 @@
 - **Tricky Aspect**: The dynamic aggregation of cost data across multiple dimensions (project, service, time-range) required careful handling of null values and timezone offsets to prevent skewed totals in the summary cards.
 - **Pattern Discovered**: The codebase consistently uses a "Memoized Data Fetcher" pattern for dashboard widgets, where data is cached by query parameters to prevent redundant API calls during rapid filter changes.
 - **Correction Made**: Initially implemented the "last 30 days" default range using client-side date math, which caused discrepancies for users in different timezones; corrected by delegating range calculation to the backend API to ensure consistency.
+
+--- Story 143: About page (attempts: 1, 2026-03-06 08:54) ---
+- **Non-obvious routing**: The "About" page requires a specific layout wrapper to inherit the global navigation state; omitting this caused the header to render inconsistently across different route depths.
+- **Content separation**: The codebase strictly enforces separating static text from dynamic data by using a `ContentBlock` component, rather than hardcoding text directly into the page component.
+- **Correction**: Initially attempted to fetch team member data via a client-side API call on mount, which caused a hydration mismatch; corrected by moving the data fetching to `getStaticProps` to ensure server-side rendering.
