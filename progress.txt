@@ -732,3 +732,8 @@
 - **Role-Based Access Control (RBAC) Granularity**: Implementing permission checks at the controller level was trickier than expected; I initially relied on simple boolean flags but had to refactor to a middleware-based approach to cleanly separate authorization logic from business rules.
 - **Consistent Error Handling Pattern**: Discovered that this codebase strictly uses a centralized `ApiResponse` wrapper for all admin endpoints, ensuring uniform JSON structure and status codes across the API, which simplifies frontend consumption.
 - **Over-Engineering Data Fetching**: Initially attempted to load all user data into memory for the dashboard summary, causing performance bottlenecks; corrected this by switching to aggregated database queries with proper indexing to handle larger datasets efficiently.
+
+--- Story 141: Approval workflow page (attempts: 1, 2026-03-06 08:52) ---
+- **Tricky**: Handling the conditional rendering of the "Approve" button based on the user's role and the current workflow state required careful validation to prevent unauthorized actions.
+- **Pattern**: The codebase consistently uses a centralized `useWorkflowStatus` hook to manage state transitions, rather than managing status directly within individual component logic.
+- **Correction**: Initially attempted to trigger the API call directly on button click; corrected to use a confirmation modal first to prevent accidental approvals and ensure user intent.
