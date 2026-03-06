@@ -809,3 +809,6 @@ Add gold_rush event type
 [2026-03-06 13:35:04 UTC] deploy_ok: Story 127 deployed: Healthy after 0.1s
 [2026-03-06 13:35:09 UTC] story_done: Story 127 complete: Responsive grid layout
 [2026-03-06 13:35:09 UTC] story_start: Story 128: Buildings list page
+[2026-03-06 13:36:09 UTC] deploy_ok: Story 128 deployed: Healthy after 0.1s
+[2026-03-06 13:36:14 UTC] story_done: Story 128 complete: Buildings list page
+[2026-03-06 13:36:15 UTC] story_start: Story 129: Building detail page

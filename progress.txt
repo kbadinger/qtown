@@ -672,3 +672,8 @@
 - **Tricky/Non-Obvious**: The `buildings` collection requires a manual `reindex` call after bulk updates; relying on automatic background indexing causes a 2-3 second delay in UI visibility for new entries.
 - **Patterns/Conventions**: All list views follow the `fetch -> map -> render` pattern using the shared `DataTable` component, but filtering logic is strictly handled in the controller layer, never in the view.
 - **Mistakes/Corrections**: Initially omitted the `status` filter in the API query, causing the frontend to display archived buildings; fixed by ensuring the `status=active` param is always appended to the request.
+
+--- Story 129: Building detail page (attempts: 1, 2026-03-06 08:36) ---
+*   **Non-obvious state synchronization**: The detail page requires explicit handling of the "optimistic UI" update when a user toggles a status; failing to sync the local component state with the global store immediately caused a brief visual flicker before the server response.
+*   **Codebase convention for data fetching**: This project enforces a strict pattern where all API calls for detail views must use the `useAsync` hook with a `staleTime` of 0 to prevent caching stale data, rather than relying on default React Query behavior.
+*   **Correction on error boundaries**: Initially, I wrapped the entire page in a generic error boundary, which hid specific 404 states; I corrected this by moving the boundary down to the specific data-fetching component and implementing a dedicated `NotFound` fallback UI.
