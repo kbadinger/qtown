@@ -937,3 +937,8 @@
 - **Non-obvious coupling**: NPC memory retrieval is tightly coupled with the `BuildingRegistry` singleton; favoring a building requires checking both the NPC's internal `memoryMap` and the global registry's `isAccessible` flag, which isn't immediately clear from the method signature.
 - **Convention for persistence**: The codebase uses a "dirty flag" pattern on the `NPC` entity rather than immediate database writes; changes to favorite buildings only persist when the `NPC` is serialized at the end of the tick cycle.
 - **Correction on edge cases**: Initially assumed `favoriteBuildingId` could be `null` for new NPCs, but the schema enforces a default "None" enum value; failing to handle this caused a null-pointer exception during the serialization check.
+
+--- Story 178: NPC memory - avoid dangerous areas (attempts: 1, 2026-03-06 16:41) ---
+- **Tricky Logic**: Determining "danger" requires checking both the target tile's properties and the NPC's current pathfinding state; simply checking the destination isn't enough if the path *to* it is blocked by hazards.
+- **Codebase Convention**: The `Map` class exposes a `get_tile(x, y)` method that returns a `Tile` object with a `is_hazardous` boolean, which is the canonical way to evaluate terrain safety rather than parsing raw grid data.
+- **Correction**: Initially, I updated the NPC's destination immediately upon detecting danger, causing jittery movement; I corrected this by forcing a full path recalculation only when the current path is invalidated, ensuring smoother behavior.

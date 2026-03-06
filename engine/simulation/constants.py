@@ -84,3 +84,9 @@ JUSTICE_RESPONSE_PURSUIT_DURATION = 10
 JUSTICE_RESPONSE_RE_RAID_DELAY = 50
 """Ticks before bandits raid again if they escape."""
 
+
+
+
+AVOIDED_AREA_EXPIRATION_TICKS = 50
+"""Number of ticks before a dangerous area is no longer avoided."""
+

@@ -707,3 +707,39 @@ def update_favorites(db: Session, npc_id: int) -> None:
     # Store as JSON string
     npc.favorite_buildings = json.dumps(favorites)
     db.commit()
+
+
+def mark_dangerous_area(db: Session, npc_id: int, x: int, y: int) -> None:
+    """Mark a location as dangerous for an NPC."""
+    from engine.models import NPC, WorldState
+    
+    # Get current tick from world state
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Get the NPC
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return
+    
+    # Load existing avoided areas
+    avoided_areas = npc.avoided_areas
+    if avoided_areas and isinstance(avoided_areas, str):
+        try:
+            avoided_list = json.loads(avoided_areas)
+        except (json.JSONDecodeError, TypeError):
+            avoided_list = []
+    else:
+        avoided_list = []
+    
+    # Add new dangerous area with tick information
+    new_area = {
+        "x": x,
+        "y": y,
+        "tick_added": current_tick
+    }
+    avoided_list.append(new_area)
+    
+    # Save back to NPC
+    npc.avoided_areas = json.dumps(avoided_list)
+    db.commit()
