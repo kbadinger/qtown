@@ -692,3 +692,8 @@
 - **Grid Layout Logic**: The interaction between `minmax()` in `grid-template-columns` and `grid-auto-rows` was non-obvious; relying solely on `fr` units caused unexpected row collapsing when content height varied, requiring explicit `auto-fill` handling.
 - **Responsive Breakpoint Pattern**: Discovered the codebase enforces a "mobile-first" convention where base styles are fluid, and specific grid column counts are only applied via `@media` queries, avoiding nested media blocks in component CSS.
 - **Correction on Gap Handling**: Initially applied `gap` to the container without accounting for the parent's `padding`, causing visual misalignment on small screens; corrected by using `calc()` to sync gap with container padding or switching to `gap` on the grid item level.
+
+--- Story 133: Economy dashboard (attempts: 1, 2026-03-06 08:41) ---
+*   **Non-obvious data aggregation**: The dashboard's "projected revenue" metric required a custom SQL window function to handle fiscal year boundaries correctly; standard `GROUP BY` logic failed when transactions spanned two fiscal periods.
+*   **Codebase convention**: This project enforces a strict separation where all currency formatting and localization logic must reside in the `utils/currency` module, never inside React components or API response handlers.
+*   **Correction on caching**: Initially, I implemented client-side caching for the dashboard widget, which caused stale data issues during high-frequency updates; I corrected this by switching to a server-side cache with a 30-second TTL and `stale-while-revalidate` headers.
