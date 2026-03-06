@@ -1,0 +1,151 @@
+"""Main simulation tick orchestrator."""
+
+from sqlalchemy.orm import Session
+
+from engine.models import NPC, WorldState
+from engine.simulation.init import init_world_state
+from engine.simulation.buildings import seed_all_buildings
+from engine.simulation.weather import update_weather, apply_weather_effects
+from engine.simulation.npcs import (
+    eat, sleep_npc, calculate_happiness, move_npc_toward_target,
+    update_relationships, check_marriage, check_population_growth, age_npcs,
+)
+from engine.simulation.production import (
+    produce_resources, produce_bakery_resources, produce_blacksmith_resources,
+    produce_farm_resources, produce_library_resources,
+    produce_mine_resources, produce_lumber_mill_resources,
+    produce_fishing_dock_resources, produce_guard_tower_resources,
+    produce_gate_resources, produce_well_resources,
+    produce_warehouse_resources, produce_bank_resources,
+    produce_theater_resources, produce_art,
+)
+from engine.simulation.effects import (
+    process_hospital, process_tavern, process_school_skill_gain,
+    apply_church_effects, apply_fountain_effects,
+)
+from engine.simulation.economy import (
+    process_work, collect_taxes, track_inflation,
+)
+
+
+def process_tick(db: Session) -> None:
+    """Advance the simulation by one tick.
+    
+    Processes all game systems in order:
+    1. World State — time, weather
+    2. NPC Needs — hunger, energy decay
+    3. NPC Decisions — eat, sleep, work, move
+    4. Movement — NPCs move toward targets
+    5. Production — buildings produce resources
+    6. Economy — wages, trades, tax collection
+    7. Population — births, deaths, aging
+    8. Events — log notable events
+    """
+    # 0. Ensure all building types are seeded (idempotent)
+    seed_all_buildings(db)
+
+    # 1. Update world state (time, weather)
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        init_world_state(db)
+        world_state = db.query(WorldState).first()
+    
+    world_state.tick += 1
+    
+    # Advance time of day
+    time_order = ['morning', 'afternoon', 'evening', 'night']
+    current_time_idx = time_order.index(world_state.time_of_day)
+    world_state.time_of_day = time_order[(current_time_idx + 1) % 4]
+    
+    # Change day every 4 ticks
+    if world_state.time_of_day == 'morning':
+        world_state.day += 1
+    
+    # 2. Process weather
+    update_weather(db)
+    apply_weather_effects(db)
+    
+    # 3. Process NPC needs (hunger, energy decay)
+    npcs = db.query(NPC).filter(NPC.is_dead == False).all()
+    for npc in npcs:
+        npc.hunger = min(100, npc.hunger + 5)
+        npc.energy = max(0, npc.energy - 3)
+    
+    # 4. Process NPC decisions (eat, sleep, work, move)
+    for npc in npcs:
+        # Decide based on needs
+        if npc.hunger > 50:
+            # Try to eat
+            if npc.gold >= 5:
+                eat(db, npc.id)
+        elif npc.energy < 30:
+            # Try to sleep
+            sleep_npc(db, npc.id)
+        
+        # Calculate happiness
+        calculate_happiness(db, npc.id)
+    
+    # 5. Process movement (snow halves movement - every other tick)
+    weather = world_state.weather
+    if weather != 'snow' or world_state.tick % 2 == 0:
+        for npc in npcs:
+            move_npc_toward_target(db, npc)
+    
+    # 6. Process production
+    produce_resources(db, weather)
+    produce_bakery_resources(db)  # Bakery production
+    produce_blacksmith_resources(db)  # Blacksmith production
+    produce_farm_resources(db)  # Farm production
+    produce_library_resources(db)  # Library production
+    produce_mine_resources(db)  # Mine production
+    produce_lumber_mill_resources(db)  # Lumber Mill production
+    produce_fishing_dock_resources(db)  # Fishing Dock production
+    produce_guard_tower_resources(db)  # Guard Tower production
+    produce_gate_resources(db)  # Gate production
+    produce_well_resources(db)  # Well production
+    produce_warehouse_resources(db)  # Warehouse production
+    produce_bank_resources(db)  # Bank production
+    produce_theater_resources(db)  # Theater production
+    produce_art(db)  # Art production from Theater
+    process_hospital(db)  # Hospital healing
+    process_tavern(db)  # Tavern effects
+    
+    # 7. Process economy (wages, trades, tax collection)
+    process_work(db)
+    
+    # Collect taxes every 10 ticks
+    if world_state.tick % 10 == 0:
+        collect_taxes(db)
+    
+    # Track inflation every 10 ticks
+    if world_state.tick % 10 == 0:
+        track_inflation(db)
+    
+    # 8. Process population (births, deaths, aging)
+    check_population_growth(db)
+    
+    # Age NPCs every 100 ticks
+    if world_state.tick % 100 == 0:
+        age_npcs(db)
+    
+    # 9. Log events (notable events)
+    # Events are logged throughout other functions
+    
+    # Process school skill gains every 5 ticks
+    if world_state.tick % 5 == 0:
+        process_school_skill_gain(db)
+    
+    # Apply church effects
+    apply_church_effects(db)
+    
+    # Apply fountain effects
+    apply_fountain_effects(db)
+    
+    # Update relationships
+    update_relationships(db)
+    
+    # Check for marriages every 50 ticks
+    if world_state.tick % 50 == 0:
+        check_marriage(db)
+    
+    db.commit()

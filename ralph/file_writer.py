@@ -13,6 +13,7 @@ BLOCKLIST = [
     "engine/auth.py",
     "engine/main.py",
     "engine/db.py",
+    "engine/simulation/__init__.py",
     "engine/sprites.py",
     "engine/templates/dashboard.html",
     "engine/templates/timeline.html",
@@ -317,7 +318,7 @@ def parse_patch_sections(content: str) -> list[PatchSection]:
     # Split on section headers — allow ###, ####, or no hashes (Qwen varies)
     header_re = re.compile(
         r"^(?:#{3,4}\s+)?"
-        r"(ADD\s+IMPORT|ADD\s+FUNCTION|UPDATE\s+FUNCTION|(?:UPDATE|ADD)\s+CONSTANT)"
+        r"(ADD\s+IMPORT|ADD\s+FUNCTION|ADD\s+CLASS|UPDATE\s+FUNCTION|UPDATE\s+CLASS|(?:UPDATE|ADD)\s+CONSTANT)"
         r"(?:\s*:\s*(\w+))?"  # optional : name
         r":?\s*$",  # allow trailing colon with no name
         re.IGNORECASE | re.MULTILINE,
@@ -331,6 +332,11 @@ def parse_patch_sections(content: str) -> list[PatchSection]:
         # Normalize add_constant → update_constant
         if raw_action == "add_constant":
             raw_action = "update_constant"
+        # Normalize class actions → function actions (same append/replace logic)
+        if raw_action == "add_class":
+            raw_action = "add_function"
+        if raw_action == "update_class":
+            raw_action = "update_function"
         target = m.group(2) or ""
         start = m.end()
         end = splits[i + 1].start() if i + 1 < len(splits) else len(content)
@@ -347,6 +353,10 @@ def parse_patch_sections(content: str) -> list[PatchSection]:
         else:
             sections.append(PatchSection(action=raw_action, target=target, body=body))
 
+    # Fallback: if no sections found, scan code blocks for class/function defs
+    if not sections:
+        sections = _extract_sections_from_code_blocks(content)
+
     return sections
 
 
@@ -355,22 +365,54 @@ def _merge_imports(existing_source: str, import_block: str) -> str:
     existing_lines = existing_source.split("\n")
     new_import_lines = [l.strip() for l in import_block.split("\n") if l.strip()]
 
-    # Find where imports end in existing file (last import/from line before first def/class)
+    # Find where imports end — track multi-line import blocks (parenthesized)
+    # IMPORTANT: only match column-0 imports to avoid matching `import sys` inside functions
     last_import_idx = -1
+    in_multiline = False
     for i, line in enumerate(existing_lines):
-        stripped = line.strip()
-        if stripped.startswith("import ") or stripped.startswith("from "):
+        if in_multiline:
             last_import_idx = i
+            if ")" in line:
+                in_multiline = False
+            continue
+        if line.startswith("import ") or line.startswith("from "):
+            last_import_idx = i
+            if "(" in line and ")" not in line:
+                in_multiline = True
 
-    # Collect existing import strings for dedup
-    existing_imports = set()
+    # Collect all imported names for dedup (handles both single-line and multi-line)
+    existing_import_lines = set()
+    existing_names = set()  # individual imported names like "Relationship"
+    in_multiline = False
     for line in existing_lines:
-        stripped = line.strip()
-        if stripped.startswith("import ") or stripped.startswith("from "):
-            existing_imports.add(stripped)
+        if in_multiline:
+            # Inside parenthesized import — collect names
+            for name in re.findall(r'\b(\w+)\b', line.replace(")", "")):
+                existing_names.add(name)
+            if ")" in line:
+                in_multiline = False
+            continue
+        if line.startswith("import ") or line.startswith("from "):
+            existing_import_lines.add(line.strip())
+            # Collect individual names from "from x import A, B, C"
+            m = re.match(r'from\s+\S+\s+import\s+(.+)', line)
+            if m:
+                for name in re.findall(r'\b(\w+)\b', m.group(1).replace("(", "")):
+                    existing_names.add(name)
+            if "(" in line and ")" not in line:
+                in_multiline = True
 
-    # Filter to truly new imports
-    to_add = [l for l in new_import_lines if l not in existing_imports]
+    # Filter: skip if exact line exists OR if all imported names already present
+    to_add = []
+    for imp in new_import_lines:
+        if imp in existing_import_lines:
+            continue
+        # Check if "from x import Y" and Y is already imported
+        m = re.match(r'from\s+\S+\s+import\s+(\w+)', imp)
+        if m and m.group(1) in existing_names:
+            continue
+        to_add.append(imp)
+
     if not to_add:
         return existing_source
 
@@ -383,14 +425,14 @@ def _merge_imports(existing_source: str, import_block: str) -> str:
 
 
 def _find_function_range(source: str, func_name: str) -> tuple[int, int] | None:
-    """Find the line range (start, end exclusive, 0-indexed) of a top-level function by name."""
+    """Find the line range (start, end exclusive, 0-indexed) of a top-level function or class by name."""
     try:
         tree = ast.parse(source)
     except SyntaxError:
         return None
 
     for node in ast.iter_child_nodes(tree):
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == func_name:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and node.name == func_name:
             start = node.lineno - 1
             if node.decorator_list:
                 start = min(d.lineno for d in node.decorator_list) - 1
@@ -598,9 +640,59 @@ def apply_patch(filepath: str, sections: list[PatchSection]) -> str:
 
 
 def _guess_func_name(body: str) -> str:
-    """Extract function name from a function body string."""
-    m = re.match(r"(?:@\w+.*\n)*(?:async\s+)?def\s+(\w+)", body.strip())
+    """Extract function or class name from a body string."""
+    m = re.match(r"(?:@\w+.*\n)*(?:async\s+)?(?:def|class)\s+(\w+)", body.strip())
     return m.group(1) if m else ""
+
+
+def _extract_sections_from_code_blocks(content: str) -> list[PatchSection]:
+    """Fallback: extract class and function definitions from code blocks.
+
+    When Qwen doesn't use proper section headers, scan for class/def
+    definitions inside code fences and create appropriate sections.
+    """
+    sections = []
+    # Find all code blocks
+    code_blocks = re.findall(r"```(?:python)?\n(.*?)```", content, re.DOTALL)
+    if not code_blocks:
+        # Try without fences — maybe it's raw code after ### PATCH:
+        code_blocks = [content]
+
+    for block in code_blocks:
+        block = block.strip()
+        if not block:
+            continue
+
+        # Split into top-level definitions (class or def at column 0)
+        chunks = re.split(r"\n(?=(?:class |def |async def |@))", block)
+        for chunk in chunks:
+            chunk = chunk.strip()
+            if not chunk:
+                continue
+            # Skip comments
+            if chunk.startswith("#"):
+                # Check if there's a class/def after the comment
+                lines = chunk.split("\n")
+                code_lines = [l for l in lines if not l.strip().startswith("#")]
+                if code_lines:
+                    chunk = "\n".join(code_lines).strip()
+                else:
+                    continue
+
+            if re.match(r"(?:@\w+.*\n)*class\s+(\w+)", chunk):
+                name = re.match(r"(?:@\w+.*\n)*class\s+(\w+)", chunk).group(1)
+                sections.append(PatchSection(action="add_function", target=name, body=chunk))
+                print(f"  [PATCH] Recovered class {name} from code block")
+            elif re.match(r"(?:@\w+.*\n)*(?:async\s+)?def\s+(\w+)", chunk):
+                name = _guess_func_name(chunk)
+                sections.append(PatchSection(action="add_function", target=name, body=chunk))
+                print(f"  [PATCH] Recovered function {name} from code block")
+            # Import lines
+            elif chunk.startswith("import ") or chunk.startswith("from "):
+                sections.append(PatchSection(action="add_import", target="", body=chunk))
+                print(f"  [PATCH] Recovered import from code block")
+
+    return sections
 
 
 def parse_file_blocks(response: str) -> list[FileBlock]:
@@ -634,14 +726,14 @@ def _redirect_misplaced_sections(file_blocks: list[FileBlock]) -> list[FileBlock
     """Redirect patch sections that target the wrong file.
 
     Common Qwen mistake: writing BUILDING_TYPES to engine/models.py when it
-    lives in engine/simulation.py. Detect and redirect.
+    lives in engine/simulation/constants.py. Detect and redirect.
     """
-    # Constants that live in engine/simulation.py, NOT engine/models.py
+    # Constants that live in engine/simulation/constants.py, NOT engine/models.py
     SIM_CONSTANTS = {"BUILDING_TYPES"}
 
     sim_block = None
     for b in file_blocks:
-        if b.filepath.replace("\\", "/") == "engine/simulation.py" and b.mode == "patch":
+        if b.filepath.replace("\\", "/") == "engine/simulation/constants.py" and b.mode == "patch":
             sim_block = b
             break
 
@@ -649,7 +741,7 @@ def _redirect_misplaced_sections(file_blocks: list[FileBlock]) -> list[FileBlock
         if block.mode != "patch":
             continue
         norm = block.filepath.replace("\\", "/")
-        if norm == "engine/simulation.py":
+        if norm == "engine/simulation/constants.py":
             continue
 
         redirected = []
@@ -662,11 +754,11 @@ def _redirect_misplaced_sections(file_blocks: list[FileBlock]) -> list[FileBlock
 
         if redirected:
             names = [s.target for s in redirected]
-            print(f"  [REDIRECT] Moving {names} from {block.filepath} -> engine/simulation.py")
+            print(f"  [REDIRECT] Moving {names} from {block.filepath} -> engine/simulation/constants.py")
             block.sections = kept
 
             if sim_block is None:
-                sim_block = FileBlock(filepath="engine/simulation.py", content="", mode="patch", sections=[])
+                sim_block = FileBlock(filepath="engine/simulation/constants.py", content="", mode="patch", sections=[])
                 file_blocks.append(sim_block)
             sim_block.sections = redirected + sim_block.sections
 

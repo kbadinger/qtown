@@ -1,0 +1,592 @@
+"""Building seed functions and build_building."""
+
+import sys
+from sqlalchemy.orm import Session
+
+from engine.models import Building
+
+
+def seed_all_buildings(db: Session) -> None:
+    """Call every seed_* function in this module. All are idempotent.
+
+    Auto-discovers functions matching seed_*(db) so new building types
+    added by Qwen are picked up without editing this function.
+    """
+    import sys
+    module = sys.modules[__name__]
+    for name in sorted(dir(module)):
+        if name.startswith("seed_") and name != "seed_all_buildings":
+            fn = getattr(module, name)
+            if callable(fn):
+                fn(db)
+
+
+def build_building(db: Session, name: str, building_type: str, x: int, y: int) -> Building:
+    """Build a new building at the specified coordinates.
+    
+    Validates x,y are in 0-49 range. Creates a Building row.
+    Returns the new Building object.
+    Raises ValueError if coordinates out of range or occupied.
+    """
+    # Validate coordinates are in range
+    if x < 0 or x > 49 or y < 0 or y > 49:
+        raise ValueError(f"Coordinates ({x}, {y}) out of valid range (0-49)")
+    
+    # Check if tile is already occupied by another building
+    existing_building = db.query(Building).filter(Building.x == x, Building.y == y).first()
+    if existing_building:
+        raise ValueError(f"Tile ({x}, {y}) is already occupied by {existing_building.name}")
+    
+    # Create the new building
+    new_building = Building(
+        name=name,
+        building_type=building_type,
+        x=x,
+        y=y,
+        capacity=10
+    )
+    
+    db.add(new_building)
+    db.commit()
+    db.refresh(new_building)
+    
+    return new_building
+
+
+def seed_bakery(db: Session) -> None:
+    """Seed a bakery building into the town.
+
+    Creates 1 bakery building at coordinates (18, 18).
+    Idempotent: calling twice will not duplicate the bakery.
+    """
+    existing_bakery = db.query(Building).filter(
+        Building.building_type == "bakery"
+    ).first()
+    if existing_bakery:
+        return
+
+    bakery = Building(
+        name="Bakery",
+        building_type="bakery",
+        x=18,
+        y=18,
+        capacity=10
+    )
+    db.add(bakery)
+    db.commit()
+
+
+def seed_blacksmith(db: Session) -> None:
+    """Seed a blacksmith building into the town.
+
+    Creates 1 blacksmith building at coordinates (22, 22).
+    Idempotent: calling twice will not duplicate the blacksmith.
+    """
+    existing_blacksmith = db.query(Building).filter(
+        Building.building_type == "blacksmith"
+    ).first()
+    if existing_blacksmith:
+        return
+
+    blacksmith = Building(
+        name="Blacksmith",
+        building_type="blacksmith",
+        x=22,
+        y=22,
+        capacity=10
+    )
+    db.add(blacksmith)
+    db.commit()
+
+
+def seed_farm(db: Session) -> None:
+    """Seed a farm building into the town.
+
+    Creates 1 farm building at coordinates (15, 15).
+    Idempotent: calling twice will not duplicate the farm.
+    """
+    existing_farm = db.query(Building).filter(
+        Building.building_type == "farm"
+    ).first()
+    if existing_farm:
+        return
+
+    farm = Building(
+        name="Farm",
+        building_type="farm",
+        x=15,
+        y=15,
+        capacity=10
+    )
+    db.add(farm)
+    db.commit()
+
+
+def seed_church(db: Session) -> None:
+    """Seed a church building into the town.
+
+    Creates 1 church building at coordinates (35, 35).
+    Idempotent: calling twice will not duplicate the church.
+    """
+    existing_church = db.query(Building).filter(
+        Building.building_type == "church"
+    ).first()
+    if existing_church:
+        return
+
+    church = Building(
+        name="Church",
+        building_type="church",
+        x=35,
+        y=35,
+        capacity=10
+    )
+    db.add(church)
+    db.commit()
+
+
+def seed_school(db: Session) -> None:
+    """Seed school building idempotently.
+    
+    Creates one school if none exists.
+    """
+    existing = db.query(Building).filter(Building.building_type == "school").first()
+    if existing:
+        return
+    
+    db.add(Building(name="School", building_type="school", x=25, y=35, capacity=30))
+    db.commit()
+
+
+def seed_hospital(db: Session) -> None:
+    """Seed a hospital building into the town.
+
+    Creates 1 hospital building at coordinates (28, 28).
+    Idempotent: calling twice will not duplicate the hospital.
+    """
+    existing_hospital = db.query(Building).filter(
+        Building.building_type == "hospital"
+    ).first()
+    if existing_hospital:
+        return
+
+    hospital = Building(
+        name="Hospital",
+        building_type="hospital",
+        x=28,
+        y=28,
+        capacity=10
+    )
+    db.add(hospital)
+    db.commit()
+
+
+def seed_tavern(db: Session) -> None:
+    """Seed a tavern building into the town.
+
+    Creates 1 tavern building at coordinates (40, 40).
+    Idempotent: calling twice will not duplicate the tavern.
+    """
+    existing_tavern = db.query(Building).filter(
+        Building.building_type == "tavern"
+    ).first()
+    if existing_tavern:
+        return
+
+    tavern = Building(
+        name="Tavern",
+        building_type="tavern",
+        x=40,
+        y=40,
+        capacity=10
+    )
+    db.add(tavern)
+    db.commit()
+
+
+def seed_library(db: Session) -> None:
+    """Seed a library building into the town.
+
+    Creates 1 library building at coordinates (20, 20).
+    Idempotent: calling twice will not duplicate the library.
+    """
+    existing_library = db.query(Building).filter(Building.building_type == "library").first()
+    if existing_library:
+        return
+
+    db.add(Building(name="Library", building_type="library", x=20, y=20))
+    db.commit()
+
+
+def seed_mine(db: Session) -> None:
+    """Seed a mine building into the town.
+
+    Creates 1 mine building at coordinates (45, 45).
+    Idempotent - will not create if one already exists.
+    """
+    existing_mines = db.query(Building).filter(Building.building_type == 'mine').count()
+    if existing_mines > 0:
+        return
+    
+    # Create mine at (45, 45)
+    mine = Building(
+        name="Town Mine",
+        building_type="mine",
+        x=45,
+        y=45,
+        capacity=5
+    )
+    db.add(mine)
+    db.commit()
+
+
+def seed_lumber_mill(db: Session) -> None:
+    """Seed a lumber mill building into the town.
+
+    Creates 1 lumber mill building at coordinates (46, 46).
+    Idempotent - will not create if one already exists.
+    """
+    existing_mills = db.query(Building).filter(Building.building_type == 'lumber_mill').count()
+    if existing_mills > 0:
+        return
+    
+    # Create lumber mill at (46, 46)
+    lumber_mill = Building(
+        name="Town Lumber Mill",
+        building_type="lumber_mill",
+        x=46,
+        y=46,
+        capacity=5
+    )
+    db.add(lumber_mill)
+    db.commit()
+
+
+def seed_fishing_dock(db: Session) -> None:
+    """Seed a fishing dock building into the town.
+
+    Creates 1 fishing dock building at coordinates (47, 47).
+    Idempotent - will not create if one already exists.
+    """
+    existing_docks = db.query(Building).filter(Building.building_type == 'fishing_dock').count()
+    if existing_docks > 0:
+        return
+    
+    # Create fishing dock at (47, 47)
+    fishing_dock = Building(
+        name="Town Fishing Dock",
+        building_type="fishing_dock",
+        x=47,
+        y=47,
+        capacity=5
+    )
+    db.add(fishing_dock)
+    db.commit()
+
+
+def seed_guard_tower(db: Session) -> None:
+    """Seed a guard tower building into the town.
+
+    Creates 1 guard tower building at coordinates (48, 48).
+    Idempotent - will not create if one already exists.
+    """
+    existing_towers = db.query(Building).filter(Building.building_type == 'guard_tower').count()
+    if existing_towers > 0:
+        return
+    
+    # Create guard tower at (48, 48)
+    guard_tower = Building(
+        name="Town Guard Tower",
+        building_type="guard_tower",
+        x=48,
+        y=48,
+        capacity=5
+    )
+    db.add(guard_tower)
+    db.commit()
+
+
+def seed_wall(db: Session) -> None:
+    """Seed a wall building into the town.
+
+    Creates 1 wall building at coordinates (49, 49).
+    Idempotent - will not create if one already exists.
+    """
+    existing_walls = db.query(Building).filter(Building.building_type == 'wall').count()
+    if existing_walls > 0:
+        return
+    
+    # Create wall at (49, 49)
+    wall = Building(
+        name="Town Wall",
+        building_type="wall",
+        x=49,
+        y=49,
+        capacity=5
+    )
+    db.add(wall)
+    db.commit()
+
+
+def seed_gate(db: Session) -> None:
+    """Seed a gate building into the town.
+
+    Creates 1 gate building at coordinates (50, 50).
+    Idempotent - will not create if one already exists.
+    """
+    existing_gates = db.query(Building).filter(Building.building_type == 'gate').count()
+    if existing_gates > 0:
+        return
+    
+    # Create gate at (50, 50)
+    gate = Building(
+        name="Town Gate",
+        building_type="gate",
+        x=50,
+        y=50,
+        capacity=5
+    )
+    db.add(gate)
+    db.commit()
+
+
+def seed_fountain(db: Session) -> None:
+    """Seed a fountain building into the town.
+
+    Creates 1 fountain building at coordinates (40, 40).
+    Idempotent - will not create if one already exists.
+    """
+    existing_fountains = db.query(Building).filter(Building.building_type == 'fountain').count()
+    if existing_fountains > 0:
+        return
+    
+    # Create fountain at (40, 40)
+    fountain = Building(
+        name="Town Fountain",
+        building_type="fountain",
+        x=40,
+        y=40,
+        capacity=5
+    )
+    db.add(fountain)
+    db.commit()
+
+
+def seed_well(db: Session) -> None:
+    """Seed a well building into the town.
+
+    Creates 1 well building at coordinates (41, 41).
+    Idempotent - will not create if one already exists.
+    """
+    existing_wells = db.query(Building).filter(Building.building_type == 'well').count()
+    if existing_wells > 0:
+        return
+    
+    # Create well at (41, 41)
+    well = Building(
+        name="Town Well",
+        building_type="well",
+        x=41,
+        y=41,
+        capacity=5
+    )
+    db.add(well)
+    db.commit()
+
+
+def seed_warehouse(db: Session) -> None:
+    """Seed a warehouse building into the town.
+
+    Creates 1 warehouse building at coordinates (42, 42).
+    Idempotent - will not create if one already exists.
+    """
+    existing_warehouses = db.query(Building).filter(Building.building_type == 'warehouse').count()
+    if existing_warehouses > 0:
+        return
+    
+    # Create warehouse at (42, 42)
+    warehouse = Building(
+        name="Town Warehouse",
+        building_type="warehouse",
+        x=42,
+        y=42,
+        capacity=5
+    )
+    db.add(warehouse)
+    db.commit()
+
+
+def seed_bank(db: Session) -> None:
+    """Seed a bank building into the town.
+
+    Creates 1 bank building at coordinates (51, 51).
+    Idempotent - will not create if one already exists.
+    """
+    existing_banks = db.query(Building).filter(Building.building_type == 'bank').count()
+    if existing_banks > 0:
+        return
+    
+    # Create bank at (51, 51)
+    bank = Building(
+        name="Town Bank",
+        building_type="bank",
+        x=51,
+        y=51,
+        capacity=5
+    )
+    db.add(bank)
+    db.commit()
+
+
+def seed_theater(db: Session) -> None:
+    """Seed a theater building into the town.
+
+    Creates 1 theater building at coordinates (52, 52).
+    Idempotent - will not create if one already exists.
+    """
+    existing_theaters = db.query(Building).filter(Building.building_type == 'theater').count()
+    if existing_theaters > 0:
+        return
+    
+    # Create theater at (52, 52)
+    theater = Building(
+        name="Town Theater",
+        building_type="theater",
+        x=52,
+        y=52,
+        capacity=5
+    )
+    db.add(theater)
+    db.commit()
+
+
+def seed_arena(db: Session) -> None:
+    """Seed an arena building into the town.
+
+    Creates 1 arena building at coordinates (53, 53).
+    Idempotent - will not create if one already exists.
+    """
+    existing_arenas = db.query(Building).filter(Building.building_type == 'arena').count()
+    if existing_arenas > 0:
+        return
+    
+    # Create arena at (53, 53)
+    arena = Building(
+        name="Town Arena",
+        building_type="arena",
+        x=53,
+        y=53,
+        capacity=5
+    )
+    db.add(arena)
+    db.commit()
+
+
+def seed_prison(db: Session) -> None:
+    """Seed a prison building into the town.
+
+    Creates 1 prison building at coordinates (54, 54).
+    Idempotent - will not create if one already exists.
+    """
+    existing_prisons = db.query(Building).filter(Building.building_type == 'prison').count()
+    if existing_prisons > 0:
+        return
+    
+    # Create prison at (54, 54)
+    prison = Building(
+        name="Town Prison",
+        building_type="prison",
+        x=54,
+        y=54,
+        capacity=5
+    )
+    db.add(prison)
+    db.commit()
+
+
+def seed_graveyard(db: Session) -> None:
+    """Seed a graveyard building into the town.
+
+    Creates 1 graveyard building at coordinates (55, 55).
+    Idempotent - will not create if one already exists.
+    """
+    existing_graveyards = db.query(Building).filter(Building.building_type == 'graveyard').count()
+    if existing_graveyards > 0:
+        return
+    
+    # Create graveyard at (55, 55)
+    graveyard = Building(
+        name="Town Graveyard",
+        building_type="graveyard",
+        x=55,
+        y=55,
+        capacity=5
+    )
+    db.add(graveyard)
+    db.commit()
+
+
+def seed_garden(db: Session) -> None:
+    """Seed a garden building into the town.
+
+    Creates 1 garden building at coordinates (56, 56).
+    Idempotent - will not create if one already exists.
+    """
+    existing_gardens = db.query(Building).filter(Building.building_type == 'garden').count()
+    if existing_gardens > 0:
+        return
+    
+    # Create garden at (56, 56)
+    garden = Building(
+        name="Town Garden",
+        building_type="garden",
+        x=56,
+        y=56,
+        capacity=5
+    )
+    db.add(garden)
+    db.commit()
+
+
+def seed_watchtower(db: Session) -> None:
+    """Seed a watchtower building into the town.
+
+    Creates 1 watchtower building at coordinates (57, 57).
+    Idempotent - will not create if one already exists.
+    """
+    existing_watchtowers = db.query(Building).filter(Building.building_type == 'watchtower').count()
+    if existing_watchtowers > 0:
+        return
+    
+    # Create watchtower at (57, 57)
+    watchtower = Building(
+        name="Town Watchtower",
+        building_type="watchtower",
+        x=57,
+        y=57,
+        capacity=5
+    )
+    db.add(watchtower)
+    db.commit()
+
+
+def seed_windmill(db: Session) -> None:
+    """Seed a windmill building into the town.
+
+    Creates 1 windmill building at coordinates (58, 58).
+    Idempotent - will not create if one already exists.
+    """
+    existing_windmills = db.query(Building).filter(Building.building_type == 'windmill').count()
+    if existing_windmills > 0:
+        return
+    
+    # Create windmill at (58, 58)
+    windmill = Building(
+        name="Town Windmill",
+        building_type="windmill",
+        x=58,
+        y=58,
+        capacity=5
+    )
+    db.add(windmill)
+    db.commit()

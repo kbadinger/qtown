@@ -1,0 +1,645 @@
+"""NPC movement, needs, decisions, lifecycle, and relationships."""
+
+import json
+import random
+from sqlalchemy.orm import Session
+
+from engine.models import NPC, Building, Resource, WorldState, Relationship, Treasury
+from engine.simulation.init import _generate_personality
+
+
+def move_npc_toward_target(db: Session, npc: NPC) -> None:
+    """Move an NPC one step closer to its target position.
+    
+    If target_x/target_y are set, move 1 step closer per tick.
+    If x < target_x, x += 1. If x > target_x, x -= 1. Same for y.
+    Clamp to 0-49. Clear target when reached.
+    """
+    if npc.target_x is None or npc.target_y is None:
+        return
+    
+    # Move towards target_x
+    if npc.x < npc.target_x:
+        npc.x += 1
+    elif npc.x > npc.target_x:
+        npc.x -= 1
+    
+    # Move towards target_y
+    if npc.y < npc.target_y:
+        npc.y += 1
+    elif npc.y > npc.target_y:
+        npc.y -= 1
+    
+    # Clamp to grid bounds (0-49)
+    npc.x = max(0, min(49, npc.x))
+    npc.y = max(0, min(49, npc.y))
+    
+    # Check if reached target
+    if npc.x == npc.target_x and npc.y == npc.target_y:
+        npc.target_x = None
+        npc.target_y = None
+
+
+def assign_homes(db: Session) -> None:
+    """Assign homes to NPCs without one.
+
+    For each NPC without a home_building_id, find a residential building
+    with capacity > current occupants and assign it.
+    """
+    homeless_npcs = db.query(NPC).filter(NPC.home_building_id == None).all()
+    residential_buildings = db.query(Building).filter(
+        Building.building_type == "residential"
+    ).all()
+
+    occupancy = {}
+    for building in residential_buildings:
+        occupancy[building.id] = (
+            db.query(NPC).filter(NPC.home_building_id == building.id).count()
+        )
+
+    for npc in homeless_npcs:
+        for building in residential_buildings:
+            if occupancy.get(building.id, 0) < building.capacity:
+                npc.home_building_id = building.id
+                occupancy[building.id] += 1
+                break
+
+    db.commit()
+
+
+def assign_work(db: Session) -> None:
+    """Assign work buildings to NPCs without one.
+
+    For each NPC without a work_building_id, find a non-residential building
+    matching their role and assign it.
+    """
+    role_mapping = {
+        "farmer": "food",
+        "baker": "food",
+        "guard": "guard",
+        "merchant": "market",
+        "priest": "religious",
+    }
+
+    unemployed_npcs = db.query(NPC).filter(NPC.work_building_id == None).all()
+
+    for npc in unemployed_npcs:
+        target_type = role_mapping.get(npc.role)
+        if not target_type:
+            continue
+
+        building = db.query(Building).filter(
+            Building.building_type == target_type,
+            Building.building_type != "residential",
+        ).first()
+
+        if building:
+            npc.work_building_id = building.id
+
+    db.commit()
+
+
+def eat(db: Session, npc_id: int) -> bool:
+    """Allow an NPC to eat food.
+
+    Reduces hunger by 30 (minimum 0). Costs 5 gold.
+    Returns False if NPC not found or insufficient gold.
+    """
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return False
+    if npc.gold < 5:
+        return False
+
+    npc.gold -= 5
+    npc.hunger = max(0, npc.hunger - 30)
+    db.commit()
+    return True
+
+
+def sleep_npc(db: Session, npc_id: int) -> bool:
+    """Allow an NPC to sleep.
+
+    Restores energy by 40, capped at 100.
+    Returns False if NPC not found.
+    """
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return False
+
+    npc.energy = min(100, npc.energy + 40)
+    db.commit()
+    return True
+
+
+def buy_food(db: Session, npc_id: int) -> bool:
+    """Allow an NPC to buy food from any building.
+    
+    NPC spends 5 gold, hunger decreases by 30 (min 0).
+    Requires a Food resource with quantity >= 1 at any building.
+    Decrements food quantity by 1.
+    Returns False if no food or insufficient gold.
+    """
+    # Get the NPC
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return False
+    
+    # Check if NPC has enough gold
+    if npc.gold < 5:
+        return False
+    
+    # Find a Food resource with quantity >= 1 at any building
+    food_resource = db.query(Resource).filter(
+        Resource.name == 'Food',
+        Resource.quantity >= 1
+    ).first()
+    
+    if not food_resource:
+        return False
+    
+    # Execute the purchase
+    npc.gold -= 5
+    npc.hunger = max(0, npc.hunger - 30)
+    food_resource.quantity -= 1
+    
+    db.commit()
+    return True
+
+
+def buy_fish(db: Session, npc_id: int) -> bool:
+    """Allow an NPC to buy Fish, reducing hunger by 25 and gold by 3."""
+    from engine.models import NPC, Resource, Building
+    
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return False
+    
+    # Check if NPC has enough gold
+    if npc.gold < 3:
+        return False
+    
+    # Find available Fish resources (from any fishing dock)
+    fish_resources = db.query(Resource).filter(
+        Resource.name == 'Fish',
+        Resource.quantity > 0
+    ).all()
+    
+    if not fish_resources:
+        return False
+    
+    # Find the first available fish resource
+    fish = fish_resources[0]
+    
+    # Deduct gold from NPC
+    npc.gold -= 3
+    
+    # Reduce hunger by 25 (but not below 0)
+    npc.hunger = max(0, npc.hunger - 25)
+    
+    # Reduce fish quantity by 1
+    fish.quantity -= 1
+    if fish.quantity <= 0:
+        db.delete(fish)
+    
+    db.commit()
+    return True
+
+
+def buy_art(db: Session, npc_id: int) -> bool:
+    """NPC buys Art for 15 gold, gaining +20 happiness.
+    
+    Art is a luxury: only bought when hunger < 30 and energy > 60.
+    Returns True if purchase succeeded, False otherwise.
+    """
+    from engine.models import NPC, Resource, Building
+    
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return False
+    
+    # Luxury condition: only buy when hunger < 30 and energy > 60
+    if npc.hunger >= 30 or npc.energy <= 60:
+        return False
+    
+    # Check if NPC can afford Art (15 gold)
+    if npc.gold < 15:
+        return False
+    
+    # Find available Art resources (any theater with Art in stock)
+    art_resources = db.query(Resource).filter(
+        Resource.name == "Art",
+        Resource.quantity > 0
+    ).all()
+    
+    if not art_resources:
+        return False
+    
+    # Find the first theater with Art
+    theater_id = art_resources[0].building_id
+    theater = db.query(Building).filter(Building.id == theater_id).first()
+    if not theater:
+        return False
+    
+    # Complete the transaction
+    npc.gold -= 15
+    npc.happiness = min(100, npc.happiness + 20)
+    
+    # Reduce Art quantity
+    art = db.query(Resource).filter(
+        Resource.name == "Art",
+        Resource.building_id == theater_id
+    ).first()
+    
+    if art and art.quantity > 0:
+        art.quantity -= 1
+    
+    db.commit()
+    return True
+
+
+def buy_books(db: Session, npc_id: int) -> bool:
+    """NPC buys Books for 10 gold (+15 happiness, +5 skill)."""
+    from engine.models import NPC, Resource, Building
+
+    npc = db.query(NPC).filter_by(id=npc_id).first()
+    if not npc:
+        return False
+
+    # Check conditions: hunger < 30 and energy > 60
+    if npc.hunger >= 30 or npc.energy <= 60:
+        return False
+
+    # Check gold
+    if npc.gold < 10:
+        return False
+
+    # Find available Books (from any Library)
+    libraries = db.query(Building).filter_by(building_type="library").all()
+    book_resource = None
+    for lib in libraries:
+        res = db.query(Resource).filter_by(name="Books", building_id=lib.id).first()
+        if res and res.quantity > 0:
+            book_resource = res
+            break
+
+    if not book_resource:
+        return False
+
+    # Execute purchase
+    npc.gold -= 10
+    npc.happiness += 15
+    npc.skill += 5
+    book_resource.quantity -= 1
+
+    db.commit()
+    return True
+
+
+def buy_medicine(db: Session, npc_id: int) -> bool:
+    """NPC buys Medicine for 8 gold if available."""
+    from engine.models import Resource, Building, NPC
+    
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return False
+    
+    if npc.gold < 8:
+        return False
+    
+    hospitals = db.query(Building).filter(Building.building_type == 'hospital').all()
+    
+    for hospital in hospitals:
+        medicine = db.query(Resource).filter(
+            Resource.name == 'Medicine',
+            Resource.building_id == hospital.id,
+            Resource.quantity > 0
+        ).first()
+        
+        if medicine:
+            medicine.quantity -= 1
+            npc.gold -= 8
+            npc.illness_severity = 0
+            db.commit()
+            return True
+    
+    return False
+
+
+def calculate_happiness(db: Session, npc_id: int) -> None:
+    """Calculate and update happiness for an NPC.
+    
+    Happiness is affected by:
+    - Hunger: -10 if hunger > 50
+    - Energy: -10 if energy < 30
+    - Gold: +5 if gold > 20
+    - Has home: +10 if home_building_id is set
+    - Has work: +10 if work_building_id is set
+    Base happiness is 50.
+    """
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return
+    
+    # Calculate happiness based on conditions
+    happiness = 50
+    
+    if npc.hunger > 50:
+        happiness -= 10
+    if npc.energy < 30:
+        happiness -= 10
+    if npc.gold > 20:
+        happiness += 5
+    if npc.home_building_id is not None:
+        happiness += 10
+    if npc.work_building_id is not None:
+        happiness += 10
+    
+    # Clamp happiness between 0 and 100
+    npc.happiness = max(0, min(100, happiness))
+    db.commit()
+
+
+def get_npc_decision(db: Session, npc_id: int) -> str:
+    """Determine what an NPC should do based on their state.
+    
+    Decision priority:
+    1. eat (if hunger > 50)
+    2. sleep (if energy < 30)
+    3. work (if has work_building and not at work)
+    4. rest (otherwise)
+    """
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return "rest"
+    
+    if npc.hunger > 50:
+        return "eat"
+    elif npc.energy < 30:
+        return "sleep"
+    elif npc.work_building_id is not None:
+        work_building = db.query(Building).filter(Building.id == npc.work_building_id).first()
+        if work_building and (npc.x != work_building.x or npc.y != work_building.y):
+            return "work"
+    
+    return "rest"
+
+
+def update_relationships(db: Session) -> None:
+    """Update relationships between NPCs based on proximity and competition."""
+    from engine.models import NPC, Building
+    
+    # Get all NPCs with their work buildings
+    npcs = db.query(NPC).all()
+    
+    # Group NPCs by work building
+    building_npcs: dict[int, list[NPC]] = {}
+    for npc in npcs:
+        if npc.work_building_id:
+            if npc.work_building_id not in building_npcs:
+                building_npcs[npc.work_building_id] = []
+            building_npcs[npc.work_building_id].append(npc)
+    
+    # Process friendships (same building)
+    for building_id, building_npc_list in building_npcs.items():
+        for i, npc1 in enumerate(building_npc_list):
+            for npc2 in building_npc_list[i+1:]:
+                # Create or update friendship
+                rel = db.query(Relationship).filter(
+                    Relationship.npc_id == npc1.id,
+                    Relationship.target_npc_id == npc2.id
+                ).first()
+                
+                if not rel:
+                    rel = Relationship(
+                        npc_id=npc1.id,
+                        target_npc_id=npc2.id,
+                        relationship_type="friend",
+                        strength=5
+                    )
+                    db.add(rel)
+                else:
+                    rel.strength = min(100, rel.strength + 5)
+                
+                # Also create reverse relationship
+                rel_reverse = db.query(Relationship).filter(
+                    Relationship.npc_id == npc2.id,
+                    Relationship.target_npc_id == npc1.id
+                ).first()
+                
+                if not rel_reverse:
+                    rel_reverse = Relationship(
+                        npc_id=npc2.id,
+                        target_npc_id=npc1.id,
+                        relationship_type="friend",
+                        strength=5
+                    )
+                    db.add(rel_reverse)
+                else:
+                    rel_reverse.strength = min(100, rel_reverse.strength + 5)
+    
+    # Process rivalries (competing for same resource)
+    # Group NPCs by building type
+    building_type_npcs: dict[str, list[NPC]] = {}
+    for npc in npcs:
+        if npc.work_building_id:
+            building = db.query(Building).filter(Building.id == npc.work_building_id).first()
+            if building:
+                building_type = building.building_type
+                if building_type not in building_type_npcs:
+                    building_type_npcs[building_type] = []
+                building_type_npcs[building_type].append(npc)
+    
+    # Process rivalries for resource-producing buildings
+    resource_buildings = ['mine', 'lumber_mill', 'fishing_dock', 'farm']
+    
+    for building_type in resource_buildings:
+        if building_type in building_type_npcs:
+            npc_list = building_type_npcs[building_type]
+            for i, npc1 in enumerate(npc_list):
+                for npc2 in npc_list[i+1:]:
+                    # Skip if they're at the same building (already friends)
+                    if npc1.work_building_id == npc2.work_building_id:
+                        continue
+                    
+                    # Create or update rivalry
+                    rel = db.query(Relationship).filter(
+                        Relationship.npc_id == npc1.id,
+                        Relationship.target_npc_id == npc2.id
+                    ).first()
+                    
+                    if not rel:
+                        rel = Relationship(
+                            npc_id=npc1.id,
+                            target_npc_id=npc2.id,
+                            relationship_type="rival",
+                            strength=5
+                        )
+                        db.add(rel)
+                    else:
+                        rel.strength = min(100, rel.strength + 5)
+                    
+                    # Also create reverse relationship
+                    rel_reverse = db.query(Relationship).filter(
+                        Relationship.npc_id == npc2.id,
+                        Relationship.target_npc_id == npc1.id
+                    ).first()
+                    
+                    if not rel_reverse:
+                        rel_reverse = Relationship(
+                            npc_id=npc2.id,
+                            target_npc_id=npc1.id,
+                            relationship_type="rival",
+                            strength=5
+                        )
+                        db.add(rel_reverse)
+                    else:
+                        rel_reverse.strength = min(100, rel_reverse.strength + 5)
+    
+    db.commit()
+
+
+def check_marriage(db: Session) -> None:
+    """Check for NPCs that can marry and process marriages.
+    
+    Two NPCs with friendship strength > 80 and no existing spouse may marry.
+    They move to the same home.
+    """
+    from engine.models import Relationship, NPC
+    
+    # Find all friend relationships with strength > 80
+    friend_relationships = db.query(Relationship).filter(
+        Relationship.relationship_type == 'friend',
+        Relationship.strength > 80
+    ).all()
+    
+    for rel in friend_relationships:
+        # Check if npc1 already has a spouse
+        npc1_has_spouse = db.query(Relationship).filter(
+            ((Relationship.npc_id == rel.npc_id) | (Relationship.target_npc_id == rel.npc_id)) &
+            (Relationship.relationship_type == 'spouse')
+        ).first()
+        
+        # Check if npc2 already has a spouse
+        npc2_has_spouse = db.query(Relationship).filter(
+            ((Relationship.npc_id == rel.target_npc_id) | (Relationship.target_npc_id == rel.target_npc_id)) &
+            (Relationship.relationship_type == 'spouse')
+        ).first()
+        
+        # Only marry if neither has a spouse
+        if not npc1_has_spouse and not npc2_has_spouse:
+            # Update relationship to spouse
+            rel.relationship_type = 'spouse'
+            
+            # Get both NPCs
+            npc1 = db.query(NPC).filter(NPC.id == rel.npc_id).first()
+            npc2 = db.query(NPC).filter(NPC.id == rel.target_npc_id).first()
+            
+            if npc1 and npc2:
+                # Move to the same home
+                if npc1.home_building_id:
+                    npc2.home_building_id = npc1.home_building_id
+                elif npc2.home_building_id:
+                    npc1.home_building_id = npc2.home_building_id
+
+
+def age_npcs(db: Session) -> None:
+    """Age all NPCs by 1 year. Mark NPCs as dead when they reach max_age."""
+    from engine.models import NPC
+    
+    for npc in db.query(NPC).filter(NPC.is_dead == False).all():
+        npc.age += 1
+        if npc.age >= npc.max_age:
+            npc.is_dead = True
+    
+    db.commit()
+
+
+def process_inheritance(db: Session) -> None:
+    """Process inheritance for all dead NPCs."""
+    from engine.models import NPC, Relationship, Treasury
+    
+    # Get all dead NPCs who still have gold
+    dead_npcs = db.query(NPC).filter(NPC.is_dead == 1).filter(NPC.gold > 0).all()
+    
+    for dead_npc in dead_npcs:
+        gold = dead_npc.gold
+        
+        # Find children (Relationship where npc_id is dead_npc and target_npc_id is child)
+        children = db.query(NPC).join(
+            Relationship, Relationship.target_npc_id == NPC.id
+        ).filter(
+            Relationship.npc_id == dead_npc.id,
+            Relationship.relationship_type == "child"
+        ).all()
+        
+        if children:
+            # Split gold equally among children
+            share = gold // len(children)
+            remainder = gold % len(children)
+            for i, child in enumerate(children):
+                child.gold += share + (1 if i < remainder else 0)
+        else:
+            # Find spouse
+            spouse = db.query(NPC).join(
+                Relationship, Relationship.target_npc_id == NPC.id
+            ).filter(
+                Relationship.npc_id == dead_npc.id,
+                Relationship.relationship_type == "spouse"
+            ).first()
+            
+            if spouse:
+                # Spouse gets all gold
+                spouse.gold += gold
+            else:
+                # Treasury gets all gold
+                treasury = db.query(Treasury).first()
+                if treasury:
+                    treasury.gold_stored += gold
+        
+        # Clear dead NPC's gold
+        dead_npc.gold = 0
+    
+    db.commit()
+
+
+def check_population_growth(db: Session) -> None:
+    """Check if we can spawn a new NPC based on happiness and population.
+    
+    If average happiness > 60 and population < 100, spawn a new NPC.
+    """
+    npcs = db.query(NPC).all()
+    
+    if not npcs:
+        return
+    
+    # Calculate average happiness
+    total_happiness = sum(npc.happiness for npc in npcs)
+    avg_happiness = total_happiness / len(npcs)
+    
+    # Check if we can spawn a new NPC
+    if avg_happiness > 60 and len(npcs) < 100:
+        names = ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", "Henry", "Ivy", "Jack"]
+        roles = ["farmer", "baker", "guard", "merchant", "priest"]
+        
+        # Find valid positions (not occupied by existing NPCs)
+        existing_positions = set((npc.x, npc.y) for npc in npcs)
+        valid_positions = [(x, y) for x in range(50) for y in range(50) if (x, y) not in existing_positions]
+        
+        if valid_positions:
+            new_x, new_y = random.choice(valid_positions)
+            
+            new_npc = NPC(
+                name=random.choice(names),
+                role=random.choice(roles),
+                x=new_x,
+                y=new_y,
+                gold=0,
+                hunger=0,
+                energy=100,
+                happiness=50,
+                personality=_generate_personality()
+            )
+            
+            db.add(new_npc)
+            db.commit()

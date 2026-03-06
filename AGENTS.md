@@ -25,7 +25,21 @@ You are Qwen, an AI developer building a 2D town simulation. Follow these rules 
 
 - **All state in SQLite** — no global variables, no in-memory state
 - **Models**: `engine/models.py` — all SQLAlchemy models in one file
-- **Simulation**: `engine/simulation.py` — all game logic functions
+- **Simulation**: `engine/simulation/` — game logic split into submodules:
+
+| Submodule | What goes here |
+|-----------|---------------|
+| `constants.py` | BUILDING_TYPES, DEFAULT_BASE_PRICE, etc. |
+| `init.py` | init_world_state, init_grid, seed_buildings, seed_npcs |
+| `buildings.py` | seed_all_buildings, build_building, all seed_* functions |
+| `production.py` | All produce_* functions |
+| `effects.py` | Hospital, tavern, church, fountain, school effects |
+| `npcs.py` | Movement, needs, decisions, lifecycle, relationships, buying |
+| `economy.py` | process_work, pricing, trade, taxes, inflation, recession |
+| `weather.py` | update_weather, apply_weather_effects |
+| `events.py` | Event triggers (disasters, cascading effects) |
+| `tick.py` | process_tick orchestrator |
+
 - **Routers**: `engine/routers/` — one router file per domain (buildings, npcs, economy, etc.)
 - **Templates**: `engine/templates/` — Jinja2 HTML templates
 - **Static files**: `engine/static/` — CSS, JS, images
@@ -67,10 +81,23 @@ You must NEVER create or modify these files:
 ## What You CAN Modify
 
 - `engine/models.py` — add new models (never remove existing ones)
-- `engine/simulation.py` — add simulation functions
+- `engine/simulation/*.py` — add/update simulation functions (NOT `__init__.py`)
 - `engine/routers/*.py` — create new router files
 - `engine/templates/*.html` — create templates
 - `engine/static/*` — add static assets
+
+### Which simulation submodule to patch
+
+| Story type | Target file |
+|-----------|-------------|
+| New building type | `engine/simulation/buildings.py` (seed) + `engine/simulation/production.py` (produce) + `engine/simulation/constants.py` (BUILDING_TYPES) |
+| New NPC behavior / buying | `engine/simulation/npcs.py` |
+| Economy / trade / pricing | `engine/simulation/economy.py` |
+| Events / disasters | `engine/simulation/events.py` |
+| Building effects (heal, teach) | `engine/simulation/effects.py` |
+| Weather changes | `engine/simulation/weather.py` |
+| Tick orchestration changes | `engine/simulation/tick.py` |
+| New constants | `engine/simulation/constants.py` |
 
 ## Router Pattern — Auto-Discovery
 
@@ -142,19 +169,20 @@ For files that already exist (especially `engine/simulation.py`), output ONLY th
 sections — do NOT rewrite the entire file:
 
 ```
-### PATCH: engine/simulation.py
-
-### ADD IMPORT
-from engine.models import Warehouse
+### PATCH: engine/simulation/constants.py
 
 ### UPDATE CONSTANT: BUILDING_TYPES
 BUILDING_TYPES = ["civic", "food", "tavern", "library", "mine"]
+
+### PATCH: engine/simulation/buildings.py
 
 ### ADD FUNCTION
 def seed_mine(db: Session) -> None:
     """Seed a mine building."""
     from engine.models import Building
     ...full function body...
+
+### PATCH: engine/simulation/tick.py
 
 ### UPDATE FUNCTION: process_tick
 def process_tick(db: Session) -> None:
