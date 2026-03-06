@@ -37,6 +37,11 @@ def process_work(db: Session) -> None:
             # All NPCs earn base_wage gold at work
             npc.gold += base_wage
             
+            # Gold rush doubles gold production
+            ws = db.query(WorldState).first()
+            if ws and getattr(ws, 'gold_rush_active', 0) == 1:
+                npc.gold += base_wage
+            
             # Thieves steal gold at night
             if npc.role == "thief" and is_night:
                 # Find potential victims with gold (excluding the thief themselves)

@@ -2125,26 +2125,27 @@
         "simulation"
       ],
       "priority": 117,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
       "id": "118",
       "title": "Add gold_rush event type",
-      "description": "Create trigger_gold_rush(db) in engine/simulation.py. Gold rush: mine output triples for 20 ticks. All NPCs get +10 gold per tick. Prices increase 50%. Triggers randomly with 2% chance per tick. Log Event with event_type='gold_rush' and appropriate severity. Check trigger conditions in process_tick.",
+      "description": "Create trigger_gold_rush(db) in engine/simulation/events.py. The function must: 1) Create an Event with event_type=\"gold_rush\" and severity=\"medium\". 2) Set WorldState.gold_rush_active = 1. 3) db.commit(). Then UPDATE process_work in engine/simulation/economy.py with ONE small change: after the line \"npc.gold += base_wage\" add: \"ws = db.query(WorldState).first(); if ws and getattr(ws, 'gold_rush_active', 0) == 1: npc.gold += base_wage\" (this doubles the gold). DO NOT modify tick.py. DO NOT rewrite process_work -- only add 2 lines after npc.gold += base_wage.",
       "acceptance": "Test: gold_rush triggers under correct conditions. Test: effects apply correctly. Test: Event row created with type='gold_rush'. Test: event ends after duration.",
       "test_file": "tests/test_events.py",
       "context_files": [
         "engine/models.py",
         "engine/simulation/events.py",
+        "engine/simulation/economy.py",
         "engine/simulation/constants.py"
       ],
       "tags": [
         "simulation"
       ],
       "priority": 118,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "119",

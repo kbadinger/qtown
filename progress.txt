@@ -616,3 +616,8 @@
 - **Event Schema Consistency**: It was non-obvious that `baby_boom` required a specific `target_population` field in the payload, which is distinct from the generic `population` used in other demographic events; missing this caused silent failures in the simulation engine.
 - **State Mutation Pattern**: Discovered that this codebase strictly avoids direct state mutation in event handlers; instead, events must return a `StateDelta` object that is merged by the central `SimulationEngine`, a pattern I initially bypassed with direct assignment.
 - **Correction on Trigger Logic**: Initially implemented the event trigger based on a simple population threshold, but corrected it to use the `is_stable` flag from the previous tick to prevent the event from firing repeatedly in a single simulation cycle.
+
+--- Story 118: Add gold_rush event type (attempts: 1, 2026-03-06 07:24) ---
+*   **Event Dispatching Logic**: It was non-obvious that `gold_rush` requires a separate `trigger` method in the `EventManager` to handle the dynamic duration, unlike static events that rely solely on the `tick` loop.
+*   **State Mutation Pattern**: The codebase consistently uses `EventContext` to pass mutable state between the event definition and the world, rather than relying on global state or direct world access within the event class.
+*   **Correction on Reward Calculation**: Initially, I hardcoded the gold multiplier; I corrected this to pull the `base_gold` and `multiplier` from the `EventConfig` to ensure it respects the difficulty scaling already present in the system.

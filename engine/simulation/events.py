@@ -285,3 +285,26 @@ def trigger_baby_boom(db: Session) -> None:
     )
     db.add(baby_boom_event)
     db.commit()
+
+
+def trigger_gold_rush(db: Session) -> None:
+    """Trigger a gold rush event that doubles gold production."""
+    from engine.models import Event, WorldState
+    
+    # Get world state for tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Set gold rush active flag in WorldState
+    if world_state:
+        world_state.gold_rush_active = 1
+    
+    # Create gold rush event
+    gold_rush_event = Event(
+        event_type="gold_rush",
+        description="A gold rush has begun, doubling gold production for all workers",
+        tick=current_tick,
+        severity="medium"
+    )
+    db.add(gold_rush_event)
+    db.commit()
