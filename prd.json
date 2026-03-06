@@ -2961,7 +2961,7 @@
         "api"
       ],
       "priority": 165,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
@@ -2979,8 +2979,8 @@
         "template"
       ],
       "priority": 166,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "167",

@@ -936,3 +936,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 14:46:39 UTC] deploy_ok: Story 164 deployed: Healthy after 0.1s
 [2026-03-06 14:46:44 UTC] story_done: Story 164 complete: Gzip compression
 [2026-03-06 14:46:44 UTC] story_start: Story 165: Detailed health check
+[2026-03-06 14:48:05 UTC] deploy_ok: Story 165 deployed: Healthy after 0.1s
+[2026-03-06 14:48:10 UTC] story_done: Story 165 complete: Detailed health check
+[2026-03-06 14:48:10 UTC] story_start: Story 166: GET /api/costs endpoint

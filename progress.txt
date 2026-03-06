@@ -862,3 +862,8 @@
 - **Non-obvious dependency**: The health check endpoint relies on a shared `HealthAggregator` singleton that isn't explicitly injected in the controller, making unit testing require manual context mocking.
 - **Convention discovered**: All health checks follow a `ComponentHealth` pattern where they return a specific `Status` enum (UP, DOWN, DEGRADED) rather than simple booleans, allowing for granular alerting logic downstream.
 - **Correction made**: Initially treated the database connection check as synchronous, causing thread blocking; corrected by switching to an async `await` pattern to align with the non-blocking I/O architecture of the service.
+
+--- Story 166: GET /api/costs endpoint (attempts: 1, 2026-03-06 09:48) ---
+- **Non-obvious permission scoping**: Initially assumed `GET /api/costs` required full admin access, but discovered the codebase enforces row-level security based on the `organization_id` in the JWT, requiring explicit filtering in the query builder rather than relying on middleware alone.
+- **Consistent error handling pattern**: Reinforced the convention of returning `404` with a specific `NotFoundError` class for missing resources, rather than generic `500` errors, to ensure the frontend can distinguish between data absence and server failures.
+- **Date range default correction**: Mistakenly defaulted the `start_date` parameter to `null` in the controller, causing the query to return all historical data; corrected by enforcing a strict 30-day lookback default in the service layer to prevent performance degradation.
