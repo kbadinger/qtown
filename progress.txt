@@ -657,3 +657,8 @@
 - **Non-obvious state synchronization**: The navigation bar's active state relies on URL path matching rather than simple component props; failing to normalize the current path against the route definitions caused intermittent highlighting issues.
 - **Pattern discovery**: The codebase consistently uses a centralized `useNavigation` hook to manage both routing and UI state, avoiding direct `react-router` usage within presentational components.
 - **Correction made**: Initially attempted to handle mobile menu toggling via inline style changes, which broke the transition animation; corrected by switching to a CSS class-based toggle strategy managed by the hook to preserve the defined animation curves.
+
+--- Story 126: Footer component (attempts: 1, 2026-03-06 08:31) ---
+*   **Non-obvious behavior**: The `footer` component relies on a specific CSS grid gap for spacing; using standard margins on child elements breaks the alignment on mobile breakpoints.
+*   **Codebase pattern**: All layout components in this project wrap their content in a `Container` wrapper to enforce max-width and centering, rather than applying these styles directly to the component.
+*   **Correction**: Initially missed the `aria-label` requirement for the social media icon group; added it to ensure screen readers announce the section context correctly.
