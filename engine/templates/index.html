@@ -12,10 +12,10 @@
         
         <div class="flex items-center justify-between mb-2">
             <span class="text-lg font-medium text-gray-900">
-                {{ stories_done }}/{{ stories_total }} stories completed
+                {{ stories_done|default(0) }}/{{ stories_total|default(215) }} stories completed
             </span>
             <span class="text-sm text-gray-500">
-                {{ (stories_done / stories_total * 100) | int }}%
+                {{ (stories_done|default(0) / stories_total|default(215) * 100) | int }}%
             </span>
         </div>
         
@@ -24,7 +24,7 @@
             <div 
                 id="progress-bar-fill"
                 class="bg-blue-600 h-4 rounded-full transition-all duration-500 ease-out"
-                style="width: {{ (stories_done / stories_total * 100) }}%;"
+                style="width: {{ (stories_done|default(0) / stories_total|default(215) * 100) }}%;"
             ></div>
         </div>
         
