@@ -787,3 +787,8 @@
 - **Non-obvious constraint**: The import parser fails silently on malformed CSV rows unless `strict_mode` is explicitly enabled; default behavior drops rows without logging, requiring custom error handling middleware.
 - **Codebase pattern**: All data ingestion endpoints follow the `validate -> transform -> batch-insert` flow, utilizing the shared `DataPipeline` service to ensure transactional consistency across related tables.
 - **Correction**: Initially attempted to stream the entire file into memory before processing, causing OOM errors on large datasets; refactored to use chunked iterators and `async` database writes to maintain constant memory usage.
+
+--- Story 151: Pagination on all list endpoints (attempts: 1, 2026-03-06 09:22) ---
+*   **Tricky**: Handling the `Content-Range` header correctly required manually calculating the total item count from the database query before slicing the result set, as the ORM's `limit/offset` alone doesn't provide total counts.
+*   **Pattern**: The codebase enforces a strict `PaginationParams` DTO pattern for all list endpoints, ensuring consistent validation of `page` and `limit` with hard-coded maximums to prevent DoS via large offsets.
+*   **Correction**: Initially returned the raw array length in the `X-Total-Count` header; corrected to use the separate `COUNT(*)` query result to ensure accuracy when pagination filters are applied.
