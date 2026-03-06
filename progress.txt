@@ -852,3 +852,8 @@
 - **Non-obvious cache invalidation**: Realized that `Response` objects are immutable; modifying headers or body requires creating a new instance, making the cache key logic (based on request fingerprinting) critical rather than just storing the object reference.
 - **Middleware placement pattern**: Discovered the convention of wrapping caching logic in a `before` hook to intercept requests early, ensuring the cache check happens before expensive database queries or external API calls are triggered.
 - **Corrected key collision bug**: Initially used only the URL as the cache key, ignoring query parameters and headers; fixed this by hashing the full normalized request signature to prevent serving stale data for distinct user contexts.
+
+--- Story 164: Gzip compression (attempts: 1, 2026-03-06 09:45) ---
+- **Tricky/Non-obvious**: The interaction between `Content-Encoding` headers and the underlying stream lifecycle was subtle; forgetting to close the `GzipStream` explicitly before closing the response can leave the connection in a half-written state, causing downstream clients to hang waiting for the trailer.
+- **Patterns/Conventions**: The codebase consistently wraps compression logic in a dedicated middleware layer that checks `Accept-Encoding` before wrapping the `res` object, rather than handling it inline within route handlers, ensuring consistent header management across all endpoints.
+- **Mistakes/Corrections**: Initially, I attempted to compress the entire response body into memory before sending it, which caused high memory usage for large payloads; I corrected this by switching to a streaming approach that pipes data directly from the source to the gzip stream and then to the client.
