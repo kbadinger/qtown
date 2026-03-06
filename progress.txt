@@ -601,3 +601,8 @@
 - **Event Dispatching Nuance**: The `bandit_raid` logic required manually triggering the `EventQueue` within the combat loop rather than relying on the standard turn-based scheduler, as raids can interrupt mid-turn.
 - **State Mutation Convention**: Discovered that all event handlers must mutate the `WorldState` directly before returning; the framework does not support returning a delta or new state object for events.
 - **Correction on Loot Logic**: Initially attempted to calculate loot distribution after the event resolved, but corrected this to pre-calculate and attach loot to the `EventPayload` before dispatch to ensure atomicity during the raid resolution.
+
+--- Story 115: Add earthquake event type (attempts: 1, 2026-03-06 00:54) ---
+- **Non-obvious Event Dispatching**: The earthquake event type required explicit handling of the `severity` enum in the `EventDispatcher` to prevent default fallback logic from treating all seismic events as minor tremors; this distinction was not documented in the base `Event` interface.
+- **Codebase Convention**: All new event types must implement the `HasTimestamp` trait and register a corresponding factory method in `EventRegistry` before being usable by the simulation engine; omitting the registry entry causes silent failures during event deserialization.
+- **Correction**: Initially placed the magnitude calculation inside the event constructor, which caused issues with time-based decay logic; moved the calculation to the `process()` method to ensure it respects the simulation's current `tick` state.

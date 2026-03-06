@@ -180,3 +180,39 @@ def trigger_bandit_raid(db: Session) -> None:
     )
     db.add(event)
     db.commit()
+
+
+def trigger_earthquake(db: Session) -> None:
+    """Trigger an earthquake event that damages all buildings."""
+    from engine.models import Building, Event, WorldState
+    import random
+    
+    # Get world state for tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Create earthquake event
+    earthquake_event = Event(
+        event_type="earthquake",
+        description="An earthquake has shaken the town, damaging buildings",
+        tick=current_tick,
+        severity="high"
+    )
+    db.add(earthquake_event)
+    
+    # Damage all buildings
+    buildings = db.query(Building).all()
+    stone_building_types = ['wall', 'gate', 'guard_tower', 'watchtower']
+    
+    for building in buildings:
+        if building.building_type in stone_building_types:
+            # Stone buildings take less damage (10-25%)
+            damage_percent = random.uniform(0.10, 0.25)
+        else:
+            # Regular buildings take more damage (10-50%)
+            damage_percent = random.uniform(0.10, 0.50)
+        
+        new_capacity = int(building.capacity * (1 - damage_percent))
+        building.capacity = max(1, new_capacity)  # Ensure capacity stays at least 1
+    
+    db.commit()

@@ -757,3 +757,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 05:30:24 UTC] deploy_ok: Story 113 deploy fixed on retry
 [2026-03-06 05:30:37 UTC] story_done: Story 113 complete: Add harvest_festival event type
 [2026-03-06 05:30:37 UTC] story_start: Story 114: Add bandit_raid event type
+[2026-03-06 05:45:37 UTC] deploy_ok: Story 114 deployed: Healthy after 0.1s
+[2026-03-06 05:45:49 UTC] story_done: Story 114 complete: Add bandit_raid event type
+[2026-03-06 05:45:50 UTC] story_start: Story 115: Add earthquake event type
