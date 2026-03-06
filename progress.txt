@@ -707,3 +707,8 @@
 - **Tricky Aspect**: Determining the correct sort order for events with identical timestamps required implementing a stable secondary sort on `event_id` to ensure deterministic rendering across different environments.
 - **Pattern Discovered**: The codebase consistently uses a centralized `EventFactory` for all event creation, enforcing a strict schema validation step before any event is added to the timeline stream.
 - **Correction Made**: Initially missed handling timezone offsets in the frontend display logic, causing a 5-hour shift for UTC events; fixed by normalizing all timestamps to the user's local timezone at the point of ingestion rather than rendering.
+
+--- Story 136: Weather display (attempts: 1, 2026-03-06 08:45) ---
+- **Async Data Handling**: The trickiest part was managing the race condition between the initial fetch and the 10-minute auto-refresh interval; I had to ensure the `useEffect` cleanup function properly aborts pending requests to prevent stale data overwrites.
+- **State Normalization**: Discovered a strong convention in this codebase of normalizing API responses into a flat `weatherData` object before passing it to components, rather than passing raw JSON, which simplifies downstream rendering logic.
+- **Error Boundary Scope**: Initially wrapped the entire app in an error boundary for the weather widget, but corrected it to scope the boundary only to the `WeatherDisplay` component to prevent a single widget failure from crashing the whole dashboard.
