@@ -757,3 +757,8 @@
 *   **Tricky Aspect**: Determining the correct routing strategy for versioned API docs was non-obvious; the existing `docs` route was hardcoded, requiring a refactor to support dynamic version slugs without breaking legacy links.
 *   **Pattern Discovered**: The codebase consistently uses a "content-first" architecture where markdown files drive both the UI rendering and the OpenAPI schema generation, meaning changes to the UI often require updating the source markdown rather than the view layer.
 *   **Mistake & Correction**: Initially attempted to parse the OpenAPI spec at runtime for every page load, causing significant latency; corrected by pre-compiling the schema into a static JSON bundle during the build step and caching it in the client.
+
+--- Story 145: Changelog page (attempts: 1, 2026-03-06 09:13) ---
+- **Tricky**: Determining the correct sorting logic for changelog entries was non-obvious; the data requires a stable sort by version number (semver) rather than a simple date sort to handle pre-release tags correctly.
+- **Patterns**: The codebase consistently uses a centralized `useChangelog` hook for fetching and caching data, avoiding direct API calls within components to maintain testability and state consistency.
+- **Mistakes**: Initially rendered version badges using inline styles, which broke the design system's theme switching; corrected by migrating to the existing `Badge` component with semantic `variant` props.

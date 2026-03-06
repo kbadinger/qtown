@@ -872,3 +872,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 14:10:33 UTC] story_done: Story 143 complete: About page
 [2026-03-06 14:10:33 UTC] story_start: Story 144: API docs page
 [2026-03-06 14:10:50 UTC] WARN deploy_fail: Story 144 deploy failed — starting fix cycle
+[2026-03-06 14:13:08 UTC] deploy_ok: Story 144 deploy fixed on retry
+[2026-03-06 14:13:14 UTC] story_done: Story 144 complete: API docs page
+[2026-03-06 14:13:14 UTC] story_start: Story 145: Changelog page
