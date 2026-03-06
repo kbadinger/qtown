@@ -977,3 +977,8 @@
 - **Non-obvious coupling**: The scoring logic was tightly coupled to specific infrastructure providers via hardcoded thresholds; refactoring required introducing a provider-agnostic interface to handle dynamic rule evaluation.
 - **Convention discovery**: The codebase consistently uses a "command-query separation" pattern where scoring functions return immutable data structures, while side effects (like alerting) are handled by separate event listeners.
 - **Correction made**: Initially attempted to cache scores in memory for performance, but realized this violated the idempotency requirement for re-scoring; switched to a write-through cache with explicit invalidation triggers instead.
+
+--- Story 186: Merchant NPCs set prices (attempts: 1, 2026-03-06 18:22) ---
+*   **Price Calculation Logic**: The pricing formula isn't a simple static multiplier; it dynamically adjusts based on the NPC's current inventory depth and the player's reputation, requiring careful handling of floating-point precision to avoid rounding errors in the final cost.
+*   **State Mutation Convention**: The codebase strictly avoids direct mutation of the `Item` prototype; instead, price overrides must be applied via a transient `TransactionContext` object to ensure the base catalog remains immutable across different merchant interactions.
+*   **Correction on Edge Cases**: Initially, I failed to account for zero-quantity items in the inventory check, which caused a division-by-zero crash in the discount calculation; this was fixed by adding a guard clause that defaults to the base price when stock is depleted.

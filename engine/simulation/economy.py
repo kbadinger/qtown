@@ -6,6 +6,7 @@ from sqlalchemy import func
 
 from engine.models import NPC, Building, Resource, WorldState, Treasury, Transaction, Event, PriceHistory
 from engine.simulation.constants import DEFAULT_BASE_PRICE, DEFAULT_DEMAND, RESOURCE_DEMAND, SATURATION_TICK_THRESHOLD
+import json
 
 
 def process_work(db: Session) -> None:
@@ -744,3 +745,84 @@ def apply_stimulus(db: Session) -> dict:
         "total_gold_given": total_gold_given,
         "production_boost": production_boost
     }
+
+
+def set_merchant_prices(db: Session, npc_id: int) -> dict:
+    """Set prices for a merchant NPC based on supply/demand and personality.
+    
+    Greedy merchants charge 20% more.
+    Social merchants charge 10% less.
+    
+    Args:
+        db: Database session
+        npc_id: ID of the merchant NPC
+        
+    Returns:
+        Dictionary of resource_name -> price
+    """
+    from engine.models import NPC, Building, Resource, PriceHistory, WorldState
+    import json
+    
+    # Get the merchant NPC
+    merchant = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not merchant:
+        return {}
+    
+    # Get the merchant's work building (market/shop)
+    building = db.query(Building).filter(Building.id == merchant.work_building_id).first()
+    if not building:
+        return {}
+    
+    # Get current world state for base price reference
+    world_state = db.query(WorldState).first()
+    base_price = world_state.base_wage if world_state else 10
+    
+    # Get resources at this building
+    resources = db.query(Resource).filter(Resource.building_id == building.id).all()
+    
+    # Parse personality to determine merchant type
+    personality = json.loads(merchant.personality or '{}')
+    is_greedy = personality.get('greedy', False)
+    is_social = personality.get('social', False)
+    
+    # Calculate prices for each resource
+    prices = {}
+    
+    for resource in resources:
+        # Calculate supply/demand ratio
+        supply = resource.quantity
+        demand = DEFAULT_DEMAND.get(resource.name, 10)  # Default demand if not specified
+        
+        # Base price calculation: more supply = lower price, more demand = higher price
+        if supply == 0:
+            base_price_for_resource = base_price * 2  # Scarcity premium
+        else:
+            # Price inversely proportional to supply, directly proportional to demand
+            price_ratio = demand / max(supply, 1)
+            base_price_for_resource = base_price * price_ratio
+        
+        # Apply personality modifier
+        if is_greedy:
+            # Greedy merchants charge 20% more
+            final_price = base_price_for_resource * 1.2
+        elif is_social:
+            # Social merchants charge 10% less
+            final_price = base_price_for_resource * 0.9
+        else:
+            final_price = base_price_for_resource
+        
+        prices[resource.name] = final_price
+        
+        # Record price history
+        current_tick = world_state.tick if world_state else 0
+        price_history = PriceHistory(
+            resource_name=resource.name,
+            price=final_price,
+            supply=supply,
+            demand=demand,
+            tick=current_tick
+        )
+        db.add(price_history)
+    
+    db.commit()
+    return prices

@@ -1038,3 +1038,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 22:53:45 UTC] deploy_ok: Story 184 deployed: Healthy after 0.1s
 [2026-03-06 22:53:56 UTC] story_done: Story 184 complete: Zoning system
 [2026-03-06 22:53:56 UTC] story_start: Story 185: Infrastructure scoring
+[2026-03-06 23:04:53 UTC] WARN deploy_fail: Story 185 deploy failed — starting fix cycle
+[2026-03-06 23:14:02 UTC] story_done: Story 185 complete: Infrastructure scoring
+[2026-03-06 23:14:02 UTC] story_start: Story 186: Merchant NPCs set prices
