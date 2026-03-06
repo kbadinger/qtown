@@ -842,3 +842,8 @@
 - **Non-obvious selectivity**: Learned that adding an index on a column with low cardinality (e.g., `status`) can actually degrade performance if the query filters for a highly common value, causing the optimizer to prefer a full table scan.
 - **Composite index ordering**: Discovered the codebase convention of placing the most selective column first in composite indexes, but realized this must be balanced against the specific `WHERE` clause order to avoid index bypass.
 - **Correction on `EXPLAIN`**: Initially misinterpreted the `cost` estimate as a direct runtime metric; corrected this by verifying actual execution times and row counts, as the planner's estimates were skewed by stale statistics.
+
+--- Story 162: Query optimization for /api/world (attempts: 1, 2026-03-06 09:37) ---
+- **Tricky**: The `N+1` query issue was masked by the ORM's lazy loading; it only surfaced under high concurrency, requiring explicit `JOIN` logic in the repository layer rather than relying on default behavior.
+- **Pattern**: This codebase consistently uses `SelectMany` with `AsNoTracking()` for read-heavy endpoints, but the convention for handling pagination with complex joins is inconsistent across modules.
+- **Correction**: Initially attempted to cache the entire result set at the controller level, which caused memory spikes; corrected by moving the caching strategy to the repository with a granular key based on query parameters.
