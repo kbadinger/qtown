@@ -818,3 +818,6 @@ Add gold_rush event type
 [2026-03-06 13:38:38 UTC] deploy_ok: Story 130 deployed: Healthy after 0.1s
 [2026-03-06 13:38:43 UTC] story_done: Story 130 complete: NPC list page
 [2026-03-06 13:38:44 UTC] story_start: Story 131: NPC detail page
+[2026-03-06 13:39:44 UTC] deploy_ok: Story 131 deployed: Healthy after 0.1s
+[2026-03-06 13:39:49 UTC] story_done: Story 131 complete: NPC detail page
+[2026-03-06 13:39:50 UTC] story_start: Story 132: Building grid page

@@ -687,3 +687,8 @@
 *   **Non-obvious state synchronization**: Realized that the NPC detail page relies on a global `selectedEntity` store rather than local props; updating the store triggers a cascade of re-renders that must be debounced to avoid performance hiccups on rapid clicks.
 *   **Codebase convention for dynamic data**: Discovered the strict pattern of using `useAsyncData` hooks with a `staleTime` of 0 for NPC stats, ensuring the UI always reflects the latest server state without manual refetch logic.
 *   **Corrected conditional rendering bug**: Initially rendered the "Inventory" tab component unconditionally, causing a layout shift when the NPC had no items; fixed by moving the tab registration into the `if (hasInventory)` block within the tab factory function.
+
+--- Story 132: Building grid page (attempts: 1, 2026-03-06 08:39) ---
+- **Grid Layout Logic**: The interaction between `minmax()` in `grid-template-columns` and `grid-auto-rows` was non-obvious; relying solely on `fr` units caused unexpected row collapsing when content height varied, requiring explicit `auto-fill` handling.
+- **Responsive Breakpoint Pattern**: Discovered the codebase enforces a "mobile-first" convention where base styles are fluid, and specific grid column counts are only applied via `@media` queries, avoiding nested media blocks in component CSS.
+- **Correction on Gap Handling**: Initially applied `gap` to the container without accounting for the parent's `padding`, causing visual misalignment on small screens; corrected by using `calc()` to sync gap with container padding or switching to `gap` on the grid item level.
