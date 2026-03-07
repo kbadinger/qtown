@@ -28,6 +28,7 @@
                     <a href="/timeline" class="text-xs text-gray-400 hover:text-amber-400 transition-colors">Timeline</a>
                     <a href="/dashboard" class="text-xs text-gray-400 hover:text-amber-400 transition-colors">Dashboard</a>
                     <a href="/stories" class="text-xs text-gray-400 hover:text-amber-400 transition-colors">Stories</a>
+                    <a href="/features" class="text-xs text-gray-400 hover:text-amber-400 transition-colors">Features</a>
                 </div>
             </div>
             <p class="text-gray-500 text-xs mb-3">A self-evolving town built entirely by a local AI</p>
@@ -53,6 +54,36 @@
                 </div>
             </div>
             <div id="hud-info" class="hidden mt-2 text-xs text-gray-400 border-t border-gray-700 pt-2 leading-relaxed"></div>
+        </div>
+    </div>
+
+    <!-- Stats Panel (top-right) -->
+    <div id="stats-panel" class="fixed top-4 right-4 z-50 select-none">
+        <div class="bg-gray-900/80 backdrop-blur-sm border border-amber-500/30 rounded-lg px-5 py-4 shadow-xl shadow-amber-900/10 min-w-[200px]">
+            <h2 class="text-amber-400 font-bold text-sm tracking-wide mb-2">Town Stats</h2>
+            <div class="space-y-1.5 text-xs">
+                <div class="flex justify-between"><span class="text-gray-400">Weather</span><span id="stat-weather" class="text-gray-200">--</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Time</span><span id="stat-time" class="text-gray-200">--</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Economy</span><span id="stat-economy" class="text-gray-200">--</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Treasury</span><span id="stat-treasury" class="text-amber-300 font-mono">0g</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Tax Rate</span><span id="stat-tax" class="text-gray-200 font-mono">10%</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Avg Happy</span><span id="stat-happiness" class="text-gray-200 font-mono">--</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Avg Age</span><span id="stat-age" class="text-gray-200 font-mono">--</span></div>
+                <div class="border-t border-gray-700 pt-1.5 mt-1.5">
+                    <div class="text-gray-500 mb-1">Resources</div>
+                    <div id="stat-resources" class="space-y-0.5 text-gray-300"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Feed (bottom-right) -->
+    <div id="activity-feed" class="fixed bottom-4 right-4 z-50 select-none">
+        <div class="bg-gray-900/80 backdrop-blur-sm border border-amber-500/30 rounded-lg px-4 py-3 shadow-xl shadow-amber-900/10 w-[320px]">
+            <h2 class="text-amber-400 font-bold text-xs tracking-wide mb-2">Activity</h2>
+            <div id="activity-list" class="space-y-1 max-h-[200px] overflow-y-auto text-xs scrollbar-thin">
+                <div class="text-gray-500 italic">Waiting for events...</div>
+            </div>
         </div>
     </div>
 
@@ -86,6 +117,6 @@
     <!-- PixiJS from CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
     <!-- Town renderer -->
-    <script src="/static/js/town.js?v=22"></script>
+    <script src="/static/js/town.js?v=23"></script>
 </body>
 </html>

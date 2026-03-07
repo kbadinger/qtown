@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Features — Qwen Town{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-amber-400 mb-2">Feature Voting</h1>
+    <p class="text-gray-400 mb-8">Suggest features for Qwen to build. Vote on your favorites — top-voted features get added to the PRD.</p>
+
+    <!-- Submit Form -->
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-8">
+        <h2 class="text-lg font-semibold text-gray-200 mb-4">Submit a Feature</h2>
+        <form id="submit-form" class="space-y-4">
+            <div>
+                <label for="feat-title" class="block text-sm text-gray-400 mb-1">Title</label>
+                <input id="feat-title" type="text" maxlength="200" required
+                       class="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-gray-200 focus:border-amber-500 focus:outline-none"
+                       placeholder="e.g. NPC pet ownership system">
+            </div>
+            <div>
+                <label for="feat-desc" class="block text-sm text-gray-400 mb-1">Description (optional)</label>
+                <textarea id="feat-desc" rows="3" maxlength="2000"
+                          class="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-gray-200 focus:border-amber-500 focus:outline-none"
+                          placeholder="Describe the feature in detail..."></textarea>
+            </div>
+            <div class="flex items-center gap-3">
+                <button type="submit"
+                        class="bg-amber-600 hover:bg-amber-500 text-white font-medium px-5 py-2 rounded transition-colors">
+                    Submit Feature
+                </button>
+                <span id="submit-status" class="text-sm text-gray-500"></span>
+            </div>
+        </form>
+    </div>
+
+    <!-- Feature List -->
+    <div id="features-list" class="space-y-4">
+        <div class="text-gray-500 text-center py-8">Loading features...</div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    const listEl = document.getElementById('features-list');
+    const form = document.getElementById('submit-form');
+    const statusEl = document.getElementById('submit-status');
+
+    const STATUS_COLORS = {
+        submitted: 'bg-blue-900 text-blue-300',
+        approved: 'bg-green-900 text-green-300',
+        rejected: 'bg-red-900 text-red-300',
+        published: 'bg-amber-900 text-amber-300',
+    };
+
+    function renderFeature(f) {
+        const statusClass = STATUS_COLORS[f.status] || 'bg-gray-700 text-gray-300';
+        return `
+        <div class="bg-gray-800 border border-gray-700 rounded-lg p-5 flex gap-4" data-id="${f.id}">
+            <div class="flex flex-col items-center gap-1 min-w-[60px]">
+                <button onclick="vote(${f.id}, this)" class="text-2xl hover:scale-110 transition-transform" title="Vote">&#9650;</button>
+                <span class="text-xl font-bold text-amber-300 font-mono vote-count">${f.vote_count}</span>
+                <span class="text-xs text-gray-500">votes</span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                    <h3 class="text-gray-100 font-semibold truncate">${escHtml(f.title)}</h3>
+                    <span class="text-xs px-2 py-0.5 rounded ${statusClass}">${f.status}</span>
+                </div>
+                ${f.description ? `<p class="text-gray-400 text-sm">${escHtml(f.description)}</p>` : ''}
+                <div class="text-xs text-gray-600 mt-2">${new Date(f.created_at).toLocaleDateString()}</div>
+            </div>
+        </div>`;
+    }
+
+    function escHtml(s) {
+        const d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+    }
+
+    async function loadFeatures() {
+        try {
+            const resp = await fetch('/api/features/');
+            if (!resp.ok) return;
+            const features = await resp.json();
+            features.sort((a, b) => b.vote_count - a.vote_count);
+            if (features.length === 0) {
+                listEl.innerHTML = '<div class="text-gray-500 text-center py-8">No features yet. Be the first to submit one!</div>';
+            } else {
+                listEl.innerHTML = features.map(renderFeature).join('');
+            }
+        } catch(e) {
+            console.error('Failed to load features:', e);
+        }
+    }
+
+    window.vote = async function(id, btn) {
+        try {
+            const resp = await fetch(`/api/features/${id}/vote`, { method: 'POST' });
+            const data = await resp.json();
+            if (resp.ok) {
+                const card = btn.closest('[data-id]');
+                const countEl = card.querySelector('.vote-count');
+                countEl.textContent = data.vote_count;
+                btn.style.color = '#f59e0b';
+                btn.disabled = true;
+            } else {
+                const msg = data.detail || 'Vote failed';
+                btn.title = msg;
+                if (resp.status === 409) {
+                    btn.style.color = '#6b7280';
+                    btn.disabled = true;
+                }
+            }
+        } catch(e) {
+            console.error('Vote error:', e);
+        }
+    };
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const title = document.getElementById('feat-title').value.trim();
+        const description = document.getElementById('feat-desc').value.trim();
+        if (!title) return;
+
+        statusEl.textContent = 'Submitting...';
+        statusEl.className = 'text-sm text-gray-400';
+
+        try {
+            const resp = await fetch('/api/features/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, description: description || null }),
+            });
+            if (resp.ok) {
+                statusEl.textContent = 'Submitted!';
+                statusEl.className = 'text-sm text-green-400';
+                form.reset();
+                loadFeatures();
+                setTimeout(() => { statusEl.textContent = ''; }, 3000);
+            } else {
+                const data = await resp.json();
+                statusEl.textContent = data.detail || 'Failed';
+                statusEl.className = 'text-sm text-red-400';
+            }
+        } catch(e) {
+            statusEl.textContent = 'Network error';
+            statusEl.className = 'text-sm text-red-400';
+        }
+    });
+
+    loadFeatures();
+    setInterval(loadFeatures, 10000);
+})();
+</script>
+{% endblock %}

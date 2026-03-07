@@ -363,6 +363,9 @@
     return d.innerHTML;
   }
 
+  // Track latest world data for building worker lookups
+  let latestWorldData = null;
+
   function onSpriteOver(e) {
     const data = e.currentTarget._tooltipData;
     if (!data) return;
@@ -370,13 +373,36 @@
     let html = `<div class="font-semibold text-amber-300">${esc(data.title)}</div>`;
     html += `<div class="text-gray-400 text-xs uppercase tracking-wide">${esc(data.type)}</div>`;
 
-    // Show extra info if available
     const ex = data.extra;
-    if (ex.gold !== undefined) html += `<div class="text-xs mt-1">Gold: <span class="text-amber-200">${esc(ex.gold)}</span></div>`;
-    if (ex.hunger !== undefined) html += `<div class="text-xs">Hunger: ${esc(ex.hunger)}</div>`;
-    if (ex.energy !== undefined) html += `<div class="text-xs">Energy: ${esc(ex.energy)}</div>`;
-    if (ex.hp !== undefined) html += `<div class="text-xs">HP: ${esc(ex.hp)}</div>`;
-    if (ex.level !== undefined) html += `<div class="text-xs">Level: ${esc(ex.level)}</div>`;
+
+    if (ex.hunger !== undefined) {
+      // NPC tooltip — rich format
+      html += `<div class="text-xs mt-1">`;
+      html += `<span title="Happiness">\u2665 ${esc(ex.happiness != null ? ex.happiness : '?')}</span>`;
+      html += `  <span title="Energy">\u26A1 ${esc(ex.energy)}</span>`;
+      html += `  <span title="Hunger">\uD83C\uDF56 ${esc(ex.hunger)}</span>`;
+      html += `</div>`;
+      html += `<div class="text-xs">\uD83D\uDCB0 ${esc(ex.gold)}g \u00B7 Age ${esc(ex.age != null ? ex.age : '?')}</div>`;
+      // Show workplace if known
+      if (ex.work_building_id && latestWorldData) {
+        const wb = (latestWorldData.buildings || []).find(b => b.id === ex.work_building_id);
+        if (wb) html += `<div class="text-xs text-gray-400">\u2192 ${esc(wb.name)}</div>`;
+      }
+    } else if (ex.building_type !== undefined) {
+      // Building tooltip — show level, capacity, workers
+      html += `<div class="text-xs mt-1">Level ${esc(ex.level || 1)} \u00B7 Cap: ${esc(ex.capacity || '?')}</div>`;
+      if (latestWorldData) {
+        const workers = (latestWorldData.npcs || []).filter(n => n.work_building_id === ex.id);
+        if (workers.length) {
+          html += `<div class="text-xs text-gray-400">Workers: ${workers.map(w => esc(w.name)).join(', ')}</div>`;
+        }
+      }
+    } else {
+      // Fallback
+      if (ex.gold !== undefined) html += `<div class="text-xs mt-1">Gold: <span class="text-amber-200">${esc(ex.gold)}</span></div>`;
+      if (ex.hp !== undefined) html += `<div class="text-xs">HP: ${esc(ex.hp)}</div>`;
+      if (ex.level !== undefined) html += `<div class="text-xs">Level: ${esc(ex.level)}</div>`;
+    }
 
     tooltipDiv.innerHTML = html;
     tooltipEl.classList.remove("hidden");
@@ -546,6 +572,7 @@
   }
 
   function render(world) {
+    latestWorldData = world;
     const tiles     = world.tiles || world.grid || [];
     const buildings = world.buildings || [];
     const npcs      = world.npcs || [];
@@ -554,6 +581,106 @@
     drawBuildings(buildings);
     drawNPCs(npcs);
     updateHUD(world);
+    updateStatsFromWorld(world);
+  }
+
+  // -------------------------------------------------------------------------
+  // Stats panel — updated from /api/world data + periodic /api/stats fetch
+  // -------------------------------------------------------------------------
+
+  function updateStatsFromWorld(world) {
+    var el;
+    el = document.getElementById("stat-weather");
+    if (el) el.textContent = world.weather || "clear";
+    el = document.getElementById("stat-time");
+    if (el) el.textContent = world.time_of_day || "morning";
+    el = document.getElementById("stat-treasury");
+    if (el) el.textContent = (world.treasury || 0) + "g";
+
+    // Compute avg happiness from NPC data
+    var npcs = world.npcs || [];
+    if (npcs.length) {
+      var avgH = Math.round(npcs.reduce(function(s,n){ return s + (n.happiness || 0); }, 0) / npcs.length);
+      var avgA = Math.round(npcs.reduce(function(s,n){ return s + (n.age || 0); }, 0) / npcs.length);
+      el = document.getElementById("stat-happiness");
+      if (el) el.textContent = avgH;
+      el = document.getElementById("stat-age");
+      if (el) el.textContent = avgA;
+    }
+  }
+
+  // Fetch enriched stats periodically (for economy, resources, tax)
+  async function fetchStats() {
+    try {
+      var resp = await fetch("/api/stats/");
+      if (!resp.ok) return;
+      var data = await resp.json();
+
+      var el;
+      el = document.getElementById("stat-economy");
+      if (el) el.textContent = data.economic_status || "normal";
+      el = document.getElementById("stat-tax");
+      if (el) el.textContent = Math.round((data.tax_rate || 0.10) * 100) + "%";
+      el = document.getElementById("stat-treasury");
+      if (el) el.textContent = (data.treasury_gold || 0) + "g";
+
+      // Resources
+      var resEl = document.getElementById("stat-resources");
+      if (resEl && data.resources) {
+        var keys = Object.keys(data.resources);
+        if (keys.length) {
+          resEl.innerHTML = keys.map(function(k) {
+            return '<div class="flex justify-between"><span class="text-gray-500">' + esc(k) + '</span><span class="font-mono">' + esc(data.resources[k]) + '</span></div>';
+          }).join('');
+        } else {
+          resEl.innerHTML = '<div class="text-gray-600">None yet</div>';
+        }
+      }
+    } catch(e) { /* ignore */ }
+  }
+
+  // -------------------------------------------------------------------------
+  // Activity feed — polls /api/activity every 3s
+  // -------------------------------------------------------------------------
+
+  var lastActivityJSON = "";
+
+  async function fetchActivity() {
+    try {
+      var resp = await fetch("/api/activity/");
+      if (!resp.ok) return;
+      var items = await resp.json();
+      var json = JSON.stringify(items);
+      if (json === lastActivityJSON) return;
+      lastActivityJSON = json;
+
+      var listEl = document.getElementById("activity-list");
+      if (!listEl) return;
+
+      if (!items.length) {
+        listEl.innerHTML = '<div class="text-gray-500 italic">No activity yet...</div>';
+        return;
+      }
+
+      var html = "";
+      var maxItems = 15;
+      var shown = items.slice(0, maxItems);
+      for (var i = 0; i < shown.length; i++) {
+        var item = shown[i];
+        var color = "text-gray-300";
+        var dot = "\u25CF";
+        if (item.type === "transaction") { color = "text-amber-300"; dot = "\uD83D\uDCB0"; }
+        else if (item.severity === "critical" || item.severity === "high") { color = "text-red-400"; dot = "\u26A0"; }
+        else if (item.severity === "warning") { color = "text-yellow-400"; dot = "\u26A0"; }
+        else { color = "text-blue-300"; dot = "\u25CB"; }
+
+        html += '<div class="' + color + ' truncate" title="' + esc(item.message) + '">';
+        html += dot + ' ' + esc(item.message);
+        html += '</div>';
+      }
+      listEl.innerHTML = html;
+      listEl.scrollTop = listEl.scrollHeight;
+    } catch(e) { /* ignore */ }
   }
 
   // -------------------------------------------------------------------------
@@ -591,4 +718,10 @@
   // Initial fetch, then poll
   fetchWorld();
   setInterval(fetchWorld, POLL_MS);
+
+  // Stats + Activity polling (slower cadence to avoid overloading)
+  fetchStats();
+  fetchActivity();
+  setInterval(fetchStats, 5000);
+  setInterval(fetchActivity, 3000);
 })();

@@ -34,6 +34,28 @@ def get_stats(db: Session = Depends(get_db)):
     current_tick = world_state.tick if world_state else 0
     current_day = world_state.day if world_state else 1
 
+    # World state details
+    weather = world_state.weather if world_state else None
+    time_of_day = world_state.time_of_day if world_state else "morning"
+    economic_status = world_state.economic_status if world_state else "normal"
+    tax_rate = world_state.tax_rate if world_state else 0.10
+    inflation_rate = world_state.inflation_rate if world_state else 0.0
+
+    # Treasury
+    from engine.models import Treasury, Resource
+    treasury_gold = db.query(func.sum(Treasury.gold_stored)).scalar() or 0
+
+    # Resource totals
+    resource_rows = (
+        db.query(Resource.name, func.sum(Resource.quantity))
+        .group_by(Resource.name)
+        .all()
+    )
+    resources = {name: qty for name, qty in resource_rows}
+
+    # Average age
+    avg_age = db.query(func.avg(NPC.age)).scalar() or 0.0
+
     return {
         "population": population,
         "total_gold": total_gold,
@@ -42,5 +64,13 @@ def get_stats(db: Session = Depends(get_db)):
         "avg_happiness": avg_happiness,
         "total_buildings": total_buildings,
         "current_tick": current_tick,
-        "current_day": current_day
+        "current_day": current_day,
+        "weather": weather,
+        "time_of_day": time_of_day,
+        "economic_status": economic_status,
+        "tax_rate": tax_rate,
+        "inflation_rate": inflation_rate,
+        "treasury_gold": treasury_gold,
+        "resources": resources,
+        "avg_age": avg_age,
     }

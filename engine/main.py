@@ -8,6 +8,7 @@ import subprocess
 from pathlib import Path
 
 from dotenv import load_dotenv
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 load_dotenv()
@@ -28,7 +29,7 @@ from slowapi.util import get_remote_address
 
 from engine.auth import hash_key
 from engine.db import Base, SessionLocal, engine, get_db, init_db
-from engine.models import AdminUser, Building, NPC, Tile, WorldState
+from engine.models import AdminUser, Building, NPC, Tile, Treasury, WorldState
 
 # ---------------------------------------------------------------------------
 # App setup
@@ -437,7 +438,7 @@ def world_state(db: Session = Depends(get_db)):
     buildings = [
         {
             "id": b.id, "name": b.name, "building_type": b.building_type,
-            "x": b.x, "y": b.y, "capacity": b.capacity,
+            "x": b.x, "y": b.y, "capacity": b.capacity, "level": b.level,
         }
         for b in db.query(Building).all()
     ]
@@ -446,14 +447,22 @@ def world_state(db: Session = Depends(get_db)):
             "id": n.id, "name": n.name, "role": n.role,
             "x": n.x, "y": n.y, "gold": n.gold,
             "hunger": n.hunger, "energy": n.energy,
+            "happiness": n.happiness, "age": n.age,
+            "work_building_id": n.work_building_id,
+            "home_building_id": n.home_building_id,
         }
         for n in db.query(NPC).all()
     ]
+
+    treasury_gold = db.query(func.sum(Treasury.gold_stored)).scalar() or 0
 
     return {
         "tick": tick,
         "day": tick // 24 + 1,
         "total_gold": sum(n["gold"] for n in npcs),
+        "weather": ws.weather if ws else None,
+        "time_of_day": ws.time_of_day if ws else "morning",
+        "treasury": treasury_gold,
         "tiles": tiles,
         "buildings": buildings,
         "npcs": npcs,
@@ -463,6 +472,11 @@ def world_state(db: Session = Depends(get_db)):
 # ---------------------------------------------------------------------------
 # Stories — individual story detail view
 # ---------------------------------------------------------------------------
+
+
+@app.get("/features", response_class=HTMLResponse)
+def features_page(request: Request):
+    return templates.TemplateResponse("features.html", {"request": request})
 
 
 @app.get("/stories", response_class=HTMLResponse)
