@@ -78,6 +78,7 @@ You must NEVER create or modify these files:
 - `engine/models.py` — all models pre-added (human-written, BLOCKLISTED)
 - `engine/db.py` — database setup (human-written)
 - `engine/sprites.py` — sprite generation bridge (human-written)
+- `engine/templates/index.html` — main game page with PixiJS renderer (human-written)
 - `engine/templates/dashboard.html` — progress dashboard (human-written)
 - `docs/` — documentation (human-written)
 - `HUMAN.md` — human intervention file

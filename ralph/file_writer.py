@@ -18,6 +18,7 @@ BLOCKLIST = [
     "engine/sprites.py",
     "engine/templates/dashboard.html",
     "engine/templates/timeline.html",
+    "engine/templates/index.html",
     "engine/templates/base.html",
     "docs/",
     "HUMAN.md",
