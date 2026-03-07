@@ -987,3 +987,24 @@ def negotiate_trade(db: Session, npc_a_id: int, npc_b_id: int, resource: str, qu
     db.commit()
     
     return final_price
+
+
+def check_bankruptcy(db: Session) -> None:
+    """Check for bankrupt NPCs and apply bankruptcy consequences.
+    
+    NPCs with gold < -50 go bankrupt:
+    - is_bankrupt set to 1
+    - happiness drops to 0
+    - lose home and work assignments
+    """
+    from engine.models import NPC
+    
+    bankrupt_npcs = db.query(NPC).filter(NPC.gold < -50).all()
+    
+    for npc in bankrupt_npcs:
+        npc.is_bankrupt = 1
+        npc.happiness = 0
+        npc.home_building_id = None
+        npc.work_building_id = None
+    
+    db.commit()
