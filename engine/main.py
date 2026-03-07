@@ -143,6 +143,7 @@ def _seed_world():
 
     db = SessionLocal()
     try:
+        _migrate_layout(db)
         init_grid(db)
         seed_buildings(db)
         seed_npcs(db)
@@ -152,6 +153,48 @@ def _seed_world():
         print("[qtown] World seeded")
     finally:
         db.close()
+
+
+def _migrate_layout(db):
+    """One-time migration: fix building coords, terrain, NPC gold for existing DBs."""
+    from engine.models import Building, Tile, NPC
+
+    # Check if migration needed: any building at diagonal coords 50+?
+    offgrid = db.query(Building).filter(Building.x >= 50).first()
+    if not offgrid:
+        return  # Already migrated or fresh DB
+
+    print("[qtown] Migrating building layout...")
+
+    # New coordinates for all building types
+    coords = {
+        "civic": (25, 25), "food": (10, 15), "residential": (26, 20),
+        "bakery": (27, 22), "blacksmith": (30, 20), "farm": (15, 12),
+        "church": (22, 30), "school": (20, 28), "hospital": (32, 26),
+        "tavern": (28, 28), "library": (18, 26), "mine": (42, 8),
+        "lumber_mill": (8, 38), "fishing_dock": (5, 45),
+        "guard_tower": (45, 5), "wall": (48, 25), "gate": (48, 24),
+        "fountain": (25, 24), "well": (12, 18), "warehouse": (35, 15),
+        "bank": (30, 24), "theater": (35, 30), "arena": (40, 35),
+        "prison": (44, 10), "graveyard": (8, 42), "garden": (22, 20),
+        "watchtower": (5, 5), "windmill": (12, 8),
+    }
+
+    for b in db.query(Building).all():
+        if b.building_type in coords:
+            b.x, b.y = coords[b.building_type]
+
+    # Fix terrain: reset all tiles and re-seed with variety
+    from engine.simulation.init import _terrain_for
+    for tile in db.query(Tile).all():
+        tile.terrain = _terrain_for(tile.x, tile.y)
+
+    # Give NPCs starting gold if they have 0
+    for npc in db.query(NPC).filter(NPC.gold == 0).all():
+        npc.gold = 50
+
+    db.commit()
+    print("[qtown] Layout migration complete")
 
 
 def _start_tick_loop():
