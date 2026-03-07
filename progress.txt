@@ -1062,3 +1062,8 @@
 *   **Tricky Aspect**: The achievement unlock logic required careful handling of race conditions; checking state directly from the event emitter caused false negatives, necessitating a separate, debounced validation step against the persistent user profile.
 *   **Codebase Pattern**: This project strictly separates "trigger" logic (event listeners) from "evaluation" logic (rule engines), keeping the `AchievementService` stateless and purely functional while the `UserStore` handles all persistence side effects.
 *   **Correction**: Initially, I attempted to update the UI immediately upon event emission, which led to stale data if the user failed a secondary condition; I corrected this by moving the UI update to the `onProfileSync` callback to ensure data consistency.
+
+--- Story 206: Add NPC dialogue system (attempts: 1, 2026-03-07 01:56) ---
+- **State Management Complexity**: The trickiest part was ensuring the dialogue system's state (current speaker, active choices) remained isolated from the main game loop to prevent race conditions when players interacted with other systems simultaneously.
+- **Data-Driven Design Pattern**: This codebase heavily favors external JSON/ScriptableObjects for content; hardcoding dialogue logic in C# is discouraged in favor of data-driven configurations to allow designers to iterate without recompiling.
+- **Coroutine Cleanup**: Initially, I forgot to cancel pending dialogue coroutines when an NPC was despawned, causing memory leaks and phantom text to appear; I corrected this by implementing a `StopAllCoroutines` check in the `OnDestroy` lifecycle hook.

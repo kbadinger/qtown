@@ -9,6 +9,8 @@ from engine.simulation.init import _generate_personality
 from engine.models import Loan
 from typing import List
 import heapq
+from sqlalchemy import func
+from engine.models import Dialogue, NPC, Event, WorldState
 
 
 def move_npc_toward_target(db: Session, npc: NPC) -> None:
@@ -1324,3 +1326,71 @@ def recall_memory(db: Session, npc_id: int, keyword: str) -> list:
     ]
     
     return matching_memories
+
+
+def generate_dialogue(db: Session, speaker_id: int, listener_id: int) -> str:
+    """Generate a dialogue string between two NPCs based on context."""
+    # Fetch the NPCs
+    speaker = db.query(NPC).filter(NPC.id == speaker_id).first()
+    listener = db.query(NPC).filter(NPC.id == listener_id).first()
+    
+    if not speaker or not listener:
+        return "Hello there!"
+    
+    # Get current weather from WorldState
+    world_state = db.query(WorldState).first()
+    weather = world_state.weather if world_state else "sunny"
+    
+    # Get recent events (last 10 ticks)
+    current_tick = world_state.tick if world_state else 0
+    recent_events = db.query(Event).filter(
+        Event.tick > current_tick - 10
+    ).limit(5).all()
+    
+    # Build dialogue based on context
+    dialogue_parts = []
+    
+    # Weather reference
+    if weather == "rainy":
+        dialogue_parts.append("It's raining today,")
+    elif weather == "sunny":
+        dialogue_parts.append("What a beautiful day,")
+    elif weather == "snowy":
+        dialogue_parts.append("Brr, it's cold out,")
+    elif weather == "stormy":
+        dialogue_parts.append("The storm is fierce,")
+    
+    # NPC needs reference
+    if speaker.hunger > 80:
+        dialogue_parts.append(f"I'm starving, {listener.name}!")
+    elif speaker.energy < 20:
+        dialogue_parts.append(f"I'm so tired, {listener.name}!")
+    elif speaker.happiness < 30:
+        dialogue_parts.append(f"I'm feeling down, {listener.name}!")
+    else:
+        dialogue_parts.append(f"How are you doing, {listener.name}?")
+    
+    # Recent events reference
+    if recent_events:
+        event = recent_events[0]
+        if "flood" in event.event_type.lower():
+            dialogue_parts.append("That flood was terrible!")
+        elif "fire" in event.event_type.lower():
+            dialogue_parts.append("The fire was scary!")
+        elif "festival" in event.event_type.lower():
+            dialogue_parts.append("The festival was amazing!")
+    
+    # Combine dialogue
+    dialogue = " ".join(dialogue_parts) if dialogue_parts else "Hello there!"
+    
+    # Save to Dialogue table
+    dialogue_record = Dialogue(
+        speaker_npc_id=speaker_id,
+        listener_npc_id=listener_id,
+        message=dialogue,
+        tick=current_tick
+    )
+    db.add(dialogue_record)
+    db.commit()
+    
+    return dialogue
