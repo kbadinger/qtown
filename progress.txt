@@ -1042,3 +1042,8 @@
 - **Heuristic Tuning**: The non-obvious challenge was balancing the heuristic weight; using a pure Manhattan distance caused NPCs to get stuck in narrow corridors, requiring a slight overestimation to prioritize directness over strict optimality.
 - **Grid Abstraction**: The codebase consistently separates raw tile data from navigation logic via a `NavMesh` wrapper, meaning A* operates on an abstracted graph rather than direct map coordinates.
 - **State Mutation Bug**: Initially, I modified the `g_score` dictionary in-place during iteration, causing stale path data to persist across frames; switching to immutable snapshots for the open/closed sets resolved the flickering movement issue.
+
+--- Story 202: Implement dynamic supply/demand pricing engine (attempts: 1, 2026-03-07 00:45) ---
+*   **Non-Obvious Complexity**: The "supply" metric isn't just current inventory; it requires a weighted forecast of incoming stock over the next 24 hours, which initially caused pricing to spike erroneously during low-stock windows.
+*   **Codebase Pattern**: Pricing rules are strictly separated from calculation logic using a `Strategy` interface; new pricing tiers must be added as new strategy classes rather than modifying the core engine to maintain testability.
+*   **Correction**: Initially, I updated prices synchronously within the inventory event loop, causing race conditions during high-volume sales; I corrected this by offloading price recalculation to an async background job with idempotent updates.

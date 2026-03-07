@@ -1116,3 +1116,6 @@ Ralph stopped — needs human debugging
 [2026-03-07 05:25:53 UTC] deploy_ok: Story 200 deployed: Healthy after 0.1s
 [2026-03-07 05:26:05 UTC] story_done: Story 200 complete: Town anthem generator
 [2026-03-07 05:26:05 UTC] story_start: Story 201: Implement A* pathfinding for NPC movement
+[2026-03-07 05:36:57 UTC] deploy_ok: Story 201 deployed: Healthy after 0.1s
+[2026-03-07 05:37:09 UTC] story_done: Story 201 complete: Implement A* pathfinding for NPC movement
+[2026-03-07 05:37:09 UTC] story_start: Story 202: Implement dynamic supply/demand pricing engine

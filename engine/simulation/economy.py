@@ -826,3 +826,32 @@ def set_merchant_prices(db: Session, npc_id: int) -> dict:
     
     db.commit()
     return prices
+
+
+def update_price_history(db: Session) -> None:
+    """Update price history for all resources in the database."""
+    from engine.models import Resource, WorldState, PriceHistory
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Get all resources from the database
+    resources = db.query(Resource).all()
+    
+    # For each resource, calculate price and create a PriceHistory record
+    for resource in resources:
+        price = calculate_price(db, resource.name)
+        
+        # Create PriceHistory record
+        price_history = PriceHistory(
+            resource_name=resource.name,
+            price=price,
+            supply=resource.quantity,
+            demand=DEFAULT_DEMAND,
+            tick=current_tick
+        )
+        db.add(price_history)
+    
+    # Commit all changes
+    db.commit()
