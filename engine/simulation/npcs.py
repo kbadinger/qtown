@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from engine.models import NPC, Building, Resource, WorldState, Relationship, Treasury
 from engine.simulation.init import _generate_personality
 from engine.models import Loan
+from typing import List
 
 
 def move_npc_toward_target(db: Session, npc: NPC) -> None:
@@ -891,3 +892,29 @@ def process_loans(db: Session) -> None:
                     db.add(event)
     
     db.commit()
+
+
+def get_tax_route(db: Session, npc_id: int) -> List[int]:
+    """Get the tax collection route for a politician NPC.
+    Returns building IDs ordered by gold amount (wealthy buildings first).
+    """
+    from engine.models import Building, Resource
+    
+    # Get all buildings that can be taxed
+    buildings = db.query(Building).all()
+    
+    # Calculate gold for each building
+    building_gold = []
+    for building in buildings:
+        # Sum all resources at this building
+        total_gold = 0
+        resources = db.query(Resource).filter(Resource.building_id == building.id).all()
+        for resource in resources:
+            total_gold += resource.quantity
+        building_gold.append((building.id, total_gold))
+    
+    # Sort by gold descending (prioritize wealthy buildings)
+    building_gold.sort(key=lambda x: x[1], reverse=True)
+    
+    # Return just the building IDs in order
+    return [b[0] for b in building_gold]

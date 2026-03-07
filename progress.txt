@@ -987,3 +987,8 @@
 - **Non-obvious state coupling**: Loan eligibility logic is tightly coupled with the `Banker` NPC's internal `reputation` flag, which is not passed explicitly to the loan service but accessed via a global context, making unit testing difficult without mocking the entire session.
 - **Codebase convention**: Financial transactions in this codebase consistently use a `TransactionLog` pattern where every state change (even failed validations) is recorded as an immutable event before the actual deduction occurs, ensuring audit trails are never lost.
 - **Correction made**: Initially attempted to validate loan terms synchronously within the NPC's dialogue handler; corrected by refactoring to an asynchronous `LoanService` to prevent blocking the main game loop during complex interest rate calculations.
+
+--- Story 188: Tax collector routes (attempts: 1, 2026-03-06 20:27) ---
+- **Non-obvious routing logic**: The tax collector routes rely on a dynamic `priority` field in the database rather than static path definitions, requiring explicit sorting before applying the collection rules.
+- **Convention for edge cases**: The codebase consistently handles "zero-value" tax amounts by returning an empty response object rather than `null`, preventing downstream serialization errors in the API layer.
+- **Correction on transaction scope**: Initially wrapped the route update in a global transaction, but corrected it to use a scoped lock only on the specific route entity to avoid deadlocks during high-concurrency collection cycles.

@@ -1045,3 +1045,6 @@ Ralph stopped — needs human debugging
 [2026-03-07 01:00:02 UTC] deploy_ok: Story 186 deploy fixed on retry
 [2026-03-07 01:00:15 UTC] story_done: Story 186 complete: Merchant NPCs set prices
 [2026-03-07 01:00:15 UTC] story_start: Story 187: Banker NPCs offer loans
+[2026-03-07 01:09:43 UTC] deploy_ok: Story 187 deployed: Healthy after 0.1s
+[2026-03-07 01:09:54 UTC] story_done: Story 187 complete: Banker NPCs offer loans
+[2026-03-07 01:09:55 UTC] story_start: Story 188: Tax collector routes
