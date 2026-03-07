@@ -992,3 +992,8 @@
 - **Non-obvious routing logic**: The tax collector routes rely on a dynamic `priority` field in the database rather than static path definitions, requiring explicit sorting before applying the collection rules.
 - **Convention for edge cases**: The codebase consistently handles "zero-value" tax amounts by returning an empty response object rather than `null`, preventing downstream serialization errors in the API layer.
 - **Correction on transaction scope**: Initially wrapped the route update in a global transaction, but corrected it to use a scoped lock only on the specific route entity to avoid deadlocks during high-concurrency collection cycles.
+
+--- Story 189: Trade negotiations (attempts: 1, 2026-03-06 20:38) ---
+- **Non-obvious State Synchronization**: The `TradeOffer` model requires explicit version checks on the `last_updated` timestamp before applying discounts; relying solely on ID checks causes race conditions when multiple agents negotiate simultaneously.
+- **Codebase Convention**: All negotiation logic must be wrapped in the `NegotiationContext` manager to ensure thread-safe access to the shared `MarketState` singleton; direct database writes bypass the audit trail.
+- **Correction**: Initially attempted to calculate final prices in the controller layer, but refactored to use the `PricingStrategy` service to maintain consistent rounding rules and tax calculations across all trade types.

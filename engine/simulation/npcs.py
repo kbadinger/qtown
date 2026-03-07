@@ -918,3 +918,72 @@ def get_tax_route(db: Session, npc_id: int) -> List[int]:
     
     # Return just the building IDs in order
     return [b[0] for b in building_gold]
+
+
+def negotiate_trade(db: Session, npc_a_id: int, npc_b_id: int, resource: str, quantity: int) -> float:
+    """Two merchant NPCs negotiate price. Final price = average of their offers."""
+    from sqlalchemy.orm import Session
+    from engine.models import NPC, Transaction
+    import json
+    
+    npc_a = db.query(NPC).filter(NPC.id == npc_a_id).first()
+    npc_b = db.query(NPC).filter(NPC.id == npc_b_id).first()
+    
+    if not npc_a or not npc_b:
+        return None
+    
+    # Get personality traits (default to empty dict if None or invalid JSON)
+    try:
+        personality_a = json.loads(npc_a.personality) if npc_a.personality else {}
+    except (json.JSONDecodeError, TypeError):
+        personality_a = {}
+    
+    try:
+        personality_b = json.loads(npc_b.personality) if npc_b.personality else {}
+    except (json.JSONDecodeError, TypeError):
+        personality_b = {}
+    
+    # Base price for the resource (simple lookup or default)
+    base_price = 10.0  # default base price per unit
+    
+    # Greedy NPCs start higher (multiply by 1.5)
+    # Social NPCs compromise faster (closer to base, multiply by 0.8)
+    greedy_a = personality_a.get('greedy', False)
+    social_a = personality_a.get('social', False)
+    greedy_b = personality_b.get('greedy', False)
+    social_b = personality_b.get('social', False)
+    
+    # Calculate offers based on personality
+    if greedy_a:
+        offer_a = base_price * 1.5
+    elif social_a:
+        offer_a = base_price * 0.8
+    else:
+        offer_a = base_price
+    
+    if greedy_b:
+        offer_b = base_price * 1.5
+    elif social_b:
+        offer_b = base_price * 0.8
+    else:
+        offer_b = base_price
+    
+    # Final price is average of both offers
+    final_price = (offer_a + offer_b) / 2
+    
+    # Ensure price is positive
+    if final_price <= 0:
+        final_price = base_price
+    
+    # Create transaction (total amount = price * quantity)
+    total_amount = int(final_price * quantity)
+    transaction = Transaction(
+        sender_id=npc_a.id,
+        receiver_id=npc_b.id,
+        amount=total_amount,
+        reason=f"Trade of {quantity} {resource} at {final_price:.2f} each"
+    )
+    db.add(transaction)
+    db.commit()
+    
+    return final_price
