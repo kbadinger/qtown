@@ -143,7 +143,6 @@ def _seed_world():
 
     db = SessionLocal()
     try:
-        _cleanup_excess_npcs(db)
         _migrate_layout(db)
         init_grid(db)
         seed_buildings(db)
