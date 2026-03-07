@@ -199,24 +199,26 @@ def _migrate_layout(db):
 
 def _start_tick_loop():
     """Start a background thread that runs process_tick every 5 seconds."""
+    import sys
     import threading
     import time
 
     def _tick_worker():
+        from engine.simulation import process_tick
+        print("[qtown] Tick worker thread started", flush=True)
         while True:
             time.sleep(5)
             db = SessionLocal()
             try:
-                from engine.simulation import process_tick
                 process_tick(db)
             except Exception as e:
-                print(f"[qtown] Tick error: {e}")
+                print(f"[qtown] Tick error: {e}", flush=True)
             finally:
                 db.close()
 
     thread = threading.Thread(target=_tick_worker, daemon=True)
     thread.start()
-    print("[qtown] Auto-tick started (every 5s)")
+    print("[qtown] Auto-tick started (every 5s)", flush=True)
 
 
 def _seed_admin():
