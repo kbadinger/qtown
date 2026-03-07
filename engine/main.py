@@ -158,7 +158,10 @@ def _seed_world():
 
 def _cleanup_excess_npcs(db):
     """One-time cleanup: remove NPCs spawned by runaway population growth."""
-    from engine.models import NPC, WorldState
+    from engine.models import (
+        NPC, WorldState, Transaction, Relationship, Event, Loan,
+        Election, Policy, Crime, Newspaper, VisitorLog, TownAnthem, Dialogue,
+    )
 
     npc_count = db.query(NPC).count()
     if npc_count <= 5:
@@ -166,9 +169,28 @@ def _cleanup_excess_npcs(db):
 
     print(f"[qtown] Cleaning up excess NPCs ({npc_count} found, keeping original 5)...")
 
-    # Keep only the first 5 NPCs (by id), delete the rest
+    # Keep only the first 5 NPCs (by id)
     original_ids = [n.id for n in db.query(NPC).order_by(NPC.id).limit(5).all()]
-    db.query(NPC).filter(~NPC.id.in_(original_ids)).delete(synchronize_session="fetch")
+    excess_ids = [n.id for n in db.query(NPC).filter(~NPC.id.in_(original_ids)).all()]
+
+    if not excess_ids:
+        return
+
+    # Delete all related records referencing excess NPCs
+    for model, cols in [
+        (Transaction, ["sender_id", "receiver_id"]),
+        (Relationship, ["npc_id", "target_npc_id"]),
+        (Loan, ["lender_npc_id", "borrower_npc_id"]),
+        (Crime, ["criminal_npc_id"]),
+        (Dialogue, ["speaker_npc_id", "listener_npc_id"]),
+        (VisitorLog, ["npc_id", "greeted_by_npc_id"]),
+    ]:
+        for col_name in cols:
+            col = getattr(model, col_name)
+            db.query(model).filter(col.in_(excess_ids)).delete(synchronize_session="fetch")
+
+    # Delete excess NPCs
+    db.query(NPC).filter(NPC.id.in_(excess_ids)).delete(synchronize_session="fetch")
 
     # Reset tick and world state so the town starts fresh
     ws = db.query(WorldState).first()
