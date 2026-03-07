@@ -1017,3 +1017,8 @@
 - **State Persistence**: Realized that NPC dialogue state isn't just a simple flag; it requires checking the `town_newspaper` quest log entry to prevent the "read" status from resetting on server reloads.
 - **Codebase Convention**: Discovered the pattern of using `NPC_DATA_QUEST_TRIGGER` enums in the header files rather than hardcoding quest IDs directly in the dialogue switch cases, which improves maintainability across multiple NPCs.
 - **Correction**: Initially forgot to add the `RESET` condition for the daily newspaper mechanic, causing the NPC to offer the same "new" paper indefinitely; fixed by implementing a timestamp check against the player's last interaction.
+
+--- Story 197: Historian NPC (attempts: 1, 2026-03-06 23:54) ---
+- **Tricky Logic**: Determining the correct `history_event` ID required tracing a non-linear dependency chain through the `world_state` singleton, which wasn't immediately obvious from the NPC's local script.
+- **Codebase Pattern**: This project consistently uses a "data-first" approach where NPC behaviors are driven by external JSON configuration files rather than hard-coded logic branches, requiring careful schema validation.
+- **Correction**: Initially attempted to modify the NPC's dialogue directly in the script, which broke the localization pipeline; corrected by updating the `dialogue_tree.json` and regenerating the language assets instead.

@@ -1101,3 +1101,6 @@ Ralph stopped — needs human debugging
 [2026-03-07 04:02:41 UTC] stop: Ralph offline — 190/215 stories complete
 [2026-03-07 04:34:11 UTC] start: Ralph online — 193/215 stories complete
 [2026-03-07 04:34:11 UTC] story_start: Story 196: Town newspaper NPC
+[2026-03-07 04:45:24 UTC] deploy_ok: Story 196 deployed: Healthy after 0.1s
+[2026-03-07 04:45:37 UTC] story_done: Story 196 complete: Town newspaper NPC
+[2026-03-07 04:45:37 UTC] story_start: Story 197: Historian NPC

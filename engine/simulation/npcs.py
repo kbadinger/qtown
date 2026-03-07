@@ -1051,3 +1051,56 @@ def publish_newspaper(db: Session) -> None:
     
     db.add(newspaper)
     db.commit()
+
+
+def record_milestones(db: Session) -> None:
+    """Record milestones based on current world state."""
+    from engine.models import Milestone, Building, NPC, WorldState
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return
+    current_tick = world_state.tick
+    
+    # Check if first building milestone exists
+    first_building = db.query(Milestone).filter(
+        Milestone.name == "First building"
+    ).first()
+    if not first_building:
+        building_count = db.query(Building).count()
+        if building_count >= 1:
+            db.add(Milestone(
+                name="First building",
+                description="The town built its first building.",
+                tick_achieved=current_tick
+            ))
+            db.commit()
+    
+    # Check if 10th NPC milestone exists
+    tenth_npc = db.query(Milestone).filter(
+        Milestone.name == "10th NPC"
+    ).first()
+    if not tenth_npc:
+        npc_count = db.query(NPC).count()
+        if npc_count >= 10:
+            db.add(Milestone(
+                name="10th NPC",
+                description="The town reached 10 NPCs.",
+                tick_achieved=current_tick
+            ))
+            db.commit()
+    
+    # Check if first death milestone exists
+    first_death = db.query(Milestone).filter(
+        Milestone.name == "First death"
+    ).first()
+    if not first_death:
+        dead_count = db.query(NPC).filter(NPC.is_dead == True).count()
+        if dead_count >= 1:
+            db.add(Milestone(
+                name="First death",
+                description="The first NPC died.",
+                tick_achieved=current_tick
+            ))
+            db.commit()
