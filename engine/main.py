@@ -408,6 +408,15 @@ def world_state(db: Session = Depends(get_db)):
     }
 
 
+@app.post("/api/tick")
+def manual_tick(db: Session = Depends(get_db)):
+    """Manually advance one tick. Returns new tick count."""
+    from engine.simulation import process_tick
+    process_tick(db)
+    ws = db.query(WorldState).first()
+    return {"tick": ws.tick if ws else 0}
+
+
 # ---------------------------------------------------------------------------
 # Stories — individual story detail view
 # ---------------------------------------------------------------------------
