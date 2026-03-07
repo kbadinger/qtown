@@ -205,14 +205,21 @@ def _start_tick_loop():
 
     def _tick_worker():
         from engine.simulation import process_tick
+        from engine.models import WorldState
         print("[qtown] Tick worker thread started", flush=True)
         while True:
             time.sleep(5)
             db = SessionLocal()
             try:
                 process_tick(db)
+                ws = db.query(WorldState).first()
+                tick_num = ws.tick if ws else "?"
+                print(f"[qtown] Tick {tick_num} processed", flush=True)
             except Exception as e:
+                import traceback
                 print(f"[qtown] Tick error: {e}", flush=True)
+                traceback.print_exc()
+                sys.stdout.flush()
             finally:
                 db.close()
 
@@ -406,15 +413,6 @@ def world_state(db: Session = Depends(get_db)):
         "buildings": buildings,
         "npcs": npcs,
     }
-
-
-@app.post("/api/tick")
-def manual_tick(db: Session = Depends(get_db)):
-    """Manually advance one tick. Returns new tick count."""
-    from engine.simulation import process_tick
-    process_tick(db)
-    ws = db.query(WorldState).first()
-    return {"tick": ws.tick if ws else 0}
 
 
 # ---------------------------------------------------------------------------
