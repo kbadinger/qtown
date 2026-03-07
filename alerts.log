@@ -1071,3 +1071,4 @@ Ralph stopped — needs human debugging
 [2026-03-07 01:57:45 UTC] deploy_ok: Story 190 deployed: Healthy after 0.1s
 [2026-03-07 01:57:57 UTC] story_done: Story 190 complete: Bankruptcy handling
 [2026-03-07 01:57:58 UTC] story_start: Story 191: Mayor election
+[2026-03-07 02:07:27 UTC] WARN deploy_fail: Story 191 deploy failed — starting fix cycle
