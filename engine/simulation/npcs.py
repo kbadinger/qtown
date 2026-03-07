@@ -623,30 +623,40 @@ def process_inheritance(db: Session) -> None:
 
 def check_population_growth(db: Session) -> None:
     """Check if we can spawn a new NPC based on happiness and population.
-    
-    If average happiness > 60 and population < 100, spawn a new NPC.
+
+    Only runs every 50 ticks with a 30% chance. Requires avg happiness > 60
+    and living population < 20.
     """
-    npcs = db.query(NPC).all()
-    
+    from engine.models import WorldState
+    ws = db.query(WorldState).first()
+    if not ws or ws.tick % 50 != 0:
+        return
+
+    # Only 30% chance even when conditions are met
+    if random.random() > 0.3:
+        return
+
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+
     if not npcs:
         return
-    
+
     # Calculate average happiness
     total_happiness = sum(npc.happiness for npc in npcs)
     avg_happiness = total_happiness / len(npcs)
-    
-    # Check if we can spawn a new NPC
-    if avg_happiness > 60 and len(npcs) < 100:
+
+    # Check if we can spawn a new NPC (cap at 20 living NPCs)
+    if avg_happiness > 60 and len(npcs) < 20:
         names = ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", "Henry", "Ivy", "Jack"]
         roles = ["farmer", "baker", "guard", "merchant", "priest"]
-        
+
         # Find valid positions (not occupied by existing NPCs)
         existing_positions = set((npc.x, npc.y) for npc in npcs)
         valid_positions = [(x, y) for x in range(50) for y in range(50) if (x, y) not in existing_positions]
-        
+
         if valid_positions:
             new_x, new_y = random.choice(valid_positions)
-            
+
             new_npc = NPC(
                 name=random.choice(names),
                 role=random.choice(roles),
@@ -658,7 +668,7 @@ def check_population_growth(db: Session) -> None:
                 happiness=50,
                 personality=_generate_personality()
             )
-            
+
             db.add(new_npc)
             db.commit()
 

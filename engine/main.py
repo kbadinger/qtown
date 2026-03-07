@@ -143,6 +143,7 @@ def _seed_world():
 
     db = SessionLocal()
     try:
+        _cleanup_excess_npcs(db)
         _migrate_layout(db)
         init_grid(db)
         seed_buildings(db)
@@ -153,6 +154,31 @@ def _seed_world():
         print("[qtown] World seeded")
     finally:
         db.close()
+
+
+def _cleanup_excess_npcs(db):
+    """One-time cleanup: remove NPCs spawned by runaway population growth."""
+    from engine.models import NPC, WorldState
+
+    npc_count = db.query(NPC).count()
+    if npc_count <= 5:
+        return  # No cleanup needed
+
+    print(f"[qtown] Cleaning up excess NPCs ({npc_count} found, keeping original 5)...")
+
+    # Keep only the first 5 NPCs (by id), delete the rest
+    original_ids = [n.id for n in db.query(NPC).order_by(NPC.id).limit(5).all()]
+    db.query(NPC).filter(~NPC.id.in_(original_ids)).delete(synchronize_session="fetch")
+
+    # Reset tick and world state so the town starts fresh
+    ws = db.query(WorldState).first()
+    if ws:
+        ws.tick = 0
+        ws.day = 1
+        ws.time_of_day = "morning"
+
+    db.commit()
+    print(f"[qtown] Cleanup done — {db.query(NPC).count()} NPCs remain")
 
 
 def _migrate_layout(db):
