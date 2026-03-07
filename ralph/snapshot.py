@@ -28,6 +28,18 @@ def take_browser_screenshot(story_id: str) -> str | None:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page(viewport={"width": 1280, "height": 720})
             page.goto(DEPLOY_URL, wait_until="networkidle", timeout=30000)
+
+            # Wait for PixiJS to render (status-counter updates after each render)
+            try:
+                page.wait_for_function(
+                    "document.getElementById('status-counter')?.textContent?.includes('buildings:')",
+                    timeout=15000,
+                )
+                # Extra wait for async sprite texture loads
+                page.wait_for_timeout(3000)
+            except Exception:
+                pass  # Still take screenshot even if wait times out
+
             page.screenshot(path=str(output_path), full_page=True)
             browser.close()
 
