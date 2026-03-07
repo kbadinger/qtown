@@ -72,7 +72,7 @@ def test_s025_npc_movement(db):
     """Story 025: NPCs should move toward their target during tick."""
     _setup_world(db)
     from engine.models import NPC
-    from engine.simulation import process_tick
+    from engine.simulation import move_npc_toward_target
 
     npc = db.query(NPC).first()
     old_x, old_y = npc.x, npc.y
@@ -80,7 +80,8 @@ def test_s025_npc_movement(db):
     npc.target_x = old_x + 5 if old_x < 45 else old_x - 5
     npc.target_y = old_y + 5 if old_y < 45 else old_y - 5
     db.commit()
-    process_tick(db)
+    move_npc_toward_target(db, npc)
+    db.flush()
     db.refresh(npc)
     # NPC should have moved (at least one coordinate changed)
     assert (npc.x != old_x or npc.y != old_y), "NPC should have moved toward target"
