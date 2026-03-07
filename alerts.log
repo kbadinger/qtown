@@ -1072,3 +1072,32 @@ Ralph stopped — needs human debugging
 [2026-03-07 01:57:57 UTC] story_done: Story 190 complete: Bankruptcy handling
 [2026-03-07 01:57:58 UTC] story_start: Story 191: Mayor election
 [2026-03-07 02:07:27 UTC] WARN deploy_fail: Story 191 deploy failed — starting fix cycle
+[2026-03-07 02:09:12 UTC] deploy_ok: Story 191 deploy fixed on retry
+[2026-03-07 02:09:23 UTC] story_done: Story 191 complete: Mayor election
+[2026-03-07 02:09:24 UTC] story_start: Story 192: Policy votes
+[2026-03-07 02:16:35 UTC] WARN story_fail: Story 192 struggling — attempt 5/12
+Policy votes
+[2026-03-07 02:17:37 UTC] CRITICAL loop: Story 192: same error 5x in a row — giving up
+`tests/test_tick.py::test_s192_propose_policy FAILED                      [100%]`
+[2026-03-07 02:17:38 UTC] CRITICAL critical: Story 192 failed: Policy votes
+Ralph stopped — needs human debugging
+[2026-03-07 02:17:38 UTC] stop: Ralph offline — 190/215 stories complete
+[2026-03-07 02:36:36 UTC] start: Ralph online — 190/215 stories complete
+[2026-03-07 02:36:36 UTC] story_start: Story 193: Law enforcement
+[2026-03-07 03:12:53 UTC] WARN story_fail: Story 193 struggling — attempt 5/12
+Law enforcement
+[2026-03-07 03:35:34 UTC] WARN story_fail: Story 193 failed after 12 attempts: Law enforcement
+[2026-03-07 03:35:34 UTC] CRITICAL critical: Story 193 failed: Law enforcement
+Ralph stopped — needs human debugging
+[2026-03-07 03:35:35 UTC] stop: Ralph offline — 190/215 stories complete
+[2026-03-07 03:41:13 UTC] start: Ralph online — 190/215 stories complete
+[2026-03-07 03:41:14 UTC] story_start: Story 194: Crime and punishment
+[2026-03-07 03:57:17 UTC] WARN story_fail: Story 194 struggling — attempt 5/12
+Crime and punishment
+[2026-03-07 04:02:40 UTC] CRITICAL loop: Story 194: same error 5x in a row — giving up
+`tests/test_tick.py::test_s194_process_punishment FAILED                  [100%]`
+[2026-03-07 04:02:41 UTC] CRITICAL critical: Story 194 failed: Crime and punishment
+Ralph stopped — needs human debugging
+[2026-03-07 04:02:41 UTC] stop: Ralph offline — 190/215 stories complete
+[2026-03-07 04:34:11 UTC] start: Ralph online — 193/215 stories complete
+[2026-03-07 04:34:11 UTC] story_start: Story 196: Town newspaper NPC

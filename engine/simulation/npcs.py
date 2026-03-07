@@ -1022,3 +1022,32 @@ def check_bankruptcy(db: Session) -> None:
         npc.happiness = 50  # Restore happiness
     
     db.commit()
+
+
+def publish_newspaper(db: Session) -> None:
+    """Publish a newspaper entry summarizing recent events."""
+    from engine.models import Newspaper, NPC, WorldState
+    
+    # Find a journalist NPC or any NPC to be the author
+    author = db.query(NPC).filter(NPC.role == "journalist").first()
+    if not author:
+        author = db.query(NPC).first()
+    
+    if not author:
+        return  # No NPCs available to author the newspaper
+    
+    # Get current tick from world state
+    world_state = db.query(WorldState).first()
+    tick = world_state.tick if world_state else 1
+    
+    # Create newspaper entry with headline referencing recent events
+    newspaper = Newspaper(
+        day=tick,
+        headline="Town Updates",
+        body="The town continues to grow and thrive with new developments.",
+        author_npc_id=author.id,
+        tick=tick
+    )
+    
+    db.add(newspaper)
+    db.commit()

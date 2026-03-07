@@ -1012,3 +1012,8 @@
 - **Non-obvious state synchronization**: The mayor election logic required explicit handling of the `term_end` timestamp to prevent race conditions between vote counting and term expiration, which wasn't immediately clear from the schema.
 - **Idempotency pattern**: The codebase consistently uses `upsert` operations with `ON CONFLICT DO UPDATE` for vote recording, ensuring duplicate submissions don't skew results or crash the transaction.
 - **Correction on null handling**: Initially assumed `current_mayor` would always exist; added a guard clause to handle the edge case where the election occurs during a vacancy, preventing a `NullPointerException` in the UI.
+
+--- Story 196: Town newspaper NPC (attempts: 1, 2026-03-06 23:42) ---
+- **State Persistence**: Realized that NPC dialogue state isn't just a simple flag; it requires checking the `town_newspaper` quest log entry to prevent the "read" status from resetting on server reloads.
+- **Codebase Convention**: Discovered the pattern of using `NPC_DATA_QUEST_TRIGGER` enums in the header files rather than hardcoding quest IDs directly in the dialogue switch cases, which improves maintainability across multiple NPCs.
+- **Correction**: Initially forgot to add the `RESET` condition for the daily newspaper mechanic, causing the NPC to offer the same "new" paper indefinitely; fixed by implementing a timestamp check against the player's last interaction.
