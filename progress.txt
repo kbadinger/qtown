@@ -982,3 +982,8 @@
 *   **Price Calculation Logic**: The pricing formula isn't a simple static multiplier; it dynamically adjusts based on the NPC's current inventory depth and the player's reputation, requiring careful handling of floating-point precision to avoid rounding errors in the final cost.
 *   **State Mutation Convention**: The codebase strictly avoids direct mutation of the `Item` prototype; instead, price overrides must be applied via a transient `TransactionContext` object to ensure the base catalog remains immutable across different merchant interactions.
 *   **Correction on Edge Cases**: Initially, I failed to account for zero-quantity items in the inventory check, which caused a division-by-zero crash in the discount calculation; this was fixed by adding a guard clause that defaults to the base price when stock is depleted.
+
+--- Story 187: Banker NPCs offer loans (attempts: 1, 2026-03-06 20:08) ---
+- **Non-obvious state coupling**: Loan eligibility logic is tightly coupled with the `Banker` NPC's internal `reputation` flag, which is not passed explicitly to the loan service but accessed via a global context, making unit testing difficult without mocking the entire session.
+- **Codebase convention**: Financial transactions in this codebase consistently use a `TransactionLog` pattern where every state change (even failed validations) is recorded as an immutable event before the actual deduction occurs, ensuring audit trails are never lost.
+- **Correction made**: Initially attempted to validate loan terms synchronously within the NPC's dialogue handler; corrected by refactoring to an asynchronous `LoanService` to prevent blocking the main game loop during complex interest rate calculations.

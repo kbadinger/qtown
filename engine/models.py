@@ -243,3 +243,19 @@ class Cost(Base):
     cost = Column(Float, nullable=False)
     duration = Column(Integer, nullable=False)  # in seconds
     created_at = Column(DateTime, default=_utcnow)
+
+
+class Loan(Base):
+    __tablename__ = "loans"
+
+    id = Column(Integer, primary_key=True, index=True)
+    lender_npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=False)
+    borrower_npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=False)
+    amount = Column(Integer, nullable=False)
+    interest_rate = Column(Float, nullable=False)
+    ticks_remaining = Column(Integer, nullable=False)
+    status = Column(String(32), nullable=False, default="active")
+    created_at = Column(DateTime, default=_utcnow)
+
+    lender = relationship("NPC", foreign_keys=[lender_npc_id])
+    borrower = relationship("NPC", foreign_keys=[borrower_npc_id])

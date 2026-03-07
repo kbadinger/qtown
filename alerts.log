@@ -1042,3 +1042,6 @@ Ralph stopped — needs human debugging
 [2026-03-06 23:14:02 UTC] story_done: Story 185 complete: Infrastructure scoring
 [2026-03-06 23:14:02 UTC] story_start: Story 186: Merchant NPCs set prices
 [2026-03-06 23:22:09 UTC] WARN deploy_fail: Story 186 deploy failed — starting fix cycle
+[2026-03-07 01:00:02 UTC] deploy_ok: Story 186 deploy fixed on retry
+[2026-03-07 01:00:15 UTC] story_done: Story 186 complete: Merchant NPCs set prices
+[2026-03-07 01:00:15 UTC] story_start: Story 187: Banker NPCs offer loans

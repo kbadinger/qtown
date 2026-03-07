@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from engine.models import NPC, Building, Resource, WorldState, Relationship, Treasury
 from engine.simulation.init import _generate_personality
+from engine.models import Loan
 
 
 def move_npc_toward_target(db: Session, npc: NPC) -> None:
@@ -792,4 +793,101 @@ def learn(db: Session, npc_id: int, lesson: str) -> None:
     
     # Save back to database
     npc.experience = json.dumps(experience_list)
+    db.commit()
+
+
+def process_loans(db: Session) -> None:
+    """Process banker NPCs offering loans to poor NPCs."""
+    from sqlalchemy import func
+    
+    # Find all banker NPCs with sufficient gold to lend
+    bankers = db.query(NPC).filter(
+        NPC.role == "banker",
+        NPC.gold >= 100  # Minimum gold to lend
+    ).all()
+    
+    # Find all poor NPCs (gold < 10) who don't already have active loans
+    poor_npcs = db.query(NPC).filter(
+        NPC.gold < 10,
+        NPC.is_dead == 0
+    ).all()
+    
+    # Check which poor NPCs already have active loans
+    existing_loan_borrowers = set()
+    for loan in db.query(Loan).filter(Loan.status == "active").all():
+        existing_loan_borrowers.add(loan.borrower_npc_id)
+    
+    # Create loans for poor NPCs without existing loans
+    for banker in bankers:
+        for borrower in poor_npcs:
+            if borrower.id in existing_loan_borrowers:
+                continue
+            
+            # Create a loan
+            loan = Loan(
+                lender_npc_id=banker.id,
+                borrower_npc_id=borrower.id,
+                amount=100,
+                interest_rate=0.1,
+                ticks_remaining=50,
+                status="active"
+            )
+            db.add(loan)
+            
+            # Transfer gold from banker to borrower
+            banker.gold -= 100
+            borrower.gold += 100
+            
+            # Limit to one loan per banker per tick
+            break
+    
+    # Process loan repayments
+    active_loans = db.query(Loan).filter(
+        Loan.status == "active",
+        Loan.ticks_remaining > 0
+    ).all()
+    
+    for loan in active_loans:
+        # Decrement ticks remaining
+        loan.ticks_remaining -= 1
+        
+        if loan.ticks_remaining == 0:
+            # Loan is due - check if borrower can repay
+            borrower = db.query(NPC).filter(NPC.id == loan.borrower_npc_id).first()
+            lender = db.query(NPC).filter(NPC.id == loan.lender_npc_id).first()
+            
+            if borrower and lender:
+                total_due = int(loan.amount * (1 + loan.interest_rate))
+                
+                if borrower.gold >= total_due:
+                    # Successful repayment
+                    borrower.gold -= total_due
+                    lender.gold += total_due
+                    loan.status = "repaid"
+                    
+                    # Log successful repayment event
+                    from engine.models import Event
+                    event = Event(
+                        event_type="loan_repayment",
+                        description=f"{borrower.name} repaid loan to {lender.name}",
+                        tick=db.query(WorldState).first().tick if db.query(WorldState).first() else 0,
+                        severity="info",
+                        affected_npc_id=borrower.id
+                    )
+                    db.add(event)
+                else:
+                    # Default - borrower can't repay
+                    loan.status = "defaulted"
+                    
+                    # Log default event
+                    from engine.models import Event
+                    event = Event(
+                        event_type="loan_default",
+                        description=f"{borrower.name} defaulted on loan to {lender.name}",
+                        tick=db.query(WorldState).first().tick if db.query(WorldState).first() else 0,
+                        severity="warning",
+                        affected_npc_id=borrower.id
+                    )
+                    db.add(event)
+    
     db.commit()
