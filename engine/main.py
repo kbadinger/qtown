@@ -126,7 +126,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 
 @app.on_event("startup")
-def startup():
+async def startup():
     init_db()
     _seed_admin()
     _seed_world()
@@ -198,34 +198,32 @@ def _migrate_layout(db):
 
 
 def _start_tick_loop():
-    """Start a background thread that runs process_tick every 5 seconds."""
-    import sys
-    import threading
-    import time
+    """Start an asyncio background task that runs process_tick every 5 seconds."""
+    import asyncio
+    import logging
 
-    def _tick_worker():
+    logger = logging.getLogger("uvicorn.error")
+
+    async def _tick_worker():
         from engine.simulation import process_tick
         from engine.models import WorldState
-        print("[qtown] Tick worker thread started", flush=True)
+
+        logger.info("[qtown] Tick worker started")
         while True:
-            time.sleep(5)
+            await asyncio.sleep(5)
             db = SessionLocal()
             try:
                 process_tick(db)
                 ws = db.query(WorldState).first()
                 tick_num = ws.tick if ws else "?"
-                print(f"[qtown] Tick {tick_num} processed", flush=True)
+                logger.info("[qtown] Tick %s processed", tick_num)
             except Exception as e:
-                import traceback
-                print(f"[qtown] Tick error: {e}", flush=True)
-                traceback.print_exc()
-                sys.stdout.flush()
+                logger.error("[qtown] Tick error: %s", e, exc_info=True)
             finally:
                 db.close()
 
-    thread = threading.Thread(target=_tick_worker, daemon=True)
-    thread.start()
-    print("[qtown] Auto-tick started (every 5s)", flush=True)
+    asyncio.create_task(_tick_worker())
+    logger.info("[qtown] Auto-tick scheduled (every 5s)")
 
 
 def _seed_admin():

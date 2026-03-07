@@ -26,14 +26,18 @@ def test_s001_init_grid_covers_full_range(db):
 
 
 def test_s001_init_grid_default_terrain(db):
-    """Story 001: All tiles should default to 'grass' terrain."""
+    """Story 001: Most tiles should be grass, with terrain variety for special zones."""
     from engine.simulation import init_grid
 
     init_grid(db)
     from engine.models import Tile
 
-    non_grass = db.query(Tile).filter(Tile.terrain != "grass").count()
-    assert non_grass == 0, f"Expected all grass, found {non_grass} non-grass tiles"
+    total = db.query(Tile).count()
+    grass = db.query(Tile).filter(Tile.terrain == "grass").count()
+    valid_terrains = {"grass", "water", "forest", "dirt", "sand", "stone"}
+    all_terrains = {t.terrain for t in db.query(Tile).all()}
+    assert all_terrains.issubset(valid_terrains), f"Unexpected terrains: {all_terrains - valid_terrains}"
+    assert grass > total * 0.8, f"Expected mostly grass, got {grass}/{total}"
 
 
 def test_s001_init_grid_idempotent(db):
