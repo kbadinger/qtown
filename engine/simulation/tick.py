@@ -3,7 +3,7 @@
 from sqlalchemy.orm import Session
 
 from engine.models import NPC, WorldState
-from engine.simulation.init import init_world_state
+from engine.simulation.init import init_world_state, assign_work_and_homes
 from engine.simulation.buildings import seed_all_buildings
 from engine.simulation.weather import update_weather, apply_weather_effects
 from engine.simulation.npcs import (
@@ -41,8 +41,9 @@ def process_tick(db: Session) -> None:
     7. Population — births, deaths, aging
     8. Events — log notable events
     """
-    # 0. Ensure all building types are seeded (idempotent)
+    # 0. Ensure all building types are seeded and NPCs assigned (idempotent)
     seed_all_buildings(db)
+    assign_work_and_homes(db)
 
     # 1. Update world state (time, weather)
     world_state = db.query(WorldState).first()

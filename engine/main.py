@@ -131,11 +131,15 @@ def startup():
     _seed_admin()
     _seed_world()
     _auto_discover_routers()
+    _start_tick_loop()
 
 
 def _seed_world():
     """Seed grid, buildings, NPCs, and world state on first run. All idempotent."""
-    from engine.simulation import init_grid, seed_buildings, seed_npcs, init_world_state
+    from engine.simulation import (
+        init_grid, seed_buildings, seed_npcs, init_world_state,
+        seed_all_buildings, assign_work_and_homes,
+    )
 
     db = SessionLocal()
     try:
@@ -143,9 +147,33 @@ def _seed_world():
         seed_buildings(db)
         seed_npcs(db)
         init_world_state(db)
+        seed_all_buildings(db)
+        assign_work_and_homes(db)
         print("[qtown] World seeded")
     finally:
         db.close()
+
+
+def _start_tick_loop():
+    """Start a background thread that runs process_tick every 5 seconds."""
+    import threading
+    import time
+
+    def _tick_worker():
+        while True:
+            time.sleep(5)
+            db = SessionLocal()
+            try:
+                from engine.simulation import process_tick
+                process_tick(db)
+            except Exception as e:
+                print(f"[qtown] Tick error: {e}")
+            finally:
+                db.close()
+
+    thread = threading.Thread(target=_tick_worker, daemon=True)
+    thread.start()
+    print("[qtown] Auto-tick started (every 5s)")
 
 
 def _seed_admin():
