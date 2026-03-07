@@ -8,6 +8,7 @@ from engine.models import NPC, Building, Resource, WorldState, Relationship, Tre
 from engine.simulation.init import _generate_personality
 from engine.models import Loan
 from typing import List
+import heapq
 
 
 def move_npc_toward_target(db: Session, npc: NPC) -> None:
@@ -1158,3 +1159,87 @@ def compose_anthem(db: Session) -> None:
     )
     db.add(anthem)
     db.commit()
+
+
+def find_path(db: Session, start_x: int, start_y: int, end_x: int, end_y: int) -> list:
+    """Find path using A* algorithm avoiding buildings and water tiles.
+    
+    Args:
+        db: Database session
+        start_x: Starting x coordinate
+        start_y: Starting y coordinate
+        end_x: Ending x coordinate
+        end_y: Ending y coordinate
+        
+    Returns:
+        List of (x, y) tuples representing the path, or empty list if no path exists
+    """
+    from engine.models import Building, Tile
+    
+    # Get all obstacle positions (buildings and water)
+    obstacles = set()
+    
+    # Add building positions as obstacles
+    buildings = db.query(Building).all()
+    for building in buildings:
+        obstacles.add((building.x, building.y))
+    
+    # Add water tiles as obstacles
+    water_tiles = db.query(Tile).filter(Tile.terrain == "water").all()
+    for tile in water_tiles:
+        obstacles.add((tile.x, tile.y))
+    
+    # A* algorithm implementation
+    def heuristic(x, y):
+        """Manhattan distance heuristic."""
+        return abs(end_x - x) + abs(end_y - y)
+    
+    def get_neighbors(x, y):
+        """Get valid neighboring tiles (up, down, left, right)."""
+        neighbors = []
+        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            nx, ny = x + dx, y + dy
+            # Check bounds (50x50 grid)
+            if 0 <= nx < 50 and 0 <= ny < 50:
+                if (nx, ny) not in obstacles:
+                    neighbors.append((nx, ny))
+        return neighbors
+    
+    # A* search
+    start = (start_x, start_y)
+    end = (end_x, end_y)
+    
+    # If start or end is an obstacle, no path possible
+    if start in obstacles or end in obstacles:
+        return []
+    
+    # Priority queue: (f_score, g_score, x, y, path)
+    open_set = [(heuristic(start[0], start[1]), 0, start[0], start[1], [start])]
+    open_set_dict = {start: (heuristic(start[0], start[1]), 0)}
+    
+    while open_set:
+        # Get node with lowest f_score
+        f_score, g_score, x, y, path = heapq.heappop(open_set)
+        
+        # Check if we reached the end
+        if (x, y) == end:
+            return path
+        
+        # Explore neighbors
+        for nx, ny in get_neighbors(x, y):
+            neighbor = (nx, ny)
+            tentative_g = g_score + 1
+            
+            # Skip if we've found a better path to this neighbor
+            if neighbor in open_set_dict:
+                old_f, old_g = open_set_dict[neighbor]
+                if tentative_g >= old_g:
+                    continue
+            
+            # Found better path to neighbor
+            f_score_neighbor = tentative_g + heuristic(nx, ny)
+            open_set_dict[neighbor] = (f_score_neighbor, tentative_g)
+            heapq.heappush(open_set, (f_score_neighbor, tentative_g, nx, ny, path + [neighbor]))
+    
+    # No path found
+    return []

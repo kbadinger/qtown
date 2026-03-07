@@ -1037,3 +1037,8 @@
 *   **Non-obvious dependency on `lyric_structure`**: The generator relies on a specific JSON schema for rhyme schemes; deviating from the expected `stanza_type` keys caused silent failures in the rhythm calculation rather than throwing errors.
 *   **Pattern of "Template + Constraint"**: The codebase consistently separates static template strings from dynamic constraint objects (e.g., `max_syllables`), allowing the core logic to remain agnostic of specific town names or themes.
 *   **Correction of off-by-one indexing**: Initially, the rhyme group assignment used 0-based indexing against a 1-based rhyme scheme definition, causing the final line of every stanza to mismatch; shifting to 1-based alignment fixed the output.
+
+--- Story 201: Implement A* pathfinding for NPC movement (attempts: 1, 2026-03-07 00:35) ---
+- **Heuristic Tuning**: The non-obvious challenge was balancing the heuristic weight; using a pure Manhattan distance caused NPCs to get stuck in narrow corridors, requiring a slight overestimation to prioritize directness over strict optimality.
+- **Grid Abstraction**: The codebase consistently separates raw tile data from navigation logic via a `NavMesh` wrapper, meaning A* operates on an abstracted graph rather than direct map coordinates.
+- **State Mutation Bug**: Initially, I modified the `g_score` dictionary in-place during iteration, causing stale path data to persist across frames; switching to immutable snapshots for the open/closed sets resolved the flickering movement issue.
