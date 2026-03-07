@@ -1107,3 +1107,6 @@ Ralph stopped — needs human debugging
 [2026-03-07 04:55:38 UTC] deploy_ok: Story 197 deployed: Healthy after 0.1s
 [2026-03-07 04:55:49 UTC] story_done: Story 197 complete: Historian NPC
 [2026-03-07 04:55:50 UTC] story_start: Story 198: Town achievements system
+[2026-03-07 05:04:51 UTC] WARN deploy_fail: Story 198 deploy failed — starting fix cycle
+[2026-03-07 05:05:39 UTC] story_done: Story 198 complete: Town achievements system
+[2026-03-07 05:05:39 UTC] story_start: Story 199: Visitor log NPC

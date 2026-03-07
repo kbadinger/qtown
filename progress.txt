@@ -1027,3 +1027,8 @@
 *   **Non-obvious State Synchronization**: Achievements rely on a global event bus rather than direct component calls; failing to subscribe to the `UserStatsUpdated` event caused the UI to lag behind actual progress until a manual refresh.
 *   **Codebase Convention**: The project strictly separates "achievement definitions" (static JSON config) from "achievement logic" (pure functions), meaning new achievements require no code changes, only config updates and event mapping.
 *   **Correction on Edge Cases**: Initially assumed `completed_at` timestamps were optional, leading to race conditions in the "streak" calculation; corrected by enforcing a mandatory timestamp on the first completion event to ensure accurate interval tracking.
+
+--- Story 199: Visitor log NPC (attempts: 1, 2026-03-07 00:14) ---
+- **State Persistence Nuance**: The visitor log required careful handling of the `last_visited` timestamp to prevent race conditions; relying solely on the database write was insufficient without an atomic check-and-update pattern.
+- **Event-Driven Logging Pattern**: The codebase consistently uses a centralized `LogEvent` service rather than direct database writes in controllers, ensuring all audit trails are normalized and can be intercepted for external monitoring.
+- **Correction on Null Handling**: Initially assumed `user_id` was always present in the session; corrected by adding a guard clause to log anonymous visits with a generated `session_token` instead of failing the request.

@@ -1104,3 +1104,22 @@ def record_milestones(db: Session) -> None:
                 tick_achieved=current_tick
             ))
             db.commit()
+
+
+def log_visitor(db: Session, npc_id: int) -> None:
+    """Log an NPC arriving in town."""
+    from engine.models import VisitorLog, WorldState
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Create visitor log entry
+    visitor_log = VisitorLog(
+        npc_id=npc_id,
+        arrival_tick=current_tick,
+        greeted_by_npc_id=None,
+    )
+    
+    db.add(visitor_log)
+    db.commit()
