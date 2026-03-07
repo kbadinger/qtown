@@ -196,7 +196,23 @@ def _auto_discover_routers():
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    import json
+    from pathlib import Path
+    prd_path = Path(__file__).resolve().parent.parent / "prd.json"
+    stories_done = 0
+    stories_total = 265
+    if prd_path.exists():
+        try:
+            prd = json.loads(prd_path.read_text(encoding="utf-8"))
+            stories_total = len(prd.get("stories", []))
+            stories_done = sum(1 for s in prd.get("stories", []) if s.get("status") == "done")
+        except Exception:
+            pass
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "stories_done": stories_done,
+        "stories_total": stories_total,
+    })
 
 
 # ---------------------------------------------------------------------------
