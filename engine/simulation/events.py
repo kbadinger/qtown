@@ -6,6 +6,7 @@ from engine.models import WorldState, Event
 import random
 from engine.simulation.constants import PLAGUE_OVERWHELM_THRESHOLD
 import json
+from datetime import datetime
 
 
 def trigger_drought(db: Session) -> None:
@@ -568,4 +569,38 @@ def form_parties(db: Session) -> None:
     """Form political parties from NPCs with similar personalities. No-op placeholder."""
     from engine.models import NPC
     # Placeholder — Qwen will flesh out party logic in later stories
+    db.commit()
+
+
+def check_achievements(db: Session) -> None:
+    """Check all achievements and unlock those whose conditions are met."""
+    from engine.models import Achievement, Event, Building
+    
+    # Get all unachieved achievements
+    achievements = db.query(Achievement).filter(Achievement.achieved == False).all()
+    
+    for ach in achievements:
+        # Parse condition (stored as JSON string)
+        try:
+            condition = json.loads(ach.condition)
+        except (json.JSONDecodeError, TypeError):
+            continue
+        
+        # Check building_count condition
+        if "building_count" in condition:
+            required_count = condition.get("building_count", 0)
+            actual_count = db.query(Building).count()
+            
+            if actual_count >= required_count:
+                ach.achieved = True
+                ach.unlocked_at = datetime.now()
+                
+                # Create event
+                event = Event(
+                    event_type="achievement",
+                    description=f"Achievement unlocked: {ach.name}",
+                    tick=0  # Will be set by tick processor
+                )
+                db.add(event)
+    
     db.commit()

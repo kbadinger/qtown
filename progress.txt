@@ -1022,3 +1022,8 @@
 - **Tricky Logic**: Determining the correct `history_event` ID required tracing a non-linear dependency chain through the `world_state` singleton, which wasn't immediately obvious from the NPC's local script.
 - **Codebase Pattern**: This project consistently uses a "data-first" approach where NPC behaviors are driven by external JSON configuration files rather than hard-coded logic branches, requiring careful schema validation.
 - **Correction**: Initially attempted to modify the NPC's dialogue directly in the script, which broke the localization pipeline; corrected by updating the `dialogue_tree.json` and regenerating the language assets instead.
+
+--- Story 198: Town achievements system (attempts: 1, 2026-03-07 00:04) ---
+*   **Non-obvious State Synchronization**: Achievements rely on a global event bus rather than direct component calls; failing to subscribe to the `UserStatsUpdated` event caused the UI to lag behind actual progress until a manual refresh.
+*   **Codebase Convention**: The project strictly separates "achievement definitions" (static JSON config) from "achievement logic" (pure functions), meaning new achievements require no code changes, only config updates and event mapping.
+*   **Correction on Edge Cases**: Initially assumed `completed_at` timestamps were optional, leading to race conditions in the "streak" calculation; corrected by enforcing a mandatory timestamp on the first completion event to ensure accurate interval tracking.
