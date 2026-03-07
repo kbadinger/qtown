@@ -31,3 +31,6 @@ Railway healthcheck was returning 400 because TrustedHostMiddleware blocked inte
 - Rewrote ralph/deployer.py to capture deploy IDs and fetch build+runtime logs on failure
 - Added HUD subtitle and Dashboard link to index.html
 Files touched: engine/main.py, ralph/deployer.py, engine/templates/index.html
+
+### 2026-03-07 07:02 UTC — Human (via HUMAN.md) — review_stories
+Ralph paused for human story review

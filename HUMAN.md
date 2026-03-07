@@ -1,5 +1,5 @@
 ---
-action: none
+action: resume
 story_id: null
 message: null
 ---
@@ -26,7 +26,7 @@ Ralph reads this file at the start of each iteration. Edit the YAML frontmatter 
 ### Pause Ralph
 ```yaml
 ---
-action: pause
+action: review_stories
 story_id: null
 message: null
 ---
@@ -35,7 +35,7 @@ message: null
 ### Give Qwen extra instructions
 ```yaml
 ---
-action: instruction
+action: review_stories
 story_id: null
 message: "Use a dictionary lookup instead of if/else chains for terrain colors"
 ---
@@ -44,7 +44,7 @@ message: "Use a dictionary lookup instead of if/else chains for terrain colors"
 ### Skip a problematic story
 ```yaml
 ---
-action: skip
+action: review_stories
 story_id: "042"
 message: null
 ---
