@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from engine.models import WorldState, Event
 import random
 from engine.simulation.constants import PLAGUE_OVERWHELM_THRESHOLD
+import json
 
 
 def trigger_drought(db: Session) -> None:
@@ -459,3 +460,70 @@ def apply_priest_healing(db: Session) -> None:
             npc.illness = npc.illness_severity
     
     db.commit()
+
+
+def hold_election(db: Session) -> dict:
+    """Hold a mayoral election.
+    
+    1. Select candidates (NPCs with sufficient experience)
+    2. NPCs vote for candidates
+    3. Determine winner by highest vote count
+    4. Update winner's role to "mayor"
+    5. Record election in database
+    
+    Returns: dict with election results including winner_npc_id
+    """
+    from engine.models import NPC, Election
+    import random
+    
+    # Get all living NPCs
+    npcs = db.query(NPC).filter(NPC.is_dead == False).all()
+    if not npcs:
+        return {"error": "No NPCs available"}
+    
+    # Select candidates (at least 2, prefer NPCs with higher experience or random)
+    # For simplicity, select random NPCs as candidates (at least 2, max 5)
+    candidate_count = min(5, len(npcs))
+    candidate_count = max(2, candidate_count)
+    candidates = random.sample(npcs, candidate_count)
+    candidate_ids = [c.id for c in candidates]
+    
+    # Initialize votes for each candidate
+    votes = {str(c.id): 0 for c in candidates}
+    
+    # Each NPC votes for a candidate (simple random voting)
+    for npc in npcs:
+        # NPCs vote for a random candidate
+        chosen_candidate = random.choice(candidates)
+        votes[str(chosen_candidate.id)] = votes.get(str(chosen_candidate.id), 0) + 1
+    
+    # Determine winner (highest vote count)
+    winner_id = max(votes, key=votes.get)
+    winner_npc_id = int(winner_id)
+    
+    # Update winner's role to "mayor"
+    winner = db.query(NPC).filter(NPC.id == winner_npc_id).first()
+    if winner:
+        winner.role = "mayor"
+    
+    # Get current tick
+    from engine.models import WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Create election record
+    election = Election(
+        candidate_npc_ids=json.dumps(candidate_ids),
+        votes=json.dumps(votes),
+        winner_npc_id=winner_npc_id,
+        tick_held=current_tick
+    )
+    db.add(election)
+    db.commit()
+    
+    return {
+        "winner_npc_id": winner_npc_id,
+        "winner": winner.name if winner else None,
+        "votes": votes,
+        "tick": current_tick
+    }

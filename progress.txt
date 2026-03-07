@@ -1007,3 +1007,8 @@
 - **Non-obvious edge case**: The interaction between `bankruptcy_status` and `active_loan` flags was not atomic; a race condition could occur if a user triggers bankruptcy while a loan repayment is processing, requiring a database-level transaction lock.
 - **Codebase convention**: Financial state changes consistently use a "snapshot" pattern where the pre-change state is archived to a `transaction_history` table before the main entity is updated, ensuring auditability without complex versioning logic.
 - **Correction made**: Initially attempted to calculate final balances by iterating through all historical transactions, which caused performance timeouts; corrected by using a pre-aggregated `current_balance` column updated via a single atomic `UPDATE` statement.
+
+--- Story 191: Mayor election (attempts: 1, 2026-03-06 21:07) ---
+- **Non-obvious state synchronization**: The mayor election logic required explicit handling of the `term_end` timestamp to prevent race conditions between vote counting and term expiration, which wasn't immediately clear from the schema.
+- **Idempotency pattern**: The codebase consistently uses `upsert` operations with `ON CONFLICT DO UPDATE` for vote recording, ensuring duplicate submissions don't skew results or crash the transaction.
+- **Correction on null handling**: Initially assumed `current_mayor` would always exist; added a guard clause to handle the edge case where the election occurs during a vacancy, preventing a `NullPointerException` in the UI.

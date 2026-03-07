@@ -148,4 +148,9 @@ def process_tick(db: Session) -> None:
     if world_state.tick % 50 == 0:
         check_marriage(db)
     
+    # Hold mayoral election every 500 ticks
+    if world_state.tick % 500 == 0:
+        from engine.simulation.events import hold_election
+        hold_election(db)
+    
     db.commit()

@@ -260,3 +260,16 @@ class Loan(Base):
 
     lender = relationship("NPC", foreign_keys=[lender_npc_id])
     borrower = relationship("NPC", foreign_keys=[borrower_npc_id])
+
+
+class Election(Base):
+    __tablename__ = "elections"
+
+    id = Column(Integer, primary_key=True, index=True)
+    candidate_npc_ids = Column(Text, nullable=False, default='[]')  # JSON array of NPC IDs
+    votes = Column(Text, nullable=False, default='{}')  # JSON object: npc_id -> vote count
+    winner_npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=True)
+    tick_held = Column(Integer, nullable=False)
+    created_at = Column(DateTime, default=_utcnow)
+
+    winner = relationship("NPC", foreign_keys=[winner_npc_id])

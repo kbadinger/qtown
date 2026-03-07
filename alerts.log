@@ -1068,3 +1068,6 @@ Ralph stopped — needs human debugging
 [2026-03-07 01:49:41 UTC] stop: Ralph offline — 188/215 stories complete
 [2026-03-07 01:56:12 UTC] start: Ralph online — 188/215 stories complete
 [2026-03-07 01:56:13 UTC] story_start: Story 190: Bankruptcy handling
+[2026-03-07 01:57:45 UTC] deploy_ok: Story 190 deployed: Healthy after 0.1s
+[2026-03-07 01:57:57 UTC] story_done: Story 190 complete: Bankruptcy handling
+[2026-03-07 01:57:58 UTC] story_start: Story 191: Mayor election
