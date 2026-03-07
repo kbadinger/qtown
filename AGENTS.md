@@ -75,6 +75,7 @@ You must NEVER create or modify these files:
 - `engine/simulation/__init__.py` — auto-re-export facade (human-written)
 - `engine/auth.py` — authentication (human-written, security-critical)
 - `engine/main.py` — app setup (human-written, security-critical)
+- `engine/models.py` — all models pre-added (human-written, BLOCKLISTED)
 - `engine/db.py` — database setup (human-written)
 - `engine/sprites.py` — sprite generation bridge (human-written)
 - `engine/templates/dashboard.html` — progress dashboard (human-written)
@@ -88,11 +89,28 @@ You must NEVER create or modify these files:
 
 ## What You CAN Modify
 
-- `engine/models.py` — add new models (never remove existing ones)
 - `engine/simulation/*.py` — add/update simulation functions (NOT `__init__.py`)
 - `engine/routers/*.py` — create new router files
 - `engine/templates/*.html` — create templates
 - `engine/static/*` — add static assets
+
+**IMPORTANT: `engine/models.py` is BLOCKLISTED.** All models have been pre-added by the human scaffolder.
+Do NOT try to modify, patch, or write to `engine/models.py`. All models you need already exist.
+Just import them: `from engine.models import Newspaper, Milestone, Achievement` etc.
+
+Available models (already in models.py):
+- Tile, AdminUser, WorldState, Feature, Vote
+- Building (has: id, name, building_type, x, y, capacity, level)
+- NPC (has: id, name, role, x, y, gold, hunger, energy, happiness, age, max_age, is_dead, is_bankrupt, illness_severity, illness, home_building_id, work_building_id, target_x, target_y, personality, skill, memory_events, favorite_buildings, avoided_areas, experience)
+- Transaction, Resource, Treasury, Event, Relationship
+- PriceHistory (has: resource_name, price, supply, demand, tick)
+- Cost, Loan, Election, Policy, Crime
+- Newspaper (has: day, headline, body, author_npc_id, tick)
+- Milestone (has: name, description, tick_achieved)
+- Achievement (has: name, description, condition, condition_type, condition_value, achieved, unlocked_at)
+- VisitorLog (has: npc_id, arrival_tick, greeted_by_npc_id)
+- TownAnthem (has: lyrics, composed_by_npc_id, tick_composed)
+- Dialogue (has: speaker_npc_id, listener_npc_id, message, tick)
 
 ### Which simulation submodule to patch
 

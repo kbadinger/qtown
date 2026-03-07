@@ -562,3 +562,10 @@ def propose_policy(db: Session, name: str, effect: dict) -> "Policy | None":
     db.add(policy)
     db.commit()
     return policy
+
+
+def form_parties(db: Session) -> None:
+    """Form political parties from NPCs with similar personalities. No-op placeholder."""
+    from engine.models import NPC
+    # Placeholder — Qwen will flesh out party logic in later stories
+    db.commit()

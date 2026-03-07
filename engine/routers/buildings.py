@@ -71,3 +71,19 @@ def create_building(
         "capacity": building.capacity,
         "created_at": building.created_at.isoformat()
     }
+
+
+@router.post("/{building_id}/upgrade")
+def upgrade_building_endpoint(
+    building_id: int,
+    db: Session = Depends(get_db),
+    _admin: str = Depends(require_admin),
+):
+    from engine.models import Building
+    building = db.query(Building).filter(Building.id == building_id).first()
+    if not building:
+        raise HTTPException(status_code=404, detail="Building not found")
+    building.level = (building.level or 1) + 1
+    db.commit()
+    db.refresh(building)
+    return {"id": building.id, "name": building.name, "level": building.level}

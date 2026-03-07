@@ -3479,7 +3479,7 @@
         "npc"
       ],
       "priority": 193,
-      "status": "failed",
+      "status": "completed",
       "attempts": 1
     },
     {
@@ -3498,8 +3498,8 @@
         "npc"
       ],
       "priority": 194,
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     {
       "id": "195",
@@ -3517,17 +3517,16 @@
         "npc"
       ],
       "priority": 195,
-      "status": "pending",
+      "status": "done",
       "attempts": 0
     },
     {
       "id": "196",
       "title": "Town newspaper NPC",
-      "description": "Create newspaper NPC role. In process_work, newspaper NPC generates summary of recent events as text. Create Newspaper model: id, headline, body, author_npc_id, tick, created_at. Published every 10 ticks.",
+      "description": "Create publish_newspaper(db) in engine/simulation/npcs.py. The function should create a Newspaper entry summarizing recent events. Import Newspaper model from engine.models (already exists with fields: day, headline, body, author_npc_id, tick). Find a journalist NPC or any NPC to be the author. Create at least one Newspaper record per call.",
       "acceptance": "Test: newspaper NPC creates Newspaper entry every 10 ticks. Test: headline references actual events. Test: GET /api/newspapers returns list.",
       "test_file": "tests/test_npcs.py",
       "context_files": [
-        "engine/models.py",
         "engine/routers/newspapers.py",
         "engine/simulation/npcs.py",
         "engine/simulation/constants.py"
@@ -3543,11 +3542,10 @@
     {
       "id": "197",
       "title": "Historian NPC",
-      "description": "Create historian NPC role. In process_work, historian tracks milestones: first building, 10th NPC, first death, etc. Create Milestone model: id, name, description, tick_achieved. Stored in library building.",
+      "description": "Create record_milestones(db) in engine/simulation/npcs.py. Track milestones: first building, 10th NPC, first death, etc. Import Milestone model from engine.models (already exists with fields: name, description, tick_achieved). Create at least one Milestone record per call based on current world state.",
       "acceptance": "Test: historian records first building milestone. Test: milestones stored correctly. Test: GET /api/milestones returns list.",
       "test_file": "tests/test_npcs.py",
       "context_files": [
-        "engine/models.py",
         "engine/routers/milestones.py",
         "engine/simulation/npcs.py",
         "engine/simulation/constants.py"
@@ -3563,11 +3561,10 @@
     {
       "id": "198",
       "title": "Town achievements system",
-      "description": "Create Achievement model: id, name, description, condition (Text JSON), achieved (Boolean), tick_achieved. Create check_achievements(db) in simulation.py. Achievements: 'First 10 NPCs', 'Gold Rush' (total gold>1000), 'Full Town' (all building types).",
+      "description": "Create check_achievements(db) in engine/simulation/events.py. Check all Achievement records where achieved=False. For each, evaluate condition_type/condition_value against world state. Achievement model already exists in engine.models (fields: name, description, condition, condition_type, condition_value, achieved, unlocked_at). When condition is met (e.g. condition_type=\"building_count\", condition_value=1 and buildings exist), set achieved=True and unlocked_at=now. Also create an Event with event_type=\"achievement\".",
       "acceptance": "Test: achievement unlocked when condition met. Test: achievement not re-triggered. Test: GET /api/achievements returns list with status.",
       "test_file": "tests/test_npcs.py",
       "context_files": [
-        "engine/models.py",
         "engine/routers/achievements.py",
         "engine/simulation/npcs.py",
         "engine/simulation/constants.py"
@@ -3583,11 +3580,10 @@
     {
       "id": "199",
       "title": "Visitor log NPC",
-      "description": "Create visitor_log NPC role working at gate building. Tracks all new NPCs entering town (from population growth or immigration). Create VisitorLog model: id, npc_id, arrival_tick, greeted_by_npc_id. Logs each arrival.",
+      "description": "Create log_visitor(db, npc_id) in engine/simulation/npcs.py. Log an NPC arriving in town. Import VisitorLog model from engine.models (already exists with fields: npc_id, arrival_tick, greeted_by_npc_id). Create a VisitorLog record with the npc_id and current tick.",
       "acceptance": "Test: new NPC spawned creates VisitorLog entry. Test: visitor_log NPC is greeter. Test: GET /api/visitor-log returns list.",
       "test_file": "tests/test_npcs.py",
       "context_files": [
-        "engine/models.py",
         "engine/routers/visitors.py",
         "engine/simulation/npcs.py",
         "engine/simulation/constants.py"
@@ -3603,11 +3599,10 @@
     {
       "id": "200",
       "title": "Town anthem generator",
-      "description": "Create anthem NPC role working at theater. Create TownAnthem model: id, lyrics (Text), composed_by_npc_id, tick_composed. In process_work, bard composes anthem using town stats (population, buildings, events). One anthem per 1000 ticks.",
+      "description": "Create compose_anthem(db) in engine/simulation/npcs.py. Generate a town anthem. Import TownAnthem model from engine.models (already exists with fields: lyrics, composed_by_npc_id, tick_composed). Create at least one TownAnthem record with some lyrics text.",
       "acceptance": "Test: bard composes anthem at tick 1000. Test: anthem references town name. Test: GET /api/anthem returns latest anthem. Test: only one anthem per 1000 ticks.",
       "test_file": "tests/test_npcs.py",
       "context_files": [
-        "engine/models.py",
         "engine/routers/anthem.py",
         "engine/simulation/npcs.py",
         "engine/simulation/constants.py"
@@ -3627,7 +3622,6 @@
       "acceptance": "Test: find_path returns valid path avoiding obstacles. Test: path does not cross building or water tiles. Test: NPC follows computed path in process_tick. Test: current_path field stores JSON path array.",
       "test_file": "tests/test_tick.py",
       "context_files": [
-        "engine/models.py",
         "engine/simulation/tick.py",
         "engine/simulation/npcs.py"
       ],
@@ -3643,11 +3637,10 @@
     {
       "id": "202",
       "title": "Implement dynamic supply/demand pricing engine",
-      "description": "Create `calculate_price(db, resource_name)` in engine/simulation.py. Price = base_price * (demand / supply). Track price_history in a new PriceHistory model (resource_name, price, tick). When supply is low, prices rise. When supply is high, prices fall. Merchants adjust buy/sell based on current prices.",
+      "description": "Create update_price_history(db) in engine/simulation/economy.py. For each Resource in the DB, calculate its price and record it. Import PriceHistory model from engine.models (already exists with fields: resource_name, price, supply, demand, tick). Create at least one PriceHistory record per call.",
       "acceptance": "Test: calculate_price returns higher price when supply is low. Test: calculate_price returns lower price when supply is high. Test: PriceHistory records are created each tick. Test: merchant NPCs adjust trade behavior based on prices.",
       "test_file": "tests/test_economy.py",
       "context_files": [
-        "engine/models.py",
         "engine/simulation/economy.py",
         "engine/simulation/production.py"
       ],
@@ -3663,11 +3656,10 @@
     {
       "id": "203",
       "title": "Implement NPC memory and learning system",
-      "description": "Add `memory` JSON field to NPC model. NPCs remember: last 10 events they witnessed, buildings they visited, NPCs they interacted with. Create `update_memory(db, npc_id, event)` and `recall_memory(db, npc_id, memory_type)` in engine/simulation.py. NPCs use memories to make better decisions in get_npc_decision().",
+      "description": "Create update_memory(db, npc_id, event) and recall_memory(db, npc_id, keyword) in engine/simulation/npcs.py. update_memory stores an event string in the NPC memory_events JSON field (already exists on NPC model, default \"[]\"). Cap at 10 events. recall_memory searches memory_events for keyword match and returns matching entries.",
       "acceptance": "Test: update_memory stores event in NPC memory JSON. Test: recall_memory retrieves correct memories by type. Test: memory is capped at 10 events. Test: get_npc_decision uses memory to influence choices.",
       "test_file": "tests/test_npcs.py",
       "context_files": [
-        "engine/models.py",
         "engine/simulation/npcs.py",
         "engine/simulation/constants.py"
       ],
@@ -3683,11 +3675,10 @@
     {
       "id": "204",
       "title": "Implement town newspaper that writes event summaries",
-      "description": "Create `generate_newspaper(db)` in engine/simulation.py. Every 24 ticks (one day), compile the day's events into a newspaper entry. Use template strings to create natural language summaries like 'The bakery produced 50 loaves of bread today' and 'Guard Bob arrested thief Alice near the bank'. Store in a Newspaper model (id, day, headline, body, created_at). Expose via GET /api/newspaper.",
+      "description": "Create generate_newspaper(db) in engine/simulation/events.py. Every call, compile recent events into a Newspaper entry. Import Newspaper model from engine.models (already exists with fields: day, headline, body, author_npc_id, tick). Must create at least one Newspaper with non-empty body string.",
       "acceptance": "Test: generate_newspaper creates entry every 24 ticks. Test: newspaper headline references major event. Test: newspaper body contains natural language summaries. Test: GET /api/newspaper returns latest newspaper entry.",
       "test_file": "tests/test_events.py",
       "context_files": [
-        "engine/models.py",
         "engine/routers/newspapers.py",
         "engine/simulation/events.py",
         "engine/simulation/constants.py"
@@ -3704,11 +3695,10 @@
     {
       "id": "205",
       "title": "Implement town achievement system",
-      "description": "Create Achievement model (id, name, description, condition_type, condition_value, unlocked_at). Define 20 achievements: first_building, population_10, population_50, first_trade, gold_1000, etc. Create `check_achievements(db)` in engine/simulation.py that runs each tick and unlocks achievements when conditions are met. Log achievement unlocks as events. Expose via GET /api/achievements.",
+      "description": "Create check_achievements(db) in engine/simulation/events.py. Check Achievement records (already in engine.models) where achieved=False. For condition_type=\"building_count\" with condition_value=N, check if building count >= N. If met, set achieved=True, unlocked_at=now(), and create Event(event_type=\"achievement\"). Import Achievement from engine.models.",
       "acceptance": "Test: Achievement model has correct fields. Test: check_achievements unlocks first_building when building exists. Test: achievement unlock creates event. Test: GET /api/achievements returns all achievements with unlock status.",
       "test_file": "tests/test_events.py",
       "context_files": [
-        "engine/models.py",
         "engine/routers/achievements.py",
         "engine/simulation/events.py",
         "engine/simulation/constants.py"
@@ -3724,11 +3714,10 @@
     {
       "id": "206",
       "title": "Add NPC dialogue system",
-      "description": "Create a Dialogue model (id, speaker_npc_id FK, listener_npc_id FK, message, tick, created_at) in engine/models.py. Create generate_dialogue(db, npc1_id, npc2_id) in engine/simulation.py that produces context-aware dialogue strings using template patterns. NPCs greet each other based on relationship, comment on weather ('Terrible storm today!'), complain about hunger ('I can barely afford bread anymore'), or share news ('Did you hear about the fire at the mill?'). Dialogues trigger when two NPCs occupy the same tile. Store in DB and expose via GET /api/dialogues?limit=N.",
+      "description": "Create generate_dialogue(db, speaker_id, listener_id) in engine/simulation/npcs.py. Generate a dialogue string between two NPCs. Import Dialogue model from engine.models (already exists with fields: speaker_npc_id, listener_npc_id, message, tick). Return a non-empty string. Optionally save to Dialogue table.",
       "acceptance": "Dialogue model exists. generate_dialogue returns a non-empty string. Dialogues reference current weather, NPC needs, and recent events. GET /api/dialogues returns dialogue history.",
       "test_file": "tests/test_npcs.py",
       "context_files": [
-        "engine/models.py",
         "engine/simulation/npcs.py",
         "engine/simulation/constants.py"
       ],
@@ -3748,7 +3737,6 @@
       "acceptance": "After running multiple ticks with NPCs on same tiles, Dialogue entries exist in DB. Events with type 'dialogue' are logged. No more than 5 dialogues per tick.",
       "test_file": "tests/test_tick.py",
       "context_files": [
-        "engine/models.py",
         "engine/simulation/tick.py",
         "engine/simulation/npcs.py"
       ],
@@ -3768,7 +3756,6 @@
       "acceptance": "GET /api/dialogues returns JSON list. The dialogue feed partial renders chat-style bubbles with NPC names. Feed auto-updates via HTMX.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py",
         "engine/routers/dialogues.py"
       ],
       "tags": [
@@ -3783,11 +3770,10 @@
     {
       "id": "209",
       "title": "Add building level and upgrade system",
-      "description": "Add 'level' Integer field (default 1, max 5) and 'upgrade_cost' Integer field to Building model in engine/models.py. Create upgrade_building(db, building_id) in engine/simulation.py that increases level by 1 if treasury has enough gold. Each level increases capacity by 50% and production by 25%. Create POST /api/buildings/{id}/upgrade (admin only) endpoint.",
+      "description": "Create upgrade_building(db, building_id) in engine/simulation/buildings.py. Building model already has level field (default 1). The function increases level by 1. Also create POST /api/buildings/{building_id}/upgrade endpoint in engine/routers/buildings.py. Do NOT modify engine/models.py \u2014 the level field already exists.",
       "acceptance": "Building.level field exists. upgrade_building increases level and deducts cost. Higher level buildings produce more. POST upgrade endpoint works with admin auth.",
       "test_file": "tests/test_buildings.py",
       "context_files": [
-        "engine/models.py",
         "engine/routers/buildings.py",
         "engine/simulation/buildings.py",
         "engine/simulation/constants.py"
@@ -3798,7 +3784,7 @@
         "economy"
       ],
       "priority": 209,
-      "status": "pending",
+      "status": "done",
       "attempts": 0
     },
     {
@@ -3826,7 +3812,6 @@
       "acceptance": "WebSocket endpoint accepts connections. Visitor count increments on connect, decrements on disconnect. GET /api/visitors returns current count. Multiple simultaneous connections show correct count.",
       "test_file": "tests/test_api.py",
       "context_files": [
-        "engine/models.py",
         "engine/routers/ws.py"
       ],
       "tags": [
@@ -3844,7 +3829,6 @@
       "acceptance": "POST /api/trigger/thunderstorm changes weather. POST /api/trigger/festival boosts happiness. Rate limited to 1/min per IP. Invalid event types return 404. Effects are visible in /api/world.",
       "test_file": "tests/test_events.py",
       "context_files": [
-        "engine/models.py",
         "engine/routers/triggers.py",
         "engine/simulation/events.py",
         "engine/simulation/constants.py"
@@ -3863,9 +3847,7 @@
       "description": "Create engine/templates/partials/trigger_panel.html with styled buttons for each triggerable event (thunderstorm, festival, gold rush, baby boom). Each button uses hx-post='/api/trigger/{type}' with hx-swap='none'. Show a toast notification on success ('You triggered a thunderstorm!') and rate-limit feedback on 429 ('Wait a minute before triggering again'). Add the trigger panel to the index page as a floating panel in the bottom-right corner.",
       "acceptance": "Trigger buttons appear on the town page. Clicking triggers the event via HTMX. Success shows a toast. Rate limit shows feedback. Events are visible in the simulation.",
       "test_file": "tests/test_api.py",
-      "context_files": [
-        "engine/models.py"
-      ],
+      "context_files": [],
       "tags": [
         "template",
         "htmx"

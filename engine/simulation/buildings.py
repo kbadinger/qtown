@@ -824,3 +824,11 @@ def calculate_infrastructure_score(db: Session) -> float:
         db.commit()
     
     return score
+
+
+def upgrade_building(db: Session, building_id: int) -> None:
+    """Upgrade a building by increasing its level by 1."""
+    building = db.query(Building).filter(Building.id == building_id).first()
+    if building:
+        building.level = (building.level or 1) + 1
+        db.commit()

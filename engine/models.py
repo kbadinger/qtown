@@ -111,6 +111,7 @@ class Building(Base):
     x = Column(Integer, nullable=False)
     y = Column(Integer, nullable=False)
     capacity = Column(Integer, default=10)
+    level = Column(Integer, default=1)
     created_at = Column(DateTime, default=_utcnow)
 
 
@@ -303,3 +304,80 @@ class Crime(Base):
     resolved = Column(Boolean, default=False, nullable=False)
 
     criminal = relationship("NPC", backref="crimes")
+
+
+class Newspaper(Base):
+    __tablename__ = "newspapers"
+
+    id = Column(Integer, primary_key=True, index=True)
+    day = Column(Integer, nullable=True)
+    headline = Column(String(256), nullable=False)
+    body = Column(Text, nullable=False, default="")
+    author_npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=True)
+    tick = Column(Integer, nullable=True)
+    created_at = Column(DateTime, default=_utcnow)
+
+    author = relationship("NPC", foreign_keys=[author_npc_id])
+
+
+class Milestone(Base):
+    __tablename__ = "milestones"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(128), nullable=False)
+    description = Column(Text, nullable=True)
+    tick_achieved = Column(Integer, nullable=False)
+    created_at = Column(DateTime, default=_utcnow)
+
+
+class Achievement(Base):
+    __tablename__ = "achievements"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(128), nullable=False)
+    description = Column(Text, nullable=True)
+    condition = Column(Text, nullable=True, default='{}')
+    condition_type = Column(String(64), nullable=True)
+    condition_value = Column(Integer, nullable=True)
+    achieved = Column(Boolean, default=False)
+    unlocked_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=_utcnow)
+
+
+class VisitorLog(Base):
+    __tablename__ = "visitor_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=False)
+    arrival_tick = Column(Integer, nullable=False, default=0)
+    greeted_by_npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=True)
+    created_at = Column(DateTime, default=_utcnow)
+
+    visitor = relationship("NPC", foreign_keys=[npc_id])
+    greeter = relationship("NPC", foreign_keys=[greeted_by_npc_id])
+
+
+class TownAnthem(Base):
+    __tablename__ = "town_anthems"
+
+    id = Column(Integer, primary_key=True, index=True)
+    lyrics = Column(Text, nullable=False)
+    composed_by_npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=True)
+    tick_composed = Column(Integer, nullable=True)
+    created_at = Column(DateTime, default=_utcnow)
+
+    composer = relationship("NPC", foreign_keys=[composed_by_npc_id])
+
+
+class Dialogue(Base):
+    __tablename__ = "dialogues"
+
+    id = Column(Integer, primary_key=True, index=True)
+    speaker_npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=False)
+    listener_npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=True)
+    message = Column(Text, nullable=False)
+    tick = Column(Integer, nullable=False, default=0)
+    created_at = Column(DateTime, default=_utcnow)
+
+    speaker = relationship("NPC", foreign_keys=[speaker_npc_id])
+    listener = relationship("NPC", foreign_keys=[listener_npc_id])
