@@ -481,7 +481,7 @@ def hold_election(db: Session) -> dict:
     candidates = db.query(NPC).filter(
         NPC.is_dead == False,
         NPC.is_bankrupt == False,
-        NPC.age >= 30
+        NPC.age >= 18
     ).all()
     
     if not candidates:
@@ -539,3 +539,26 @@ def hold_election(db: Session) -> dict:
         "total_votes": sum(votes.values()),
         "candidates": candidate_ids
     }
+
+
+def propose_policy(db: Session, name: str, effect: dict) -> "Policy | None":
+    """Mayor proposes a new policy. Returns Policy or None if no mayor."""
+    from engine.models import Policy, Election, NPC
+
+    election = db.query(Election).order_by(Election.tick_held.desc()).first()
+    if not election or not election.winner_npc_id:
+        return None
+
+    mayor = db.query(NPC).filter(NPC.id == election.winner_npc_id).first()
+    if not mayor:
+        return None
+
+    policy = Policy(
+        name=name,
+        description=f"Policy: {name}",
+        effect=json.dumps(effect),
+        proposed_by_npc_id=mayor.id,
+    )
+    db.add(policy)
+    db.commit()
+    return policy

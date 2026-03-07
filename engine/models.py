@@ -273,3 +273,20 @@ class Election(Base):
     created_at = Column(DateTime, default=_utcnow)
 
     winner = relationship("NPC", foreign_keys=[winner_npc_id])
+
+
+class Policy(Base):
+    __tablename__ = "policies"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(128), nullable=False)
+    description = Column(Text, nullable=True)
+    effect = Column(Text, nullable=False, default='{}')
+    proposed_by_npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=False)
+    vote_for = Column(Integer, default=0)
+    vote_against = Column(Integer, default=0)
+    status = Column(String(32), nullable=False, default="proposed")
+    enacted_tick = Column(Integer, nullable=True)
+    created_at = Column(DateTime, default=_utcnow)
+
+    proposed_by = relationship("NPC", foreign_keys=[proposed_by_npc_id])
