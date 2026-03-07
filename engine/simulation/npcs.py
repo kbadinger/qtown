@@ -622,12 +622,43 @@ def process_inheritance(db: Session) -> None:
 
 
 def check_population_growth(db: Session) -> None:
-    """Population growth is marriage-based only. New NPCs are born via check_marriage.
+    """Spawn a new NPC if conditions are right.
 
-    This function is intentionally a no-op. Future stories will add birth logic
-    tied to married NPC pairs.
+    Throttled: only checks every 100 ticks with a 25% chance.
+    Requires avg happiness > 60 and living population < 20.
     """
-    pass
+    from engine.models import WorldState
+    ws = db.query(WorldState).first()
+    if not ws or ws.tick % 100 != 0:
+        return
+
+    if random.random() > 0.25:
+        return
+
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    if not npcs:
+        return
+
+    avg_happiness = sum(npc.happiness for npc in npcs) / len(npcs)
+
+    if avg_happiness > 60 and len(npcs) < 20:
+        names = ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank",
+                 "Grace", "Henry", "Ivy", "Jack"]
+        roles = ["farmer", "baker", "guard", "merchant", "priest"]
+
+        new_npc = NPC(
+            name=random.choice(names),
+            role=random.choice(roles),
+            x=random.randint(5, 45),
+            y=random.randint(5, 45),
+            gold=0,
+            hunger=0,
+            energy=100,
+            happiness=50,
+            personality=_generate_personality(),
+        )
+        db.add(new_npc)
+        db.commit()
 
 
 def remember_event(db: Session, npc_id: int, event: str) -> None:
