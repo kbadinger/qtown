@@ -781,3 +781,165 @@ def test_s252_apply_skill_bonuses(db):
     result = apply_skill_bonuses(db)
     assert isinstance(result, dict), "Should return bonus dict"
     db.flush()
+
+
+def test_s281_check_guild_formation(db):
+    """Trade guild formation."""
+    _setup_world(db)
+    from engine.simulation import check_guild_formation
+
+    result = check_guild_formation(db)
+    assert result is not None, "check_guild_formation should return a value"
+    db.flush()
+
+
+def test_s282_detect_monopoly(db):
+    """Monopoly detection."""
+    _setup_world(db)
+    from engine.simulation import detect_monopoly
+
+    result = detect_monopoly(db)
+    assert result is not None, "detect_monopoly should return a value"
+    db.flush()
+
+
+def test_s283_enforce_price_ceiling(db):
+    """Price ceiling during disasters."""
+    _setup_world(db)
+    from engine.simulation import enforce_price_ceiling
+
+    result = enforce_price_ceiling(db)
+    assert result is not None, "enforce_price_ceiling should return a value"
+    db.flush()
+
+
+def test_s284_create_futures_contract(db):
+    """Commodity futures."""
+    _setup_world(db)
+    from engine.simulation import create_futures_contract
+    from engine.models import NPC
+
+    npc = db.query(NPC).first()
+    assert npc is not None, "Need seeded NPCs"
+    result = create_futures_contract(db, npc.id, "Food", 10, 5)
+    db.flush()
+
+
+def test_s285_process_debt_forgiveness(db):
+    """Debt forgiveness."""
+    _setup_world(db)
+    from engine.simulation import process_debt_forgiveness
+
+    result = process_debt_forgiveness(db)
+    assert result is not None, "process_debt_forgiveness should return a value"
+    db.flush()
+
+
+def test_s286_detect_economic_boom(db):
+    """Economic boom detection."""
+    _setup_world(db)
+    from engine.simulation import detect_economic_boom
+
+    result = detect_economic_boom(db)
+    assert result is not None, "detect_economic_boom should return a value"
+    db.flush()
+
+
+def test_s287_detect_recession(db):
+    """Recession detection."""
+    _setup_world(db)
+    from engine.simulation import detect_recession
+
+    result = detect_recession(db)
+    assert result is not None, "detect_recession should return a value"
+    db.flush()
+
+
+def test_s288_process_wage_negotiations(db):
+    """Wage negotiation."""
+    _setup_world(db)
+    from engine.simulation import process_wage_negotiations
+
+    result = process_wage_negotiations(db)
+    assert result is not None, "process_wage_negotiations should return a value"
+    db.flush()
+
+
+def test_s289_process_tips(db):
+    """Tip system."""
+    _setup_world(db)
+    from engine.simulation import process_tips
+
+    result = process_tips(db)
+    assert result is not None, "process_tips should return a value"
+    db.flush()
+
+
+def test_s290_assign_resource_quality(db):
+    """Resource quality tiers."""
+    _setup_world(db)
+    from engine.simulation import assign_resource_quality
+
+    result = assign_resource_quality(db)
+    assert result is not None, "assign_resource_quality should return a value"
+    db.flush()
+
+
+def test_s291_calculate_trade_balance(db):
+    """Import/export balance tracking."""
+    _setup_world(db)
+    from engine.simulation import calculate_trade_balance
+
+    result = calculate_trade_balance(db)
+    assert result is not None, "calculate_trade_balance should return a value"
+    db.flush()
+
+
+def test_s292_adjust_for_inflation(db):
+    """Inflation adjustment."""
+    _setup_world(db)
+    from engine.simulation import adjust_for_inflation
+
+    result = adjust_for_inflation(db)
+    assert result is not None, "adjust_for_inflation should return a value"
+    db.flush()
+
+
+def test_s293_run_gold_sink(db):
+    """Gold sink events."""
+    _setup_world(db)
+    from engine.simulation import run_gold_sink
+
+    result = run_gold_sink(db)
+    assert result is not None, "run_gold_sink should return a value"
+    db.flush()
+
+
+def test_s294_generate_economic_report(db):
+    """Economic report generation."""
+    _setup_world(db)
+    from engine.simulation import generate_economic_report
+
+    result = generate_economic_report(db)
+    assert result is not None, "generate_economic_report should return a value"
+    db.flush()
+
+
+def test_s295_calculate_gini(db):
+    """Wealth inequality index."""
+    _setup_world(db)
+    from engine.simulation import calculate_gini
+
+    result = calculate_gini(db)
+    assert result is not None, "calculate_gini should return a value"
+    db.flush()
+
+
+def test_s344_calculate_prosperity(db):
+    """Prosperity score."""
+    _setup_world(db)
+    from engine.simulation import calculate_prosperity
+
+    result = calculate_prosperity(db)
+    assert result is not None, "calculate_prosperity should return a value"
+    db.flush()

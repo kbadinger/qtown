@@ -2112,3 +2112,196 @@ def test_s248_check_crime_motivation(db):
     result = check_crime_motivation(db)
     assert isinstance(result, int), "check_crime_motivation should return count"
     db.flush()
+
+
+def test_s266_process_dreams(db):
+    """NPC dream system."""
+    _setup_world(db)
+    from engine.simulation import process_dreams
+
+    result = process_dreams(db)
+    assert result is not None, "process_dreams should return a value"
+    db.flush()
+
+
+def test_s267_check_career_progression(db):
+    """Career progression."""
+    _setup_world(db)
+    from engine.simulation import check_career_progression
+
+    result = check_career_progression(db)
+    assert result is not None, "check_career_progression should return a value"
+    db.flush()
+
+
+def test_s268_process_retirement(db):
+    """NPC retirement."""
+    _setup_world(db)
+    from engine.simulation import process_retirement
+
+    result = process_retirement(db)
+    assert result is not None, "process_retirement should return a value"
+    db.flush()
+
+
+def test_s269_process_inheritance(db):
+    """Family inheritance."""
+    _setup_world(db)
+    from engine.simulation import process_inheritance
+
+    result = process_inheritance(db)
+    assert result is not None, "process_inheritance should return a value"
+    db.flush()
+
+
+def test_s270_process_child_growth(db):
+    """Child NPC growth."""
+    _setup_world(db)
+    from engine.simulation import process_child_growth
+
+    result = process_child_growth(db)
+    assert result is not None, "process_child_growth should return a value"
+    db.flush()
+
+
+def test_s271_attempt_persuasion(db):
+    """NPC persuasion."""
+    _setup_world(db)
+    from engine.simulation import attempt_persuasion
+
+    result = attempt_persuasion(db)
+    assert result is not None, "attempt_persuasion should return a value"
+    db.flush()
+
+
+def test_s272_process_crowd_behavior(db):
+    """Crowd behavior."""
+    _setup_world(db)
+    from engine.simulation import process_crowd_behavior
+
+    result = process_crowd_behavior(db)
+    assert result is not None, "process_crowd_behavior should return a value"
+    db.flush()
+
+
+def test_s273_track_emotions(db):
+    """Emotion memory tracking."""
+    _setup_world(db)
+    from engine.simulation import track_emotions
+
+    result = track_emotions(db)
+    assert result is not None, "track_emotions should return a value"
+    db.flush()
+
+
+def test_s274_process_emigration(db):
+    """NPC migration out."""
+    _setup_world(db)
+    from engine.simulation import process_emigration
+
+    result = process_emigration(db)
+    assert result is not None, "process_emigration should return a value"
+    db.flush()
+
+
+def test_s275_check_immigration(db):
+    """NPC arrival by prosperity."""
+    _setup_world(db)
+    from engine.simulation import check_immigration
+
+    result = check_immigration(db)
+    assert result is not None, "check_immigration should return a value"
+    db.flush()
+
+
+def test_s276_decay_friendships(db):
+    """Friendship decay."""
+    _setup_world(db)
+    from engine.simulation import decay_friendships
+
+    result = decay_friendships(db)
+    assert result is not None, "decay_friendships should return a value"
+    db.flush()
+
+
+def test_s277_apply_specialization_bonus(db):
+    """NPC specialization bonus."""
+    _setup_world(db)
+    from engine.simulation import apply_specialization_bonus
+
+    result = apply_specialization_bonus(db)
+    assert result is not None, "apply_specialization_bonus should return a value"
+    db.flush()
+
+
+def test_s278_apply_fatigue(db):
+    """NPC fatigue system."""
+    _setup_world(db)
+    from engine.simulation import apply_fatigue
+
+    result = apply_fatigue(db)
+    assert result is not None, "apply_fatigue should return a value"
+    db.flush()
+
+
+def test_s279_check_celebrations(db):
+    """NPC celebration."""
+    _setup_world(db)
+    from engine.simulation import check_celebrations
+
+    result = check_celebrations(db)
+    assert result is not None, "check_celebrations should return a value"
+    db.flush()
+
+
+def test_s280_process_mourning(db):
+    """NPC mourning."""
+    _setup_world(db)
+    from engine.simulation import process_mourning
+
+    result = process_mourning(db)
+    assert result is not None, "process_mourning should return a value"
+    db.flush()
+
+
+def test_s341_generate_npc_name(db):
+    """NPC name generator."""
+    _setup_world(db)
+    from engine.simulation import generate_npc_name
+
+    result = generate_npc_name(db)
+    assert result is not None, "generate_npc_name should return a value"
+    db.flush()
+
+
+def test_s346_calculate_compatibility(db):
+    """NPC compatibility score."""
+    _setup_world(db)
+    from engine.simulation import calculate_compatibility
+    from engine.models import NPC
+
+    npcs = db.query(NPC).limit(2).all()
+    assert len(npcs) >= 2, "Need at least 2 NPCs"
+    result = calculate_compatibility(db, npcs[0].id, npcs[1].id)
+    assert result is not None, "calculate_compatibility should return a value"
+    db.flush()
+
+
+def test_s347_assign_homeless(db):
+    """Auto-assign homeless NPCs."""
+    _setup_world(db)
+    from engine.simulation import assign_homeless
+
+    result = assign_homeless(db)
+    assert result is not None, "assign_homeless should return a value"
+    db.flush()
+
+
+def test_s348_assign_unemployed(db):
+    """Auto-assign unemployed NPCs."""
+    _setup_world(db)
+    from engine.simulation import assign_unemployed
+
+    result = assign_unemployed(db)
+    assert result is not None, "assign_unemployed should return a value"
+    db.flush()

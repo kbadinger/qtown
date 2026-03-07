@@ -311,3 +311,113 @@ def test_s255_hold_ceremony(db):
     result = hold_ceremony(db)
     assert isinstance(result, int), "Should return attendee count"
     db.flush()
+
+
+def test_s311_assign_factions(db):
+    """Political faction system."""
+    _setup_world(db)
+    from engine.simulation import assign_factions
+
+    result = assign_factions(db)
+    assert result is not None, "assign_factions should return a value"
+    db.flush()
+
+
+def test_s312_manage_proposal_queue(db):
+    """Policy proposal queue."""
+    _setup_world(db)
+    from engine.simulation import manage_proposal_queue
+
+    result = manage_proposal_queue(db)
+    assert result is not None, "manage_proposal_queue should return a value"
+    db.flush()
+
+
+def test_s313_check_term_limits(db):
+    """Term limits for mayor."""
+    _setup_world(db)
+    from engine.simulation import check_term_limits
+
+    result = check_term_limits(db)
+    assert result is not None, "check_term_limits should return a value"
+    db.flush()
+
+
+def test_s314_check_impeachment(db):
+    """Impeachment mechanic."""
+    _setup_world(db)
+    from engine.simulation import check_impeachment
+
+    result = check_impeachment(db)
+    assert result is not None, "check_impeachment should return a value"
+    db.flush()
+
+
+def test_s315_check_tax_revolt(db):
+    """Tax revolt."""
+    _setup_world(db)
+    from engine.simulation import check_tax_revolt
+
+    result = check_tax_revolt(db)
+    assert result is not None, "check_tax_revolt should return a value"
+    db.flush()
+
+
+def test_s316_launch_public_works(db):
+    """Public works projects."""
+    _setup_world(db)
+    from engine.simulation import launch_public_works
+
+    result = launch_public_works(db)
+    assert result is not None, "launch_public_works should return a value"
+    db.flush()
+
+
+def test_s317_send_diplomat(db):
+    """Diplomatic missions."""
+    _setup_world(db)
+    from engine.simulation import send_diplomat
+
+    result = send_diplomat(db)
+    assert result is not None, "send_diplomat should return a value"
+    db.flush()
+
+
+def test_s318_run_census(db):
+    """Census system."""
+    _setup_world(db)
+    from engine.simulation import run_census
+
+    result = run_census(db)
+    assert result is not None, "run_census should return a value"
+    db.flush()
+
+
+def test_s319_generate_charter(db):
+    """Town charter."""
+    _setup_world(db)
+    from engine.simulation import generate_charter
+
+    result = generate_charter(db)
+    assert result is not None, "generate_charter should return a value"
+    db.flush()
+
+
+def test_s320_grant_emergency_powers(db):
+    """Emergency powers."""
+    _setup_world(db)
+    from engine.simulation import grant_emergency_powers
+
+    result = grant_emergency_powers(db)
+    assert result is not None, "grant_emergency_powers should return a value"
+    db.flush()
+
+
+def test_s350_generate_end_of_day_report(db):
+    """End-of-day report."""
+    _setup_world(db)
+    from engine.simulation import generate_end_of_day_report
+
+    result = generate_end_of_day_report(db)
+    assert result is not None, "generate_end_of_day_report should return a value"
+    db.flush()

@@ -881,3 +881,173 @@ def test_s256_hold_town_meeting(db):
     result = hold_town_meeting(db)
     assert isinstance(result, str), "Should return complaint string"
     db.flush()
+
+
+def test_s296_process_event_chains(db):
+    """Multi-day event chains."""
+    _setup_world(db)
+    from engine.simulation import process_event_chains
+
+    result = process_event_chains(db)
+    assert result is not None, "process_event_chains should return a value"
+    db.flush()
+
+
+def test_s297_escalate_events(db):
+    """Event severity escalation."""
+    _setup_world(db)
+    from engine.simulation import escalate_events
+
+    result = escalate_events(db)
+    assert result is not None, "escalate_events should return a value"
+    db.flush()
+
+
+def test_s298_apply_recovery_bonus(db):
+    """Event recovery bonus."""
+    _setup_world(db)
+    from engine.simulation import apply_recovery_bonus
+
+    result = apply_recovery_bonus(db)
+    assert result is not None, "apply_recovery_bonus should return a value"
+    db.flush()
+
+
+def test_s299_check_anniversaries(db):
+    """Anniversary events."""
+    _setup_world(db)
+    from engine.simulation import check_anniversaries
+
+    result = check_anniversaries(db)
+    assert result is not None, "check_anniversaries should return a value"
+    db.flush()
+
+
+def test_s300_spawn_visitor_trader(db):
+    """Visitor trader events."""
+    _setup_world(db)
+    from engine.simulation import spawn_visitor_trader
+
+    result = spawn_visitor_trader(db)
+    assert result is not None, "spawn_visitor_trader should return a value"
+    db.flush()
+
+
+def test_s301_hold_festival_vote(db):
+    """Festival voting."""
+    _setup_world(db)
+    from engine.simulation import hold_festival_vote
+
+    result = hold_festival_vote(db)
+    assert result is not None, "hold_festival_vote should return a value"
+    db.flush()
+
+
+def test_s302_predict_weather(db):
+    """Weather prediction."""
+    _setup_world(db)
+    from engine.simulation import predict_weather
+
+    result = predict_weather(db)
+    assert result is not None, "predict_weather should return a value"
+    db.flush()
+
+
+def test_s303_calculate_crop_yield(db):
+    """Crop yield calculation."""
+    _setup_world(db)
+    from engine.simulation import calculate_crop_yield
+
+    result = calculate_crop_yield(db)
+    assert result is not None, "calculate_crop_yield should return a value"
+    db.flush()
+
+
+def test_s304_distribute_famine_relief(db):
+    """Famine relief distribution."""
+    _setup_world(db)
+    from engine.simulation import distribute_famine_relief
+
+    result = distribute_famine_relief(db)
+    assert result is not None, "distribute_famine_relief should return a value"
+    db.flush()
+
+
+def test_s305_apply_event_damage(db):
+    """Building damage from events."""
+    _setup_world(db)
+    from engine.simulation import apply_event_damage
+
+    result = apply_event_damage(db)
+    assert result is not None, "apply_event_damage should return a value"
+    db.flush()
+
+
+def test_s306_generate_event_news(db):
+    """Event newspaper coverage."""
+    _setup_world(db)
+    from engine.simulation import generate_event_news
+
+    result = generate_event_news(db)
+    assert result is not None, "generate_event_news should return a value"
+    db.flush()
+
+
+def test_s307_create_memorial(db):
+    """Memorial creation."""
+    _setup_world(db)
+    from engine.simulation import create_memorial
+
+    result = create_memorial(db)
+    assert result is not None, "create_memorial should return a value"
+    db.flush()
+
+
+def test_s308_calculate_prevention_chance(db):
+    """Event prevention by guards."""
+    _setup_world(db)
+    from engine.simulation import calculate_prevention_chance
+
+    result = calculate_prevention_chance(db)
+    assert result is not None, "calculate_prevention_chance should return a value"
+    db.flush()
+
+
+def test_s309_process_seasonal_visitors(db):
+    """Seasonal migration."""
+    _setup_world(db)
+    from engine.simulation import process_seasonal_visitors
+
+    result = process_seasonal_visitors(db)
+    assert result is not None, "process_seasonal_visitors should return a value"
+    db.flush()
+
+
+def test_s310_check_legendary_event(db):
+    """Legendary event."""
+    _setup_world(db)
+    from engine.simulation import check_legendary_event
+
+    result = check_legendary_event(db)
+    assert result is not None, "check_legendary_event should return a value"
+    db.flush()
+
+
+def test_s343_generate_daily_digest(db):
+    """Daily digest."""
+    _setup_world(db)
+    from engine.simulation import generate_daily_digest
+
+    result = generate_daily_digest(db)
+    assert result is not None, "generate_daily_digest should return a value"
+    db.flush()
+
+
+def test_s345_calculate_danger_scores(db):
+    """Danger score per tile."""
+    _setup_world(db)
+    from engine.simulation import calculate_danger_scores
+
+    result = calculate_danger_scores(db)
+    assert result is not None, "calculate_danger_scores should return a value"
+    db.flush()

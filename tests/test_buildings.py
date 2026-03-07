@@ -1004,3 +1004,130 @@ def test_s261_update_building_efficiency(db):
     result = update_building_efficiency(db)
     assert isinstance(result, dict), "Should return worker count dict"
     db.flush()
+
+
+def test_s321_calculate_adjacency_bonuses(db):
+    """Building adjacency bonuses."""
+    _setup_world(db)
+    from engine.simulation import calculate_adjacency_bonuses
+
+    result = calculate_adjacency_bonuses(db)
+    assert result is not None, "calculate_adjacency_bonuses should return a value"
+    db.flush()
+
+
+def test_s322_calculate_road_bonus(db):
+    """Road network speed bonus."""
+    _setup_world(db)
+    from engine.simulation import calculate_road_bonus
+
+    result = calculate_road_bonus(db)
+    assert result is not None, "calculate_road_bonus should return a value"
+    db.flush()
+
+
+def test_s323_set_building_focus(db):
+    """Building specialization."""
+    _setup_world(db)
+    from engine.simulation import set_building_focus
+    from engine.models import Building
+
+    b = db.query(Building).first()
+    assert b is not None, "Need seeded buildings"
+    result = set_building_focus(db, b.id, "production")
+    db.flush()
+
+
+def test_s324_process_building_decay(db):
+    """Ruin decay system."""
+    _setup_world(db)
+    from engine.simulation import process_building_decay
+
+    result = process_building_decay(db)
+    assert result is not None, "process_building_decay should return a value"
+    db.flush()
+
+
+def test_s325_process_construction(db):
+    """Construction queue."""
+    _setup_world(db)
+    from engine.simulation import process_construction
+
+    result = process_construction(db)
+    assert result is not None, "process_construction should return a value"
+    db.flush()
+
+
+def test_s326_process_insurance(db):
+    """Building insurance."""
+    _setup_world(db)
+    from engine.simulation import process_insurance
+
+    result = process_insurance(db)
+    assert result is not None, "process_insurance should return a value"
+    db.flush()
+
+
+def test_s327_check_landmarks(db):
+    """Landmark buildings."""
+    _setup_world(db)
+    from engine.simulation import check_landmarks
+
+    result = check_landmarks(db)
+    assert result is not None, "check_landmarks should return a value"
+    db.flush()
+
+
+def test_s328_inspect_buildings(db):
+    """Building inspection."""
+    _setup_world(db)
+    from engine.simulation import inspect_buildings
+
+    result = inspect_buildings(db)
+    assert result is not None, "inspect_buildings should return a value"
+    db.flush()
+
+
+def test_s329_enforce_storage_limits(db):
+    """Resource storage limits."""
+    _setup_world(db)
+    from engine.simulation import enforce_storage_limits
+
+    result = enforce_storage_limits(db)
+    assert result is not None, "enforce_storage_limits should return a value"
+    db.flush()
+
+
+def test_s330_rename_building(db):
+    """Building rename system."""
+    _setup_world(db)
+    from engine.simulation import rename_building
+    from engine.models import Building
+
+    b = db.query(Building).first()
+    assert b is not None, "Need seeded buildings"
+    result = rename_building(db, b.id, "New Name")
+    db.flush()
+
+
+def test_s342_generate_building_description(db):
+    """Building description generator."""
+    _setup_world(db)
+    from engine.simulation import generate_building_description
+    from engine.models import Building
+
+    b = db.query(Building).first()
+    assert b is not None, "Need seeded buildings"
+    result = generate_building_description(db, b.id)
+    assert result is not None, "generate_building_description should return a value"
+    db.flush()
+
+
+def test_s349_get_population_cap(db):
+    """Town population cap."""
+    _setup_world(db)
+    from engine.simulation import get_population_cap
+
+    result = get_population_cap(db)
+    assert result is not None, "get_population_cap should return a value"
+    db.flush()

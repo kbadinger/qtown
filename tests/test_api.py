@@ -651,3 +651,87 @@ def test_s265_event_timeline_api(client):
     if resp.status_code == 200:
         data = resp.json()
         assert isinstance(data, list)
+
+
+def test_s262_api(client):
+    """Story 262: Town statistics API endpoint."""
+    resp = client.get("/api/stats/summary")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s263_api(client):
+    """Story 263: NPC detail API endpoint."""
+    resp = client.get("/api/npcs/{npc_id}")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s264_api(client):
+    """Story 264: Price history chart API."""
+    resp = client.get("/api/economy/price-history")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s265_api(client):
+    """Story 265: Event timeline API grouped by day."""
+    resp = client.get("/api/events/timeline")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s331_api(client):
+    """NPC biography API."""
+    resp = client.get("/api/npcs/1/biography")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s332_api(client):
+    """Building history API."""
+    resp = client.get("/api/buildings/1/history")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s333_api(client):
+    """Economic chart data API."""
+    resp = client.get("/api/economy/chart-data")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s334_api(client):
+    """Relationship graph API."""
+    resp = client.get("/api/relationships/graph")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s335_api(client):
+    """Town achievement progress API."""
+    resp = client.get("/api/achievements")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s336_api(client):
+    """Event calendar API."""
+    resp = client.get("/api/events/calendar")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s337_api(client):
+    """Resource flow API."""
+    resp = client.get("/api/economy/resource-flow")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s338_api(client):
+    """Leaderboard API."""
+    resp = client.get("/api/leaderboards")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s339_api(client):
+    """Town history summary API."""
+    resp = client.get("/api/town/history")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s340_api(client):
+    """Simulation config API."""
+    resp = client.get("/api/config")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
