@@ -734,3 +734,150 @@ def test_s212_trigger_endpoint_invalid_type(client, admin_headers):
     assert resp.status_code == 404, (
         f"Invalid event type should return 404, got {resp.status_code}"
     )
+
+
+# ── Stories 226, 234-246: Events, Seasons, Politics ─────────────────
+
+
+def test_s226_trigger_merchant_caravan(db):
+    """Story 226: Merchant caravan events."""
+    _setup_world(db)
+    from engine.simulation import trigger_merchant_caravan
+
+    trigger_merchant_caravan(db)
+    db.flush()
+
+    from engine.models import Event
+    evt = db.query(Event).filter(Event.event_type == "merchant_caravan").first()
+    assert evt is not None, "Should create merchant_caravan event"
+
+
+def test_s234_get_season(db):
+    """Story 234: Seasonal cycle system."""
+    _setup_world(db)
+    from engine.simulation import get_season
+
+    result = get_season(db)
+    assert result in ("spring", "summer", "fall", "winter"), f"Bad season: {result}"
+
+
+def test_s235_check_seasonal_events(db):
+    """Story 235: Auto-trigger harvest festival in fall."""
+    _setup_world(db)
+    from engine.simulation import check_seasonal_events
+
+    check_seasonal_events(db)
+    db.flush()
+
+
+def test_s236_apply_winter_effects(db):
+    """Story 236: Winter hardship effects."""
+    _setup_world(db)
+    from engine.simulation import apply_winter_effects
+
+    apply_winter_effects(db)
+    db.flush()
+
+
+def test_s237_spread_epidemic(db):
+    """Story 237: Epidemic contagion spread."""
+    _setup_world(db)
+    from engine.simulation import spread_epidemic
+
+    result = spread_epidemic(db)
+    assert isinstance(result, int), "spread_epidemic should return count"
+    db.flush()
+
+
+def test_s238_check_infrastructure_collapse(db):
+    """Story 238: Infrastructure collapse cascade."""
+    _setup_world(db)
+    from engine.simulation import check_infrastructure_collapse
+
+    result = check_infrastructure_collapse(db)
+    assert isinstance(result, bool), "Should return bool"
+    db.flush()
+
+
+def test_s239_generate_town_review(db):
+    """Story 239: Annual town review report."""
+    _setup_world(db)
+    from engine.simulation import generate_town_review
+
+    result = generate_town_review(db)
+    assert isinstance(result, dict), "Should return stats dict"
+    assert "population" in result
+    db.flush()
+
+
+def test_s240_trigger_random_boon(db):
+    """Story 240: Random positive micro-events."""
+    _setup_world(db)
+    from engine.simulation import trigger_random_boon
+
+    # Call multiple times — result is None or event_type string
+    for _ in range(10):
+        result = trigger_random_boon(db)
+        assert result is None or isinstance(result, str)
+    db.flush()
+
+
+def test_s241_process_refugees(db):
+    """Story 241: Refugee wave after disasters."""
+    _setup_world(db)
+    from engine.simulation import process_refugees
+
+    result = process_refugees(db)
+    assert isinstance(result, int), "Should return count"
+    db.flush()
+
+
+def test_s242_apply_policy_effects(db):
+    """Story 242: Policy effect enforcement."""
+    _setup_world(db)
+    from engine.simulation import apply_policy_effects
+
+    result = apply_policy_effects(db)
+    assert isinstance(result, int), "Should return count"
+    db.flush()
+
+
+def test_s243_check_corruption(db):
+    """Story 243: Mayor corruption system."""
+    _setup_world(db)
+    from engine.simulation import check_corruption
+
+    result = check_corruption(db)
+    assert isinstance(result, (int, float)), "Should return amount stolen"
+    db.flush()
+
+
+def test_s244_calculate_approval(db):
+    """Story 244: Public approval rating."""
+    _setup_world(db)
+    from engine.simulation import calculate_approval
+
+    result = calculate_approval(db)
+    assert isinstance(result, int), "Should return integer rating"
+    assert 0 <= result <= 100, f"Rating out of range: {result}"
+    db.flush()
+
+
+def test_s245_check_emergency_election(db):
+    """Story 245: Emergency election on low approval."""
+    _setup_world(db)
+    from engine.simulation import check_emergency_election
+
+    result = check_emergency_election(db)
+    assert isinstance(result, bool), "Should return bool"
+    db.flush()
+
+
+def test_s256_hold_town_meeting(db):
+    """Story 256: Town hall grievance meetings."""
+    _setup_world(db)
+    from engine.simulation import hold_town_meeting
+
+    result = hold_town_meeting(db)
+    assert isinstance(result, str), "Should return complaint string"
+    db.flush()

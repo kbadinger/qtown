@@ -953,3 +953,54 @@ def test_s209_upgrade_building_api(client, admin_headers):
     assert resp.status_code in (200, 201), (
         f"POST /api/buildings/{building_id}/upgrade failed: {resp.text}"
     )
+
+
+# ── Stories 257-261: Infrastructure & Buildings ─────────────────────
+
+
+def test_s257_repair_buildings(db):
+    """Story 257: Building auto-repair system."""
+    _setup_world(db)
+    from engine.simulation import repair_buildings
+
+    result = repair_buildings(db)
+    assert isinstance(result, int), "Should return count of repairs"
+    db.flush()
+
+
+def test_s258_get_level_multiplier(db):
+    """Story 258: Building level production bonus."""
+    from engine.simulation import get_level_multiplier
+
+    assert get_level_multiplier(1) == 1.0
+    assert get_level_multiplier(3) == 1.5
+    assert get_level_multiplier(5) == 2.0
+
+
+def test_s259_check_housing_crisis(db):
+    """Story 259: Housing crisis detection."""
+    _setup_world(db)
+    from engine.simulation import check_housing_crisis
+
+    result = check_housing_crisis(db)
+    assert isinstance(result, int), "Should return homeless count"
+    db.flush()
+
+
+def test_s260_check_market_exists(db):
+    """Story 260: Market building enables trading."""
+    _setup_world(db)
+    from engine.simulation import check_market_exists
+
+    result = check_market_exists(db)
+    assert isinstance(result, bool), "Should return bool"
+
+
+def test_s261_update_building_efficiency(db):
+    """Story 261: Building capacity from worker count."""
+    _setup_world(db)
+    from engine.simulation import update_building_efficiency
+
+    result = update_building_efficiency(db)
+    assert isinstance(result, dict), "Should return worker count dict"
+    db.flush()

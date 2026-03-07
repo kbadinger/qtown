@@ -665,3 +665,119 @@ def test_s202_price_history_model_fields(db):
     assert ph.supply == 40
     assert ph.demand == 60
     assert ph.tick == 10
+
+
+# ── Stories 227-233, 246, 252: Economy ──────────────────────────────
+
+
+def test_s227_apply_resource_spoilage(db):
+    """Story 227: Resource spoilage system."""
+    _setup_world(db)
+    from engine.models import Resource, Building
+    from engine.simulation import apply_resource_spoilage
+
+    # Create a food resource not in warehouse
+    b = Building(name="Farm1", building_type="farm", x=5, y=5)
+    db.add(b)
+    db.flush()
+    r = Resource(name="Food", quantity=100, building_id=b.id)
+    db.add(r)
+    db.flush()
+
+    apply_resource_spoilage(db)
+    db.flush()
+    db.refresh(r)
+    assert r.quantity < 100, "Food should have spoiled"
+
+
+def test_s228_classify_npcs(db):
+    """Story 228: NPC economic class system."""
+    _setup_world(db)
+    from engine.simulation import classify_npcs
+
+    result = classify_npcs(db)
+    assert isinstance(result, dict), "Should return class counts dict"
+    db.flush()
+
+
+def test_s229_detect_supply_disruptions(db):
+    """Story 229: Supply chain disruption detection."""
+    _setup_world(db)
+    from engine.simulation import detect_supply_disruptions
+
+    result = detect_supply_disruptions(db)
+    assert isinstance(result, list), "Should return list of disrupted types"
+    db.flush()
+
+
+def test_s230_collect_progressive_taxes(db):
+    """Story 230: Progressive tax brackets."""
+    _setup_world(db)
+    from engine.simulation import collect_progressive_taxes
+
+    result = collect_progressive_taxes(db)
+    assert isinstance(result, (int, float)), "Should return total tax"
+    db.flush()
+
+
+def test_s231_process_exports(db):
+    """Story 231: Trade surplus auto-export."""
+    _setup_world(db)
+    from engine.simulation import process_exports
+
+    result = process_exports(db)
+    assert isinstance(result, list), "Should return list of exported resources"
+    db.flush()
+
+
+def test_s232_calculate_skill_wage(db):
+    """Story 232: Skill-based wage multiplier."""
+    _setup_world(db)
+    from engine.models import NPC
+    from engine.simulation import calculate_skill_wage
+
+    npc = db.query(NPC).first()
+    result = calculate_skill_wage(db, npc.id)
+    assert isinstance(result, int), "Should return integer wage"
+    assert result > 0, "Wage should be positive"
+
+
+def test_s233_apply_bank_interest(db):
+    """Story 233: Bank interest for savers."""
+    _setup_world(db)
+    from engine.simulation import apply_bank_interest
+
+    result = apply_bank_interest(db)
+    assert isinstance(result, (int, float)), "Should return total interest"
+    db.flush()
+
+
+def test_s246_allocate_budget(db):
+    """Story 246: Town budget allocation."""
+    _setup_world(db)
+    from engine.models import Treasury
+    from engine.simulation import allocate_budget
+
+    # Ensure treasury has gold
+    t = db.query(Treasury).first()
+    if not t:
+        t = Treasury(gold_stored=500)
+        db.add(t)
+        db.flush()
+    else:
+        t.gold_stored = 500
+        db.flush()
+
+    result = allocate_budget(db)
+    assert isinstance(result, dict), "Should return allocation dict"
+    db.flush()
+
+
+def test_s252_apply_skill_bonuses(db):
+    """Story 252: Skill specialization production bonus."""
+    _setup_world(db)
+    from engine.simulation import apply_skill_bonuses
+
+    result = apply_skill_bonuses(db)
+    assert isinstance(result, dict), "Should return bonus dict"
+    db.flush()

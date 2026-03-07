@@ -1968,3 +1968,147 @@ def test_s206_generate_dialogue_returns_string(db):
     result = generate_dialogue(db, npc1.id, npc2.id)
     assert isinstance(result, str), "generate_dialogue should return a string"
     assert len(result) > 0, "generate_dialogue should return non-empty string"
+
+
+# ── Stories 216-225: NPC Psychology & Autonomy ──────────────────────
+
+
+def test_s216_personality_decision(db):
+    """Story 216: Personality-driven NPC decisions."""
+    _setup_world(db)
+    from engine.models import NPC
+    from engine.simulation import personality_decision
+
+    npc = db.query(NPC).first()
+    result = personality_decision(db, npc.id)
+    assert isinstance(result, str), "personality_decision should return a string"
+    db.flush()
+
+
+def test_s217_spread_mood(db):
+    """Story 217: Mood contagion between NPCs."""
+    _setup_world(db)
+    from engine.simulation import spread_mood
+
+    spread_mood(db)
+    db.flush()
+
+
+def test_s218_apply_daily_routine(db):
+    """Story 218: NPC daily routines based on time of day."""
+    _setup_world(db)
+    from engine.simulation import apply_daily_routine
+
+    apply_daily_routine(db)
+    db.flush()
+
+
+def test_s219_spread_gossip(db):
+    """Story 219: NPC gossip system."""
+    _setup_world(db)
+    from engine.models import NPC
+    from engine.simulation import spread_gossip
+    import json
+
+    # Place two NPCs on same tile with different memories
+    npcs = db.query(NPC).limit(2).all()
+    assert len(npcs) >= 2
+    npcs[0].x, npcs[0].y = 25, 25
+    npcs[1].x, npcs[1].y = 25, 25
+    npcs[0].memory_events = json.dumps(["event_A"])
+    npcs[1].memory_events = json.dumps(["event_B"])
+    db.commit()
+
+    spread_gossip(db)
+    db.flush()
+
+    db.refresh(npcs[0])
+    mem0 = json.loads(npcs[0].memory_events)
+    assert "event_B" in mem0 or len(mem0) > 1, "NPC should have learned gossip"
+
+
+def test_s220_pursue_goals(db):
+    """Story 220: NPC goal pursuit system."""
+    _setup_world(db)
+    from engine.simulation import pursue_goals
+
+    result = pursue_goals(db)
+    assert isinstance(result, int), "pursue_goals should return count"
+    db.flush()
+
+
+def test_s221_flee_disaster(db):
+    """Story 221: NPC fear response to disasters."""
+    _setup_world(db)
+    from engine.simulation import flee_disaster
+
+    flee_disaster(db)
+    db.flush()
+
+
+def test_s222_apply_age_effects(db):
+    """Story 222: NPC aging effects on productivity."""
+    _setup_world(db)
+    from engine.simulation import apply_age_effects
+
+    result = apply_age_effects(db)
+    assert isinstance(result, dict), "apply_age_effects should return dict"
+    db.flush()
+
+
+def test_s223_mentor_apprentices(db):
+    """Story 223: Mentor-apprentice skill transfer."""
+    _setup_world(db)
+    from engine.models import NPC
+    from engine.simulation import mentor_apprentices
+
+    # Create mentor and apprentice on same tile
+    mentor = NPC(name="Master Smith", role="blacksmith", x=20, y=20, skill=8)
+    apprentice = NPC(name="Young Bob", role="blacksmith", x=20, y=20, skill=1)
+    db.add_all([mentor, apprentice])
+    db.flush()
+
+    result = mentor_apprentices(db)
+    assert isinstance(result, int), "mentor_apprentices should return count"
+    db.refresh(apprentice)
+    assert apprentice.skill > 1, "Apprentice should have gained skill"
+
+
+def test_s224_apply_homesickness(db):
+    """Story 224: NPC homesickness mechanic."""
+    _setup_world(db)
+    from engine.simulation import apply_homesickness
+
+    apply_homesickness(db)
+    db.flush()
+
+
+def test_s225_process_rivalries(db):
+    """Story 225: NPC rivalry competition."""
+    _setup_world(db)
+    from engine.simulation import process_rivalries
+
+    process_rivalries(db)
+    db.flush()
+
+
+# ── Stories 247-248: Military & Crime (NPC module) ──────────────────
+
+
+def test_s247_patrol_guards(db):
+    """Story 247: Guard patrol movement."""
+    _setup_world(db)
+    from engine.simulation import patrol_guards
+
+    patrol_guards(db)
+    db.flush()
+
+
+def test_s248_check_crime_motivation(db):
+    """Story 248: Crime motivation from poverty."""
+    _setup_world(db)
+    from engine.simulation import check_crime_motivation
+
+    result = check_crime_motivation(db)
+    assert isinstance(result, int), "check_crime_motivation should return count"
+    db.flush()

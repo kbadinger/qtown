@@ -248,3 +248,66 @@ def test_s207_dialogue_in_tick(db):
     # Run tick — should generate dialogues
     process_tick(db)
     db.flush()
+
+
+# ── Stories 249-255: Military, Culture (tick module) ────────────────
+
+
+def test_s249_serve_sentences(db):
+    """Story 249: Prison sentence serving."""
+    _setup_world(db)
+    from engine.simulation import serve_sentences
+
+    result = serve_sentences(db)
+    assert isinstance(result, int), "Should return count released"
+    db.flush()
+
+
+def test_s250_process_bounties(db):
+    """Story 250: Bounty board for unresolved crimes."""
+    _setup_world(db)
+    from engine.simulation import process_bounties
+
+    result = process_bounties(db)
+    assert isinstance(result, int), "Should return count collected"
+    db.flush()
+
+
+def test_s251_vigilante_justice(db):
+    """Story 251: Vigilante justice without guards."""
+    _setup_world(db)
+    from engine.simulation import vigilante_justice
+
+    result = vigilante_justice(db)
+    assert isinstance(result, int), "Should return count resolved"
+    db.flush()
+
+
+def test_s253_conduct_research(db):
+    """Story 253: Library research discoveries."""
+    _setup_world(db)
+    from engine.simulation import conduct_research
+
+    result = conduct_research(db)
+    assert result is None or isinstance(result, str), "Should return discovery or None"
+    db.flush()
+
+
+def test_s254_hold_performance(db):
+    """Story 254: Theater performance events."""
+    _setup_world(db)
+    from engine.simulation import hold_performance
+
+    result = hold_performance(db)
+    assert isinstance(result, int), "Should return attendee count"
+    db.flush()
+
+
+def test_s255_hold_ceremony(db):
+    """Story 255: Church ceremony happiness boost."""
+    _setup_world(db)
+    from engine.simulation import hold_ceremony
+
+    result = hold_ceremony(db)
+    assert isinstance(result, int), "Should return attendee count"
+    db.flush()

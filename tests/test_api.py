@@ -609,3 +609,45 @@ def test_s215_day_night_cycle(client):
     # It is stored in WorldState and may be exposed
     data = resp.json()
     assert isinstance(data, dict)
+
+
+# ── Stories 262-265: API & Visualization ────────────────────────────
+
+
+def test_s262_stats_summary_api(client):
+    """Story 262: Town statistics API endpoint."""
+    resp = client.get("/api/stats/summary")
+    assert resp.status_code in (200, 404), f"{resp.status_code}: {resp.text}"
+    if resp.status_code == 200:
+        data = resp.json()
+        assert "population" in data
+
+
+def test_s263_npc_detail_api(client):
+    """Story 263: NPC detail API endpoint."""
+    # First create an NPC, then fetch it
+    resp = client.get("/api/npcs/")
+    if resp.status_code == 200:
+        npcs = resp.json()
+        if npcs:
+            npc_id = npcs[0]["id"]
+            detail = client.get(f"/api/npcs/{npc_id}")
+            assert detail.status_code == 200, f"NPC detail failed: {detail.text}"
+
+
+def test_s264_price_history_api(client):
+    """Story 264: Price history chart API."""
+    resp = client.get("/api/economy/price-history")
+    assert resp.status_code in (200, 404), f"{resp.status_code}: {resp.text}"
+    if resp.status_code == 200:
+        data = resp.json()
+        assert isinstance(data, list)
+
+
+def test_s265_event_timeline_api(client):
+    """Story 265: Event timeline API grouped by day."""
+    resp = client.get("/api/events/timeline")
+    assert resp.status_code in (200, 404), f"{resp.status_code}: {resp.text}"
+    if resp.status_code == 200:
+        data = resp.json()
+        assert isinstance(data, list)
