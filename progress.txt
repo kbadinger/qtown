@@ -1002,3 +1002,8 @@
 - **Non-obvious state transitions**: The logic for handling "reopened" bankruptcies was tricky; the system doesn't just reset the status but requires re-validating the entire creditor hierarchy before allowing new filings.
 - **Convention on financial rounding**: The codebase strictly uses `Decimal` with `ROUND_HALF_UP` for all currency calculations to avoid floating-point drift, and this must be applied before any aggregation, not just at the final display.
 - **Correction on race conditions**: Initially, I assumed the `BankruptcyCase` lock was sufficient, but I had to add a database-level `SELECT FOR UPDATE` on the `CreditorClaims` table to prevent duplicate claim submissions during the same processing window.
+
+--- Story 190: Bankruptcy handling (attempts: 1, 2026-03-06 20:56) ---
+- **Non-obvious edge case**: The interaction between `bankruptcy_status` and `active_loan` flags was not atomic; a race condition could occur if a user triggers bankruptcy while a loan repayment is processing, requiring a database-level transaction lock.
+- **Codebase convention**: Financial state changes consistently use a "snapshot" pattern where the pre-change state is archived to a `transaction_history` table before the main entity is updated, ensuring auditability without complex versioning logic.
+- **Correction made**: Initially attempted to calculate final balances by iterating through all historical transactions, which caused performance timeouts; corrected by using a pre-aggregated `current_balance` column updated via a single atomic `UPDATE` statement.

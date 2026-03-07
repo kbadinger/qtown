@@ -1055,3 +1055,16 @@ Ralph stopped — needs human debugging
 [2026-03-07 01:40:15 UTC] story_done: Story 189 complete: Trade negotiations
 [2026-03-07 01:40:16 UTC] story_start: Story 190: Bankruptcy handling
 [2026-03-07 01:49:04 UTC] WARN deploy_fail: Story 190 deploy failed — starting fix cycle
+[2026-03-07 01:49:40 UTC] CRITICAL deploy_fail: Story 190 deploy failed twice — stopping
+Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   a5deb81..7b2bb70  main -> main
+
+Indexing...
+Uploading...
+error sending request for url (https://backboard.railway.com/project/2e76505e-
+[2026-03-07 01:49:40 UTC] CRITICAL critical: Story 190 failed: Bankruptcy handling
+Ralph stopped — needs human debugging
+[2026-03-07 01:49:41 UTC] stop: Ralph offline — 188/215 stories complete
+[2026-03-07 01:56:12 UTC] start: Ralph online — 188/215 stories complete
+[2026-03-07 01:56:13 UTC] story_start: Story 190: Bankruptcy handling
