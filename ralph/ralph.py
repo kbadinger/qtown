@@ -452,6 +452,7 @@ def run_story(story: dict) -> bool:
     consecutive_infra_failures = 0
     regression_feedback: str | None = None  # Fed back to Qwen after regression revert
     regression_fail_counts: dict[str, int] = {}  # {reg_story_id: consecutive_fail_count}
+    last_written: list[str] = []  # Files written by previous attempt (for targeted revert)
     passed = False
 
     while attempt < MAX_ATTEMPTS:
@@ -466,12 +467,15 @@ def run_story(story: dict) -> bool:
         if attempt == 5:
             warn("story_fail", f"Story {story_id} struggling — attempt 5/{MAX_ATTEMPTS}\n{story['title']}")
 
-        # 0. Reset to clean state — undo any changes from prior attempt (or crash)
-        #    Each attempt starts from committed code. Patch mode applies surgical
-        #    changes, so we need a clean base each time.
-        #    Runs on ALL attempts including attempt 1 to handle Ralph crash recovery.
-        subprocess.run(["git", "checkout", "engine/"], capture_output=True)
-        subprocess.run(["git", "checkout", "assets/"], capture_output=True)
+        # 0. Reset to clean state — undo changes from prior attempt only.
+        #    On attempt 1: broad checkout to handle crash recovery.
+        #    On retries: only revert files this story touched (preserves prior story models).
+        if attempt == 1 or not last_written:
+            subprocess.run(["git", "checkout", "engine/"], capture_output=True)
+            subprocess.run(["git", "checkout", "assets/"], capture_output=True)
+        else:
+            for fpath in last_written:
+                subprocess.run(["git", "checkout", fpath], capture_output=True)
 
         # 1. Get test output for Qwen
         #    On retries: use the POST-WRITE test output from the previous attempt
@@ -560,6 +564,7 @@ def run_story(story: dict) -> bool:
 
         # 5. Apply file changes
         written = apply_files(response)
+        last_written = written  # Track for targeted revert on next attempt
         if not written:
             print("  No files written — Qwen may have returned empty/invalid output")
             log_metric(story_id, attempt, False, gpu_time, "No files written", tokens_in, tokens_out)
@@ -592,9 +597,9 @@ def run_story(story: dict) -> bool:
                     # If same regression story failed 2+ times, try auto-resolving
                     if regression_fail_counts[reg_sid] >= 2:
                         print(f"  [CONFLICT] Same regression (Story {reg_sid}) failed {regression_fail_counts[reg_sid]}x — attempting auto-resolve")
-                        # Revert engine changes first (test file stays for conflict resolver to read)
-                        subprocess.run(["git", "checkout", "engine/"], capture_output=True)
-                        subprocess.run(["git", "checkout", "assets/"], capture_output=True)
+                        # Revert only files this story touched
+                        for fpath in last_written:
+                            subprocess.run(["git", "checkout", fpath], capture_output=True)
                         resolved = resolve_test_conflict(story, reg_output, test_file)
                         if resolved:
                             regression_fail_counts.clear()
@@ -606,8 +611,8 @@ def run_story(story: dict) -> bool:
                             continue
 
                 print(f"  Undoing changes, will retry")
-                subprocess.run(["git", "checkout", "engine/"], capture_output=True)
-                subprocess.run(["git", "checkout", "assets/"], capture_output=True)
+                for fpath in last_written:
+                    subprocess.run(["git", "checkout", fpath], capture_output=True)
                 log_metric(story_id, attempt, False, gpu_time, f"REGRESSION: {reg_output[:300]}", tokens_in, tokens_out)
                 regression_feedback = reg_output  # Feed back to Qwen on next attempt
                 prev_test_output = None  # Regression feedback takes priority

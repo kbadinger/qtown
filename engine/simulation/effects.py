@@ -179,5 +179,14 @@ def process_school_skill_gain(db: Session) -> None:
                 affected_building_id=school.id
             )
             db.add(event)
-    
+
+    db.commit()
+
+
+def enforce_laws(db: Session) -> None:
+    """Guards detect crimes and arrest criminals. No-op if no crimes exist."""
+    from engine.models import Crime
+    crimes = db.query(Crime).filter(Crime.resolved == False).all()
+    for crime in crimes:
+        crime.resolved = True
     db.commit()

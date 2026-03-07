@@ -3441,7 +3441,7 @@
         "npc"
       ],
       "priority": 191,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
@@ -3460,8 +3460,8 @@
         "npc"
       ],
       "priority": 192,
-      "status": "pending",
-      "attempts": 0
+      "status": "completed",
+      "attempts": 1
     },
     {
       "id": "193",
@@ -3479,8 +3479,8 @@
         "npc"
       ],
       "priority": 193,
-      "status": "pending",
-      "attempts": 0
+      "status": "failed",
+      "attempts": 1
     },
     {
       "id": "194",

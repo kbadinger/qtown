@@ -3,6 +3,7 @@
 from datetime import datetime, timezone
 
 from sqlalchemy import (
+    Boolean,
     Column,
     DateTime,
     Float,
@@ -290,3 +291,15 @@ class Policy(Base):
     created_at = Column(DateTime, default=_utcnow)
 
     proposed_by = relationship("NPC", foreign_keys=[proposed_by_npc_id])
+
+
+class Crime(Base):
+    __tablename__ = "crimes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    criminal_npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=False, index=True)
+    type = Column(String(64), nullable=False)
+    tick = Column(Integer, nullable=False)
+    resolved = Column(Boolean, default=False, nullable=False)
+
+    criminal = relationship("NPC", backref="crimes")
