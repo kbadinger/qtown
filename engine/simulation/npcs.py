@@ -1123,3 +1123,38 @@ def log_visitor(db: Session, npc_id: int) -> None:
     
     db.add(visitor_log)
     db.commit()
+
+
+def compose_anthem(db: Session) -> None:
+    """Compose a town anthem if 1000 ticks have passed since last one."""
+    from engine.models import TownAnthem, NPC, WorldState
+    from engine.simulation.constants import ANTHEM_TICK_INTERVAL
+    
+    # Get current tick from world state
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return
+    
+    current_tick = world_state.tick
+    
+    # Check if enough time has passed since last anthem
+    last_anthem = db.query(TownAnthem).order_by(TownAnthem.tick_composed.desc()).first()
+    if last_anthem and (current_tick - last_anthem.tick_composed) < ANTHEM_TICK_INTERVAL:
+        return
+    
+    # Find a bard NPC to compose the anthem
+    bard = db.query(NPC).filter(NPC.role == "bard").first()
+    composer_id = bard.id if bard else None
+    
+    # Generate lyrics with town name
+    town_name = getattr(world_state, 'town_name', 'Qwen Town')
+    lyrics = f"Oh {town_name}, our home so bright, where day turns into night."
+    
+    # Create the anthem
+    anthem = TownAnthem(
+        lyrics=lyrics,
+        composed_by_npc_id=composer_id,
+        tick_composed=current_tick
+    )
+    db.add(anthem)
+    db.commit()

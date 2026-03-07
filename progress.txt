@@ -1032,3 +1032,8 @@
 - **State Persistence Nuance**: The visitor log required careful handling of the `last_visited` timestamp to prevent race conditions; relying solely on the database write was insufficient without an atomic check-and-update pattern.
 - **Event-Driven Logging Pattern**: The codebase consistently uses a centralized `LogEvent` service rather than direct database writes in controllers, ensuring all audit trails are normalized and can be intercepted for external monitoring.
 - **Correction on Null Handling**: Initially assumed `user_id` was always present in the session; corrected by adding a guard clause to log anonymous visits with a generated `session_token` instead of failing the request.
+
+--- Story 200: Town anthem generator (attempts: 1, 2026-03-07 00:24) ---
+*   **Non-obvious dependency on `lyric_structure`**: The generator relies on a specific JSON schema for rhyme schemes; deviating from the expected `stanza_type` keys caused silent failures in the rhythm calculation rather than throwing errors.
+*   **Pattern of "Template + Constraint"**: The codebase consistently separates static template strings from dynamic constraint objects (e.g., `max_syllables`), allowing the core logic to remain agnostic of specific town names or themes.
+*   **Correction of off-by-one indexing**: Initially, the rhyme group assignment used 0-based indexing against a 1-based rhyme scheme definition, causing the final line of every stanza to mismatch; shifting to 1-based alignment fixed the output.

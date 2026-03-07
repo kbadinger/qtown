@@ -1,3 +1,4 @@
+from sqlalchemy.orm import Session
 # Drought to famine cascade threshold
 DROUGHT_FAMINE_THRESHOLD = 5
 """Simulation constants."""
@@ -89,4 +90,10 @@ JUSTICE_RESPONSE_RE_RAID_DELAY = 50
 
 AVOIDED_AREA_EXPIRATION_TICKS = 50
 """Number of ticks before a dangerous area is no longer avoided."""
+
+
+
+
+ANTHEM_TICK_INTERVAL = 1000
+"""Number of ticks between town anthem compositions."""
 
