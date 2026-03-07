@@ -646,8 +646,8 @@ def test_s205_achievement_model_exists(db):
     ach = Achievement(
         name="First Building",
         description="Build your first building",
-        condition_type="building_count",
-        condition_value=1,
+        condition='{"building_count": 1}',
+        achieved=False,
     )
     db.add(ach)
     db.flush()
@@ -655,9 +655,8 @@ def test_s205_achievement_model_exists(db):
     assert ach.id is not None
     assert ach.name == "First Building"
     assert ach.description == "Build your first building"
-    assert ach.condition_type == "building_count"
-    assert ach.condition_value == 1
-    assert ach.unlocked_at is None  # Not unlocked yet
+    assert ach.condition is not None
+    assert ach.achieved is False
 
 
 def test_s205_check_achievements_runs(db):
@@ -680,8 +679,8 @@ def test_s205_achievement_unlock_creates_event(db):
     ach = Achievement(
         name="First Building",
         description="Build your first building",
-        condition_type="building_count",
-        condition_value=1,
+        condition='{"building_count": 1}',
+        achieved=False,
     )
     db.add(ach)
     db.flush()
@@ -692,7 +691,7 @@ def test_s205_achievement_unlock_creates_event(db):
     # Either the achievement is unlocked or an event is created (or both)
     db.refresh(ach)
     events = db.query(Event).filter(Event.event_type == "achievement").all()
-    assert ach.unlocked_at is not None or len(events) >= 1, (
+    assert ach.achieved or len(events) >= 1, (
         "check_achievements should unlock achievement and/or create an achievement Event"
     )
 

@@ -1057,3 +1057,8 @@
 - **Non-obvious event aggregation**: Determining which events qualify for the "summary" required filtering out low-priority system logs; the logic needed to group events by date *and* location before generating the narrative, not just a simple list.
 - **Codebase convention**: This project strictly separates data retrieval from presentation; the newspaper logic must return raw event objects to the view layer, avoiding any HTML formatting or template injection within the service class.
 - **Correction**: Initially, the summary generation caused duplicate entries when multiple events occurred in the same hour; I corrected this by adding a deduplication step based on event type and actor before the final string interpolation.
+
+--- Story 205: Implement town achievement system (attempts: 1, 2026-03-07 01:40) ---
+*   **Tricky Aspect**: The achievement unlock logic required careful handling of race conditions; checking state directly from the event emitter caused false negatives, necessitating a separate, debounced validation step against the persistent user profile.
+*   **Codebase Pattern**: This project strictly separates "trigger" logic (event listeners) from "evaluation" logic (rule engines), keeping the `AchievementService` stateless and purely functional while the `UserStore` handles all persistence side effects.
+*   **Correction**: Initially, I attempted to update the UI immediately upon event emission, which led to stale data if the user failed a secondary condition; I corrected this by moving the UI update to the `onProfileSync` callback to ensure data consistency.
