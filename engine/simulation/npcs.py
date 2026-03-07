@@ -996,15 +996,29 @@ def check_bankruptcy(db: Session) -> None:
     - is_bankrupt set to 1
     - happiness drops to 0
     - lose home and work assignments
+    
+    Recovery:
+    - If is_bankrupt is 1 and gold > 0, they recover:
+      - is_bankrupt set to 0
+      - happiness restored to 50 (default)
     """
     from engine.models import NPC
     
+    # 1. Handle new bankruptcies (gold < -50)
     bankrupt_npcs = db.query(NPC).filter(NPC.gold < -50).all()
     
     for npc in bankrupt_npcs:
-        npc.is_bankrupt = 1
-        npc.happiness = 0
-        npc.home_building_id = None
-        npc.work_building_id = None
+        if not npc.is_bankrupt:
+            npc.is_bankrupt = 1
+            npc.happiness = 0
+            npc.home_building_id = None
+            npc.work_building_id = None
+    
+    # 2. Handle recovery (is_bankrupt == 1 and gold > 0)
+    recovering_npcs = db.query(NPC).filter(NPC.is_bankrupt == 1, NPC.gold > 0).all()
+    
+    for npc in recovering_npcs:
+        npc.is_bankrupt = 0
+        npc.happiness = 50  # Restore happiness
     
     db.commit()
