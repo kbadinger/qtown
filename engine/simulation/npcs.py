@@ -371,11 +371,13 @@ def get_npc_decision(db: Session, npc_id: int) -> str:
     2. sleep (if energy < 30)
     3. work (if has work_building and not at work)
     4. rest (otherwise)
+    5. memory-based decisions (if memory influences choice)
     """
     npc = db.query(NPC).filter(NPC.id == npc_id).first()
     if not npc:
         return "rest"
     
+    # Check basic needs first
     if npc.hunger > 50:
         return "eat"
     elif npc.energy < 30:
@@ -384,6 +386,17 @@ def get_npc_decision(db: Session, npc_id: int) -> str:
         work_building = db.query(Building).filter(Building.id == npc.work_building_id).first()
         if work_building and (npc.x != work_building.x or npc.y != work_building.y):
             return "work"
+    
+    # Check memory for influencing decisions
+    # If NPC remembers a favorite building, they might visit it
+    memories = recall_memory(db, npc_id, "favorite")
+    if memories and npc.happiness < 70:
+        return "visit_favorite"
+    
+    # If NPC remembers danger, they might avoid certain areas
+    danger_memories = recall_memory(db, npc_id, "danger")
+    if danger_memories:
+        return "avoid_danger"
     
     return "rest"
 
@@ -1243,3 +1256,71 @@ def find_path(db: Session, start_x: int, start_y: int, end_x: int, end_y: int) -
     
     # No path found
     return []
+
+
+def update_memory(db: Session, npc_id: int, event: str) -> None:
+    """Store an event in the NPC's memory_events JSON field.
+    
+    Memory is capped at 10 events (FIFO - oldest removed first).
+    """
+    import json
+    
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return
+    
+    # Parse existing memory (handle both string and list)
+    memory_events = npc.memory_events
+    if memory_events is None:
+        memory_events = []
+    elif isinstance(memory_events, str):
+        try:
+            memory_events = json.loads(memory_events)
+        except (json.JSONDecodeError, TypeError):
+            memory_events = []
+    elif not isinstance(memory_events, list):
+        memory_events = []
+    
+    # Cap at 10 events (remove oldest if full)
+    if len(memory_events) >= 10:
+        memory_events = memory_events[1:]
+    
+    # Add new event
+    memory_events.append(event)
+    
+    # Save back to database
+    npc.memory_events = json.dumps(memory_events)
+    db.commit()
+
+
+def recall_memory(db: Session, npc_id: int, keyword: str) -> list:
+    """Search NPC memory_events for entries containing the keyword.
+    
+    Returns list of matching memory entries (empty list if none found).
+    """
+    import json
+    
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return []
+    
+    # Parse memory
+    memory_events = npc.memory_events
+    if memory_events is None:
+        return []
+    elif isinstance(memory_events, str):
+        try:
+            memory_events = json.loads(memory_events)
+        except (json.JSONDecodeError, TypeError):
+            return []
+    elif not isinstance(memory_events, list):
+        return []
+    
+    # Search for keyword match (case-insensitive)
+    keyword_lower = keyword.lower()
+    matching_memories = [
+        event for event in memory_events 
+        if isinstance(event, str) and keyword_lower in event.lower()
+    ]
+    
+    return matching_memories

@@ -1047,3 +1047,8 @@
 *   **Non-Obvious Complexity**: The "supply" metric isn't just current inventory; it requires a weighted forecast of incoming stock over the next 24 hours, which initially caused pricing to spike erroneously during low-stock windows.
 *   **Codebase Pattern**: Pricing rules are strictly separated from calculation logic using a `Strategy` interface; new pricing tiers must be added as new strategy classes rather than modifying the core engine to maintain testability.
 *   **Correction**: Initially, I updated prices synchronously within the inventory event loop, causing race conditions during high-volume sales; I corrected this by offloading price recalculation to an async background job with idempotent updates.
+
+--- Story 203: Implement NPC memory and learning system (attempts: 1, 2026-03-07 00:56) ---
+*   **Non-obvious State Persistence**: The learning system required a hybrid approach where short-term observations live in volatile memory, but only "significant" events (threshold-based) are serialized to the persistent store; attempting to save every interaction caused immediate performance bottlenecks.
+*   **Codebase Convention**: This project strictly separates `Entity` state from `World` logic; memory updates must trigger a `WorldEvent` rather than modifying NPC data directly to ensure the simulation loop remains deterministic and replayable.
+*   **Correction on Decay Logic**: Initially implemented memory decay as a simple time-based counter, which caused NPCs to forget crucial plot points too quickly; corrected by switching to a weighted relevance score that decays slower for high-impact interactions.
