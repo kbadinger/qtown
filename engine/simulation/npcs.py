@@ -565,10 +565,10 @@ def age_npcs(db: Session) -> None:
     """Age all NPCs by 1 year. Mark NPCs as dead when they reach max_age."""
     from engine.models import NPC
     
-    for npc in db.query(NPC).filter(NPC.is_dead == False).all():
+    for npc in db.query(NPC).filter(NPC.is_dead == 0).all():
         npc.age += 1
         if npc.age >= npc.max_age:
-            npc.is_dead = True
+            npc.is_dead = 1
     
     db.commit()
 
@@ -1112,7 +1112,7 @@ def record_milestones(db: Session) -> None:
         Milestone.name == "First death"
     ).first()
     if not first_death:
-        dead_count = db.query(NPC).filter(NPC.is_dead == True).count()
+        dead_count = db.query(NPC).filter(NPC.is_dead == 1).count()
         if dead_count >= 1:
             db.add(Milestone(
                 name="First death",

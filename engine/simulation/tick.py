@@ -67,7 +67,7 @@ def process_tick(db: Session) -> None:
     apply_weather_effects(db)
     
     # 3. Process NPC needs (hunger, energy decay)
-    npcs = db.query(NPC).filter(NPC.is_dead == False).all()
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
     for npc in npcs:
         npc.hunger = min(100, npc.hunger + 5)
         npc.energy = max(0, npc.energy - 3)

@@ -481,8 +481,8 @@ def hold_election(db: Session) -> dict:
     
     # Select candidates: NPCs who are alive, not dead, not bankrupt, and age >= 30
     candidates = db.query(NPC).filter(
-        NPC.is_dead == False,
-        NPC.is_bankrupt == False,
+        NPC.is_dead == 0,
+        NPC.is_bankrupt == 0,
         NPC.age >= 18
     ).all()
     
@@ -502,7 +502,7 @@ def hold_election(db: Session) -> dict:
     candidate_ids = [c.id for c in candidates]
     
     # Simulate votes from all living NPCs
-    voters = db.query(NPC).filter(NPC.is_dead == False).all()
+    voters = db.query(NPC).filter(NPC.is_dead == 0).all()
     votes = {c.id: 0 for c in candidates}
     
     for voter in voters:

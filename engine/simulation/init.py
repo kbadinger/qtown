@@ -116,7 +116,7 @@ _ROLE_WORK_BUILDING = {
 
 def assign_work_and_homes(db: Session) -> None:
     """Assign work buildings and homes to NPCs that don't have them."""
-    npcs = db.query(NPC).filter(NPC.is_dead == False).all()
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
 
     # Find the residential building for homes
     home_building = db.query(Building).filter(
