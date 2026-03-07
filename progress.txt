@@ -1052,3 +1052,8 @@
 *   **Non-obvious State Persistence**: The learning system required a hybrid approach where short-term observations live in volatile memory, but only "significant" events (threshold-based) are serialized to the persistent store; attempting to save every interaction caused immediate performance bottlenecks.
 *   **Codebase Convention**: This project strictly separates `Entity` state from `World` logic; memory updates must trigger a `WorldEvent` rather than modifying NPC data directly to ensure the simulation loop remains deterministic and replayable.
 *   **Correction on Decay Logic**: Initially implemented memory decay as a simple time-based counter, which caused NPCs to forget crucial plot points too quickly; corrected by switching to a weighted relevance score that decays slower for high-impact interactions.
+
+--- Story 204: Implement town newspaper that writes event summaries (attempts: 1, 2026-03-07 01:07) ---
+- **Non-obvious event aggregation**: Determining which events qualify for the "summary" required filtering out low-priority system logs; the logic needed to group events by date *and* location before generating the narrative, not just a simple list.
+- **Codebase convention**: This project strictly separates data retrieval from presentation; the newspaper logic must return raw event objects to the view layer, avoiding any HTML formatting or template injection within the service class.
+- **Correction**: Initially, the summary generation caused duplicate entries when multiple events occurred in the same hour; I corrected this by adding a deduplication step based on event type and actor before the final string interpolation.

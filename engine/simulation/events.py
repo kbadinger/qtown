@@ -7,6 +7,7 @@ import random
 from engine.simulation.constants import PLAGUE_OVERWHELM_THRESHOLD
 import json
 from datetime import datetime
+from sqlalchemy import desc
 
 
 def trigger_drought(db: Session) -> None:
@@ -603,4 +604,53 @@ def check_achievements(db: Session) -> None:
                 )
                 db.add(event)
     
+    db.commit()
+
+
+def generate_newspaper(db: Session) -> None:
+    """Generate a newspaper entry summarizing recent events."""
+    from engine.models import Newspaper, Event, WorldState, NPC
+    
+    # Get current world state
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        world_state = WorldState(tick=0, day=1, time_of_day="morning")
+        db.add(world_state)
+        db.commit()
+    
+    # Query recent events (last 24 ticks)
+    recent_events = db.query(Event).filter(
+        Event.tick >= world_state.tick - 24
+    ).order_by(desc(Event.tick)).limit(10).all()
+    
+    # Generate headline based on events
+    if recent_events:
+        headline = f"Town Updates: {len(recent_events)} Notable Events"
+    else:
+        headline = "Another Quiet Day in Town"
+    
+    # Generate body with event summaries
+    body_parts = []
+    for event in recent_events:
+        body_parts.append(f"- {event.event_type}: {event.description}")
+    
+    if body_parts:
+        body = "\n".join(body_parts)
+    else:
+        body = "No major events occurred this period."
+    
+    # Find an author NPC (preferably a journalist or town crier)
+    author_npc = db.query(NPC).filter(
+        NPC.role.in_(['journalist', 'town_crier', 'merchant'])
+    ).first()
+    
+    # Create newspaper entry
+    newspaper = Newspaper(
+        day=world_state.day,
+        headline=headline,
+        body=body,
+        author_npc_id=author_npc.id if author_npc else None,
+        tick=world_state.tick
+    )
+    db.add(newspaper)
     db.commit()

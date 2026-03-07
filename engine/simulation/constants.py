@@ -97,3 +97,9 @@ AVOIDED_AREA_EXPIRATION_TICKS = 50
 ANTHEM_TICK_INTERVAL = 1000
 """Number of ticks between town anthem compositions."""
 
+
+
+
+NEWSPAPER_TICK_INTERVAL = 24
+"""Number of ticks between newspaper generations."""
+
