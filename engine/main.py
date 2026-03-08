@@ -152,9 +152,67 @@ def _seed_world():
         seed_all_buildings(db)
         assign_work_and_homes(db)
         _assign_sprite_ids(db)
+        _reset_world_state(db)
         print("[qtown] World seeded")
     finally:
         db.close()
+
+
+def _reset_world_state(db):
+    """One-time reset: fix runaway tick/gold/mayors from 5s tick era."""
+    from engine.models import NPC, WorldState, Relationship
+
+    ws = db.query(WorldState).first()
+    if not ws or ws.tick < 1000:
+        return  # Only reset if we're in the runaway state
+
+    print(f"[qtown] Resetting world state (was tick={ws.tick}, day={ws.day})")
+
+    # Reset tick and day
+    ws.tick = 0
+    ws.day = 1
+    ws.time_of_day = "morning"
+
+    # Keep original 5 NPCs, remove extras
+    original_ids = [n.id for n in db.query(NPC).order_by(NPC.id).limit(5).all()]
+    excess = db.query(NPC).filter(~NPC.id.in_(original_ids)).all()
+    excess_ids = [n.id for n in excess]
+
+    if excess_ids:
+        # Clean up foreign keys referencing excess NPCs
+        from engine.models import Transaction, Loan, Crime, Dialogue, VisitorLog
+        for model, cols in [
+            (Transaction, ["sender_id", "receiver_id"]),
+            (Relationship, ["npc_id", "target_npc_id"]),
+            (Loan, ["lender_npc_id", "borrower_npc_id"]),
+            (Crime, ["criminal_npc_id"]),
+            (Dialogue, ["speaker_npc_id", "listener_npc_id"]),
+            (VisitorLog, ["npc_id", "greeted_by_npc_id"]),
+        ]:
+            for col_name in cols:
+                try:
+                    col = getattr(model, col_name)
+                    db.query(model).filter(col.in_(excess_ids)).delete(synchronize_session="fetch")
+                except Exception:
+                    pass
+        db.query(NPC).filter(NPC.id.in_(excess_ids)).delete(synchronize_session="fetch")
+
+    # Reset original NPCs to sane state
+    ROLES = ["farmer", "merchant", "guard", "blacksmith", "baker"]
+    for i, npc in enumerate(db.query(NPC).order_by(NPC.id).limit(5).all()):
+        npc.gold = 50
+        npc.hunger = 0
+        npc.energy = 100
+        npc.happiness = 50
+        npc.is_dead = 0
+        npc.is_bankrupt = 0
+        npc.illness = 0
+        npc.illness_severity = 0
+        npc.role = ROLES[i] if i < len(ROLES) else "villager"
+
+    db.commit()
+    remaining = db.query(NPC).count()
+    print(f"[qtown] World reset complete — tick=0, {remaining} NPCs, roles restored")
 
 
 def _assign_sprite_ids(db):
@@ -282,7 +340,7 @@ def _migrate_layout(db):
 
 
 def _start_tick_loop():
-    """Start an asyncio background task that runs process_tick every 5 seconds."""
+    """Start an asyncio background task that runs process_tick every 30 seconds."""
     import asyncio
     import logging
 
@@ -294,7 +352,7 @@ def _start_tick_loop():
 
         logger.info("[qtown] Tick worker started")
         while True:
-            await asyncio.sleep(5)
+            await asyncio.sleep(30)
             db = SessionLocal()
             try:
                 process_tick(db)
@@ -307,7 +365,7 @@ def _start_tick_loop():
                 db.close()
 
     asyncio.create_task(_tick_worker())
-    logger.info("[qtown] Auto-tick scheduled (every 5s)")
+    logger.info("[qtown] Auto-tick scheduled (every 30s)")
 
 
 def _seed_admin():
