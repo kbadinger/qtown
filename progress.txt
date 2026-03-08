@@ -1248,3 +1248,8 @@
 - **State Persistence Complexity**: Handling multi-day state was non-obvious; relying solely on in-memory flags caused data loss on server restarts, requiring a shift to persistent database records with explicit `completed_at` timestamps.
 - **Timezone Sensitivity**: The codebase strictly uses UTC for all event scheduling and comparison; using local time for "day boundaries" caused race conditions where events triggered prematurely for users in different zones.
 - **Idempotency in Triggers**: Initially, the daily check loop re-triggered actions for already-completed days; corrected by adding a `WHERE status != 'completed'` filter and ensuring the transaction wraps the status update and action execution.
+
+--- Story 298: Event recovery bonus (attempts: 1, 2026-03-08 17:57) ---
+- **Non-obvious state handling**: The bonus logic relied on a hidden `recovery_window` flag that persists across sessions, not just the immediate event trigger, requiring careful inspection of the user session store.
+- **Codebase convention**: Reward calculations are consistently abstracted into a `BonusCalculator` service rather than inline logic, ensuring all event-based modifiers follow a single validation pipeline.
+- **Correction made**: Initially missed the edge case where a user completes recovery during a maintenance window; added a guard clause to defer bonus application until the system status is fully restored.

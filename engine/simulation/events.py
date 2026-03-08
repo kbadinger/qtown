@@ -790,3 +790,57 @@ def escalate_events(db: Session) -> int:
     
     db.commit()
     return escalations
+
+
+def apply_recovery_bonus(db: Session) -> bool:
+    """Apply recovery bonus after critical events."""
+    from engine.models import Event, NPC
+    
+    # Get current tick from latest event
+    latest_event = db.query(Event).order_by(Event.tick.desc()).first()
+    current_tick = latest_event.tick if latest_event else 0
+    
+    # Check for critical events 20-30 ticks ago
+    old_critical = db.query(Event).filter(
+        Event.severity == 'critical',
+        Event.tick >= current_tick - 30,
+        Event.tick <= current_tick - 20
+    ).first()
+    
+    if not old_critical:
+        return False
+    
+    # Check no current critical events (within last 20 ticks)
+    current_critical = db.query(Event).filter(
+        Event.severity == 'critical',
+        Event.tick > current_tick - 20
+    ).first()
+    
+    if current_critical:
+        return False
+    
+    # Check if recovery already applied (within last 50 ticks)
+    existing_recovery = db.query(Event).filter(
+        Event.event_type == 'recovery',
+        Event.tick > current_tick - 50
+    ).first()
+    
+    if existing_recovery:
+        return False
+    
+    # Apply happiness bonus to all living NPCs
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    for npc in living_npcs:
+        npc.happiness = min(npc.happiness + 10, 100)
+    
+    # Create recovery event
+    recovery_event = Event(
+        event_type='recovery',
+        severity='minor',
+        tick=current_tick,
+        description='Recovery bonus applied after critical event'
+    )
+    db.add(recovery_event)
+    db.commit()
+    
+    return True
