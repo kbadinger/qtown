@@ -1218,3 +1218,8 @@
 - **Non-obvious enum handling**: The mapping between raw API strings and internal `ResourceTier` enums required a fallback strategy for unknown values, which wasn't immediately obvious from the type definitions alone.
 - **Validation pattern**: Discovered that all tier-based logic must pass through the centralized `TierValidator` service rather than using inline `if/else` checks to ensure consistent audit logging.
 - **Correction**: Initially attempted to modify the database schema directly for the new tiers; corrected to use the existing migration generator to maintain backward compatibility with the legacy reporting module.
+
+--- Story 291: Import/export balance tracking (attempts: 1, 2026-03-08 15:09) ---
+- **Non-obvious currency handling**: The import/export balance logic requires explicit conversion to a base currency before aggregation; relying on the raw transaction currency caused silent rounding errors in the total balance.
+- **Codebase convention**: Financial summaries in this module always use immutable value objects for calculations, avoiding direct mutation of `Transaction` entities to ensure audit trail integrity.
+- **Correction**: Initially, I filtered transactions by date range *after* joining with the currency table, which excluded valid historical rates; moving the date filter to the subquery resolved the missing data issue.

@@ -1269,3 +1269,6 @@ Ralph stopped — needs human debugging
 [2026-03-08 18:44:48 UTC] deploy_ok: Story 289 deployed: Healthy after 0.1s
 [2026-03-08 18:45:05 UTC] story_done: Story 289 complete: Tip system
 [2026-03-08 18:45:06 UTC] story_start: Story 290: Resource quality tiers
+[2026-03-08 18:57:27 UTC] deploy_ok: Story 290 deployed: Healthy after 0.1s
+[2026-03-08 18:57:43 UTC] story_done: Story 290 complete: Resource quality tiers
+[2026-03-08 18:57:44 UTC] story_start: Story 291: Import/export balance tracking

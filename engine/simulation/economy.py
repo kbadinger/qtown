@@ -1249,3 +1249,43 @@ def assign_resource_quality(db: Session) -> Dict[str, str]:
     
     db.commit()
     return quality_map
+
+
+def calculate_trade_balance(db: Session) -> int:
+    """Calculate trade balance from exports and imports in last 100 ticks."""
+    from engine.models import Event, WorldState
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Calculate tick range (last 100 ticks)
+    start_tick = max(0, current_tick - 100)
+    
+    # Count exports (event_type='export')
+    export_count = db.query(Event).filter(
+        Event.event_type == 'export',
+        Event.tick >= start_tick,
+        Event.tick <= current_tick
+    ).count()
+    
+    # Count imports (event_type='import' or 'merchant_caravan')
+    import_count = db.query(Event).filter(
+        Event.event_type.in_(['import', 'merchant_caravan']),
+        Event.tick >= start_tick,
+        Event.tick <= current_tick
+    ).count()
+    
+    # Calculate balance
+    balance = export_count - import_count
+    
+    # Create trade_report event
+    trade_report = Event(
+        event_type='trade_report',
+        description=f'Trade balance: {balance}',
+        tick=current_tick
+    )
+    db.add(trade_report)
+    db.commit()
+    
+    return balance
