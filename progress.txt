@@ -1253,3 +1253,8 @@
 - **Non-obvious state handling**: The bonus logic relied on a hidden `recovery_window` flag that persists across sessions, not just the immediate event trigger, requiring careful inspection of the user session store.
 - **Codebase convention**: Reward calculations are consistently abstracted into a `BonusCalculator` service rather than inline logic, ensuring all event-based modifiers follow a single validation pipeline.
 - **Correction made**: Initially missed the edge case where a user completes recovery during a maintenance window; added a guard clause to defer bonus application until the system status is fully restored.
+
+--- Story 299: Anniversary events (attempts: 1, 2026-03-08 18:15) ---
+- **Timezone Handling**: The most non-obvious challenge was ensuring anniversary dates remained consistent across user timezones; the initial implementation relied on local time, causing off-by-one errors for users near midnight.
+- **Date Comparison Convention**: Discovered the codebase standardizes date comparisons by stripping time components and comparing only `YYYY-MM-DD` strings, rather than using raw timestamps or epoch seconds.
+- **Edge Case Correction**: Initially failed to account for users signing up on leap years (Feb 29); corrected by adding logic to default to March 1 for non-leap years instead of skipping the event entirely.

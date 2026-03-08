@@ -844,3 +844,43 @@ def apply_recovery_bonus(db: Session) -> bool:
     db.commit()
     
     return True
+
+
+def check_anniversaries(db: Session) -> bool:
+    """Check if current day is an anniversary and trigger events."""
+    from sqlalchemy.orm import Session
+    from sqlalchemy import update, func
+    from engine.models import WorldState, Event, NPC, Newspaper
+    
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return False
+    
+    day = world_state.day
+    if day % 100 == 0:
+        # Create Event
+        event = Event(
+            name='Anniversary',
+            event_type='anniversary',
+            description=f'Town celebrates day {day}!',
+            tick=world_state.tick
+        )
+        db.add(event)
+        
+        # Update NPC happiness
+        db.execute(update(NPC).values(happiness=func.coalesce(NPC.happiness, 0) + 15))
+        
+        # Create Newspaper
+        newspaper = Newspaper(
+            day=day,
+            headline='Anniversary Celebration!',
+            body=f'Town celebrates day {day}!',
+            author_npc_id=None,
+            tick=world_state.tick
+        )
+        db.add(newspaper)
+        
+        db.commit()
+        return True
+    
+    return False
