@@ -1193,3 +1193,8 @@
 - **Non-obvious complexity**: The handling of contract roll logic was trickier than expected; price adjustments for roll dates require careful timestamp alignment to avoid double-counting or gaps in the time series.
 - **Codebase patterns**: The project consistently uses a "factory" pattern for constructing futures contracts, ensuring that metadata (like tick size and multiplier) is immutable and validated at instantiation.
 - **Correction made**: Initially, I treated settlement prices as simple floats, which caused precision errors in P&L calculations; I corrected this by switching to `Decimal` types for all monetary values to match the financial data layer's standards.
+
+--- Story 285: Debt forgiveness (attempts: 1, 2026-03-08 13:36) ---
+- **Tricky Logic**: The non-obvious edge case was handling partial forgiveness on loans with accrued interest; the system required recalculating the principal balance *before* applying the forgiveness percentage to avoid inflating the remaining debt.
+- **Codebase Patterns**: This story reinforced the convention of using a dedicated `DebtAdjustment` command object rather than passing raw parameters to the service layer, ensuring all state changes are atomic and auditable.
+- **Correction**: Initially, I failed to trigger the `OnDebtModified` event after the write operation, which broke the external reporting cache; I corrected this by moving the event dispatch to the end of the transaction scope.

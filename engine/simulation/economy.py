@@ -1033,3 +1033,51 @@ def create_futures_contract(db: Session, npc_id: int, resource_name: str, quanti
     db.commit()
     
     return contract
+
+
+def process_debt_forgiveness(db: Session) -> int:
+    """Process debt forgiveness for bankrupt NPCs."""
+    import json
+    from engine.models import NPC, Event, WorldState
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return 0
+    
+    current_tick = world_state.tick
+    
+    # Find bankrupt NPCs
+    bankrupt_npcs = db.query(NPC).filter(NPC.is_bankrupt == 1).all()
+    
+    forgiven_count = 0
+    
+    for npc in bankrupt_npcs:
+        # Parse experience JSON
+        try:
+            parsed = json.loads(npc.experience) if npc.experience else "[]"
+            experience = parsed if isinstance(parsed, dict) else {}
+        except (json.JSONDecodeError, TypeError):
+            experience = {}
+        
+        bankrupt_tick = experience.get('bankrupt_tick', 0)
+        
+        # Check if 100+ ticks have passed
+        if current_tick - bankrupt_tick >= 100:
+            # Update NPC state
+            npc.is_bankrupt = 0
+            npc.gold = npc.gold + 20
+            npc.happiness = npc.happiness + 10
+            
+            # Create event
+            event = Event(
+                event_type='debt_forgiven',
+                npc_id=npc.id,
+                tick=current_tick
+            )
+            db.add(event)
+            
+            forgiven_count += 1
+    
+    db.commit()
+    return forgiven_count
