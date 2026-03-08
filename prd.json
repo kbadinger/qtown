@@ -4997,7 +4997,7 @@
         "simulation"
       ],
       "priority": 300,
-      "status": "failed",
+      "status": "done",
       "attempts": 1
     },
     {

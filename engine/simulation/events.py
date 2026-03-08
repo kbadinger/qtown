@@ -887,7 +887,7 @@ def check_anniversaries(db: Session) -> bool:
     return False
 
 
-def spawn_visitor_trader(db: Session) -> Optional[NPC]:
+def spawn_visitor_trader(db: Session) -> "Optional[NPC]":
     """Spawn a visitor trader NPC with 5% chance."""
     from engine.models import NPC, Event
     
@@ -944,7 +944,6 @@ def spawn_visitor_trader(db: Session) -> Optional[NPC]:
     )
     db.add(event)
     
-    db.commit()
-    db.refresh(visitor)
-    
+    db.flush()
+
     return visitor
