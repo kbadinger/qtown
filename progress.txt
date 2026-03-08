@@ -1153,3 +1153,8 @@
 - **Non-obvious State Coupling**: NPC arrival logic is tightly coupled with the `prosperity` metric's internal threshold checks, not just the raw value; modifying arrival triggers requires updating the `checkProsperityThreshold` helper to avoid race conditions.
 - **Event-Driven Conventions**: The codebase strictly uses the `dispatchEvent` pattern for all entity state changes; direct property mutation on the `worldState` object is avoided to ensure the UI and AI systems stay in sync.
 - **Correction on Initialization**: Initially attempted to spawn NPCs immediately upon loading, but corrected to defer instantiation until the `onProsperityChange` event fires to prevent duplicate entities during map re-renders.
+
+--- Story 276: Friendship decay (attempts: 1, 2026-03-08 03:08) ---
+*   **Tricky Logic**: The decay calculation required handling floating-point precision drift over long simulation periods; using a fixed-point integer representation for the "friendship score" prevented edge-case rounding errors that broke the threshold checks.
+*   **Codebase Patterns**: The project consistently uses a "State Snapshot" pattern where entity states are cloned before modification to support undo functionality, which I initially overlooked when implementing the decay loop.
+*   **Correction**: I initially applied the decay rate to the raw score before clamping it to the [0, 100] range, causing negative values to propagate; I corrected this by clamping the result immediately after the arithmetic operation to maintain data integrity.

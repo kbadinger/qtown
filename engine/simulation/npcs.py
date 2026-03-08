@@ -1803,3 +1803,26 @@ def check_immigration(db: Session) -> bool:
         db.commit()
         return True
     return False
+
+
+def decay_friendships(db: Session) -> int:
+    """Decay friendship relationships by reducing strength and changing type if strength hits 0."""
+    from engine.models import Relationship
+
+    friendships = db.query(Relationship).filter(
+        Relationship.relationship_type == 'friend'
+    ).all()
+
+    count = 0
+    for relationship in friendships:
+        relationship.strength -= 1
+        if relationship.strength < 0:
+            relationship.strength = 0
+        
+        if relationship.strength == 0:
+            relationship.relationship_type = 'acquaintance'
+        
+        count += 1
+
+    db.commit()
+    return count

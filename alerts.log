@@ -1188,3 +1188,6 @@ Emotion memory tracking
 [2026-03-08 06:41:02 UTC] deploy_ok: Story 274 deployed: Healthy after 0.1s
 [2026-03-08 06:41:18 UTC] story_done: Story 274 complete: NPC migration out
 [2026-03-08 06:41:18 UTC] story_start: Story 275: NPC arrival by prosperity
+[2026-03-08 06:56:18 UTC] deploy_ok: Story 275 deployed: Healthy after 0.1s
+[2026-03-08 06:56:34 UTC] story_done: Story 275 complete: NPC arrival by prosperity
+[2026-03-08 06:56:34 UTC] story_start: Story 276: Friendship decay
