@@ -1599,3 +1599,74 @@ def attempt_persuasion(db: Session) -> int:
                             count += 1
     db.commit()
     return count
+
+
+def process_crowd_behavior(db: Session) -> int:
+    """Process crowd behavior for NPCs on the same tile.
+    
+    Find tiles with 3+ living NPCs. For each crowd tile:
+    - All NPCs on that tile get happiness +2 (socializing)
+    - If any Event exists at a building on that tile, NPCs move away
+      (set target_x/y to random nearby tile within 5)
+    
+    Returns count of crowd tiles.
+    """
+    from engine.models import NPC, Building, Event
+    import random
+    
+    # Find tiles with 3+ living NPCs
+    crowd_query = db.query(
+        NPC.x, NPC.y, func.count(NPC.id).label('count')
+    ).filter(
+        NPC.is_dead == False
+    ).group_by(
+        NPC.x, NPC.y
+    ).having(
+        func.count(NPC.id) >= 3
+    )
+    
+    crowd_tiles = crowd_query.all()
+    crowd_tile_count = len(crowd_tiles)
+    
+    for crowd_x, crowd_y, count in crowd_tiles:
+        # Get all living NPCs on this tile
+        npcs_on_tile = db.query(NPC).filter(
+            NPC.x == crowd_x,
+            NPC.y == crowd_y,
+            NPC.is_dead == False
+        ).all()
+        
+        # Check if there's an Event at a building on this tile
+        building_on_tile = db.query(Building).filter(
+            Building.x == crowd_x,
+            Building.y == crowd_y
+        ).first()
+        
+        has_event = False
+        if building_on_tile:
+            has_event = db.query(Event).filter(
+                Event.building_id == building_on_tile.id
+            ).first() is not None
+        
+        for npc in npcs_on_tile:
+            # Add happiness for socializing
+            npc.happiness = min(100, npc.happiness + 2)
+            
+            # If there's an event at a building here, move away
+            if has_event:
+                # Find random nearby tile within 5 tiles
+                max_distance = 5
+                for _ in range(100):  # Try up to 100 times to find valid tile
+                    new_x = crowd_x + random.randint(-max_distance, max_distance)
+                    new_y = crowd_y + random.randint(-max_distance, max_distance)
+                    # Ensure within bounds (0-49)
+                    new_x = max(0, min(49, new_x))
+                    new_y = max(0, min(49, new_y))
+                    # Don't set target to current position
+                    if new_x != crowd_x or new_y != crowd_y:
+                        npc.target_x = new_x
+                        npc.target_y = new_y
+                        break
+    
+    db.commit()
+    return crowd_tile_count

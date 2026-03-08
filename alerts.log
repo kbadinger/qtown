@@ -1173,3 +1173,6 @@ Ralph stopped — needs human debugging
 [2026-03-08 05:35:49 UTC] deploy_ok: Story 270 deployed: Healthy after 0.1s
 [2026-03-08 05:36:05 UTC] story_done: Story 270 complete: Child NPC growth
 [2026-03-08 05:36:05 UTC] story_start: Story 271: NPC persuasion
+[2026-03-08 05:50:43 UTC] deploy_ok: Story 271 deployed: Healthy after 0.1s
+[2026-03-08 05:50:59 UTC] story_done: Story 271 complete: NPC persuasion
+[2026-03-08 05:50:59 UTC] story_start: Story 272: Crowd behavior

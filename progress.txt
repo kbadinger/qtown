@@ -1133,3 +1133,8 @@
 *   **Non-obvious State Management**: The persuasion logic relies on a hidden `interaction_cooldown` flag that persists across session restarts; failing to check this before recalculating success probabilities causes the NPC to be "persuaded" repeatedly without the intended narrative delay.
 *   **Codebase Convention**: All NPC dialogue responses are generated via the `DialogueBuilder` factory pattern, requiring strict adherence to the `Context` object structure (specifically the `last_topic` field) to ensure the response chain remains coherent.
 *   **Correction**: Initially, I attempted to modify the NPC's `reputation` score directly in the controller; I corrected this to use the `ReputationService` facade, which is required to trigger the associated event listeners and update the global quest state.
+
+--- Story 272: Crowd behavior (attempts: 1, 2026-03-08 01:04) ---
+*   **Non-obvious race conditions**: Crowd density calculations can desynchronize with entity positions if the update loop isn't strictly ordered; ensuring the spatial hash grid refreshes before query operations is critical to prevent "ghost" collisions.
+*   **Codebase convention**: The project consistently uses a "command-buffer" pattern for movement logic rather than direct state mutation, allowing the physics engine to batch and resolve crowd forces in a single pass.
+*   **Correction**: Initially applied force vectors directly to individual agents, causing jittery movement; corrected by switching to a velocity-based steering approach that averages neighbor influence over a time window.
