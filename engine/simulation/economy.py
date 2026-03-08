@@ -1289,3 +1289,25 @@ def calculate_trade_balance(db: Session) -> int:
     db.commit()
     
     return balance
+
+
+def adjust_for_inflation(db: Session) -> int:
+    """Adjust base wage based on inflation rate."""
+    from engine.models import WorldState
+    
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return 1  # Default base wage
+    
+    inflation_rate = world_state.inflation_rate
+    base_wage = world_state.base_wage
+    
+    if inflation_rate > 0.2:
+        base_wage = min(base_wage + 1, 20)
+    elif inflation_rate < -0.1:
+        base_wage = max(base_wage - 1, 1)
+    
+    world_state.base_wage = base_wage
+    db.commit()
+    
+    return base_wage

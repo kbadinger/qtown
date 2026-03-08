@@ -1223,3 +1223,8 @@
 - **Non-obvious currency handling**: The import/export balance logic requires explicit conversion to a base currency before aggregation; relying on the raw transaction currency caused silent rounding errors in the total balance.
 - **Codebase convention**: Financial summaries in this module always use immutable value objects for calculations, avoiding direct mutation of `Transaction` entities to ensure audit trail integrity.
 - **Correction**: Initially, I filtered transactions by date range *after* joining with the currency table, which excluded valid historical rates; moving the date filter to the subquery resolved the missing data issue.
+
+--- Story 292: Inflation adjustment (attempts: 1, 2026-03-08 15:22) ---
+- **Tricky Aspect**: The interaction between `Decimal` precision and floating-point arithmetic during the CPI ratio calculation caused subtle rounding errors; using `quantize()` explicitly at the final step was necessary to match the expected financial output.
+- **Pattern Discovered**: The codebase consistently isolates inflation logic in a dedicated `InflationService` that injects historical CPI data via a repository, avoiding direct database calls in the calculation layer.
+- **Correction**: Initially applied the inflation factor to the total sum rather than individual line items, which masked discrepancies in tax calculations; refactored to apply adjustments at the line-item level before aggregation.
