@@ -421,3 +421,200 @@ def test_s350_generate_end_of_day_report(db):
     result = generate_end_of_day_report(db)
     assert result is not None, "generate_end_of_day_report should return a value"
     db.flush()
+
+
+# -- Stories 401-415: Governance & Politics ----------------------------
+
+
+def test_s401_calculate_approval_rating(db):
+    """Political approval rating."""
+    _setup_world(db)
+    from engine.simulation import calculate_approval_rating
+
+    result = calculate_approval_rating(db)
+    # None if no election, dict otherwise
+    assert result is None or isinstance(result, dict), "Should return dict or None"
+    db.flush()
+
+
+def test_s402_detect_corruption(db):
+    """Corruption detection."""
+    _setup_world(db)
+    from engine.simulation import detect_corruption
+
+    result = detect_corruption(db)
+    assert result is None or isinstance(result, bool), "Should return True, False, or None"
+    db.flush()
+
+
+def test_s403_enforce_curfew(db):
+    """Town curfew."""
+    _setup_world(db)
+    from engine.simulation import enforce_curfew
+    from engine.models import WorldState
+
+    ws = db.query(WorldState).first()
+    ws.tick = 20  # nighttime
+    db.flush()
+
+    result = enforce_curfew(db)
+    assert isinstance(result, int), "Should return count of NPCs sent home"
+    db.flush()
+
+
+def test_s404_give_public_speech(db):
+    """Public speech."""
+    _setup_world(db)
+    from engine.simulation import give_public_speech
+
+    result = give_public_speech(db)
+    assert result is None or isinstance(result, int), "Should return mayor id or None"
+    db.flush()
+
+
+def test_s405_identify_opposition_leader(db):
+    """Opposition leader."""
+    _setup_world(db)
+    from engine.simulation import identify_opposition_leader
+
+    result = identify_opposition_leader(db)
+    assert result is None or isinstance(result, dict), "Should return dict or None"
+    db.flush()
+
+
+def test_s406_review_policy_effectiveness(db):
+    """Policy effectiveness review."""
+    _setup_world(db)
+    from engine.simulation import review_policy_effectiveness
+
+    result = review_policy_effectiveness(db)
+    assert isinstance(result, list), "Should return list of policy reviews"
+    db.flush()
+
+
+def test_s407_allocate_town_budget(db):
+    """Town budget allocation."""
+    _setup_world(db)
+    from engine.simulation import allocate_town_budget
+    from engine.models import Treasury, Building
+
+    # Ensure treasury exists
+    b = db.query(Building).first()
+    t = Treasury(gold_stored=1000, building_id=b.id)
+    db.add(t)
+    db.flush()
+
+    result = allocate_town_budget(db)
+    assert isinstance(result, dict), "Should return budget dict"
+    assert "total" in result, "Should have total key"
+    db.flush()
+
+
+def test_s408_send_diplomatic_gift(db):
+    """Diplomatic gift."""
+    _setup_world(db)
+    from engine.simulation import send_diplomatic_gift
+
+    result = send_diplomatic_gift(db)
+    assert isinstance(result, int), "Should return count of gifts sent"
+    db.flush()
+
+
+def test_s409_hold_war_council(db):
+    """War council."""
+    _setup_world(db)
+    from engine.simulation import hold_war_council
+
+    result = hold_war_council(db)
+    assert result is None or isinstance(result, dict), "Should return dict or None"
+    db.flush()
+
+
+def test_s410_hold_expansion_vote(db):
+    """Town expansion vote."""
+    _setup_world(db)
+    from engine.simulation import hold_expansion_vote
+
+    result = hold_expansion_vote(db)
+    assert isinstance(result, dict), "Should return vote result dict"
+    assert "vote" in result, "Should have vote key"
+    db.flush()
+
+
+def test_s411_apply_tax_exemption(db):
+    """Tax exemption."""
+    _setup_world(db)
+    from engine.simulation import apply_tax_exemption
+
+    result = apply_tax_exemption(db)
+    assert isinstance(result, int), "Should return count of exempted NPCs"
+    db.flush()
+
+
+def test_s412_declare_public_holiday(db):
+    """Public holiday declaration."""
+    _setup_world(db)
+    from engine.simulation import declare_public_holiday
+
+    result = declare_public_holiday(db)
+    assert isinstance(result, int), "Should return count of NPCs who rested"
+    assert result >= 1, "Should rest at least 1 NPC"
+    db.flush()
+
+
+def test_s413_check_recall_election(db):
+    """Recall election."""
+    _setup_world(db)
+    from engine.simulation import check_recall_election
+
+    result = check_recall_election(db)
+    assert isinstance(result, bool), "Should return True or False"
+    db.flush()
+
+
+def test_s414_expire_old_policies(db):
+    """Policy sunset."""
+    _setup_world(db)
+    from engine.simulation import expire_old_policies
+
+    result = expire_old_policies(db)
+    assert isinstance(result, int), "Should return count of expired policies"
+    db.flush()
+
+
+def test_s415_apply_emergency_tax(db):
+    """Emergency tax."""
+    _setup_world(db)
+    from engine.simulation import apply_emergency_tax
+
+    result = apply_emergency_tax(db)
+    assert isinstance(result, (int, float)), "Should return total collected"
+    db.flush()
+
+
+def test_s446_save_town_snapshot(db):
+    """Historical archive."""
+    _setup_world(db)
+    from engine.simulation import save_town_snapshot
+    from engine.models import WorldState
+
+    ws = db.query(WorldState).first()
+    ws.tick = 100  # snapshot tick
+    db.flush()
+
+    result = save_town_snapshot(db)
+    assert isinstance(result, dict), "Should return snapshot dict at tick 100"
+    assert "population" in result, "Snapshot should have population"
+    db.flush()
+
+
+def test_s450_generate_speed_report(db):
+    """Simulation speed report."""
+    _setup_world(db)
+    from engine.simulation import generate_speed_report
+
+    result = generate_speed_report(db)
+    assert isinstance(result, dict), "Should return report dict"
+    assert "tick" in result, "Should have tick key"
+    assert "complexity" in result, "Should have complexity key"
+    db.flush()

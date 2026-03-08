@@ -2305,3 +2305,346 @@ def test_s348_assign_unemployed(db):
     result = assign_unemployed(db)
     assert result is not None, "assign_unemployed should return a value"
     db.flush()
+
+
+# -- Stories 351-370: Deep NPC Simulation ---------------------------------
+
+
+def test_s351_calculate_npc_stress(db):
+    """NPC stress system."""
+    _setup_world(db)
+    from engine.simulation import calculate_npc_stress
+    from engine.models import NPC
+
+    # Make one NPC stressed: high hunger, low energy, no gold
+    npc = db.query(NPC).filter(NPC.is_dead == 0).first()
+    npc.hunger = 80
+    npc.energy = 10
+    npc.gold = 0
+    db.flush()
+
+    result = calculate_npc_stress(db)
+    assert isinstance(result, int), "Should return count of stressed NPCs"
+    assert result >= 1, "At least one NPC should be stressed"
+    db.flush()
+
+
+def test_s352_assign_npc_hobbies(db):
+    """NPC hobby selection."""
+    _setup_world(db)
+    from engine.simulation import assign_npc_hobbies
+    from engine.models import NPC
+
+    # Make an NPC idle (no work building) with energy
+    npc = db.query(NPC).filter(NPC.is_dead == 0).first()
+    npc.work_building_id = None
+    npc.energy = 80
+    db.flush()
+
+    result = assign_npc_hobbies(db)
+    assert isinstance(result, int), "Should return count of NPCs with hobbies"
+    db.flush()
+
+
+def test_s353_propagate_gossip(db):
+    """NPC gossip propagation."""
+    _setup_world(db)
+    from engine.simulation import propagate_gossip
+    import json
+    from engine.models import NPC
+
+    # Give one NPC a memory event
+    npc = db.query(NPC).filter(NPC.is_dead == 0).first()
+    npc.memory_events = json.dumps([{"type": "test_gossip", "info": "big news"}])
+    db.flush()
+
+    result = propagate_gossip(db)
+    assert isinstance(result, int), "Should return count of gossip transfers"
+    db.flush()
+
+
+def test_s354_update_trust_scores(db):
+    """NPC trust system."""
+    _setup_world(db)
+    from engine.simulation import update_trust_scores
+
+    result = update_trust_scores(db)
+    assert isinstance(result, dict), "Should return dict of npc_id: trust_score"
+    db.flush()
+
+
+def test_s355_process_gift_giving(db):
+    """NPC gift giving."""
+    _setup_world(db)
+    from engine.simulation import process_gift_giving
+    from engine.models import NPC, Relationship
+
+    # Set up a happy, wealthy NPC with a friend
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).limit(2).all()
+    npcs[0].happiness = 80
+    npcs[0].gold = 200
+    npcs[1].gold = 5
+    rel = Relationship(npc_id=npcs[0].id, target_npc_id=npcs[1].id, relationship_type="friend", strength=60)
+    db.add(rel)
+    db.flush()
+
+    result = process_gift_giving(db)
+    assert isinstance(result, int), "Should return count of gifts given"
+    db.flush()
+
+
+def test_s356_process_grudges(db):
+    """NPC grudge system."""
+    _setup_world(db)
+    from engine.simulation import process_grudges
+
+    result = process_grudges(db)
+    assert isinstance(result, int), "Should return count of grudges"
+    db.flush()
+
+
+def test_s357_process_mentorship(db):
+    """NPC mentorship."""
+    _setup_world(db)
+    from engine.simulation import process_mentorship
+    from engine.models import NPC
+
+    # Set up mentor and student
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).limit(2).all()
+    npcs[0].skill = 90
+    npcs[1].skill = 20
+    npcs[1].x = npcs[0].x
+    npcs[1].y = npcs[0].y
+    db.flush()
+
+    result = process_mentorship(db)
+    assert isinstance(result, int), "Should return count of mentorships"
+    db.flush()
+
+
+def test_s358_check_homesickness(db):
+    """NPC homesickness."""
+    _setup_world(db)
+    from engine.simulation import check_homesickness
+    from engine.models import NPC, Building
+
+    # Put NPC far from home
+    npc = db.query(NPC).filter(NPC.is_dead == 0, NPC.home_building_id.isnot(None)).first()
+    if npc:
+        npc.x = 49
+        npc.y = 49
+        home = db.query(Building).get(npc.home_building_id)
+        if home:
+            home.x = 0
+            home.y = 0
+        db.flush()
+
+    result = check_homesickness(db)
+    assert isinstance(result, int), "Should return count of homesick NPCs"
+    db.flush()
+
+
+def test_s359_apply_daily_routine(db):
+    """NPC daily routine."""
+    _setup_world(db)
+    from engine.simulation import apply_daily_routine
+
+    result = apply_daily_routine(db)
+    assert isinstance(result, dict), "Should return dict with period counts"
+    db.flush()
+
+
+def test_s360_assign_pets(db):
+    """NPC pet ownership."""
+    _setup_world(db)
+    from engine.simulation import assign_pets
+    from engine.models import NPC
+
+    # Make NPCs eligible
+    for npc in db.query(NPC).filter(NPC.is_dead == 0).all():
+        npc.happiness = 80
+        npc.gold = 100
+    db.flush()
+
+    result = assign_pets(db)
+    assert isinstance(result, int), "Should return count of new pet owners"
+    db.flush()
+
+
+def test_s361_check_birthdays(db):
+    """NPC birthday celebration."""
+    _setup_world(db)
+    from engine.simulation import check_birthdays
+
+    result = check_birthdays(db)
+    assert isinstance(result, int), "Should return count of birthdays"
+    db.flush()
+
+
+def test_s362_check_addictions(db):
+    """NPC addiction system."""
+    _setup_world(db)
+    from engine.simulation import check_addictions
+
+    result = check_addictions(db)
+    assert isinstance(result, int), "Should return count of addicted NPCs"
+    db.flush()
+
+
+def test_s363_escalate_rivalries(db):
+    """NPC rivalry escalation."""
+    _setup_world(db)
+    from engine.simulation import escalate_rivalries
+
+    result = escalate_rivalries(db)
+    assert isinstance(result, int), "Should return count of escalated rivalries"
+    db.flush()
+
+
+def test_s364_process_forgiveness(db):
+    """NPC forgiveness."""
+    _setup_world(db)
+    from engine.simulation import process_forgiveness
+    from engine.models import NPC, Relationship
+
+    # Create a rivalry
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).limit(2).all()
+    rel = Relationship(npc_id=npcs[0].id, target_npc_id=npcs[1].id, relationship_type="rival", strength=1)
+    db.add(rel)
+    db.flush()
+
+    result = process_forgiveness(db)
+    assert isinstance(result, int), "Should return count of forgiven rivalries"
+    db.flush()
+
+
+def test_s365_discover_talents(db):
+    """NPC talent discovery."""
+    _setup_world(db)
+    from engine.simulation import discover_talents
+    from engine.models import NPC
+
+    # Ensure NPCs have low skill
+    for npc in db.query(NPC).filter(NPC.is_dead == 0).all():
+        npc.skill = 10
+    db.flush()
+
+    result = discover_talents(db)
+    assert isinstance(result, int), "Should return count of talents discovered"
+    db.flush()
+
+
+def test_s366_check_social_circles(db):
+    """NPC social circles."""
+    _setup_world(db)
+    from engine.simulation import check_social_circles
+
+    result = check_social_circles(db)
+    assert isinstance(result, dict), "Should return dict of npc_id: friend_count"
+    db.flush()
+
+
+def test_s367_detect_loneliness(db):
+    """NPC loneliness detection."""
+    _setup_world(db)
+    from engine.simulation import detect_loneliness
+
+    result = detect_loneliness(db)
+    assert isinstance(result, int), "Should return count of lonely NPCs"
+    db.flush()
+
+
+def test_s368_apply_work_ethic(db):
+    """NPC work ethic."""
+    _setup_world(db)
+    from engine.simulation import apply_work_ethic
+
+    result = apply_work_ethic(db)
+    assert isinstance(result, (int, float)), "Should return total gold distributed"
+    db.flush()
+
+
+def test_s369_apply_fear_response(db):
+    """NPC fear system."""
+    _setup_world(db)
+    from engine.simulation import apply_fear_response
+
+    result = apply_fear_response(db)
+    assert isinstance(result, int), "Should return count of frightened NPCs"
+    db.flush()
+
+
+def test_s370_process_npc_goals(db):
+    """NPC goal system."""
+    _setup_world(db)
+    from engine.simulation import process_npc_goals
+
+    result = process_npc_goals(db)
+    assert isinstance(result, int), "Should return count of goals achieved"
+    db.flush()
+
+
+def test_s442_vary_npc_lifespan(db):
+    """NPC lifespan variation."""
+    _setup_world(db)
+    from engine.simulation import vary_npc_lifespan
+    from engine.models import NPC
+
+    # Set max_age to 0 so function assigns
+    for npc in db.query(NPC).filter(NPC.is_dead == 0).all():
+        npc.max_age = 0
+    db.flush()
+
+    result = vary_npc_lifespan(db)
+    assert isinstance(result, int), "Should return count of NPCs updated"
+    assert result > 0, "Should have updated at least one NPC"
+    db.flush()
+
+
+def test_s444_check_immigration_wave(db):
+    """Immigration wave."""
+    _setup_world(db)
+    from engine.simulation import check_immigration_wave
+    from engine.models import NPC
+
+    # Set high happiness
+    for npc in db.query(NPC).filter(NPC.is_dead == 0).all():
+        npc.happiness = 90
+    db.flush()
+
+    result = check_immigration_wave(db)
+    assert isinstance(result, int), "Should return count of immigrants"
+    db.flush()
+
+
+def test_s445_check_emigration_wave(db):
+    """Emigration wave."""
+    _setup_world(db)
+    from engine.simulation import check_emigration_wave
+    from engine.models import NPC
+
+    # Set low happiness to trigger emigration
+    for npc in db.query(NPC).filter(NPC.is_dead == 0).all():
+        npc.happiness = 10
+    db.flush()
+
+    result = check_emigration_wave(db)
+    assert isinstance(result, int), "Should return 0 or 1"
+    assert result in (0, 1), "Should be 0 or 1"
+    db.flush()
+
+
+def test_s449_record_npc_legacy(db):
+    """Legacy system."""
+    _setup_world(db)
+    from engine.simulation import record_npc_legacy
+    from engine.models import NPC
+
+    # Mark one NPC as dead
+    npc = db.query(NPC).first()
+    npc.is_dead = 1
+    db.flush()
+
+    result = record_npc_legacy(db)
+    assert isinstance(result, int), "Should return count of legacies recorded"
+    db.flush()

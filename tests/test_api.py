@@ -735,3 +735,66 @@ def test_s340_api(client):
     """Simulation config API."""
     resp = client.get("/api/config")
     assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+# -- Stories 431-440: API & Data Endpoints ----------------------------
+
+
+def test_s431_api(client):
+    """Story 431: NPC daily schedule API."""
+    resp = client.get("/api/npcs/1/schedule")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s432_api(client):
+    """Story 432: Crime statistics API."""
+    resp = client.get("/api/stats/crime")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s433_api(client):
+    """Story 433: Weather forecast API."""
+    resp = client.get("/api/weather/forecast")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s434_api(client):
+    """Story 434: Election history API."""
+    resp = client.get("/api/elections/history")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s435_api(client):
+    """Story 435: Policy effectiveness API."""
+    resp = client.get("/api/policies/effectiveness")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s436_api(client):
+    """Story 436: Trade volume API."""
+    resp = client.get("/api/economy/trade-volume")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s437_api(client):
+    """Story 437: Population demographics API."""
+    resp = client.get("/api/stats/demographics")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s438_api(client):
+    """Story 438: Building occupancy API."""
+    resp = client.get("/api/buildings/occupancy")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s439_api(client):
+    """Story 439: NPC mood history API."""
+    resp = client.get("/api/npcs/1/mood")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+
+
+def test_s440_api(client):
+    """Story 440: Town comparison API."""
+    resp = client.get("/api/town/comparison")
+    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"

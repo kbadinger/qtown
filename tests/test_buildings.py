@@ -955,6 +955,16 @@ def test_s209_upgrade_building_api(client, admin_headers):
     )
 
 
+def _setup_world(db):
+    """Seed grid, buildings, and NPCs for tests that need a populated world."""
+    from engine.simulation import init_world_state, init_grid, seed_buildings, seed_npcs
+
+    init_world_state(db)
+    init_grid(db)
+    seed_buildings(db)
+    seed_npcs(db)
+
+
 # ── Stories 257-261: Infrastructure & Buildings ─────────────────────
 
 
@@ -1130,4 +1140,219 @@ def test_s349_get_population_cap(db):
 
     result = get_population_cap(db)
     assert result is not None, "get_population_cap should return a value"
+    db.flush()
+
+
+# -- Stories 416-430: Buildings & Infrastructure ----------------------
+
+
+def test_s416_repair_damaged_buildings(db):
+    """Building repair system."""
+    _setup_world(db)
+    from engine.simulation import repair_damaged_buildings
+    from engine.models import Building, Treasury
+
+    # Create low-level building and treasury
+    b = db.query(Building).first()
+    b.level = 1
+    t = Treasury(gold_stored=200, building_id=b.id)
+    db.add(t)
+    db.flush()
+
+    result = repair_damaged_buildings(db)
+    assert isinstance(result, int), "Should return count of buildings repaired"
+    db.flush()
+
+
+def test_s417_calculate_upgrade_cost(db):
+    """Building upgrade cost."""
+    _setup_world(db)
+    from engine.simulation import calculate_upgrade_cost
+    from engine.models import Building, Treasury
+
+    b = db.query(Building).first()
+    t = Treasury(gold_stored=500, building_id=b.id)
+    db.add(t)
+    db.flush()
+
+    result = calculate_upgrade_cost(db, b.id)
+    assert isinstance(result, dict), "Should return cost dict"
+    assert "cost" in result, "Should have cost key"
+    assert "can_afford" in result, "Should have can_afford key"
+    db.flush()
+
+
+def test_s418_calculate_building_efficiency(db):
+    """Building efficiency rating."""
+    _setup_world(db)
+    from engine.simulation import calculate_building_efficiency
+
+    result = calculate_building_efficiency(db)
+    assert isinstance(result, dict), "Should return dict of building efficiencies"
+    db.flush()
+
+
+def test_s419_decorate_building(db):
+    """Building decoration."""
+    _setup_world(db)
+    from engine.simulation import decorate_building
+    from engine.models import Building, Treasury
+
+    b = db.query(Building).first()
+    t = Treasury(gold_stored=200, building_id=b.id)
+    db.add(t)
+    db.flush()
+
+    result = decorate_building(db, b.id, 50)
+    assert isinstance(result, bool), "Should return True or False"
+    db.flush()
+
+
+def test_s420_demolish_building(db):
+    """Building demolition."""
+    _setup_world(db)
+    from engine.simulation import demolish_building
+    from engine.models import Building
+
+    # Create a destroyed building (capacity 0)
+    b = Building(name="Ruins", building_type="ruins", x=45, y=45, capacity=0, level=0)
+    db.add(b)
+    db.flush()
+
+    result = demolish_building(db, b.id)
+    assert result is True, "Should return True for demolished building"
+    db.flush()
+
+
+def test_s420_demolish_active_building(db):
+    """Cannot demolish active building."""
+    _setup_world(db)
+    from engine.simulation import demolish_building
+    from engine.models import Building
+
+    b = db.query(Building).filter(Building.capacity > 0).first()
+    result = demolish_building(db, b.id)
+    assert result is False, "Should return False for active building"
+    db.flush()
+
+
+def test_s421_apply_infrastructure_decay(db):
+    """Infrastructure decay."""
+    _setup_world(db)
+    from engine.simulation import apply_infrastructure_decay
+
+    result = apply_infrastructure_decay(db)
+    assert isinstance(result, int), "Should return count of decayed buildings"
+    db.flush()
+
+
+def test_s422_create_building_blueprint(db):
+    """Building blueprint system."""
+    _setup_world(db)
+    from engine.simulation import create_building_blueprint
+
+    result = create_building_blueprint(db, "Library", "civic", 48, 48)
+    assert isinstance(result, int), "Should return new building id"
+    db.flush()
+
+
+def test_s422_blueprint_occupied_tile(db):
+    """Blueprint on occupied tile returns None."""
+    _setup_world(db)
+    from engine.simulation import create_building_blueprint
+    from engine.models import Building
+
+    b = db.query(Building).first()
+    result = create_building_blueprint(db, "Duplicate", "civic", b.x, b.y)
+    assert result is None, "Should return None for occupied tile"
+    db.flush()
+
+
+def test_s423_get_public_buildings(db):
+    """Public building access."""
+    _setup_world(db)
+    from engine.simulation import get_public_buildings
+
+    result = get_public_buildings(db)
+    assert isinstance(result, list), "Should return list of public buildings"
+    db.flush()
+
+
+def test_s424_get_production_multiplier(db):
+    """Building production scaling."""
+    _setup_world(db)
+    from engine.simulation import get_production_multiplier
+    from engine.models import Building
+
+    b = db.query(Building).first()
+    result = get_production_multiplier(db, b.id)
+    assert isinstance(result, float), "Should return multiplier as float"
+    assert result >= 1.0, "Multiplier should be >= 1.0"
+    db.flush()
+
+
+def test_s425_calculate_fire_safety(db):
+    """Building fire safety rating."""
+    _setup_world(db)
+    from engine.simulation import calculate_fire_safety
+
+    result = calculate_fire_safety(db)
+    assert isinstance(result, dict), "Should return dict of building safety ratings"
+    db.flush()
+
+
+def test_s426_calculate_noise_levels(db):
+    """Building noise level."""
+    _setup_world(db)
+    from engine.simulation import calculate_noise_levels
+
+    result = calculate_noise_levels(db)
+    assert isinstance(result, dict), "Should return dict of building noise levels"
+    db.flush()
+
+
+def test_s427_calculate_historical_value(db):
+    """Building historical value."""
+    _setup_world(db)
+    from engine.simulation import calculate_historical_value
+
+    result = calculate_historical_value(db)
+    assert isinstance(result, dict), "Should return dict with town_prestige"
+    assert "town_prestige" in result, "Should have town_prestige key"
+    db.flush()
+
+
+def test_s428_setup_market_stalls(db):
+    """Market stall system."""
+    _setup_world(db)
+    from engine.simulation import setup_market_stalls
+
+    result = setup_market_stalls(db)
+    assert isinstance(result, int), "Should return count of stalls created"
+    db.flush()
+
+
+def test_s429_upgrade_building_capacity(db):
+    """Building capacity upgrade."""
+    _setup_world(db)
+    from engine.simulation import upgrade_building_capacity
+    from engine.models import Building, Treasury
+
+    b = db.query(Building).first()
+    t = Treasury(gold_stored=500, building_id=b.id)
+    db.add(t)
+    db.flush()
+
+    result = upgrade_building_capacity(db, b.id)
+    assert result is None or isinstance(result, int), "Should return new capacity or None"
+    db.flush()
+
+
+def test_s430_calculate_network_effects(db):
+    """Building network effects."""
+    _setup_world(db)
+    from engine.simulation import calculate_network_effects
+
+    result = calculate_network_effects(db)
+    assert isinstance(result, dict), "Should return dict of building network data"
     db.flush()

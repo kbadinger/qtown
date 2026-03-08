@@ -1051,3 +1051,210 @@ def test_s345_calculate_danger_scores(db):
     result = calculate_danger_scores(db)
     assert result is not None, "calculate_danger_scores should return a value"
     db.flush()
+
+
+# -- Stories 386-400: Events, Disasters & Weather ---------------------
+
+
+def test_s386_trigger_earthquake(db):
+    """Earthquake event."""
+    _setup_world(db)
+    from engine.simulation import trigger_earthquake
+
+    result = trigger_earthquake(db)
+    assert isinstance(result, int), "Should return count of damaged buildings"
+    assert result >= 1, "Should damage at least 1 building"
+    db.flush()
+
+
+def test_s387_trigger_festival_of_lights(db):
+    """Festival of lights."""
+    _setup_world(db)
+    from engine.simulation import trigger_festival_of_lights
+
+    result = trigger_festival_of_lights(db)
+    assert isinstance(result, int), "Should return count of NPCs affected"
+    assert result >= 1, "Should affect at least 1 NPC"
+    db.flush()
+
+
+def test_s388_trigger_plague(db):
+    """Plague outbreak."""
+    _setup_world(db)
+    from engine.simulation import trigger_plague
+
+    result = trigger_plague(db)
+    assert isinstance(result, int), "Should return count of infected NPCs"
+    assert result >= 1, "Patient zero should always be infected"
+    db.flush()
+
+
+def test_s389_trigger_harvest_festival(db):
+    """Harvest festival."""
+    _setup_world(db)
+    from engine.simulation import trigger_harvest_festival
+    from engine.models import Resource, Building
+
+    # Create food resource
+    b = db.query(Building).first()
+    r = Resource(name="food", quantity=50, building_id=b.id)
+    db.add(r)
+    db.flush()
+
+    result = trigger_harvest_festival(db)
+    assert isinstance(result, int), "Should return count of resources doubled"
+    db.flush()
+
+
+def test_s390_trigger_fire(db):
+    """Fire event."""
+    _setup_world(db)
+    from engine.simulation import trigger_fire
+
+    result = trigger_fire(db)
+    assert isinstance(result, dict), "Should return dict with building_id and destroyed"
+    assert "building_id" in result, "Should have building_id key"
+    assert "destroyed" in result, "Should have destroyed key"
+    db.flush()
+
+
+def test_s391_trigger_flood(db):
+    """Flood event."""
+    _setup_world(db)
+    from engine.simulation import trigger_flood
+
+    result = trigger_flood(db)
+    assert isinstance(result, int), "Should return count of flooded tiles"
+    db.flush()
+
+
+def test_s392_trigger_wedding_festival(db):
+    """Wedding festival."""
+    _setup_world(db)
+    from engine.simulation import trigger_wedding_festival
+
+    result = trigger_wedding_festival(db)
+    assert isinstance(result, int), "Should return count of married couples"
+    db.flush()
+
+
+def test_s393_trigger_talent_show(db):
+    """Talent show event."""
+    _setup_world(db)
+    from engine.simulation import trigger_talent_show
+
+    result = trigger_talent_show(db)
+    # Can be NPC id or None
+    assert result is None or isinstance(result, int), "Should return winner NPC id or None"
+    db.flush()
+
+
+def test_s394_trigger_trade_caravan(db):
+    """Trade caravan arrival."""
+    _setup_world(db)
+    from engine.simulation import trigger_trade_caravan
+
+    result = trigger_trade_caravan(db)
+    assert isinstance(result, int), "Should return count of resources added"
+    db.flush()
+
+
+def test_s395_trigger_bandit_raid(db):
+    """Bandit raid."""
+    _setup_world(db)
+    from engine.simulation import trigger_bandit_raid
+    from engine.models import NPC
+
+    # Give NPCs some gold to steal
+    for npc in db.query(NPC).filter(NPC.is_dead == 0).all():
+        npc.gold = 50
+    db.flush()
+
+    result = trigger_bandit_raid(db)
+    assert isinstance(result, (int, float)), "Should return total gold stolen"
+    db.flush()
+
+
+def test_s396_trigger_miracle(db):
+    """Miracle event."""
+    _setup_world(db)
+    from engine.simulation import trigger_miracle
+    from engine.models import NPC
+
+    # Make one NPC sick
+    npc = db.query(NPC).filter(NPC.is_dead == 0).first()
+    npc.illness = "cold"
+    npc.illness_severity = 3
+    db.flush()
+
+    result = trigger_miracle(db)
+    # Should be NPC id or None
+    assert result is None or isinstance(result, int), "Should return healed NPC id or None"
+    db.flush()
+
+
+def test_s397_trigger_comet_sighting(db):
+    """Comet sighting."""
+    _setup_world(db)
+    from engine.simulation import trigger_comet_sighting
+
+    result = trigger_comet_sighting(db)
+    assert isinstance(result, bool), "Should return True or False"
+    db.flush()
+
+
+def test_s398_check_building_collapse(db):
+    """Building collapse."""
+    _setup_world(db)
+    from engine.simulation import check_building_collapse
+
+    result = check_building_collapse(db)
+    assert isinstance(result, int), "Should return count of collapsed buildings"
+    db.flush()
+
+
+def test_s399_trigger_spring_bloom(db):
+    """Spring bloom."""
+    _setup_world(db)
+    from engine.simulation import trigger_spring_bloom
+    from engine.models import WorldState
+
+    ws = db.query(WorldState).first()
+    ws.weather = "sunny"
+    db.flush()
+
+    result = trigger_spring_bloom(db)
+    assert isinstance(result, int), "Should return count of NPCs affected"
+    db.flush()
+
+
+def test_s400_trigger_drought_relief(db):
+    """Drought relief."""
+    _setup_world(db)
+    from engine.simulation import trigger_drought_relief
+
+    result = trigger_drought_relief(db)
+    assert isinstance(result, int), "Should return count of resources doubled"
+    db.flush()
+
+
+def test_s441_apply_seasonal_weather(db):
+    """Seasonal weather cycle."""
+    _setup_world(db)
+    from engine.simulation import apply_seasonal_weather
+
+    result = apply_seasonal_weather(db)
+    assert isinstance(result, str), "Should return season name string"
+    assert result in ("spring", "summer", "autumn", "winter"), f"Invalid season: {result}"
+    db.flush()
+
+
+def test_s447_check_naming_ceremony(db):
+    """Town naming ceremony."""
+    _setup_world(db)
+    from engine.simulation import check_naming_ceremony
+
+    result = check_naming_ceremony(db)
+    # Can be milestone name or None
+    assert result is None or isinstance(result, str), "Should return milestone name or None"
+    db.flush()

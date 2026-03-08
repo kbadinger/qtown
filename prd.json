@@ -4469,7 +4469,7 @@
         "simulation"
       ],
       "priority": 267,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
@@ -4485,8 +4485,8 @@
         "simulation"
       ],
       "priority": 268,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "269",
@@ -5786,6 +5786,1594 @@
         "simulation"
       ],
       "priority": 350,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "351",
+      "title": "NPC stress system",
+      "description": "Create calculate_npc_stress(db) in engine/simulation/npcs.py. For each living NPC (is_dead==0): stress_level = 0. If hunger > 70, stress_level += 2. If energy < 30, stress_level += 2. If gold < 5, stress_level += 2. If stress_level >= 4, reduce happiness by stress_level (min 0). Return count of stressed NPCs (stress_level >= 4).",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 351,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "352",
+      "title": "NPC hobby selection",
+      "description": "Create assign_npc_hobbies(db) in engine/simulation/npcs.py. For each living NPC (is_dead==0) with energy > 50 and no work_building_id (idle): pick a random building that is not their home. Store building.id in NPC.favorite_buildings JSON field (as list, append if exists, max 3 entries). Return count of NPCs who got a hobby assigned.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 352,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "353",
+      "title": "NPC gossip propagation",
+      "description": "Create propagate_gossip(db) in engine/simulation/npcs.py. For each living NPC with memory_events (JSON list, not empty): find other living NPCs within distance 5 (abs(x-x2)+abs(y-y2) <= 5). Copy the last memory_event entry to nearby NPC memory_events (append, max 10 entries). Return count of gossip transfers.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 353,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "354",
+      "title": "NPC trust system",
+      "description": "Create update_trust_scores(db) in engine/simulation/npcs.py. For each Relationship: if relationship_type=='friend' and strength > 50, that is high trust. If relationship_type=='rival' or strength < 20, that is low trust. Create trust metric: high_trust_count - low_trust_count per NPC. NPCs with trust < 0 get happiness -1. Return dict of {npc_id: trust_score}.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 354,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "355",
+      "title": "NPC gift giving",
+      "description": "Create process_gift_giving(db) in engine/simulation/npcs.py. For each living NPC with happiness > 70 and gold > 100: find friends (Relationship with relationship_type=='friend'). Give 10 gold to friend with lowest gold. Create Transaction record. Return count of gifts given.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 355,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "356",
+      "title": "NPC grudge system",
+      "description": "Create process_grudges(db) in engine/simulation/npcs.py. Query all Crime records. For each crime, find affected NPC via Event with affected_npc_id. Create or update Relationship between victim and criminal: relationship_type='rival', strength += 10 (max 100). Return count of grudges created or updated.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 356,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "357",
+      "title": "NPC mentorship",
+      "description": "Create process_mentorship(db) in engine/simulation/npcs.py. For each living NPC with skill > 80 (mentor): find nearby living NPCs (distance <= 3) with skill < 40 (student). Increase student skill by +3. Create Relationship(relationship_type='mentor', strength=60) if not exists. Return count of mentorships processed.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 357,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "358",
+      "title": "NPC homesickness",
+      "description": "Create check_homesickness(db) in engine/simulation/npcs.py. For each living NPC with home_building_id set: calculate Manhattan distance from NPC to home building. If distance > 20, reduce happiness by 3. If distance > 35, reduce happiness by 5. Return count of homesick NPCs.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 358,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "359",
+      "title": "NPC daily routine",
+      "description": "Create apply_daily_routine(db) in engine/simulation/npcs.py. Get WorldState. period = tick % 24. If period < 8 (morning): NPCs set target to work_building. If 8 <= period < 16 (afternoon): NPCs stay. If >= 16 (evening): NPCs set target to home_building. Return dict with going_work, working, going_home counts.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 359,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "360",
+      "title": "NPC pet ownership",
+      "description": "Create assign_pets(db) in engine/simulation/npcs.py. For each living NPC with happiness > 60 and gold > 50 and no got_pet in memory_events: 10% chance to get pet. Add got_pet entry to memory_events. happiness += 5. gold -= 20. Return count of new pet owners.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 360,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "361",
+      "title": "NPC birthday celebration",
+      "description": "Create check_birthdays(db) in engine/simulation/npcs.py. Get WorldState day. For each living NPC with max_age > 0: if (day % max_age) == (age % max_age), birthday. happiness += 10. Add birthday entry to memory_events. Create Event(event_type='birthday'). Return count of birthdays.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 361,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "362",
+      "title": "NPC addiction system",
+      "description": "Create check_addictions(db) in engine/simulation/npcs.py. For each living NPC: count memory_events entries with type=='tavern_visit'. If count > 5 and NPC not at tavern building, reduce happiness by 4. Return count of addicted NPCs.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 362,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "363",
+      "title": "NPC rivalry escalation",
+      "description": "Create escalate_rivalries(db) in engine/simulation/npcs.py. For each Relationship with relationship_type=='rival' and strength > 80: 15% chance NPC commits crime type='assault'. Create Crime record. Reduce strength by 20. Return count of escalated rivalries.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 363,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "364",
+      "title": "NPC forgiveness",
+      "description": "Create process_forgiveness(db) in engine/simulation/npcs.py. For each Relationship with relationship_type=='rival': reduce strength by 1. If strength reaches 0, change relationship_type to 'neutral'. Return count of forgiven rivalries.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 364,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "365",
+      "title": "NPC talent discovery",
+      "description": "Create discover_talents(db) in engine/simulation/npcs.py. For each living NPC with skill < 50: 5% chance to discover talent. If personality contains 'creative' skill += 10, 'diligent' skill += 8, else skill += 5. Add talent_discovered to memory_events. Return count.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 365,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "366",
+      "title": "NPC social circles",
+      "description": "Create check_social_circles(db) in engine/simulation/npcs.py. For each living NPC: count Relationships with relationship_type=='friend'. If friend_count >= 3, happiness += 3. Return dict of {npc_id: friend_count}.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 366,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "367",
+      "title": "NPC loneliness detection",
+      "description": "Create detect_loneliness(db) in engine/simulation/npcs.py. For each living NPC: count total Relationships. If 0, NPC is lonely: happiness -= 5. Add lonely entry to memory_events if not present. Return count of lonely NPCs.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 367,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "368",
+      "title": "NPC work ethic",
+      "description": "Create apply_work_ethic(db) in engine/simulation/npcs.py. For each living NPC with work_building_id: base gold = 10. If personality contains 'diligent' gold = 12. If 'lazy' gold = 8. Add to NPC.gold. Create Transaction(reason='work_ethic'). Return total gold distributed.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 368,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "369",
+      "title": "NPC fear system",
+      "description": "Create apply_fear_response(db) in engine/simulation/npcs.py. Query unresolved Crimes (resolved==0). For each crime get criminal NPC. Living NPCs within Manhattan distance 10 of criminal: add location to avoided_areas JSON. happiness -= 2. Return count of frightened NPCs.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 369,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "370",
+      "title": "NPC goal system",
+      "description": "Create process_npc_goals(db) in engine/simulation/npcs.py. For each living NPC: if no goal entry in memory_events, set goal with target_gold = gold + 100. If goal exists and gold >= target_gold, mark achieved, happiness += 10. Return count of goals achieved.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 370,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "371",
+      "title": "Merchant reputation",
+      "description": "Create calculate_merchant_reputation(db) in engine/simulation/economy.py. For each living merchant NPC: count Transactions as sender. reputation = min(100, transaction_count * 2). Return dict of {npc_id: reputation}.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 371,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "372",
+      "title": "Black market system",
+      "description": "Create process_black_market(db) in engine/simulation/economy.py. Query Crimes with type=='theft' and resolved==0. For each: create Resource(name='stolen_goods', quantity=1) at random building. Create PriceHistory(resource_name='stolen_goods', price=50). Return count of items created.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 372,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "373",
+      "title": "Insurance payout",
+      "description": "Create process_insurance_payouts(db) in engine/simulation/economy.py. Query Events with event_type in ('fire','earthquake','flood') from last 24 ticks. For each with affected_building_id: pay 50 gold from Treasury to each worker NPC. Create Transaction(reason='insurance'). Return total gold paid.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 373,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "374",
+      "title": "Economic bubble detection",
+      "description": "Create detect_economic_bubble(db) in engine/simulation/economy.py. For each resource_name in PriceHistory: get avg price and latest price. If latest > 3 * avg, resource is in bubble. Return list of bubble resource names. Return empty list if none.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 374,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "375",
+      "title": "Market crash simulation",
+      "description": "Create simulate_market_crash(db) in engine/simulation/economy.py. Call detect_economic_bubble(db). If bubbles: create PriceHistory entries at 60% of latest. Reduce all NPC gold by 10%. Create Event(event_type='market_crash'). Return count of affected resources or 0.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 375,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "376",
+      "title": "Cooperative formation",
+      "description": "Create form_cooperatives(db) in engine/simulation/economy.py. Find groups of 3+ living NPCs with same work_building_id. Pool 10% of each member gold. Add cooperative entry to member memory_events. Return count of cooperatives formed.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 376,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "377",
+      "title": "Savings interest",
+      "description": "Create apply_savings_interest(db) in engine/simulation/economy.py. For each living NPC with gold > 200: interest = max(1, gold // 100). gold += interest. Create Transaction(reason='savings_interest'). Return total interest paid.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 377,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "378",
+      "title": "Bankruptcy recovery program",
+      "description": "Create process_bankruptcy_recovery(db) in engine/simulation/economy.py. For each living NPC with is_bankrupt==1: increment experience by 1. If experience >= 50: set gold=10, is_bankrupt=0, experience=0. Create Event(event_type='bankruptcy_recovery'). Return count of recovered NPCs.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 378,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "379",
+      "title": "Trade embargo",
+      "description": "Create apply_trade_embargo(db) in engine/simulation/economy.py. Find buildings where 3+ unresolved Crimes at workers. Reduce Resource quantities at building by 50%. Create Event(event_type='trade_embargo'). Return count of embargoed buildings.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 379,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "380",
+      "title": "Luxury goods system",
+      "description": "Create process_luxury_purchases(db) in engine/simulation/economy.py. For each living NPC with gold > 200 and happiness < 70: gold -= 50, happiness += 10. Create Transaction(reason='luxury_purchase', amount=50). Return count of purchases.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 380,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "381",
+      "title": "Economic advisor",
+      "description": "Create get_economic_advice(db) in engine/simulation/economy.py. Find living merchant with highest skill. If avg NPC gold < 50: 'lower_tax'. If > 200: 'raise_tax'. If inflation_rate > 1.5: 'tighten_money'. Else 'maintain'. Return dict with advisor_npc_id and recommendation.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 381,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "382",
+      "title": "Resource spoilage",
+      "description": "Create process_resource_spoilage(db) in engine/simulation/economy.py. For Resources with name containing 'food','grain','bread': reduce quantity by 5% (min 1). If quantity reaches 0, delete. Return count of spoiled resources.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 382,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "383",
+      "title": "Auction system",
+      "description": "Create run_auction(db) in engine/simulation/economy.py. Find Resources with is_saturated==1. For each: find richest merchant as winner. Set resource building_id to winner building. Winner pays quantity * 10 gold. Create Transaction(reason='auction'). Return auction count.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 383,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "384",
+      "title": "Wage disparity tracking",
+      "description": "Create calculate_wage_disparity(db) in engine/simulation/economy.py. Query working NPCs gold. disparity = max_gold / max(1, min_gold). If > 10, create Event(event_type='wage_inequality'). Return disparity as float.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 384,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "385",
+      "title": "Economic stimulus",
+      "description": "Create apply_economic_stimulus(db) in engine/simulation/economy.py. If WorldState.economic_status=='recession' or avg NPC gold < 20: distribute 5 gold each from Treasury. Create Event(event_type='economic_stimulus'). Return total distributed or 0.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 385,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "386",
+      "title": "Earthquake event",
+      "description": "Create trigger_earthquake(db) in engine/simulation/events.py. Pick 1-3 random buildings. Reduce level by 1 (min 1). Create Event(event_type='earthquake', severity=3). All NPCs happiness -= 5. Return count of damaged buildings.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "tags": [
+        "events",
+        "simulation"
+      ],
+      "priority": 386,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "387",
+      "title": "Festival of lights",
+      "description": "Create trigger_festival_of_lights(db) in engine/simulation/events.py. Create Event(event_type='festival_of_lights', severity=0). All living NPCs happiness += 10. Add festival_of_lights to memory_events. Return count of NPCs affected.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "tags": [
+        "events",
+        "simulation"
+      ],
+      "priority": 387,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "388",
+      "title": "Plague outbreak",
+      "description": "Create trigger_plague(db) in engine/simulation/events.py. Pick 1 random living NPC as patient zero: illness='plague', illness_severity=5. NPCs within distance 3: 40% chance infection. Create Event(event_type='plague', severity=4). Return count of infected.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "tags": [
+        "events",
+        "simulation"
+      ],
+      "priority": 388,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "389",
+      "title": "Harvest festival",
+      "description": "Create trigger_harvest_festival(db) in engine/simulation/events.py. Double Resource quantities where name contains 'food' or 'grain'. All living NPCs happiness += 5. Create Event(event_type='harvest_festival'). Return count of resources doubled.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "tags": [
+        "events",
+        "simulation"
+      ],
+      "priority": 389,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "390",
+      "title": "Fire event",
+      "description": "Create trigger_fire(db) in engine/simulation/events.py. Pick 1 random building. If guard within distance 5: level -= 1 (min 1). If no guard: capacity = 0. Create Event(event_type='fire', severity=3). Return dict with building_id and destroyed bool.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "tags": [
+        "events",
+        "simulation"
+      ],
+      "priority": 390,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "391",
+      "title": "Flood event",
+      "description": "Create trigger_flood(db) in engine/simulation/events.py. Tiles where y < 5: set terrain='flooded'. Buildings on flooded tiles: level -= 1. NPCs there: energy -= 20. Create Event(event_type='flood', severity=3). Return count of flooded tiles.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "tags": [
+        "events",
+        "simulation"
+      ],
+      "priority": 391,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "392",
+      "title": "Wedding festival",
+      "description": "Create trigger_wedding_festival(db) in engine/simulation/events.py. Query Relationships where relationship_type=='spouse'. If any: all living NPCs happiness += 5. Create Event(event_type='wedding_festival'). Return count of couples. Return 0 if none.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "tags": [
+        "events",
+        "simulation"
+      ],
+      "priority": 392,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "393",
+      "title": "Talent show event",
+      "description": "Create trigger_talent_show(db) in engine/simulation/events.py. Find living NPC with highest skill. Award 50 gold, happiness += 10. Create Event and Transaction(reason='talent_show_prize'). Return winner NPC id or None.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "tags": [
+        "events",
+        "simulation"
+      ],
+      "priority": 393,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "394",
+      "title": "Trade caravan arrival",
+      "description": "Create trigger_trade_caravan(db) in engine/simulation/events.py. Find market building. If exists: add 3 Resources(name='caravan_goods', quantity=20). Create Event(event_type='trade_caravan'). Return resource count or 0 if no market.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "tags": [
+        "events",
+        "simulation"
+      ],
+      "priority": 394,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "395",
+      "title": "Bandit raid",
+      "description": "Create trigger_bandit_raid(db) in engine/simulation/events.py. Count guards. For each living NPC: stolen = max(0, min(20, gold) - guard_count * 5). Deduct from gold (min 0). Create Event(event_type='bandit_raid', severity=2). Return total stolen.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "tags": [
+        "events",
+        "simulation"
+      ],
+      "priority": 395,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "396",
+      "title": "Miracle event",
+      "description": "Create trigger_miracle(db) in engine/simulation/events.py. Find random living sick NPC. Set illness=None, illness_severity=0. happiness += 15. Create Event(event_type='miracle'). Return healed NPC id or None.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "tags": [
+        "events",
+        "simulation"
+      ],
+      "priority": 396,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "397",
+      "title": "Comet sighting",
+      "description": "Create trigger_comet_sighting(db) in engine/simulation/events.py. 2% random chance. If triggered: all living NPCs get comet_sighting in memory_events, happiness += 3. Create Event(event_type='comet_sighting'). Return True/False.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "tags": [
+        "events",
+        "simulation"
+      ],
+      "priority": 397,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "398",
+      "title": "Building collapse",
+      "description": "Create check_building_collapse(db) in engine/simulation/events.py. Buildings with level==1 and capacity > 0: 5% chance collapse. Set capacity=0. Workers get work_building_id=None. Create Event(event_type='building_collapse', severity=4). Return collapse count.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "tags": [
+        "events",
+        "simulation"
+      ],
+      "priority": 398,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "399",
+      "title": "Spring bloom",
+      "description": "Create trigger_spring_bloom(db) in engine/simulation/events.py. If WorldState weather=='sunny' or 'clear': all living NPCs happiness += 3. Create Event(event_type='spring_bloom'). Return NPC count or 0 if wrong weather.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "tags": [
+        "events",
+        "simulation"
+      ],
+      "priority": 399,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "400",
+      "title": "Drought relief",
+      "description": "Create trigger_drought_relief(db) in engine/simulation/events.py. If WorldState drought_active==1 and weather=='rain': set drought_active=0. Double food Resources. Create Event(event_type='drought_relief'). Return count doubled or 0.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "tags": [
+        "events",
+        "simulation"
+      ],
+      "priority": 400,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "401",
+      "title": "Political approval rating",
+      "description": "Create calculate_approval_rating(db) in engine/simulation/tick.py. Find latest Election with winner_npc_id. If none, return None. approval = avg happiness of living NPCs. Return dict with mayor_npc_id, approval (float), population (int).",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "tags": [
+        "politics",
+        "simulation"
+      ],
+      "priority": 401,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "402",
+      "title": "Corruption detection",
+      "description": "Create detect_corruption(db) in engine/simulation/tick.py. Find latest Election winner (mayor). If mayor.gold > 2 * avg gold: create Event(event_type='corruption_detected'). Return True/False. Return None if no mayor.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "tags": [
+        "politics",
+        "simulation"
+      ],
+      "priority": 402,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "403",
+      "title": "Town curfew",
+      "description": "Create enforce_curfew(db) in engine/simulation/tick.py. If WorldState.tick % 24 >= 20: for each living NPC with home_building_id, set target to home coords. Return count of NPCs sent home.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "tags": [
+        "politics",
+        "simulation"
+      ],
+      "priority": 403,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "404",
+      "title": "Public speech",
+      "description": "Create give_public_speech(db) in engine/simulation/tick.py. Find latest Election winner. If alive: all living NPCs happiness += 2. Create Dialogue and Event(event_type='public_speech'). Return mayor id or None.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "tags": [
+        "politics",
+        "simulation"
+      ],
+      "priority": 404,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "405",
+      "title": "Opposition leader",
+      "description": "Create identify_opposition_leader(db) in engine/simulation/tick.py. Find latest Election. Parse votes. Find second-place candidate. Return dict with opposition_npc_id, votes. Return None if < 2 candidates.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "tags": [
+        "politics",
+        "simulation"
+      ],
+      "priority": 405,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "406",
+      "title": "Policy effectiveness review",
+      "description": "Create review_policy_effectiveness(db) in engine/simulation/tick.py. For each enacted Policy: check avg NPC happiness. If > 50 mark effective. Return list of dicts with policy_id, name, effective bool.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "tags": [
+        "politics",
+        "simulation"
+      ],
+      "priority": 406,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "407",
+      "title": "Town budget allocation",
+      "description": "Create allocate_town_budget(db) in engine/simulation/tick.py. Sum Treasury gold. Split 40% infrastructure, 30% defense, 20% welfare, 10% events. Create Event(event_type='budget_allocation'). Return dict with category amounts and total.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "tags": [
+        "politics",
+        "simulation"
+      ],
+      "priority": 407,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "408",
+      "title": "Diplomatic gift",
+      "description": "Create send_diplomatic_gift(db) in engine/simulation/tick.py. Find NPCs with role=='visitor'. Give 20 gold each from Treasury. Create Transaction(reason='diplomatic_gift'). Return count or 0.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "tags": [
+        "politics",
+        "simulation"
+      ],
+      "priority": 408,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "409",
+      "title": "War council",
+      "description": "Create hold_war_council(db) in engine/simulation/tick.py. If 3+ living guards: create Event(event_type='war_council'). Count crimes. Return action dict. Return None if < 3 guards.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "tags": [
+        "politics",
+        "simulation"
+      ],
+      "priority": 409,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "410",
+      "title": "Town expansion vote",
+      "description": "Create hold_expansion_vote(db) in engine/simulation/tick.py. If buildings < living NPCs: 60% chance passes. Create Event if pass. Return dict with vote result string.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "tags": [
+        "politics",
+        "simulation"
+      ],
+      "priority": 410,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "411",
+      "title": "Tax exemption",
+      "description": "Create apply_tax_exemption(db) in engine/simulation/tick.py. For each living NPC with age <= 5: add tax_exempt to memory_events if not present. Return count of exempted NPCs.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "tags": [
+        "politics",
+        "simulation"
+      ],
+      "priority": 411,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "412",
+      "title": "Public holiday declaration",
+      "description": "Create declare_public_holiday(db) in engine/simulation/tick.py. Create Event(event_type='public_holiday'). All living NPCs: energy = min(100, energy+20), happiness += 5. target_x=None, target_y=None. Return rested count.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "tags": [
+        "politics",
+        "simulation"
+      ],
+      "priority": 412,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "413",
+      "title": "Recall election",
+      "description": "Create check_recall_election(db) in engine/simulation/tick.py. If avg happiness < 30: create Election with top 3 NPCs by skill. Create Event(event_type='recall_election'). Return True. Return False if >= 30.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "tags": [
+        "politics",
+        "simulation"
+      ],
+      "priority": 413,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "414",
+      "title": "Policy sunset",
+      "description": "Create expire_old_policies(db) in engine/simulation/tick.py. For each enacted Policy: if WorldState.tick - enacted_tick > 240, set status='expired'. Create Event(event_type='policy_expired'). Return count expired.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "tags": [
+        "politics",
+        "simulation"
+      ],
+      "priority": 414,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "415",
+      "title": "Emergency tax",
+      "description": "Create apply_emergency_tax(db) in engine/simulation/tick.py. Check for disaster Events in last 10 ticks. If found: each living NPC pays 5 gold to Treasury (min 0). Create Event(event_type='emergency_tax'). Return total collected or 0.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "tags": [
+        "politics",
+        "simulation"
+      ],
+      "priority": 415,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "416",
+      "title": "Building repair system",
+      "description": "Create repair_damaged_buildings(db) in engine/simulation/buildings.py. For buildings with level < 3 and capacity > 0: if Treasury gold > 30, spend 30, level += 1. Create Event(event_type='building_repair'). Return count repaired.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/simulation/buildings.py"
+      ],
+      "tags": [
+        "buildings",
+        "simulation"
+      ],
+      "priority": 416,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "417",
+      "title": "Building upgrade cost",
+      "description": "Create calculate_upgrade_cost(db, building_id) in engine/simulation/buildings.py. Cost = level * 50. Check Treasury. Return dict with building_id, current_level, cost, can_afford. Return None if not found.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/simulation/buildings.py"
+      ],
+      "tags": [
+        "buildings",
+        "simulation"
+      ],
+      "priority": 417,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "418",
+      "title": "Building efficiency rating",
+      "description": "Create calculate_building_efficiency(db) in engine/simulation/buildings.py. For each building with capacity > 0: efficiency = workers / capacity (max 1.0). Return dict of {building_id: efficiency}.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/simulation/buildings.py"
+      ],
+      "tags": [
+        "buildings",
+        "simulation"
+      ],
+      "priority": 418,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "419",
+      "title": "Building decoration",
+      "description": "Create decorate_building(db, building_id, gold_amount) in engine/simulation/buildings.py. Deduct gold from Treasury. If enough: nearby NPCs (distance 5) happiness += 2. Create Event(event_type='building_decorated'). Return True/False.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/simulation/buildings.py"
+      ],
+      "tags": [
+        "buildings",
+        "simulation"
+      ],
+      "priority": 419,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "420",
+      "title": "Building demolition",
+      "description": "Create demolish_building(db, building_id) in engine/simulation/buildings.py. If capacity == 0: reassign workers/residents, delete Resources and building. Return True. If capacity > 0 return False.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/simulation/buildings.py"
+      ],
+      "tags": [
+        "buildings",
+        "simulation"
+      ],
+      "priority": 420,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "421",
+      "title": "Infrastructure decay",
+      "description": "Create apply_infrastructure_decay(db) in engine/simulation/buildings.py. Buildings with level > 1: 3% chance to lose 1 level. Create Event(event_type='infrastructure_decay'). Return count decayed.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/simulation/buildings.py"
+      ],
+      "tags": [
+        "buildings",
+        "simulation"
+      ],
+      "priority": 421,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "422",
+      "title": "Building blueprint system",
+      "description": "Create create_building_blueprint(db, name, building_type, x, y) in engine/simulation/buildings.py. If no building at (x,y): create Building(capacity=0, level=0). Return new id. If occupied return None.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/simulation/buildings.py"
+      ],
+      "tags": [
+        "buildings",
+        "simulation"
+      ],
+      "priority": 422,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "423",
+      "title": "Public building access",
+      "description": "Create get_public_buildings(db) in engine/simulation/buildings.py. Return buildings with building_type in ('civic','market','church','tavern','hospital') as list of dicts with id, name, type, x, y.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/simulation/buildings.py"
+      ],
+      "tags": [
+        "buildings",
+        "simulation"
+      ],
+      "priority": 423,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "424",
+      "title": "Building production scaling",
+      "description": "Create get_production_multiplier(db, building_id) in engine/simulation/buildings.py. multiplier = 1.0 + (level-1)*0.25. If workers >= capacity and capacity > 0, add 0.1. Return float.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/simulation/buildings.py"
+      ],
+      "tags": [
+        "buildings",
+        "simulation"
+      ],
+      "priority": 424,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "425",
+      "title": "Building fire safety rating",
+      "description": "Create calculate_fire_safety(db) in engine/simulation/buildings.py. For each building: count guards (is_dead==0) within Manhattan distance 5. safety = min(100, count * 25). Return dict {building_id: safety}.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/simulation/buildings.py"
+      ],
+      "tags": [
+        "buildings",
+        "simulation"
+      ],
+      "priority": 425,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "426",
+      "title": "Building noise level",
+      "description": "Create calculate_noise_levels(db) in engine/simulation/buildings.py. Tavern noise=3, market=2, others=0. For residential buildings: sum noise from buildings within distance 3. If > 3, residents happiness -= 2. Return dict {building_id: noise}.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/simulation/buildings.py"
+      ],
+      "tags": [
+        "buildings",
+        "simulation"
+      ],
+      "priority": 426,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "427",
+      "title": "Building historical value",
+      "description": "Create calculate_historical_value(db) in engine/simulation/buildings.py. prestige = level * 10 + min(WorldState.tick // 100, 50) per building. Return dict with town_prestige total and per-building prestige.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/simulation/buildings.py"
+      ],
+      "tags": [
+        "buildings",
+        "simulation"
+      ],
+      "priority": 427,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "428",
+      "title": "Market stall system",
+      "description": "Create setup_market_stalls(db) in engine/simulation/buildings.py. Find market building. For each living merchant: create Resource(name='stall_'+name, quantity=1) at market. Return stall count or 0.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/simulation/buildings.py"
+      ],
+      "tags": [
+        "buildings",
+        "simulation"
+      ],
+      "priority": 428,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "429",
+      "title": "Building capacity upgrade",
+      "description": "Create upgrade_building_capacity(db, building_id) in engine/simulation/buildings.py. Cost = capacity * 10 from Treasury. If affordable: capacity += 5. Create Event(event_type='capacity_upgrade'). Return new capacity or None.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/simulation/buildings.py"
+      ],
+      "tags": [
+        "buildings",
+        "simulation"
+      ],
+      "priority": 429,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "430",
+      "title": "Building network effects",
+      "description": "Create calculate_network_effects(db) in engine/simulation/buildings.py. For each building: count others within Manhattan distance 5. has_bonus = (count >= 3). Return dict {building_id: {adjacent: N, has_bonus: bool}}.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/simulation/buildings.py"
+      ],
+      "tags": [
+        "buildings",
+        "simulation"
+      ],
+      "priority": 430,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "431",
+      "title": "NPC daily schedule API",
+      "description": "Create GET /api/npcs/{npc_id}/schedule in engine/routers/npcs.py. Return NPC schedule based on tick periods. Return 404 if not found.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/routers/npcs.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 431,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "432",
+      "title": "Crime statistics API",
+      "description": "Create GET /api/stats/crime in engine/routers/stats.py. Return total_crimes, resolved, unresolved, resolution_rate, crimes_by_type.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/routers/stats.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 432,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "433",
+      "title": "Weather forecast API",
+      "description": "Create GET /api/weather/forecast in engine/routers/world.py. Return current weather and 24-tick forecast.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/routers/world.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 433,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "434",
+      "title": "Election history API",
+      "description": "Create GET /api/elections/history in engine/routers/stats.py. Return all Elections sorted by tick_held descending.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/routers/stats.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 434,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "435",
+      "title": "Policy effectiveness API",
+      "description": "Create GET /api/policies/effectiveness in engine/routers/stats.py. Return policies with name, effect, status, enacted_tick.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/routers/stats.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 435,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "436",
+      "title": "Trade volume API",
+      "description": "Create GET /api/economy/trade-volume in engine/routers/economy.py. Accept optional days param (default 7). Return daily transaction volumes.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/routers/economy.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 436,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "437",
+      "title": "Population demographics API",
+      "description": "Create GET /api/stats/demographics in engine/routers/stats.py. Return total, by_role, avg_age, avg_happiness, avg_gold, sick_count, employed.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/routers/stats.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 437,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "438",
+      "title": "Building occupancy API",
+      "description": "Create GET /api/buildings/occupancy in engine/routers/stats.py. Return per-building workers, capacity, utilization.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/routers/stats.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 438,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "439",
+      "title": "NPC mood history API",
+      "description": "Create GET /api/npcs/{npc_id}/mood in engine/routers/npcs.py. Return npc_id, name, happiness, recent memory_events. Return 404 if not found.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/routers/npcs.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 439,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "440",
+      "title": "Town comparison API",
+      "description": "Create GET /api/town/comparison in engine/routers/stats.py. Return current stats vs day-one defaults with change diffs.",
+      "test_file": "tests/test_api.py",
+      "context_files": [
+        "engine/routers/stats.py"
+      ],
+      "tags": [
+        "api"
+      ],
+      "priority": 440,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "441",
+      "title": "Seasonal weather cycle",
+      "description": "Create apply_seasonal_weather(db) in engine/simulation/events.py. season = (WorldState.day % 96) // 24. 0=spring('sunny'), 1=summer('hot'), 2=autumn('cloudy'), 3=winter('snow'). Update weather. Create Event on season change (day%24==0). Return season name.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "tags": [
+        "events",
+        "simulation"
+      ],
+      "priority": 441,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "442",
+      "title": "NPC lifespan variation",
+      "description": "Create vary_npc_lifespan(db) in engine/simulation/npcs.py. For living NPCs with max_age==0 or None: assign by role (farmer=80, guard=70, merchant=85, priest=90, baker=75, default=78). 'healthy' +5, 'reckless' -5. Return count updated.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 442,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "443",
+      "title": "Town reputation score",
+      "description": "Create calculate_town_reputation(db) in engine/simulation/economy.py. economy=min(100, avg gold), safety=max(0, 100-crimes*10), happiness=avg happiness. reputation=(economy+safety+happiness)/3. Return dict with all scores.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "tags": [
+        "economy",
+        "simulation"
+      ],
+      "priority": 443,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "444",
+      "title": "Immigration wave",
+      "description": "Create check_immigration_wave(db) in engine/simulation/npcs.py. If avg happiness > 70 and living NPCs < 20: create 2 NPCs (role='immigrant', gold=20). Create Event(event_type='immigration'). Return count (0 if not triggered).",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 444,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "445",
+      "title": "Emigration wave",
+      "description": "Create check_emigration_wave(db) in engine/simulation/npcs.py. If avg happiness < 30 and living NPCs > 3: set lowest-happiness NPC is_dead=1. Create Event(event_type='emigration'). Return 1 or 0.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 445,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "446",
+      "title": "Historical archive",
+      "description": "Create save_town_snapshot(db) in engine/simulation/tick.py. If tick % 100 == 0: capture population, gold, happiness, buildings, weather. Store as Event(event_type='town_snapshot'). Return snapshot dict or None.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 446,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "447",
+      "title": "Town naming ceremony",
+      "description": "Create check_naming_ceremony(db) in engine/simulation/events.py. At building thresholds (10,20,30,40,50): create Milestone if not exists. Create Event(event_type='naming_ceremony'). Return milestone name or None.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "tags": [
+        "events",
+        "simulation"
+      ],
+      "priority": 447,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "448",
+      "title": "Resource discovery",
+      "description": "Create discover_new_resource(db) in engine/simulation/production.py. 3% chance. Pick random building, create Resource(name from [gems,clay,herbs,iron_ore,marble], quantity 5-20). Create Event(event_type='resource_discovery'). Return name or None.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/production.py"
+      ],
+      "tags": [
+        "production",
+        "simulation"
+      ],
+      "priority": 448,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "449",
+      "title": "Legacy system",
+      "description": "Create record_npc_legacy(db) in engine/simulation/npcs.py. For dead NPCs without legacy_recorded in memory_events: count Transactions, Relationships, Crimes. Create Event(event_type='npc_legacy'). Add legacy_recorded. Return count.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "tags": [
+        "npc",
+        "simulation"
+      ],
+      "priority": 449,
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": "450",
+      "title": "Simulation speed report",
+      "description": "Create generate_speed_report(db) in engine/simulation/tick.py. Count total_npcs, living_npcs, buildings, resources, events, transactions. complexity = total_npcs * buildings. Return dict with tick and all counts.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "tags": [
+        "simulation"
+      ],
+      "priority": 450,
       "status": "pending",
       "attempts": 0
     }

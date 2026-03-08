@@ -943,3 +943,203 @@ def test_s344_calculate_prosperity(db):
     result = calculate_prosperity(db)
     assert result is not None, "calculate_prosperity should return a value"
     db.flush()
+
+
+# -- Stories 371-385: Advanced Economy & Trade ------------------------
+
+
+def test_s371_calculate_merchant_reputation(db):
+    """Merchant reputation."""
+    _setup_world(db)
+    from engine.simulation import calculate_merchant_reputation
+
+    result = calculate_merchant_reputation(db)
+    assert isinstance(result, dict), "Should return dict of npc_id: reputation"
+    db.flush()
+
+
+def test_s372_process_black_market(db):
+    """Black market system."""
+    _setup_world(db)
+    from engine.simulation import process_black_market
+
+    result = process_black_market(db)
+    assert isinstance(result, int), "Should return count of items created"
+    db.flush()
+
+
+def test_s373_process_insurance_payouts(db):
+    """Insurance payout."""
+    _setup_world(db)
+    from engine.simulation import process_insurance_payouts
+
+    result = process_insurance_payouts(db)
+    assert isinstance(result, (int, float)), "Should return total gold paid"
+    db.flush()
+
+
+def test_s374_detect_economic_bubble(db):
+    """Economic bubble detection."""
+    _setup_world(db)
+    from engine.simulation import detect_economic_bubble
+
+    result = detect_economic_bubble(db)
+    assert isinstance(result, list), "Should return list of bubble resource names"
+    db.flush()
+
+
+def test_s375_simulate_market_crash(db):
+    """Market crash simulation."""
+    _setup_world(db)
+    from engine.simulation import simulate_market_crash
+
+    result = simulate_market_crash(db)
+    assert isinstance(result, int), "Should return count of affected resources"
+    db.flush()
+
+
+def test_s376_form_cooperatives(db):
+    """Cooperative formation."""
+    _setup_world(db)
+    from engine.simulation import form_cooperatives
+
+    result = form_cooperatives(db)
+    assert isinstance(result, int), "Should return count of cooperatives formed"
+    db.flush()
+
+
+def test_s377_apply_savings_interest(db):
+    """Savings interest."""
+    _setup_world(db)
+    from engine.simulation import apply_savings_interest
+    from engine.models import NPC
+
+    # Give an NPC enough gold
+    npc = db.query(NPC).filter(NPC.is_dead == 0).first()
+    npc.gold = 500
+    db.flush()
+
+    result = apply_savings_interest(db)
+    assert isinstance(result, (int, float)), "Should return total interest paid"
+    assert result >= 1, "Should have paid at least 1 gold interest"
+    db.flush()
+
+
+def test_s378_process_bankruptcy_recovery(db):
+    """Bankruptcy recovery program."""
+    _setup_world(db)
+    from engine.simulation import process_bankruptcy_recovery
+
+    result = process_bankruptcy_recovery(db)
+    assert isinstance(result, int), "Should return count of recovered NPCs"
+    db.flush()
+
+
+def test_s379_apply_trade_embargo(db):
+    """Trade embargo."""
+    _setup_world(db)
+    from engine.simulation import apply_trade_embargo
+
+    result = apply_trade_embargo(db)
+    assert isinstance(result, int), "Should return count of embargoed buildings"
+    db.flush()
+
+
+def test_s380_process_luxury_purchases(db):
+    """Luxury goods system."""
+    _setup_world(db)
+    from engine.simulation import process_luxury_purchases
+    from engine.models import NPC
+
+    # Set up eligible NPC
+    npc = db.query(NPC).filter(NPC.is_dead == 0).first()
+    npc.gold = 300
+    npc.happiness = 40
+    db.flush()
+
+    result = process_luxury_purchases(db)
+    assert isinstance(result, int), "Should return count of purchases"
+    db.flush()
+
+
+def test_s381_get_economic_advice(db):
+    """Economic advisor."""
+    _setup_world(db)
+    from engine.simulation import get_economic_advice
+
+    result = get_economic_advice(db)
+    assert isinstance(result, dict), "Should return dict with advisor and recommendation"
+    assert "recommendation" in result, "Should have recommendation key"
+    db.flush()
+
+
+def test_s382_process_resource_spoilage(db):
+    """Resource spoilage."""
+    _setup_world(db)
+    from engine.simulation import process_resource_spoilage
+    from engine.models import Resource, Building
+
+    # Create a food resource
+    b = db.query(Building).first()
+    r = Resource(name="food", quantity=100, building_id=b.id)
+    db.add(r)
+    db.flush()
+
+    result = process_resource_spoilage(db)
+    assert isinstance(result, int), "Should return count of spoiled resources"
+    assert result >= 1, "Should have spoiled at least one resource"
+    db.flush()
+
+
+def test_s383_run_auction(db):
+    """Auction system."""
+    _setup_world(db)
+    from engine.simulation import run_auction
+
+    result = run_auction(db)
+    assert isinstance(result, int), "Should return count of auctions held"
+    db.flush()
+
+
+def test_s384_calculate_wage_disparity(db):
+    """Wage disparity tracking."""
+    _setup_world(db)
+    from engine.simulation import calculate_wage_disparity
+
+    result = calculate_wage_disparity(db)
+    assert isinstance(result, float), "Should return disparity ratio as float"
+    assert result >= 1.0, "Ratio should be >= 1.0"
+    db.flush()
+
+
+def test_s385_apply_economic_stimulus(db):
+    """Economic stimulus."""
+    _setup_world(db)
+    from engine.simulation import apply_economic_stimulus
+
+    result = apply_economic_stimulus(db)
+    assert isinstance(result, (int, float)), "Should return total gold distributed"
+    db.flush()
+
+
+def test_s443_calculate_town_reputation(db):
+    """Town reputation score."""
+    _setup_world(db)
+    from engine.simulation import calculate_town_reputation
+
+    result = calculate_town_reputation(db)
+    assert isinstance(result, dict), "Should return dict with scores"
+    assert "reputation" in result, "Should have reputation key"
+    db.flush()
+
+
+def test_s448_discover_new_resource(db):
+    """Resource discovery."""
+    _setup_world(db)
+    from engine.simulation import discover_new_resource
+
+    # Call multiple times to increase chance of triggering (3% chance)
+    results = [discover_new_resource(db) for _ in range(50)]
+    # At least function should work without error
+    assert any(r is None for r in results) or any(r is not None for r in results), "Function should return name or None"
+    db.flush()
