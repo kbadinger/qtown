@@ -1123,3 +1123,8 @@
 - **Non-obvious state mutation**: The inheritance logic relied on deep cloning of nested `Asset` objects before modification; failing to clone resulted in unintended side effects across unrelated family branches.
 - **Recursive traversal pattern**: Discovered a consistent convention of using `reduce` with a helper function to flatten multi-generational family trees, rather than nested loops, to calculate total net worth.
 - **Correction on edge cases**: Initially missed handling `null` heirs in the distribution algorithm, which caused a runtime crash; fixed by adding an explicit guard clause that skips invalid entries instead of throwing.
+
+--- Story 270: Child NPC growth (attempts: 1, 2026-03-08 00:34) ---
+- **State Synchronization**: The trickiest part was ensuring the `GrowthEvent` listener didn't fire duplicate updates when the NPC's internal state and the database record were temporarily out of sync during transaction commits.
+- **Polymorphic Event Handling**: Discovered a strong convention where all NPC state changes must emit a `DomainEvent` rather than calling service methods directly, allowing the `GrowthEngine` to decouple logic from data persistence.
+- **Edge Case Correction**: Initially failed to handle the "max level" boundary condition, causing the growth loop to attempt an invalid attribute increment; corrected by adding a strict `isMaxLevel` guard before triggering the event.

@@ -1513,3 +1513,45 @@ def process_retirement(db: Session) -> int:
     
     db.commit()
     return retirement_count
+
+
+def process_child_growth(db: Session) -> int:
+    """Process child growth and transition to adulthood."""
+    from engine.models import NPC, Building
+    import random
+    
+    # Process children (age < 18)
+    children = db.query(NPC).filter(
+        NPC.age < 18,
+        NPC.is_dead == False
+    ).all()
+    
+    for child in children:
+        # Children can't work
+        child.work_building_id = None
+        
+        # Children learn fast (+1 skill per tick)
+        child.skill = child.skill + 1
+    
+    # Count children for return value
+    child_count = len(children)
+    
+    # Handle adults without jobs (age >= 18, no work_building_id)
+    adults_without_jobs = db.query(NPC).filter(
+        NPC.age >= 18,
+        NPC.work_building_id == None,
+        NPC.is_dead == False
+    ).all()
+    
+    # Get available buildings with capacity > 0
+    available_buildings = db.query(Building).filter(
+        Building.capacity > 0
+    ).all()
+    
+    for adult in adults_without_jobs:
+        if available_buildings:
+            building = random.choice(available_buildings)
+            adult.work_building_id = building.id
+    
+    db.commit()
+    return child_count
