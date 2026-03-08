@@ -1138,3 +1138,8 @@
 *   **Non-obvious race conditions**: Crowd density calculations can desynchronize with entity positions if the update loop isn't strictly ordered; ensuring the spatial hash grid refreshes before query operations is critical to prevent "ghost" collisions.
 *   **Codebase convention**: The project consistently uses a "command-buffer" pattern for movement logic rather than direct state mutation, allowing the physics engine to batch and resolve crowd forces in a single pass.
 *   **Correction**: Initially applied force vectors directly to individual agents, causing jittery movement; corrected by switching to a velocity-based steering approach that averages neighbor influence over a time window.
+
+--- Story 273: Emotion memory tracking (attempts: 1, 2026-03-08 01:22) ---
+- **Non-obvious State Hydration**: Realized that `useEffect` dependency arrays for emotion memory tracking must explicitly include the `userId` to prevent stale data from persisting when switching contexts, as the global store doesn't auto-invalidate on user change.
+- **Convention for Temporal Data**: Discovered the codebase enforces a strict "ISO string with timezone" format for all emotion timestamps to ensure accurate sorting in the timeline view, rather than relying on local `Date` objects.
+- **Correction on Optimistic Updates**: Initially attempted to update the UI immediately upon emotion entry without awaiting the API response; corrected this by implementing a temporary `isSaving` state and reverting the UI on failure to prevent data inconsistency.

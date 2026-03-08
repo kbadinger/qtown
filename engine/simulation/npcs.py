@@ -1670,3 +1670,49 @@ def process_crowd_behavior(db: Session) -> int:
     
     db.commit()
     return crowd_tile_count
+
+
+def track_emotions(db: Session) -> dict:
+    """Track emotion history for all living NPCs."""
+    from engine.models import NPC
+    
+    result = {}
+    living_npcs = db.query(NPC).filter(NPC.is_dead == False).all()
+    
+    for npc in living_npcs:
+        # Parse experience JSON (default to empty dict)
+        experience = json.loads(npc.experience) if npc.experience else {}
+        
+        # Ensure experience is a dict
+        if not isinstance(experience, dict):
+            experience = {}
+        
+        # Initialize mood_history if not exists
+        if 'mood_history' not in experience:
+            experience['mood_history'] = []
+        
+        # Append current happiness
+        experience['mood_history'].append(npc.happiness)
+        
+        # Keep only last 5 entries
+        experience['mood_history'] = experience['mood_history'][-5:]
+        
+        # Calculate mood trend
+        mood_history = experience['mood_history']
+        if len(mood_history) >= 2:
+            if mood_history[-1] > mood_history[0]:
+                trend = 'improving'
+            elif mood_history[-1] < mood_history[0]:
+                trend = 'declining'
+            else:
+                trend = 'stable'
+        else:
+            trend = 'stable'
+        
+        result[npc.id] = trend
+        
+        # Update NPC experience
+        npc.experience = json.dumps(experience)
+    
+    db.commit()
+    return result

@@ -1176,3 +1176,8 @@ Ralph stopped — needs human debugging
 [2026-03-08 05:50:43 UTC] deploy_ok: Story 271 deployed: Healthy after 0.1s
 [2026-03-08 05:50:59 UTC] story_done: Story 271 complete: NPC persuasion
 [2026-03-08 05:50:59 UTC] story_start: Story 272: Crowd behavior
+[2026-03-08 06:06:13 UTC] deploy_ok: Story 272 deployed: Healthy after 0.1s
+[2026-03-08 06:06:29 UTC] story_done: Story 272 complete: Crowd behavior
+[2026-03-08 06:06:30 UTC] story_start: Story 273: Emotion memory tracking
+[2026-03-08 06:12:29 UTC] WARN story_fail: Story 273 struggling — attempt 5/12
+Emotion memory tracking
