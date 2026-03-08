@@ -1108,3 +1108,8 @@
 - **Tricky Logic**: Handling the asynchronous nature of dream generation required careful state management to prevent the NPC from acting on incomplete or corrupted dream data before the system fully resolved.
 - **Codebase Patterns**: The project consistently isolates simulation logic from rendering concerns, using a centralized `EventBus` for cross-module communication (e.g., dream completion triggering memory updates).
 - **Correction**: Initially, I failed to reset the `dreamCooldown` timer on NPC death, causing them to spawn with active dream states; I corrected this by adding a cleanup hook in the entity destruction lifecycle.
+
+--- Story 267: Career progression (attempts: 1, 2026-03-07 22:41) ---
+- **Non-obvious state transitions**: The `CareerLevel` enum required explicit handling of "probationary" states before promotion; assuming a direct transition caused validation errors in the `PromotionService`.
+- **Codebase convention**: All domain events (e.g., `EmployeePromoted`) must be published via the `EventBus` interface rather than direct instantiation to ensure audit logging and async notification handlers are triggered.
+- **Correction made**: Initially calculated tenure based on `hireDate` only; corrected to include `probationEndDate` to align with the company's policy that tenure for promotion eligibility starts post-probation.

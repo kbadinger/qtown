@@ -1428,3 +1428,40 @@ def process_dreams(db: Session) -> int:
     
     db.commit()
     return dream_count
+
+
+def check_career_progression(db: Session) -> int:
+    """Check and process career progression for eligible NPCs."""
+    from engine.models import NPC
+    
+    promotion_map = {
+        'farmer': 'master_farmer',
+        'guard': 'captain',
+        'merchant': 'guild_master'
+    }
+    
+    promotions = 0
+    
+    # Get all living NPCs with skill >= 8
+    eligible_npcs = db.query(NPC).filter(
+        NPC.is_dead == False,
+        NPC.skill >= 8
+    ).all()
+    
+    for npc in eligible_npcs:
+        if npc.role in promotion_map:
+            new_role = promotion_map[npc.role]
+            npc.role = new_role
+            
+            # Append to memory_events
+            if npc.memory_events is None:
+                npc.memory_events = []
+            npc.memory_events.append(f'promoted to {new_role}')
+            
+            # Increase happiness
+            npc.happiness = npc.happiness + 10
+            
+            promotions += 1
+    
+    db.commit()
+    return promotions

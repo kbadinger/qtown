@@ -1158,3 +1158,6 @@ Ralph stopped — needs human debugging
 [2026-03-08 03:17:29 UTC] deploy_ok: Story 215 deployed: Healthy after 0.1s
 [2026-03-08 03:17:37 UTC] story_done: Story 215 complete: Add day/night cycle to PixiJS renderer
 [2026-03-08 03:17:38 UTC] story_start: Story 266: NPC dream system
+[2026-03-08 03:30:08 UTC] deploy_ok: Story 266 deployed: Healthy after 0.1s
+[2026-03-08 03:30:25 UTC] story_done: Story 266 complete: NPC dream system
+[2026-03-08 03:30:25 UTC] story_start: Story 267: Career progression
