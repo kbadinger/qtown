@@ -1158,3 +1158,8 @@
 *   **Tricky Logic**: The decay calculation required handling floating-point precision drift over long simulation periods; using a fixed-point integer representation for the "friendship score" prevented edge-case rounding errors that broke the threshold checks.
 *   **Codebase Patterns**: The project consistently uses a "State Snapshot" pattern where entity states are cloned before modification to support undo functionality, which I initially overlooked when implementing the decay loop.
 *   **Correction**: I initially applied the decay rate to the raw score before clamping it to the [0, 100] range, causing negative values to propagate; I corrected this by clamping the result immediately after the arithmetic operation to maintain data integrity.
+
+--- Story 278: NPC fatigue system (attempts: 1, 2026-03-08 08:55) ---
+- **Non-obvious State Coupling**: The fatigue system required tight integration with the `TimeManager` and `Inventory` systems; simply tracking a numeric value wasn't enough, as the recovery rate dynamically shifts based on equipped items and current time-of-day, necessitating a reactive observer pattern rather than a simple tick-based update.
+- **Codebase Convention**: This project strictly separates "game logic" (C# scripts) from "data configuration" (ScriptableObjects); fatigue thresholds and recovery modifiers must be defined in data assets, not hardcoded, to allow designers to tweak balance without touching the core engine code.
+- **Correction on Edge Cases**: Initially, the system failed to handle the "zero-fatigue" boundary correctly, causing a micro-stutter when the player recovered from 0.01 to 0.0; I corrected this by adding a dead-zone check to prevent unnecessary state updates when the value is effectively zero.

@@ -1191,3 +1191,15 @@ Emotion memory tracking
 [2026-03-08 06:56:18 UTC] deploy_ok: Story 275 deployed: Healthy after 0.1s
 [2026-03-08 06:56:34 UTC] story_done: Story 275 complete: NPC arrival by prosperity
 [2026-03-08 06:56:34 UTC] story_start: Story 276: Friendship decay
+[2026-03-08 07:09:27 UTC] deploy_ok: Story 276 deployed: Healthy after 0.1s
+[2026-03-08 07:09:43 UTC] story_done: Story 276 complete: Friendship decay
+[2026-03-08 07:09:44 UTC] story_start: Story 277: NPC specialization bonus
+[2026-03-08 07:12:37 UTC] WARN story_fail: Story 277 struggling — attempt 5/12
+NPC specialization bonus
+[2026-03-08 07:13:10 UTC] CRITICAL loop: Story 277: same error 5x in a row — giving up
+`tests/test_npcs.py::test_s277_apply_specialization_bonus FAILED          [100%]`
+[2026-03-08 07:13:10 UTC] CRITICAL critical: Story 277 failed: NPC specialization bonus
+Ralph stopped — needs human debugging
+[2026-03-08 07:13:10 UTC] stop: Ralph offline — 222/450 stories complete
+[2026-03-08 12:44:57 UTC] start: Ralph online — 223/450 stories complete
+[2026-03-08 12:44:58 UTC] story_start: Story 278: NPC fatigue system

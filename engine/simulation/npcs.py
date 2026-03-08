@@ -1871,3 +1871,48 @@ def apply_specialization_bonus(db: Session) -> int:
     
     db.commit()
     return specialists_count
+
+
+def apply_fatigue(db: Session) -> int:
+    """Apply fatigue effects to NPCs based on energy levels.
+    
+    For each living NPC with energy < 20:
+    - Set 'fatigued' flag in experience JSON (reduces skill effectiveness)
+    - Fatigued NPCs produce 50% less (halve any production bonus)
+    
+    If energy < 5:
+    - NPC collapses: move to home building, set energy=0
+    
+    Returns count of fatigued NPCs.
+    """
+    from engine.models import NPC, Building
+    import json
+    
+    fatigued_count = 0
+    
+    # Get all living NPCs
+    npcs = db.query(NPC).filter(NPC.is_dead == False).all()
+    
+    for npc in npcs:
+        if npc.energy < 20:
+            # Set fatigued flag in experience JSON
+            if npc.experience is None:
+                npc.experience = {}
+            elif isinstance(npc.experience, str):
+                npc.experience = json.loads(npc.experience)
+            
+            npc.experience['fatigued'] = True
+            fatigued_count += 1
+            
+            # If energy < 5, NPC collapses
+            if npc.energy < 5:
+                # Move to home building
+                if npc.home_building_id:
+                    home = db.query(Building).filter(Building.id == npc.home_building_id).first()
+                    if home:
+                        npc.x = home.x
+                        npc.y = home.y
+                npc.energy = 0
+    
+    db.commit()
+    return fatigued_count
