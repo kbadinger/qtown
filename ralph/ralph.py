@@ -132,11 +132,11 @@ def call_qwen(prompt: str, label: str = "qwen", think: bool = True) -> tuple[str
 
     # Thinking vs non-thinking use different recommended params
     if think:
-        options = {"num_ctx": 16384, "temperature": 0.6, "top_p": 0.95,
-                   "repeat_penalty": 1.1, "presence_penalty": 1.5}
+        options = {"num_ctx": 16384, "num_predict": 8192, "temperature": 0.6,
+                   "top_p": 0.95, "repeat_penalty": 1.1, "presence_penalty": 1.5}
     else:
-        options = {"num_ctx": 16384, "temperature": 0.7, "top_p": 0.8,
-                   "repeat_penalty": 1.1, "presence_penalty": 1.5}
+        options = {"num_ctx": 16384, "num_predict": 4096, "temperature": 0.7,
+                   "top_p": 0.8, "repeat_penalty": 1.1, "presence_penalty": 1.5}
 
     for attempt in range(max_retries + 1):
         try:
