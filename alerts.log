@@ -1155,3 +1155,6 @@ Ralph stopped — needs human debugging
 [2026-03-08 03:16:02 UTC] deploy_ok: Story 214 deployed: Healthy after 0.1s
 [2026-03-08 03:16:11 UTC] story_done: Story 214 complete: Add NPC speech bubbles to PixiJS renderer
 [2026-03-08 03:16:12 UTC] story_start: Story 215: Add day/night cycle to PixiJS renderer
+[2026-03-08 03:17:29 UTC] deploy_ok: Story 215 deployed: Healthy after 0.1s
+[2026-03-08 03:17:37 UTC] story_done: Story 215 complete: Add day/night cycle to PixiJS renderer
+[2026-03-08 03:17:38 UTC] story_start: Story 266: NPC dream system

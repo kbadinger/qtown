@@ -1392,3 +1392,39 @@ def generate_dialogue(db: Session, speaker_id: int, listener_id: int) -> str:
     db.commit()
     
     return dialogue
+
+
+def process_dreams(db: Session) -> int:
+    """Process dreams for living NPCs at night."""
+    from engine.models import NPC, WorldState
+    import random
+    
+    # Check if it's night
+    world_state = db.query(WorldState).first()
+    if not world_state or world_state.time_of_day != 'night':
+        return 0
+    
+    # Get all living NPCs
+    npcs = db.query(NPC).filter(NPC.is_dead == False).all()
+    
+    dream_count = 0
+    for npc in npcs:
+        dream = random.choice(['found_treasure', 'nightmare', 'peaceful', 'adventure'])
+        
+        # Append dream to memory_events (cap at 10)
+        if not npc.memory_events:
+            npc.memory_events = []
+        npc.memory_events.append(dream)
+        if len(npc.memory_events) > 10:
+            npc.memory_events = npc.memory_events[-10:]
+        
+        # Apply happiness effects
+        if dream == 'found_treasure':
+            npc.happiness = min(100, npc.happiness + 3)
+        elif dream == 'nightmare':
+            npc.happiness = max(0, npc.happiness - 2)
+        
+        dream_count += 1
+    
+    db.commit()
+    return dream_count

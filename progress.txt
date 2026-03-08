@@ -1103,3 +1103,8 @@
 - **Non-obvious timing**: PixiJS `ticker` updates are delta-based, not frame-based; calculating the day/night cycle required accumulating `delta` seconds rather than incrementing per-frame to ensure consistent speed across varying frame rates.
 - **Codebase convention**: The renderer layer strictly separates visual state from game logic; the cycle's progress is driven by a central `GameTime` singleton, while the renderer only consumes the resulting `timeOfDay` float to adjust tint/alpha values.
 - **Correction**: Initially applied the day/night tint directly to the root `PIXI.Container`, which inadvertently dimmed UI overlays; corrected by creating a dedicated `DayNightOverlay` container with a lower `zIndex` to isolate the effect from the HUD.
+
+--- Story 266: NPC dream system (attempts: 1, 2026-03-07 22:28) ---
+- **Tricky Logic**: Handling the asynchronous nature of dream generation required careful state management to prevent the NPC from acting on incomplete or corrupted dream data before the system fully resolved.
+- **Codebase Patterns**: The project consistently isolates simulation logic from rendering concerns, using a centralized `EventBus` for cross-module communication (e.g., dream completion triggering memory updates).
+- **Correction**: Initially, I failed to reset the `dreamCooldown` timer on NPC death, causing them to spawn with active dream states; I corrected this by adding a cleanup hook in the entity destruction lifecycle.
