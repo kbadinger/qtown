@@ -1182,3 +1182,6 @@ Ralph stopped — needs human debugging
 [2026-03-08 06:12:29 UTC] WARN story_fail: Story 273 struggling — attempt 5/12
 Emotion memory tracking
 [2026-03-08 06:22:58 UTC] WARN deploy_fail: Story 273 deploy failed — starting fix cycle
+[2026-03-08 06:26:01 UTC] deploy_ok: Story 273 deploy fixed on retry
+[2026-03-08 06:26:19 UTC] story_done: Story 273 complete: Emotion memory tracking
+[2026-03-08 06:26:19 UTC] story_start: Story 274: NPC migration out

@@ -1717,3 +1717,54 @@ def track_emotions(db: Session) -> dict:
     
     db.commit()
     return result
+
+
+def process_emigration(db: Session) -> int:
+    """Process NPC emigration based on low happiness history."""
+    from engine.models import NPC, Event, WorldState
+    import json
+
+    emigrant_count = 0
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+
+    for npc in npcs:
+        if npc.happiness < 15:
+            experience_data = npc.experience
+            if experience_data:
+                if isinstance(experience_data, str):
+                    try:
+                        exp_dict = json.loads(experience_data)
+                    except json.JSONDecodeError:
+                        continue
+                else:
+                    exp_dict = experience_data
+
+                mood_history = exp_dict.get("mood_history", [])
+                if len(mood_history) >= 3:
+                    last_three = mood_history[-3:]
+                    if all(h < 15 for h in last_three):
+                        npc.is_dead = 1
+                        memory_events = npc.memory_events or []
+                        if isinstance(memory_events, str):
+                            try:
+                                memory_events = json.loads(memory_events)
+                            except json.JSONDecodeError:
+                                memory_events = []
+                        if "emigrated" not in memory_events:
+                            memory_events.append("emigrated")
+                        npc.memory_events = memory_events
+
+                        event = Event(
+                            event_type='npc_emigrated',
+                            description=f"NPC {npc.name} emigrated",
+                            tick=current_tick,
+                            npc_id=npc.id
+                        )
+                        db.add(event)
+                        emigrant_count += 1
+
+    db.commit()
+    return emigrant_count
