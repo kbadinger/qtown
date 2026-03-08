@@ -1185,3 +1185,6 @@ Emotion memory tracking
 [2026-03-08 06:26:01 UTC] deploy_ok: Story 273 deploy fixed on retry
 [2026-03-08 06:26:19 UTC] story_done: Story 273 complete: Emotion memory tracking
 [2026-03-08 06:26:19 UTC] story_start: Story 274: NPC migration out
+[2026-03-08 06:41:02 UTC] deploy_ok: Story 274 deployed: Healthy after 0.1s
+[2026-03-08 06:41:18 UTC] story_done: Story 274 complete: NPC migration out
+[2026-03-08 06:41:18 UTC] story_start: Story 275: NPC arrival by prosperity

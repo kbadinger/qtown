@@ -1148,3 +1148,8 @@
 - **Non-obvious state coupling**: The migration logic relied on a hidden dependency between the `NPCRegistry` cache and the `WorldChunk` loader; failing to invalidate the cache before moving entities caused "ghost" NPCs to appear in unloaded chunks.
 - **Codebase convention**: Entity serialization in this project strictly uses the `IEntitySerializer` interface with a `version` check, meaning any new migration fields must be backward-compatible or explicitly handled in the `upgrade()` hook to prevent load failures.
 - **Correction made**: Initially attempted to migrate entities during the `onLoad` event, which caused race conditions with the chunk server; corrected by deferring the migration to the `postInit` phase after the world graph is fully stabilized.
+
+--- Story 275: NPC arrival by prosperity (attempts: 1, 2026-03-08 01:55) ---
+- **Non-obvious State Coupling**: NPC arrival logic is tightly coupled with the `prosperity` metric's internal threshold checks, not just the raw value; modifying arrival triggers requires updating the `checkProsperityThreshold` helper to avoid race conditions.
+- **Event-Driven Conventions**: The codebase strictly uses the `dispatchEvent` pattern for all entity state changes; direct property mutation on the `worldState` object is avoided to ensure the UI and AI systems stay in sync.
+- **Correction on Initialization**: Initially attempted to spawn NPCs immediately upon loading, but corrected to defer instantiation until the `onProsperityChange` event fires to prevent duplicate entities during map re-renders.

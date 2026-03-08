@@ -1768,3 +1768,38 @@ def process_emigration(db: Session) -> int:
 
     db.commit()
     return emigrant_count
+
+
+def check_immigration(db: Session) -> bool:
+    from engine.models import NPC, Event, WorldState
+    import random
+
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    living_npcs = db.query(NPC).filter(NPC.is_dead == False).all()
+    count = len(living_npcs)
+    if count == 0:
+        return False
+        
+    avg_happiness = sum(n.happiness for n in living_npcs) / count
+    
+    if avg_happiness > 65 and count < 20:
+        new_npc = NPC(
+            name=f"Newcomer_{random.randint(1000, 9999)}",
+            role="newcomer", gold=30,
+            x=random.randint(0, 49), y=random.randint(0, 49),
+            hunger=50, energy=50, happiness=50,
+            age=20, max_age=80, is_dead=False, is_bankrupt=False,
+            illness_severity=0, illness=None,
+            home_building_id=None, work_building_id=None,
+            target_x=None, target_y=None,
+            personality="curious", skill=1,
+            memory_events=[], favorite_buildings=[], avoided_areas=[],
+            experience=0
+        )
+        db.add(new_npc)
+        db.add(Event(event_type="npc_arrived", description="Newcomer arrived", tick=current_tick, npc_id=new_npc.id))
+        db.commit()
+        return True
+    return False
