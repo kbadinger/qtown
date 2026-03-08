@@ -2247,10 +2247,15 @@ def test_s278_apply_fatigue(db):
 def test_s279_check_celebrations(db):
     """NPC celebration."""
     _setup_world(db)
+    from engine.models import NPC
+    # Set one NPC happiness > 90 so celebration triggers
+    npc = db.query(NPC).first()
+    npc.happiness = 95
+    db.flush()
     from engine.simulation import check_celebrations
 
     result = check_celebrations(db)
-    assert result is not None, "check_celebrations should return a value"
+    assert result is not None, "check_celebrations should return a value when happy NPC exists"
     db.flush()
 
 
