@@ -1311,3 +1311,26 @@ def adjust_for_inflation(db: Session) -> int:
     db.commit()
     
     return base_wage
+
+
+def run_gold_sink(db: Session) -> int:
+    """Run gold sink events - festival when treasury is rich."""
+    from engine.models import Treasury, Event, NPC
+    
+    treasury = db.query(Treasury).first()
+    if not treasury or treasury.gold <= 200:
+        return 0
+    
+    # Spend 50 gold on festival
+    treasury.gold -= 50
+    
+    # Create festival event
+    event = Event(event_type='festival')
+    db.add(event)
+    
+    # All living NPCs get happiness +8
+    for npc in db.query(NPC).filter(NPC.is_dead == 0).all():
+        npc.happiness = min(100, npc.happiness + 8)
+    
+    db.commit()
+    return 50

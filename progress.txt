@@ -1228,3 +1228,8 @@
 - **Tricky Aspect**: The interaction between `Decimal` precision and floating-point arithmetic during the CPI ratio calculation caused subtle rounding errors; using `quantize()` explicitly at the final step was necessary to match the expected financial output.
 - **Pattern Discovered**: The codebase consistently isolates inflation logic in a dedicated `InflationService` that injects historical CPI data via a repository, avoiding direct database calls in the calculation layer.
 - **Correction**: Initially applied the inflation factor to the total sum rather than individual line items, which masked discrepancies in tax calculations; refactored to apply adjustments at the line-item level before aggregation.
+
+--- Story 293: Gold sink events (attempts: 1, 2026-03-08 15:34) ---
+- **Non-obvious state coupling**: The gold sink logic relied on a hidden dependency between the `TransactionService` and the `PlayerInventory` cache; failing to flush the cache before updating the ledger caused race conditions where players saw incorrect balances.
+- **Codebase convention**: This module strictly uses the `Result<T, E>` pattern for all financial operations, avoiding exceptions entirely; I initially tried to throw errors for invalid amounts, which broke the existing error-handling pipeline.
+- **Correction on idempotency**: I initially implemented the sink event without an idempotency key, risking double-charges on network retries; I corrected this by adding a unique `event_id` check against the `ProcessedEvents` table before executing the deduction.
