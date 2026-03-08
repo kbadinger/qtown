@@ -8,6 +8,7 @@ from engine.simulation.constants import PLAGUE_OVERWHELM_THRESHOLD
 import json
 from datetime import datetime
 from sqlalchemy import desc
+from typing import Optional
 
 
 def trigger_drought(db: Session) -> None:
@@ -884,3 +885,66 @@ def check_anniversaries(db: Session) -> bool:
         return True
     
     return False
+
+
+def spawn_visitor_trader(db: Session) -> Optional[NPC]:
+    """Spawn a visitor trader NPC with 5% chance."""
+    from engine.models import NPC, Event
+    
+    # 5% chance to spawn
+    if random.random() >= 0.05:
+        return None
+    
+    # Pick random edge position (x or y = 0 or 49)
+    edge = random.choice(['left', 'right', 'top', 'bottom'])
+    if edge == 'left':
+        x, y = 0, random.randint(0, 49)
+    elif edge == 'right':
+        x, y = 49, random.randint(0, 49)
+    elif edge == 'top':
+        x, y = random.randint(0, 49), 0
+    else:  # bottom
+        x, y = random.randint(0, 49), 49
+    
+    # Create visitor trader NPC
+    visitor = NPC(
+        name=f"Trader {random.randint(1, 1000)}",
+        role='visitor_trader',
+        x=x,
+        y=y,
+        gold=150,
+        hunger=50,
+        energy=50,
+        happiness=70,
+        age=30,
+        max_age=70,
+        is_dead=0,
+        is_bankrupt=0,
+        illness_severity=0,
+        illness=0,
+        home_building_id=None,
+        work_building_id=None,
+        target_x=None,
+        target_y=None,
+        personality='outgoing',
+        skill='trading',
+        memory_events='[]',
+        favorite_buildings='[]',
+        avoided_areas='[]',
+        experience='{}'
+    )
+    db.add(visitor)
+    
+    # Create event record
+    event = Event(
+        event_type='visitor_trader',
+        description=f"Trader {visitor.name} has arrived at the edge of town",
+        tick=db.query(Event).order_by(Event.id.desc()).first().id + 1 if db.query(Event).first() else 1,
+        resolved=0
+    )
+    db.add(event)
+    
+    db.commit()
+    db.refresh(visitor)
+    
+    return visitor
