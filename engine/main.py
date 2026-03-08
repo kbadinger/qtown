@@ -179,8 +179,11 @@ def _reset_world_state(db):
     excess_ids = [n.id for n in excess]
 
     if excess_ids:
-        # Clean up foreign keys referencing excess NPCs
-        from engine.models import Transaction, Loan, Crime, Dialogue, VisitorLog
+        # Clean up ALL foreign keys referencing excess NPCs
+        from engine.models import (
+            Transaction, Loan, Crime, Dialogue, VisitorLog,
+            Election, Policy, Newspaper, Event, TownAnthem,
+        )
         for model, cols in [
             (Transaction, ["sender_id", "receiver_id"]),
             (Relationship, ["npc_id", "target_npc_id"]),
@@ -188,6 +191,11 @@ def _reset_world_state(db):
             (Crime, ["criminal_npc_id"]),
             (Dialogue, ["speaker_npc_id", "listener_npc_id"]),
             (VisitorLog, ["npc_id", "greeted_by_npc_id"]),
+            (Election, ["winner_npc_id"]),
+            (Policy, ["proposed_by_npc_id"]),
+            (Newspaper, ["author_npc_id"]),
+            (Event, ["affected_npc_id"]),
+            (TownAnthem, ["composed_by_npc_id"]),
         ]:
             for col_name in cols:
                 try:
