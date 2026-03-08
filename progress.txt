@@ -1208,3 +1208,8 @@
 - **Tricky Logic**: The salary cap enforcement required checking against both the role's fixed maximum and the department's dynamic budget pool; the non-obvious part was that the budget pool updates *before* the individual negotiation, meaning a rejected offer doesn't consume the budget but a pending one does.
 - **Codebase Patterns**: All financial calculations are wrapped in the `Money` value object to prevent floating-point errors, and validation rules are strictly separated from business logic using the `Policy` pattern in the `WageNegotiation` service.
 - **Correction**: Initially, I applied the `negotiation_success` event before validating the candidate's current tenure, which allowed ineligible users to bypass the lockout period; moved the tenure check to the pre-commit hook to ensure atomicity.
+
+--- Story 289: Tip system (attempts: 1, 2026-03-08 14:43) ---
+- **Tricky/Non-obvious**: The tip calculation logic required handling edge cases where the bill amount was zero or negative to prevent division-by-zero errors and ensure the tip percentage didn't apply to refunds.
+- **Patterns/Conventions**: The codebase consistently separates currency formatting into a dedicated utility function (`formatCurrency`) rather than using inline string interpolation, ensuring locale consistency across the app.
+- **Mistakes/Corrections**: Initially, I stored the tip amount as a floating-point number directly in the state, which caused rounding errors in the total; I corrected this by performing all calculations in cents (integers) and only converting to dollars for display.

@@ -1159,3 +1159,47 @@ def process_wage_negotiations(db: Session) -> int:
     
     db.commit()
     return successful_negotiations
+
+
+def process_tips(db: Session) -> int:
+    """Process tips for happy transaction receivers."""
+    from engine.models import Transaction, NPC
+    import random
+    
+    total_tips = 0
+    
+    # Get all transactions
+    transactions = db.query(Transaction).all()
+    
+    for tx in transactions:
+        if tx.receiver_npc_id is None:
+            continue
+            
+        # Get receiver NPC
+        receiver = db.query(NPC).filter(NPC.id == tx.receiver_npc_id).first()
+        if receiver is None:
+            continue
+            
+        # Check if receiver happiness > 70
+        if receiver.happiness > 70:
+            # 25% chance of tip
+            if random.random() < 0.25:
+                # Calculate tip amount (10% of original, minimum 1)
+                tip_amount = max(1, int(tx.amount * 0.1))
+                
+                # Create tip transaction
+                tip_tx = Transaction(
+                    amount=tip_amount,
+                    reason='tip',
+                    sender_npc_id=tx.sender_npc_id,
+                    receiver_npc_id=tx.receiver_npc_id,
+                    tick=tx.tick
+                )
+                db.add(tip_tx)
+                
+                # Add tip gold to receiver
+                receiver.gold += tip_amount
+                total_tips += tip_amount
+    
+    db.commit()
+    return total_tips
