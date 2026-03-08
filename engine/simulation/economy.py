@@ -1334,3 +1334,66 @@ def run_gold_sink(db: Session) -> int:
     
     db.commit()
     return 50
+
+
+def generate_economic_report(db: Session) -> dict:
+    """Generate an economic report and create a Newspaper entry."""
+    from engine.models import NPC, Treasury, Resource, Newspaper, WorldState
+    from sqlalchemy import func
+
+    # Calculate total gold from all NPCs
+    total_gold = db.query(func.sum(NPC.gold)).scalar() or 0
+
+    # Get treasury gold
+    treasury = db.query(Treasury).first()
+    treasury_gold = treasury.gold if treasury else 0
+
+    # Calculate average gold per NPC
+    npc_count = db.query(NPC).filter(NPC.is_dead == 0).count()
+    avg_gold = total_gold / npc_count if npc_count > 0 else 0
+
+    # Find richest NPC (alive only)
+    richest_npc = db.query(NPC).filter(NPC.is_dead == 0).order_by(NPC.gold.desc()).first()
+    richest_npc_name = richest_npc.name if richest_npc else "N/A"
+
+    # Find poorest NPC (alive only)
+    poorest_npc = db.query(NPC).filter(NPC.is_dead == 0).order_by(NPC.gold.asc()).first()
+    poorest_npc_name = poorest_npc.name if poorest_npc else "N/A"
+
+    # Calculate total resources
+    total_resources = db.query(func.sum(Resource.quantity)).scalar() or 0
+
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+
+    # Create body with all stats
+    body = (
+        f"Total Gold: {total_gold}\n"
+        f"Treasury Gold: {treasury_gold}\n"
+        f"Average Gold per NPC: {avg_gold:.2f}\n"
+        f"Richest NPC: {richest_npc_name}\n"
+        f"Poorst NPC: {poorest_npc_name}\n"
+        f"Total Resources: {total_resources}"
+    )
+
+    # Create Newspaper entry
+    newspaper = Newspaper(
+        day=current_tick,
+        headline="Economic Report",
+        body=body,
+        author_npc_id=None,
+        tick=current_tick
+    )
+    db.add(newspaper)
+    db.commit()
+
+    # Return stats dict
+    return {
+        "total_gold": total_gold,
+        "treasury_gold": treasury_gold,
+        "avg_gold": avg_gold,
+        "richest_npc_name": richest_npc_name,
+        "poorest_npc_name": poorest_npc_name,
+        "total_resources": total_resources
+    }

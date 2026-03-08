@@ -1233,3 +1233,8 @@
 - **Non-obvious state coupling**: The gold sink logic relied on a hidden dependency between the `TransactionService` and the `PlayerInventory` cache; failing to flush the cache before updating the ledger caused race conditions where players saw incorrect balances.
 - **Codebase convention**: This module strictly uses the `Result<T, E>` pattern for all financial operations, avoiding exceptions entirely; I initially tried to throw errors for invalid amounts, which broke the existing error-handling pipeline.
 - **Correction on idempotency**: I initially implemented the sink event without an idempotency key, risking double-charges on network retries; I corrected this by adding a unique `event_id` check against the `ProcessedEvents` table before executing the deduction.
+
+--- Story 294: Economic report generation (attempts: 1, 2026-03-08 15:48) ---
+- **Tricky**: The dynamic calculation of year-over-year variance required handling `null` values in the raw dataset without breaking the aggregation pipeline, which initially caused silent failures in the report summary.
+- **Pattern**: The codebase consistently separates data fetching (via `DataService`) from formatting logic (via `ReportFormatter`), meaning new report sections should always extend the formatter rather than embedding logic in the controller.
+- **Correction**: Initially attempted to generate the PDF directly in the API response; corrected to use an async background job to prevent request timeouts for large datasets, adhering to the existing `JobQueue` pattern.

@@ -1278,3 +1278,6 @@ Ralph stopped — needs human debugging
 [2026-03-08 19:23:10 UTC] deploy_ok: Story 292 deployed: Healthy after 0.1s
 [2026-03-08 19:23:26 UTC] story_done: Story 292 complete: Inflation adjustment
 [2026-03-08 19:23:27 UTC] story_start: Story 293: Gold sink events
+[2026-03-08 19:37:02 UTC] deploy_ok: Story 293 deployed: Healthy after 0.1s
+[2026-03-08 19:37:18 UTC] story_done: Story 293 complete: Gold sink events
+[2026-03-08 19:37:19 UTC] story_start: Story 294: Economic report generation
