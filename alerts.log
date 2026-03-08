@@ -1149,3 +1149,6 @@ Ralph stopped — needs human debugging
 [2026-03-08 03:13:02 UTC] deploy_ok: Story 212 deployed: Healthy after 0.1s
 [2026-03-08 03:13:19 UTC] story_done: Story 212 complete: Add visitor event triggers
 [2026-03-08 03:13:20 UTC] story_start: Story 213: Add event trigger buttons to town view
+[2026-03-08 03:14:36 UTC] deploy_ok: Story 213 deployed: Healthy after 0.1s
+[2026-03-08 03:14:44 UTC] story_done: Story 213 complete: Add event trigger buttons to town view
+[2026-03-08 03:14:45 UTC] story_start: Story 214: Add NPC speech bubbles to PixiJS renderer
