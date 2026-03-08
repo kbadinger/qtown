@@ -11,6 +11,7 @@ from typing import List
 import heapq
 from sqlalchemy import func
 from engine.models import Dialogue, NPC, Event, WorldState
+from typing import Optional
 
 
 def move_npc_toward_target(db: Session, npc: NPC) -> None:
@@ -1921,3 +1922,51 @@ def apply_fatigue(db: Session) -> int:
     
     # Do NOT commit here; let the caller (process_tick or test) handle the commit
     return fatigued_count
+
+
+def check_celebrations(db: Session) -> Optional[str]:
+    """Check for NPC celebrations based on happiness levels.
+    
+    For each living NPC with happiness > 90, trigger celebration:
+    - All NPCs within 5 tiles get happiness +3
+    - Create Event with event_type='celebration'
+    - Max 1 celebration per call
+    
+    Returns:
+        str: Name of celebrating NPC, or None if no celebration triggered
+    """
+    from engine.models import NPC, Event, WorldState
+    
+    # Find living NPCs with happiness > 90
+    happy_npcs = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.happiness > 90
+    ).all()
+    
+    if not happy_npcs:
+        return None
+    
+    # Pick first happy NPC (max 1 celebration per call)
+    celebrating_npc = happy_npcs[0]
+    
+    # Find all living NPCs within 5 tiles (Manhattan distance)
+    all_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    for npc in all_npcs:
+        distance = abs(npc.x - celebrating_npc.x) + abs(npc.y - celebrating_npc.y)
+        if distance <= 5:
+            npc.happiness = min(100, npc.happiness + 3)
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Create celebration event
+    event = Event(
+        event_type='celebration',
+        description=f'{celebrating_npc.name} is celebrating!',
+        tick=current_tick
+    )
+    db.add(event)
+    db.commit()
+    
+    return celebrating_npc.name

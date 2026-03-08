@@ -1163,3 +1163,8 @@
 - **Non-obvious State Coupling**: The fatigue system required tight integration with the `TimeManager` and `Inventory` systems; simply tracking a numeric value wasn't enough, as the recovery rate dynamically shifts based on equipped items and current time-of-day, necessitating a reactive observer pattern rather than a simple tick-based update.
 - **Codebase Convention**: This project strictly separates "game logic" (C# scripts) from "data configuration" (ScriptableObjects); fatigue thresholds and recovery modifiers must be defined in data assets, not hardcoded, to allow designers to tweak balance without touching the core engine code.
 - **Correction on Edge Cases**: Initially, the system failed to handle the "zero-fatigue" boundary correctly, causing a micro-stutter when the player recovered from 0.01 to 0.0; I corrected this by adding a dead-zone check to prevent unnecessary state updates when the value is effectively zero.
+
+--- Story 279: NPC celebration (attempts: 1, 2026-03-08 11:53) ---
+- **Tricky Aspect**: Determining the correct scope for the celebration event was non-obvious; it required ensuring the trigger only fired for specific NPC archetypes and didn't inadvertently loop for every entity in the scene.
+- **Pattern Discovered**: The codebase consistently uses a `ContextualEvent` wrapper for all dynamic NPC interactions, separating the logic trigger from the visual/audio payload to maintain modularity.
+- **Mistake & Correction**: Initially, I attempted to modify the NPC's state directly within the event handler, which caused race conditions; I corrected this by queuing state changes through the existing `ActionScheduler` to ensure thread safety.

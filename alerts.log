@@ -1204,3 +1204,29 @@ Ralph stopped — needs human debugging
 [2026-03-08 12:44:57 UTC] start: Ralph online — 223/450 stories complete
 [2026-03-08 12:44:58 UTC] story_start: Story 278: NPC fatigue system
 [2026-03-08 12:56:03 UTC] WARN deploy_fail: Story 278 deploy failed — starting fix cycle
+[2026-03-08 12:56:36 UTC] CRITICAL deploy_fail: Story 278 deploy failed twice — stopping
+Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   da33ff8..302550e  main -> main
+
+Indexing...
+Uploading...
+error sending request for url (https://backboard.railway.com/project/2e76505e-
+[2026-03-08 12:56:36 UTC] CRITICAL critical: Story 278 failed: NPC fatigue system
+Ralph stopped — needs human debugging
+[2026-03-08 12:56:37 UTC] stop: Ralph offline — 223/450 stories complete
+[2026-03-08 13:03:51 UTC] start: Ralph online — 224/450 stories complete
+[2026-03-08 13:03:51 UTC] story_start: Story 279: NPC celebration
+[2026-03-08 13:24:35 UTC] WARN story_fail: Story 279 struggling — attempt 5/12
+NPC celebration
+[2026-03-08 14:35:10 UTC] start: Ralph online — 224/450 stories complete
+[2026-03-08 14:35:10 UTC] story_start: Story 279: NPC celebration
+[2026-03-08 15:13:02 UTC] WARN ollama_retry: Ollama unreachable (attempt 1/6): ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+Retrying in 18s
+[2026-03-08 15:17:59 UTC] WARN story_fail: Story 279 struggling — attempt 5/12
+NPC celebration
+[2026-03-08 15:30:36 UTC] CRITICAL loop: Story 279: same error 5x in a row — giving up
+`tests/test_npcs.py::test_s279_check_celebrations FAILED                  [100%]`
+[2026-03-08 15:30:37 UTC] CRITICAL critical: Story 279 failed: NPC celebration
+Ralph stopped — needs human debugging
+[2026-03-08 15:30:37 UTC] stop: Ralph offline — 224/450 stories complete
