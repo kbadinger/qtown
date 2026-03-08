@@ -578,7 +578,7 @@ def check_achievements(db: Session) -> None:
     from engine.models import Achievement, Event, Building
     
     # Get all unachieved achievements
-    achievements = db.query(Achievement).filter(Achievement.achieved == False).all()
+    achievements = db.query(Achievement).filter(Achievement.achieved == 0).all()
     
     for ach in achievements:
         # Parse condition (stored as JSON string)
@@ -683,11 +683,11 @@ def apply_triggered_event(db: Session, event_type: str) -> None:
             world_state.weather_duration = 5
     elif event_type == "festival":
         # Boost all NPC happiness by 20
-        for npc in db.query(NPC).filter(NPC.is_dead == False).all():
+        for npc in db.query(NPC).filter(NPC.is_dead == 0).all():
             npc.happiness = min(100, npc.happiness + 20)
     elif event_type == "gold_rush":
         # Give all miners +50 gold
-        for npc in db.query(NPC).filter(NPC.role == "miner", NPC.is_dead == False).all():
+        for npc in db.query(NPC).filter(NPC.role == "miner", NPC.is_dead == 0).all():
             npc.gold = npc.gold + 50
     elif event_type == "baby_boom":
         # Spawn 3 new NPCs

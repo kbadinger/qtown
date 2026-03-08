@@ -1412,7 +1412,7 @@ def process_dreams(db: Session) -> int:
         return 0
     
     # Get all living NPCs
-    npcs = db.query(NPC).filter(NPC.is_dead == False).all()
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
     
     dream_count = 0
     for npc in npcs:
@@ -1451,7 +1451,7 @@ def check_career_progression(db: Session) -> int:
     
     # Get all living NPCs with skill >= 8
     eligible_npcs = db.query(NPC).filter(
-        NPC.is_dead == False,
+        NPC.is_dead == 0,
         NPC.skill >= 8
     ).all()
     
@@ -1491,7 +1491,7 @@ def process_retirement(db: Session) -> int:
     # Get all living NPCs with age > 70 who have a job
     eligible_npcs = db.query(NPC).filter(
         NPC.age > 70,
-        NPC.is_dead == False,
+        NPC.is_dead == 0,
         NPC.work_building_id != None
     ).all()
     
@@ -1523,7 +1523,7 @@ def process_child_growth(db: Session) -> int:
     # Process children (age < 18)
     children = db.query(NPC).filter(
         NPC.age < 18,
-        NPC.is_dead == False
+        NPC.is_dead == 0
     ).all()
     
     for child in children:
@@ -1540,7 +1540,7 @@ def process_child_growth(db: Session) -> int:
     adults_without_jobs = db.query(NPC).filter(
         NPC.age >= 18,
         NPC.work_building_id == None,
-        NPC.is_dead == False
+        NPC.is_dead == 0
     ).all()
     
     # Get available buildings with capacity > 0
@@ -1563,7 +1563,7 @@ def attempt_persuasion(db: Session) -> int:
     import random
     import json
 
-    npcs = db.query(NPC).filter(NPC.is_dead == False).all()
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
     tiles: dict[tuple[int, int], list[NPC]] = {}
     for npc in npcs:
         tiles.setdefault((npc.x, npc.y), []).append(npc)
@@ -1618,7 +1618,7 @@ def process_crowd_behavior(db: Session) -> int:
     crowd_query = db.query(
         NPC.x, NPC.y, func.count(NPC.id).label('count')
     ).filter(
-        NPC.is_dead == False
+        NPC.is_dead == 0
     ).group_by(
         NPC.x, NPC.y
     ).having(
@@ -1633,7 +1633,7 @@ def process_crowd_behavior(db: Session) -> int:
         npcs_on_tile = db.query(NPC).filter(
             NPC.x == crowd_x,
             NPC.y == crowd_y,
-            NPC.is_dead == False
+            NPC.is_dead == 0
         ).all()
         
         # Check if there's an Event at a building on this tile
@@ -1678,7 +1678,7 @@ def track_emotions(db: Session) -> dict:
     import json
     
     result = {}
-    living_npcs = db.query(NPC).filter(NPC.is_dead == False).all()
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
     
     for npc in living_npcs:
         # Parse experience JSON (default to empty dict)
@@ -1777,7 +1777,7 @@ def check_immigration(db: Session) -> bool:
     world_state = db.query(WorldState).first()
     current_tick = world_state.tick if world_state else 0
     
-    living_npcs = db.query(NPC).filter(NPC.is_dead == False).all()
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
     count = len(living_npcs)
     if count == 0:
         return False
@@ -1826,3 +1826,48 @@ def decay_friendships(db: Session) -> int:
 
     db.commit()
     return count
+
+
+def apply_specialization_bonus(db: Session) -> int:
+    """Apply specialization bonus to living NPCs based on experience."""
+    from engine.models import NPC
+    import json
+    
+    specialists_count = 0
+    
+    # Get all living NPCs
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+
+    for npc in npcs:
+        # Parse experience field into a dict
+        experience = {}
+        if isinstance(npc.experience, str):
+            try:
+                parsed = json.loads(npc.experience)
+                if isinstance(parsed, dict):
+                    experience = parsed
+            except (json.JSONDecodeError, TypeError):
+                pass
+        elif isinstance(npc.experience, dict):
+            experience = npc.experience
+        
+        # Get current ticks_in_role counter
+        ticks_in_role = experience.get('ticks_in_role', 0)
+        
+        # Increment the counter
+        ticks_in_role += 1
+        experience['ticks_in_role'] = ticks_in_role
+        
+        # Check if NPC qualifies for specialization bonus
+        if ticks_in_role > 50:
+            # Increment skill, cap at 15
+            npc.skill = min(npc.skill + 1, 15)
+            specialists_count += 1
+        
+        # Store updated experience back
+        npc.experience = json.dumps(experience) if experience else None
+        
+        db.add(npc)
+    
+    db.commit()
+    return specialists_count

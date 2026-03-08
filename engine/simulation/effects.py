@@ -186,7 +186,7 @@ def process_school_skill_gain(db: Session) -> None:
 def enforce_laws(db: Session) -> None:
     """Guards detect crimes and arrest criminals. No-op if no crimes exist."""
     from engine.models import Crime
-    crimes = db.query(Crime).filter(Crime.resolved == False).all()
+    crimes = db.query(Crime).filter(Crime.resolved == 0).all()
     for crime in crimes:
         crime.resolved = True
     db.commit()
@@ -195,6 +195,6 @@ def enforce_laws(db: Session) -> None:
 def process_punishment(db: Session) -> None:
     """Process punishment for imprisoned NPCs. No-op if no crimes exist."""
     from engine.models import Crime
-    crimes = db.query(Crime).filter(Crime.resolved == True).all()
+    crimes = db.query(Crime).filter(Crime.resolved == 1).all()
     # Placeholder — Qwen will flesh out sentence tracking in later stories
     db.commit()
