@@ -1173,3 +1173,8 @@
 - **State Propagation in NPC Systems**: The most non-obvious aspect was ensuring the `mourning` state correctly cascaded to dependent AI behaviors; simply flagging the NPC wasn't enough, the logic required a full recalculation of the `social_graph` to prevent orphaned interactions.
 - **Event-Driven Conventions**: This codebase strictly relies on the `OnStateChange` event pattern for side effects rather than polling; I initially tried to force updates in the main loop, which caused race conditions with the dialogue system.
 - **Corrected Memory Leak**: I mistakenly instantiated new `MourningContext` objects for every frame the NPC was grieving, causing a memory spike; I corrected this by reusing a singleton context and only updating its timestamp, aligning with the project's object-pooling standard.
+
+--- Story 281: Trade guild formation (attempts: 1, 2026-03-08 12:25) ---
+*   **Tricky Aspect**: The `GuildRegistry` singleton required careful handling of the `onJoin` callback chain to ensure event listeners weren't triggered during the initial static population of legacy guilds.
+*   **Pattern Discovered**: The codebase consistently uses a "Factory + Registry" pattern for all new entity types (like `TradeGuild`), where the factory handles validation and the registry manages global state and lookups.
+*   **Correction**: Initially attempted to store guild membership as a flat list in the `Merchant` entity; corrected to use a dedicated `GuildMembership` aggregate to properly enforce the one-guild-per-merchant constraint and track join dates.

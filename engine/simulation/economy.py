@@ -855,3 +855,39 @@ def update_price_history(db: Session) -> None:
     
     # Commit all changes
     db.commit()
+
+
+def check_guild_formation(db: Session) -> bool:
+    """Check if trade guild should form and apply effects."""
+    from engine.models import NPC, Event
+    
+    # Count living merchants
+    merchant_count = db.query(NPC).filter(
+        NPC.role == 'merchant',
+        NPC.is_dead == 0
+    ).count()
+    
+    # Check if guild already formed
+    guild_exists = db.query(Event).filter(
+        Event.event_type == 'guild_formed'
+    ).first() is not None
+    
+    if merchant_count >= 3 and not guild_exists:
+        # Create event
+        new_event = Event(event_type='guild_formed')
+        db.add(new_event)
+        
+        # Bonus for merchants
+        merchants = db.query(NPC).filter(
+            NPC.role == 'merchant',
+            NPC.is_dead == 0
+        ).all()
+        
+        for merchant in merchants:
+            merchant.gold += 10
+            merchant.happiness += 5
+        
+        db.commit()
+        return True
+    
+    return False

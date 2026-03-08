@@ -1233,3 +1233,6 @@ Ralph stopped — needs human debugging
 [2026-03-08 15:57:08 UTC] deploy_ok: Story 279 deployed: Healthy after 0.1s
 [2026-03-08 15:57:27 UTC] story_done: Story 279 complete: NPC celebration
 [2026-03-08 15:57:28 UTC] story_start: Story 280: NPC mourning
+[2026-03-08 16:12:01 UTC] deploy_ok: Story 280 deployed: Healthy after 0.1s
+[2026-03-08 16:12:28 UTC] story_done: Story 280 complete: NPC mourning
+[2026-03-08 16:12:29 UTC] story_start: Story 281: Trade guild formation
