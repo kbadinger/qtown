@@ -1087,3 +1087,8 @@
 - **Non-obvious Event Propagation**: The visitor event triggers rely on a specific `isInternal` flag check within the middleware; omitting this caused false positives when internal health checks triggered the "new visitor" logic.
 - **Codebase Pattern**: Event handlers in this module strictly follow the `context -> validate -> enrich -> dispatch` pipeline; deviating to handle logic directly in the trigger function broke the existing audit logging chain.
 - **Correction**: Initially attempted to use synchronous database calls inside the event emitter, which blocked the worker thread; corrected by switching to async queueing to maintain system throughput during high-traffic spikes.
+
+--- Story 213: Add event trigger buttons to town view (attempts: 1, 2026-03-07 22:13) ---
+- **Tricky**: The event trigger logic required careful handling of the `useEffect` dependency array; omitting the `townId` caused stale closures where buttons triggered events for the wrong town after navigation.
+- **Pattern**: This codebase consistently uses a centralized `eventBus` for cross-component communication rather than prop drilling, requiring all new UI interactions to dispatch typed events to a global reducer.
+- **Correction**: Initially, I attempted to mutate the button state directly in the click handler, which broke the undo/redo history stack; I corrected this by dispatching an `UPDATE_UI_STATE` action instead.
