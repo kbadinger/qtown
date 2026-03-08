@@ -1465,3 +1465,44 @@ def check_career_progression(db: Session) -> int:
     
     db.commit()
     return promotions
+
+
+def process_retirement(db: Session) -> int:
+    """Process NPC retirement for living NPCs with age > 70.
+    
+    For each living NPC with age > 70:
+    - If NPC has work_building_id, 50% chance to retire (set work_building_id=None)
+    - Append 'retired' to memory_events
+    - Retired NPCs get happiness +5 (relief)
+    
+    Returns count of retirements this tick.
+    """
+    from engine.models import NPC
+    
+    retirement_count = 0
+    
+    # Get all living NPCs with age > 70 who have a job
+    eligible_npcs = db.query(NPC).filter(
+        NPC.age > 70,
+        NPC.is_dead == False,
+        NPC.work_building_id != None
+    ).all()
+    
+    for npc in eligible_npcs:
+        # 50% chance to retire each call
+        if random.random() < 0.5:
+            # Set work_building_id to None (retire)
+            npc.work_building_id = None
+            
+            # Append 'retired' to memory_events
+            if npc.memory_events is None:
+                npc.memory_events = []
+            npc.memory_events.append('retired')
+            
+            # Retired NPCs get happiness +5 (relief)
+            npc.happiness = min(npc.happiness + 5, 100)
+            
+            retirement_count += 1
+    
+    db.commit()
+    return retirement_count

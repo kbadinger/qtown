@@ -1113,3 +1113,8 @@
 - **Non-obvious state transitions**: The `CareerLevel` enum required explicit handling of "probationary" states before promotion; assuming a direct transition caused validation errors in the `PromotionService`.
 - **Codebase convention**: All domain events (e.g., `EmployeePromoted`) must be published via the `EventBus` interface rather than direct instantiation to ensure audit logging and async notification handlers are triggered.
 - **Correction made**: Initially calculated tenure based on `hireDate` only; corrected to include `probationEndDate` to align with the company's policy that tenure for promotion eligibility starts post-probation.
+
+--- Story 268: NPC retirement (attempts: 1, 2026-03-08 00:06) ---
+- **Tricky/Non-obvious**: The retirement logic required handling state transitions for NPCs that were already flagged for "pending deletion" to avoid double-processing errors during the garbage collection cycle.
+- **Patterns/Conventions**: The codebase strictly separates "logical retirement" (data archival) from "physical removal" (entity deletion), using a dedicated `RetirementQueue` service to manage the delay between these two steps.
+- **Mistakes/Corrections**: Initially attempted to directly call `deleteEntity()` on retired NPCs, which caused race conditions with active quest scripts; corrected by implementing a soft-delete flag and deferring actual removal to the next frame update.

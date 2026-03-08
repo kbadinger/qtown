@@ -1161,3 +1161,6 @@ Ralph stopped — needs human debugging
 [2026-03-08 03:30:08 UTC] deploy_ok: Story 266 deployed: Healthy after 0.1s
 [2026-03-08 03:30:25 UTC] story_done: Story 266 complete: NPC dream system
 [2026-03-08 03:30:25 UTC] story_start: Story 267: Career progression
+[2026-03-08 03:42:16 UTC] deploy_ok: Story 267 deployed: Healthy after 0.1s
+[2026-03-08 03:42:33 UTC] story_done: Story 267 complete: Career progression
+[2026-03-08 03:42:33 UTC] story_start: Story 268: NPC retirement
