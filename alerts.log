@@ -1315,3 +1315,16 @@ Ralph stopped — needs human debugging
 [2026-03-08 22:59:30 UTC] start: Ralph online — 246/450 stories complete
 [2026-03-08 22:59:30 UTC] story_start: Story 301: Festival voting
 [2026-03-08 23:13:57 UTC] WARN deploy_fail: Story 301 deploy failed — starting fix cycle
+[2026-03-08 23:15:05 UTC] CRITICAL deploy_fail: Story 301 deploy failed twice — stopping
+Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   8eadf3a..407f852  main -> main
+
+Indexing...
+Uploading...
+error sending request for url (https://backboard.railway.com/project/2e76505e-
+[2026-03-08 23:15:06 UTC] CRITICAL critical: Story 301 failed: Festival voting
+Ralph stopped — needs human debugging
+[2026-03-08 23:15:06 UTC] stop: Ralph offline — 246/450 stories complete
+[2026-03-08 23:18:50 UTC] start: Ralph online — 247/450 stories complete
+[2026-03-08 23:18:51 UTC] story_start: Story 302: Weather prediction

@@ -1009,3 +1009,67 @@ def hold_festival_vote(db: Session) -> str:
     db.commit()
     
     return winner
+
+
+def predict_weather(db: Session) -> str:
+    """
+    Predict the next weather based on current WorldState.weather.
+    
+    Weather transition probabilities:
+    - sunny: 70% sunny, 20% cloudy, 10% rain
+    - cloudy: 30% sunny, 40% cloudy, 30% rain
+    - rain: 10% sunny, 40% cloudy, 40% rain, 10% storm
+    
+    Returns: predicted weather string
+    """
+    from sqlalchemy.orm import Session
+    
+    # Get current weather from WorldState
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return "sunny"  # Default if no world state exists
+    
+    current_weather = world_state.weather or "sunny"
+    
+    # Define weather transition probabilities
+    weather_transitions = {
+        "sunny": [
+            ("sunny", 0.70),
+            ("cloudy", 0.20),
+            ("rain", 0.10),
+        ],
+        "cloudy": [
+            ("sunny", 0.30),
+            ("cloudy", 0.40),
+            ("rain", 0.30),
+        ],
+        "rain": [
+            ("sunny", 0.10),
+            ("cloudy", 0.40),
+            ("rain", 0.40),
+            ("storm", 0.10),
+        ],
+    }
+    
+    # Get transition options for current weather (default to sunny if unknown)
+    transitions = weather_transitions.get(current_weather, weather_transitions["sunny"])
+    
+    # Generate random number for probability selection
+    roll = random.random()
+    cumulative_probability = 0.0
+    
+    # Select weather based on cumulative probability
+    for weather, probability in transitions:
+        cumulative_probability += probability
+        if roll <= cumulative_probability:
+            predicted_weather = weather
+            break
+    else:
+        predicted_weather = transitions[-1][0]  # Fallback to last option
+    
+    # Store prediction in WorldState (optional, for persistence)
+    if hasattr(world_state, 'predicted_weather'):
+        world_state.predicted_weather = predicted_weather
+        db.commit()
+    
+    return predicted_weather
