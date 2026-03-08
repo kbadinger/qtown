@@ -577,6 +577,11 @@ def world_state(db: Session = Depends(get_db)):
 # ---------------------------------------------------------------------------
 
 
+@app.get("/about", response_class=HTMLResponse)
+def about_page(request: Request):
+    return templates.TemplateResponse("about.html", {"request": request})
+
+
 @app.get("/features", response_class=HTMLResponse)
 def features_page(request: Request):
     return templates.TemplateResponse("features.html", {"request": request})
