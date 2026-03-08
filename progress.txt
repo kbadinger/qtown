@@ -1178,3 +1178,8 @@
 *   **Tricky Aspect**: The `GuildRegistry` singleton required careful handling of the `onJoin` callback chain to ensure event listeners weren't triggered during the initial static population of legacy guilds.
 *   **Pattern Discovered**: The codebase consistently uses a "Factory + Registry" pattern for all new entity types (like `TradeGuild`), where the factory handles validation and the registry manages global state and lookups.
 *   **Correction**: Initially attempted to store guild membership as a flat list in the `Merchant` entity; corrected to use a dedicated `GuildMembership` aggregate to properly enforce the one-guild-per-merchant constraint and track join dates.
+
+--- Story 282: Monopoly detection (attempts: 1, 2026-03-08 12:37) ---
+*   **Non-obvious state synchronization**: The trickiest part was handling race conditions where a user's balance updates between the "check funds" and "execute trade" steps; a simple atomic transaction wrapper was required to prevent double-spending during high-concurrency detection scans.
+*   **Codebase convention for financial logic**: Discovered a strict pattern where all monetary calculations must use integer-based cents (not floats) and are always wrapped in a `Money` value object to ensure precision and immutability across the service layer.
+*   **Correction on graph traversal**: Initially attempted a recursive DFS for cycle detection which caused stack overflows on large datasets; corrected this by switching to an iterative Tarjan's algorithm with an explicit stack to handle the graph depth safely.

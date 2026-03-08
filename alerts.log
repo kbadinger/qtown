@@ -1236,3 +1236,6 @@ Ralph stopped — needs human debugging
 [2026-03-08 16:12:01 UTC] deploy_ok: Story 280 deployed: Healthy after 0.1s
 [2026-03-08 16:12:28 UTC] story_done: Story 280 complete: NPC mourning
 [2026-03-08 16:12:29 UTC] story_start: Story 281: Trade guild formation
+[2026-03-08 16:26:21 UTC] deploy_ok: Story 281 deployed: Healthy after 0.1s
+[2026-03-08 16:26:38 UTC] story_done: Story 281 complete: Trade guild formation
+[2026-03-08 16:26:39 UTC] story_start: Story 282: Monopoly detection

@@ -7,6 +7,8 @@ from sqlalchemy import func
 from engine.models import NPC, Building, Resource, WorldState, Treasury, Transaction, Event, PriceHistory
 from engine.simulation.constants import DEFAULT_BASE_PRICE, DEFAULT_DEMAND, RESOURCE_DEMAND, SATURATION_TICK_THRESHOLD
 import json
+from typing import List
+from collections import defaultdict, Counter
 
 
 def process_work(db: Session) -> None:
@@ -891,3 +893,62 @@ def check_guild_formation(db: Session) -> bool:
         return True
     
     return False
+
+
+def detect_monopoly(db: Session) -> List[str]:
+    """Detect monopolies in the economy.
+    
+    For each Resource, find which NPC's work_building produces it.
+    If one NPC controls 80%+ of total production buildings for that resource,
+    create Event with event_type='monopoly_detected' and return list of monopolist names.
+    """
+    from engine.models import Resource, Building, NPC, Event
+    from sqlalchemy import func
+    
+    monopolist_names: List[str] = []
+    
+    # Get all resources grouped by name
+    resources = db.query(Resource).all()
+    
+    # Group resource buildings by resource name
+    resource_buildings = defaultdict(list)
+    for resource in resources:
+        if resource.building_id:
+            resource_buildings[resource.name].append(resource.building_id)
+    
+    # For each resource type, check for monopolies
+    for resource_name, building_ids in resource_buildings.items():
+        if not building_ids:
+            continue
+        
+        total_buildings = len(building_ids)
+        
+        # Find which NPC controls each building (via work_building_id)
+        building_to_npc = {}
+        for building_id in building_ids:
+            npc = db.query(NPC).filter(NPC.work_building_id == building_id).first()
+            if npc:
+                building_to_npc[building_id] = npc.id
+        
+        # Count buildings per NPC
+        npc_building_counts = Counter(building_to_npc.values())
+        
+        # Check for 80%+ control
+        for npc_id, count in npc_building_counts.items():
+            if count / total_buildings >= 0.8:
+                npc = db.query(NPC).filter(NPC.id == npc_id).first()
+                if npc:
+                    # Create monopoly event
+                    event = Event(
+                        event_type='monopoly_detected',
+                        description=f"Monopoly detected: {npc.name} controls {resource_name}",
+                        tick=0  # Will be updated by process_tick
+                    )
+                    db.add(event)
+                    
+                    # Add to results if not already present
+                    if npc.name not in monopolist_names:
+                        monopolist_names.append(npc.name)
+    
+    db.commit()
+    return monopolist_names
