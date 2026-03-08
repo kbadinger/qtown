@@ -1675,6 +1675,7 @@ def process_crowd_behavior(db: Session) -> int:
 def track_emotions(db: Session) -> dict:
     """Track emotion history for all living NPCs."""
     from engine.models import NPC
+    import json
     
     result = {}
     living_npcs = db.query(NPC).filter(NPC.is_dead == False).all()
