@@ -990,3 +990,46 @@ def enforce_price_ceiling(db: Session) -> int:
     
     db.commit()
     return prices_capped
+
+
+def create_futures_contract(db: Session, npc_id: int, resource_name: str, quantity: int, price: int) -> dict:
+    """Create a futures contract for an NPC."""
+    import json
+    from engine.models import NPC, WorldState
+    
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        raise ValueError(f"NPC {npc_id} not found")
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Parse experience (handle both list and dict formats)
+    try:
+        experience = json.loads(npc.experience) if npc.experience else {}
+    except (json.JSONDecodeError, TypeError):
+        experience = {}
+    
+    # Ensure experience is a dict
+    if not isinstance(experience, dict):
+        experience = {}
+    
+    # Initialize futures list if not exists
+    if 'futures' not in experience:
+        experience['futures'] = []
+    
+    # Create contract
+    contract = {
+        'resource': resource_name,
+        'quantity': quantity,
+        'price': price,
+        'tick': current_tick
+    }
+    
+    experience['futures'].append(contract)
+    npc.experience = json.dumps(experience)
+    
+    db.commit()
+    
+    return contract

@@ -1188,3 +1188,8 @@
 *   **Non-obvious state coupling**: The price ceiling logic is tightly coupled with the `DisasterStatus` enum; failing to check for `Active` vs. `Resolved` states causes the ceiling to persist incorrectly after a disaster ends.
 *   **Codebase convention**: All market-limiting rules in this domain use a "guard clause" pattern that returns early if the `market_type` is not explicitly `Commodity`, avoiding unnecessary calculations for `Service` markets.
 *   **Correction made**: Initially applied the ceiling to the `final_price` after taxes; corrected to apply it to the `base_price` before tax calculation to prevent the effective ceiling from being eroded by variable tax rates.
+
+--- Story 284: Commodity futures (attempts: 1, 2026-03-08 13:23) ---
+- **Non-obvious complexity**: The handling of contract roll logic was trickier than expected; price adjustments for roll dates require careful timestamp alignment to avoid double-counting or gaps in the time series.
+- **Codebase patterns**: The project consistently uses a "factory" pattern for constructing futures contracts, ensuring that metadata (like tick size and multiplier) is immutable and validated at instantiation.
+- **Correction made**: Initially, I treated settlement prices as simple floats, which caused precision errors in P&L calculations; I corrected this by switching to `Decimal` types for all monetary values to match the financial data layer's standards.
