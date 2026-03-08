@@ -1555,3 +1555,47 @@ def process_child_growth(db: Session) -> int:
     
     db.commit()
     return child_count
+
+
+def attempt_persuasion(db: Session) -> int:
+    """Find pairs of NPCs on the same tile and attempt persuasion."""
+    from engine.models import NPC
+    import random
+    import json
+
+    npcs = db.query(NPC).filter(NPC.is_dead == False).all()
+    tiles: dict[tuple[int, int], list[NPC]] = {}
+    for npc in npcs:
+        tiles.setdefault((npc.x, npc.y), []).append(npc)
+
+    count = 0
+    for group in tiles.values():
+        if len(group) < 2:
+            continue
+        for i in range(len(group)):
+            for j in range(len(group)):
+                if i == j:
+                    continue
+                npc_a = group[i]
+                npc_b = group[j]
+                if npc_a.skill > npc_b.skill:
+                    if random.random() < 0.3:
+                        if npc_a.experience:
+                            npc_b.experience = npc_a.experience
+                        mem = npc_b.memory_events
+                        if mem is None:
+                            mem = []
+                        elif isinstance(mem, str):
+                            try:
+                                mem = json.loads(mem)
+                            except Exception:
+                                mem = []
+                        if isinstance(mem, list):
+                            mem.append(f"persuaded by {npc_a.name}")
+                            npc_b.memory_events = mem
+                            count += 1
+                        else:
+                            npc_b.memory_events = [f"persuaded by {npc_a.name}"]
+                            count += 1
+    db.commit()
+    return count

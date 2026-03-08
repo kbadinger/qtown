@@ -1128,3 +1128,8 @@
 - **State Synchronization**: The trickiest part was ensuring the `GrowthEvent` listener didn't fire duplicate updates when the NPC's internal state and the database record were temporarily out of sync during transaction commits.
 - **Polymorphic Event Handling**: Discovered a strong convention where all NPC state changes must emit a `DomainEvent` rather than calling service methods directly, allowing the `GrowthEngine` to decouple logic from data persistence.
 - **Edge Case Correction**: Initially failed to handle the "max level" boundary condition, causing the growth loop to attempt an invalid attribute increment; corrected by adding a strict `isMaxLevel` guard before triggering the event.
+
+--- Story 271: NPC persuasion (attempts: 1, 2026-03-08 00:49) ---
+*   **Non-obvious State Management**: The persuasion logic relies on a hidden `interaction_cooldown` flag that persists across session restarts; failing to check this before recalculating success probabilities causes the NPC to be "persuaded" repeatedly without the intended narrative delay.
+*   **Codebase Convention**: All NPC dialogue responses are generated via the `DialogueBuilder` factory pattern, requiring strict adherence to the `Context` object structure (specifically the `last_topic` field) to ensure the response chain remains coherent.
+*   **Correction**: Initially, I attempted to modify the NPC's `reputation` score directly in the controller; I corrected this to use the `ReputationService` facade, which is required to trigger the associated event listeners and update the global quest state.
