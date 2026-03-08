@@ -952,6 +952,7 @@ def spawn_visitor_trader(db: Session) -> "Optional[NPC]":
 def hold_festival_vote(db: Session) -> str:
     """Hold a festival vote based on NPC needs."""
     from engine.models import NPC, Event, WorldState
+    from datetime import datetime
     
     # Get current tick from WorldState
     world_state = db.query(WorldState).first()
@@ -975,15 +976,18 @@ def hold_festival_vote(db: Session) -> str:
         db.commit()
         return "rest_day"
     
-    # Tally votes based on lowest stat (highest need)
+    # Tally votes based on lowest stat (lowest value = highest need)
+    # hunger -> food_festival, happiness -> music_festival, energy -> rest_day
     votes = {"food_festival": 0, "music_festival": 0, "rest_day": 0}
     
     for npc in living_npcs:
-        # Find the highest need (lowest stat value means highest need)
-        # hunger -> food_festival, happiness -> music_festival, energy -> rest_day
-        if npc.hunger >= npc.happiness and npc.hunger >= npc.energy:
+        # Find the lowest stat value
+        stats = [npc.hunger, npc.happiness, npc.energy]
+        min_val = min(stats)
+        
+        if npc.hunger == min_val:
             votes["food_festival"] += 1
-        elif npc.happiness >= npc.hunger and npc.happiness >= npc.energy:
+        elif npc.happiness == min_val:
             votes["music_festival"] += 1
         else:
             votes["rest_day"] += 1

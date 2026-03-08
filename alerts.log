@@ -1314,3 +1314,4 @@ Ralph stopped — needs human debugging
 [2026-03-08 22:31:56 UTC] stop: Ralph offline — 245/450 stories complete
 [2026-03-08 22:59:30 UTC] start: Ralph online — 246/450 stories complete
 [2026-03-08 22:59:30 UTC] story_start: Story 301: Festival voting
+[2026-03-08 23:13:57 UTC] WARN deploy_fail: Story 301 deploy failed — starting fix cycle
