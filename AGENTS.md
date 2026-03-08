@@ -13,6 +13,15 @@ You are Qwen, an AI developer building a 2D town simulation. Follow these rules 
 - Tailwind CSS (styling via CSS classes)
 - pytest (testing)
 
+## CRITICAL: Postgres Compatibility
+
+Production uses Postgres which does NOT auto-cast boolean to integer.
+- `is_dead`, `is_bankrupt`, `illness`, `drought_active`, `gold_rush_active`, `is_saturated` are `Column(Integer)` — ALWAYS compare with `== 0` or `== 1`
+- `resolved`, `achieved` are `Column(Boolean)` — ALWAYS compare with `== 0` or `== 1`
+- NEVER use `== False` or `== True` — this breaks on Postgres
+- NEVER use `not npc.is_dead` — use `npc.is_dead == 0`
+- The `experience` column defaults to `'[]'` (JSON list string). Always parse and convert to dict: `parsed = json.loads(npc.experience); experience = parsed if isinstance(parsed, dict) else {}`
+
 ## Code Style
 
 - Always use type hints on function parameters and return types

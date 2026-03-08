@@ -1891,8 +1891,8 @@ def apply_fatigue(db: Session) -> int:
     fatigued_count = 0
     
     # Get all living NPCs
-    npcs = db.query(NPC).filter(NPC.is_dead == False).all()
-    
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+
     for npc in npcs:
         if npc.energy < 20:
             # Set fatigued flag in experience JSON
