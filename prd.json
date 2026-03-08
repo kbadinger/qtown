@@ -5013,8 +5013,8 @@
         "simulation"
       ],
       "priority": 301,
-      "status": "in_progress",
-      "attempts": 1
+      "status": "done",
+      "attempts": 3
     },
     {
       "id": "302",

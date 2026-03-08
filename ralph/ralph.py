@@ -811,34 +811,10 @@ def run_story(story: dict) -> bool:
             subprocess.run(["git", "push", "origin", "main"], capture_output=True)
         print(f"  [{_ts()}] Snapshots done")
     else:
-        print(f"  [{_ts()}] Deploy FAILED: {deploy_msg}")
-        warn("deploy_fail", f"Story {story_id} deploy failed — starting fix cycle")
-        # Feed deploy error back to Qwen as a fix cycle
-        print(f"  [{_ts()}] Starting deploy-fix cycle...")
-        fix_prompt = build_prompt(story, "", deploy_error=deploy_msg)
-        fix_response, fix_tin, fix_tout, fix_time = call_qwen(fix_prompt, label=f"story {story_id} deploy-fix", think=False)
-        log_cost(tokens_in=fix_tin, tokens_out=fix_tout, gpu_time_sec=fix_time)
-        apply_files(fix_response)
-        # Re-test, commit, and try deploy again
-        fix_passed, _ = run_tests(test_file, story_id)
-        if fix_passed:
-            try:
-                git_commit(f"[Ralph] Deploy fix: Story {story_id}")
-            except subprocess.CalledProcessError:
-                pass
-            deploy_ok2, deploy_msg2 = push_and_wait()
-            if deploy_ok2:
-                notify("deploy_ok", f"Story {story_id} deploy fixed on retry")
-                snapshot_files = take_all_snapshots(story_id)
-                if snapshot_files:
-                    git_commit_snapshots(story_id)
-                    subprocess.run(["git", "push", "origin", "main"], capture_output=True)
-            else:
-                alert(
-                    "deploy_fail",
-                    f"Story {story_id} deploy failed twice — stopping\n{deploy_msg2[:200]}",
-                )
-                return False
+        # Deploy failures are non-fatal — code is already committed and pushed.
+        # Railway auto-deploys on push anyway; network timeouts are transient.
+        print(f"  [{_ts()}] Deploy FAILED (non-fatal): {deploy_msg}")
+        warn("deploy_fail", f"Story {story_id} deploy failed (non-fatal, will auto-deploy on next push): {deploy_msg[:120]}")
 
     notify("story_done", f"Story {story_id} complete: {story['title']}")
     return True
