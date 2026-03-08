@@ -736,3 +736,57 @@ def process_event_chains(db: Session) -> int:
     
     db.commit()
     return follow_up_count
+
+
+def escalate_events(db: Session) -> int:
+    """Escalate event severity based on guard presence and duration."""
+    from sqlalchemy.orm import Session
+    from sqlalchemy import func
+    from engine.models import Event, NPC, Building, WorldState
+    
+    escalations = 0
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return 0
+    
+    current_tick = world_state.tick
+    
+    # Query medium severity events created in last 5 ticks
+    medium_events = db.query(Event).filter(
+        Event.severity == 'medium',
+        Event.tick >= current_tick - 5
+    ).all()
+    
+    for event in medium_events:
+        if event.affected_building_id:
+            building = db.query(Building).filter(
+                Building.id == event.affected_building_id
+            ).first()
+            
+            if building:
+                # Check for guard NPCs within 10 tiles
+                guards = db.query(NPC).filter(
+                    NPC.role == 'guard',
+                    NPC.is_dead == 0,
+                    func.abs(NPC.x - building.x) <= 10,
+                    func.abs(NPC.y - building.y) <= 10
+                ).count()
+                
+                if guards == 0:
+                    event.severity = 'high'
+                    escalations += 1
+    
+    # Query high severity events created 10+ ticks ago (unresolved)
+    high_events = db.query(Event).filter(
+        Event.severity == 'high',
+        Event.tick <= current_tick - 10
+    ).all()
+    
+    for event in high_events:
+        event.severity = 'critical'
+        escalations += 1
+    
+    db.commit()
+    return escalations
