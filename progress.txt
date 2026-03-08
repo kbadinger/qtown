@@ -1098,3 +1098,8 @@
 - **State Management Pattern**: Discovered that this codebase relies on a centralized `GameState` singleton for UI toggling rather than component-local state, meaning speech visibility is driven by a global flag updated during the dialogue manager's tick.
 - **Sprite Layering Mistake**: Initially appended the speech bubble container to the scene root, causing it to render behind other game entities; corrected by explicitly inserting the bubble into the NPC's container to ensure it moves and scales with the character.
 - **Event Cleanup**: Learned that PixiJS event listeners attached to dynamic UI elements must be explicitly removed in the `destroy()` lifecycle to prevent memory leaks, a pattern not strictly enforced in previous static UI implementations.
+
+--- Story 215: Add day/night cycle to PixiJS renderer (attempts: 1, 2026-03-07 22:16) ---
+- **Non-obvious timing**: PixiJS `ticker` updates are delta-based, not frame-based; calculating the day/night cycle required accumulating `delta` seconds rather than incrementing per-frame to ensure consistent speed across varying frame rates.
+- **Codebase convention**: The renderer layer strictly separates visual state from game logic; the cycle's progress is driven by a central `GameTime` singleton, while the renderer only consumes the resulting `timeOfDay` float to adjust tint/alpha values.
+- **Correction**: Initially applied the day/night tint directly to the root `PIXI.Container`, which inadvertently dimmed UI overlays; corrected by creating a dedicated `DayNightOverlay` container with a lower `zIndex` to isolate the effect from the HUD.
