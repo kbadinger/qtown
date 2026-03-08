@@ -44,9 +44,11 @@ from ralph.asset_gen import check_comfyui_health
 
 PRD_FILE = Path("prd.json")
 HUMAN_MD = Path("HUMAN.md")
+HELP_FILE = Path(".ralph-needs-help.json")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen3.5:27b")
 MAX_ATTEMPTS = 12
+HELP_WAIT_SECONDS = 600  # 10 minutes
 
 # ---------------------------------------------------------------------------
 # Graceful shutdown
@@ -63,6 +65,80 @@ def _signal_handler(signum, frame):
 
 signal.signal(signal.SIGINT, _signal_handler)
 signal.signal(signal.SIGTERM, _signal_handler)
+
+
+# ---------------------------------------------------------------------------
+# Auto-fix known Qwen mistakes before testing
+# ---------------------------------------------------------------------------
+
+def _autofix_postgres_compat():
+    """Fix known Postgres-incompatible patterns Qwen keeps writing."""
+    import re
+    fixes_applied = 0
+    sim_dir = Path("engine/simulation")
+    for py_file in sim_dir.glob("*.py"):
+        if py_file.name.startswith("_"):
+            continue
+        text = py_file.read_text(encoding="utf-8")
+        original = text
+        # Fix boolean comparisons: == False → == 0, == True → == 1
+        text = re.sub(r'(\w+\.is_dead)\s*==\s*False', r'\1 == 0', text)
+        text = re.sub(r'(\w+\.is_dead)\s*==\s*True', r'\1 == 1', text)
+        text = re.sub(r'(\w+\.is_bankrupt)\s*==\s*False', r'\1 == 0', text)
+        text = re.sub(r'(\w+\.is_bankrupt)\s*==\s*True', r'\1 == 1', text)
+        text = re.sub(r'(\w+\.resolved)\s*==\s*False', r'\1 == 0', text)
+        text = re.sub(r'(\w+\.resolved)\s*==\s*True', r'\1 == 1', text)
+        text = re.sub(r'(\w+\.achieved)\s*==\s*False', r'\1 == 0', text)
+        text = re.sub(r'(\w+\.achieved)\s*==\s*True', r'\1 == 1', text)
+        text = re.sub(r'(\w+\.illness)\s*==\s*False', r'\1 == 0', text)
+        text = re.sub(r'(\w+\.illness)\s*==\s*True', r'\1 == 1', text)
+        if text != original:
+            py_file.write_text(text, encoding="utf-8")
+            fixes_applied += 1
+            print(f"  [autofix] Postgres compat fixes applied to {py_file.name}")
+    return fixes_applied
+
+
+# ---------------------------------------------------------------------------
+# Help file: pause for external fix, then retry
+# ---------------------------------------------------------------------------
+
+def _request_help(story_id, story_title, error_msg, test_file, attempt):
+    """Write .ralph-needs-help.json and wait for external fix."""
+    help_data = {
+        "story_id": story_id,
+        "story_title": story_title,
+        "error": error_msg,
+        "test_file": test_file,
+        "attempt": attempt,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+    HELP_FILE.write_text(json.dumps(help_data, indent=2), encoding="utf-8")
+    alert("needs_help", f"Story {story_id} needs help — waiting {HELP_WAIT_SECONDS // 60}min for fix\n`{error_msg[:120]}`")
+    print(f"  [help] Wrote {HELP_FILE} — waiting {HELP_WAIT_SECONDS // 60} minutes for external fix...")
+
+    # Wait, checking for shutdown every 30s
+    waited = 0
+    while waited < HELP_WAIT_SECONDS:
+        if _shutdown_requested:
+            return False
+        time.sleep(30)
+        waited += 30
+        # If help file was deleted, someone handled it early
+        if not HELP_FILE.exists():
+            print(f"  [help] Help file removed early — someone fixed it!")
+            break
+
+    # Pull any fixes
+    print(f"  [help] Wait complete — pulling latest changes...")
+    subprocess.run(["git", "pull", "--rebase", "origin", "main"], capture_output=True)
+
+    # Clean up help file
+    if HELP_FILE.exists():
+        HELP_FILE.unlink()
+
+    return True
+
 
 
 def should_stop() -> bool:
@@ -565,6 +641,8 @@ def run_story(story: dict) -> bool:
         # 5. Apply file changes
         written = apply_files(response)
         last_written = written  # Track for targeted revert on next attempt
+        if written:
+            _autofix_postgres_compat()  # Fix == False/True before testing
         if not written:
             print("  No files written — Qwen may have returned empty/invalid output")
             log_metric(story_id, attempt, False, gpu_time, "No files written", tokens_in, tokens_out)
@@ -631,7 +709,40 @@ def run_story(story: dict) -> bool:
             if post_error_sig:
                 recent_errors.append(post_error_sig)
                 if len(recent_errors) >= 5 and len(set(recent_errors[-5:])) == 1:
-                    alert("loop", f"Story {story_id}: same error 5x in a row — giving up\n`{post_error_sig}`")
+                    alert("loop", f"Story {story_id}: same error 5x in a row — requesting help\n`{post_error_sig}`")
+                    # Request help and wait 10 minutes for external fix
+                    helped = _request_help(story_id, story["title"], post_error_sig, test_file, attempt)
+                    if not helped:
+                        return False  # Shutdown requested during wait
+                    # Auto-fix Postgres compat after pull
+                    _autofix_postgres_compat()
+                    # Retry: reset errors and give Qwen 3 more attempts
+                    recent_errors.clear()
+                    prev_test_output = None
+                    # Run the test again to see if external fix resolved it
+                    test_ok, test_output = run_tests(test_file, story_id)
+                    if test_ok:
+                        print(f"  [help] External fix resolved the issue!")
+                        passed = True
+                        break
+                    print(f"  [help] Still failing after help — giving Qwen 3 more attempts")
+                    MAX_HELP_RETRIES = 3
+                    for help_attempt in range(1, MAX_HELP_RETRIES + 1):
+                        print(f"\n  [Attempt {attempt + help_attempt}/{MAX_ATTEMPTS} (post-help)]")
+                        prompt = build_prompt(story, test_output, regression_error=regression_feedback)
+                        response, tin, tout, gpu_time = call_qwen(prompt, label=f"story {story_id} post-help {help_attempt}")
+                        log_cost(tokens_in=tin, tokens_out=tout, gpu_time_sec=gpu_time)
+                        last_written = apply_files(response)
+                        if last_written:
+                            _autofix_postgres_compat()
+                        test_ok, test_output = run_tests(test_file, story_id)
+                        if test_ok:
+                            passed = True
+                            break
+                    if passed:
+                        break
+                    # Truly stuck — stop for real
+                    alert("critical", f"Story {story_id}: still failing after help + 3 retries — stopping\n`{post_error_sig}`")
                     return False
             # Save post-write output so next attempt sees the REAL error
             prev_test_output = test_output
