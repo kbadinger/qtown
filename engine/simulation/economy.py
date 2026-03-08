@@ -1397,3 +1397,64 @@ def generate_economic_report(db: Session) -> dict:
         "poorest_npc_name": poorest_npc_name,
         "total_resources": total_resources
     }
+
+
+def calculate_gini(db: Session) -> float:
+    """Calculate Gini coefficient from living NPC gold values.
+    
+    Formula: sum of |xi - xj| for all pairs / (2 * n * mean)
+    Returns float 0.0 (perfect equality) to 1.0 (max inequality).
+    If only 1 NPC, returns 0.0.
+    Creates Event with event_type='gini_report' and value in description.
+    """
+    from engine.models import NPC, Event, WorldState
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Get all living NPCs and their gold
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    gold_values = [npc.gold for npc in npcs]
+    
+    n = len(gold_values)
+    
+    # If 0 or 1 NPC, return 0.0 (perfect equality)
+    if n <= 1:
+        event = Event(
+            event_type='gini_report',
+            description='Gini coefficient: 0.0000',
+            tick=current_tick,
+            severity='info',
+            affected_npc_id=None,
+            affected_building_id=None
+        )
+        db.add(event)
+        db.commit()
+        return 0.0
+    
+    # Calculate mean
+    mean = sum(gold_values) / n
+    
+    # Calculate sum of absolute differences for all pairs
+    total_diff = 0
+    for i in range(n):
+        for j in range(i + 1, n):
+            total_diff += abs(gold_values[i] - gold_values[j])
+    
+    # Gini coefficient formula
+    gini = total_diff / (2 * n * mean)
+    
+    # Create event with the result
+    event = Event(
+        event_type='gini_report',
+        description=f'Gini coefficient: {gini:.4f}',
+        tick=current_tick,
+        severity='info',
+        affected_npc_id=None,
+        affected_building_id=None
+    )
+    db.add(event)
+    db.commit()
+    
+    return gini

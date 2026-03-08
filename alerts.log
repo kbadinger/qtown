@@ -1281,3 +1281,6 @@ Ralph stopped — needs human debugging
 [2026-03-08 19:37:02 UTC] deploy_ok: Story 293 deployed: Healthy after 0.1s
 [2026-03-08 19:37:18 UTC] story_done: Story 293 complete: Gold sink events
 [2026-03-08 19:37:19 UTC] story_start: Story 294: Economic report generation
+[2026-03-08 19:49:22 UTC] deploy_ok: Story 294 deployed: Healthy after 0.1s
+[2026-03-08 19:49:38 UTC] story_done: Story 294 complete: Economic report generation
+[2026-03-08 19:49:39 UTC] story_start: Story 295: Wealth inequality index

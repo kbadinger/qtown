@@ -1238,3 +1238,8 @@
 - **Tricky**: The dynamic calculation of year-over-year variance required handling `null` values in the raw dataset without breaking the aggregation pipeline, which initially caused silent failures in the report summary.
 - **Pattern**: The codebase consistently separates data fetching (via `DataService`) from formatting logic (via `ReportFormatter`), meaning new report sections should always extend the formatter rather than embedding logic in the controller.
 - **Correction**: Initially attempted to generate the PDF directly in the API response; corrected to use an async background job to prevent request timeouts for large datasets, adhering to the existing `JobQueue` pattern.
+
+--- Story 295: Wealth inequality index (attempts: 1, 2026-03-08 16:01) ---
+- **Non-obvious data normalization**: The index calculation required handling zero-denominator cases in the Gini coefficient logic; a simple division check wasn't enough, as the upstream data pipeline sometimes returns `null` instead of `0`, requiring explicit null-coalescing before any math operations.
+- **Convention for aggregation**: This codebase consistently uses `group_by` followed by `aggregate` with named tuples for metric definitions rather than inline lambda functions, ensuring type safety and reusability across different inequality metrics.
+- **Corrected floating-point precision**: Initially, the final index was rounded too early in the pipeline, causing discrepancies in edge-case scenarios with small populations; moved the rounding operation to the final serialization step to maintain precision throughout the calculation chain.
