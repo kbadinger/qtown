@@ -1268,3 +1268,8 @@
 - **Non-obvious complexity**: Handling the asynchronous nature of weather API responses required careful state management to prevent race conditions when updating the UI before data was fully validated.
 - **Codebase conventions**: The project strictly enforces a "fail-fast" pattern for external service calls, using custom error wrappers that automatically trigger fallback UI states rather than bubbling up generic exceptions.
 - **Correction**: Initially, I cached raw API responses directly, which caused stale data issues during rapid re-renders; I corrected this by implementing a normalized cache key based on both location and timestamp.
+
+--- Story 303: Crop yield calculation (attempts: 1, 2026-03-08 19:56) ---
+- **Unit Consistency**: The most non-obvious trap was the implicit unit mismatch between the input sensor data (imperial) and the database schema (metric), requiring explicit conversion before any aggregation logic could run.
+- **Null Handling Pattern**: The codebase consistently uses `Optional` chaining for field access but relies on `ifPresent` with a default value of `0.0` for yield calculations, rather than throwing exceptions on missing data.
+- **Correction on Rounding**: Initially applied rounding to intermediate row-level calculations, which introduced cumulative errors; corrected by performing rounding only on the final aggregated sum to match the precision requirements.

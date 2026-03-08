@@ -38,3 +38,22 @@ def apply_weather_effects(db: Session) -> None:
         return
     
     weather = world_state.weather
+
+
+def get_season(db: Session) -> str:
+    """Get the current season from world state."""
+    from engine.models import WorldState
+    ws = db.query(WorldState).first()
+    if not ws:
+        return "spring"
+    # Extract season from day_of_year or similar field
+    # Assuming day_of_year exists and ranges 0-365
+    day = getattr(ws, 'day_of_year', 0)
+    if 0 <= day < 90:
+        return "spring"
+    elif 90 <= day < 180:
+        return "summer"
+    elif 180 <= day < 270:
+        return "fall"
+    else:
+        return "winter"

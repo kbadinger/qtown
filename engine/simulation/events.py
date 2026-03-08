@@ -9,6 +9,7 @@ import json
 from datetime import datetime
 from sqlalchemy import desc
 from typing import Optional
+from engine.simulation.weather import get_season
 
 
 def trigger_drought(db: Session) -> None:
@@ -1073,3 +1074,42 @@ def predict_weather(db: Session) -> str:
         db.commit()
     
     return predicted_weather
+
+
+def calculate_crop_yield(db: Session) -> int:
+    """Calculate crop yield based on season, weather, and worker skill."""
+    from engine.models import NPC
+    
+    # Base yield
+    yield_value = 10.0
+    
+    # Season multiplier
+    season = get_season(db)
+    season_multipliers = {
+        "spring": 1.2,
+        "summer": 1.5,
+        "fall": 1.0,
+        "winter": 0.3
+    }
+    yield_value *= season_multipliers.get(season, 1.0)
+    
+    # Weather multiplier
+    from engine.models import WorldState
+    ws = db.query(WorldState).first()
+    weather = getattr(ws, 'weather', 'cloudy') if ws else 'cloudy'
+    weather_multipliers = {
+        "sunny": 1.2,
+        "cloudy": 1.0,
+        "rain": 0.8,
+        "storm": 0.2
+    }
+    yield_value *= weather_multipliers.get(weather, 1.0)
+    
+    # Worker skill bonus (highest farmer skill * 0.1)
+    farmers = db.query(NPC).filter(NPC.role == "farmer").all()
+    if farmers:
+        max_skill = max(farmer.skill for farmer in farmers if farmer.skill is not None)
+        yield_value += max_skill * 0.1
+    
+    # Return as integer
+    return int(yield_value)
