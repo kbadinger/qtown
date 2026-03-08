@@ -1081,3 +1081,36 @@ def process_debt_forgiveness(db: Session) -> int:
     
     db.commit()
     return forgiven_count
+
+
+def detect_economic_boom(db: Session) -> bool:
+    """Detect economic boom: gold growth > 10% per day (average gold > base_wage * 1.1).
+
+    If boom detected, set WorldState.economic_status='boom' and create Event.
+    Returns True if boom detected, False otherwise.
+    """
+    from engine.models import NPC, Event, WorldState
+
+    total_gold = db.query(func.sum(NPC.gold)).filter(NPC.is_dead == 0).scalar() or 0
+    npc_count = db.query(func.count(NPC.id)).filter(NPC.is_dead == 0).scalar() or 1
+    avg_gold = total_gold / npc_count
+
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return False
+
+    threshold = world_state.base_wage * 1.1
+    is_boom = avg_gold > threshold
+
+    if is_boom and world_state.economic_status != "boom":
+        world_state.economic_status = "boom"
+        event = Event(
+            event_type="economic_boom",
+            description="Economic boom detected! Average gold exceeds threshold.",
+            tick=world_state.tick,
+            severity="info",
+        )
+        db.add(event)
+
+    db.commit()
+    return is_boom

@@ -838,10 +838,15 @@ def test_s285_process_debt_forgiveness(db):
 def test_s286_detect_economic_boom(db):
     """Economic boom detection."""
     _setup_world(db)
+    from engine.models import NPC
+    # Give NPCs enough gold to trigger boom (avg > base_wage * 1.1 = 11)
+    for npc in db.query(NPC).all():
+        npc.gold = 500
+    db.flush()
     from engine.simulation import detect_economic_boom
 
     result = detect_economic_boom(db)
-    assert result is not None, "detect_economic_boom should return a value"
+    assert result is True, "detect_economic_boom should detect boom when avg gold is high"
     db.flush()
 
 
