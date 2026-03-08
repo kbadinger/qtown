@@ -952,3 +952,41 @@ def detect_monopoly(db: Session) -> List[str]:
     
     db.commit()
     return monopolist_names
+
+
+def enforce_price_ceiling(db: Session) -> int:
+    """Enforce price ceiling during critical disasters.
+    
+    Check if any Event with severity='critical' exists in last 10 ticks.
+    If so, cap all Resource prices at 2x base price (base_price = 10, ceiling = 20).
+    Return count of prices capped.
+    """
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return 0
+    
+    current_tick = world_state.tick
+    
+    # Check for critical events in last 10 ticks
+    critical_events = db.query(Event).filter(
+        Event.severity == 'critical',
+        Event.tick > current_tick - 10,
+        Event.tick <= current_tick
+    ).count()
+    
+    if critical_events == 0:
+        return 0
+    
+    # Cap prices at 2x base price (base_price = 10, ceiling = 20)
+    base_price = 10
+    ceiling = base_price * 2
+    prices_capped = 0
+    
+    for resource in db.query(Resource).all():
+        if resource.price > ceiling:
+            resource.price = ceiling
+            prices_capped += 1
+    
+    db.commit()
+    return prices_capped

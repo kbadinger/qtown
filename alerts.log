@@ -1239,3 +1239,6 @@ Ralph stopped — needs human debugging
 [2026-03-08 16:26:21 UTC] deploy_ok: Story 281 deployed: Healthy after 0.1s
 [2026-03-08 16:26:38 UTC] story_done: Story 281 complete: Trade guild formation
 [2026-03-08 16:26:39 UTC] story_start: Story 282: Monopoly detection
+[2026-03-08 16:38:20 UTC] deploy_ok: Story 282 deployed: Healthy after 0.1s
+[2026-03-08 16:38:36 UTC] story_done: Story 282 complete: Monopoly detection
+[2026-03-08 16:38:36 UTC] story_start: Story 283: Price ceiling during disasters
