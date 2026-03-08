@@ -1118,3 +1118,8 @@
 - **Tricky/Non-obvious**: The retirement logic required handling state transitions for NPCs that were already flagged for "pending deletion" to avoid double-processing errors during the garbage collection cycle.
 - **Patterns/Conventions**: The codebase strictly separates "logical retirement" (data archival) from "physical removal" (entity deletion), using a dedicated `RetirementQueue` service to manage the delay between these two steps.
 - **Mistakes/Corrections**: Initially attempted to directly call `deleteEntity()` on retired NPCs, which caused race conditions with active quest scripts; corrected by implementing a soft-delete flag and deferring actual removal to the next frame update.
+
+--- Story 269: Family inheritance (attempts: 1, 2026-03-08 00:23) ---
+- **Non-obvious state mutation**: The inheritance logic relied on deep cloning of nested `Asset` objects before modification; failing to clone resulted in unintended side effects across unrelated family branches.
+- **Recursive traversal pattern**: Discovered a consistent convention of using `reduce` with a helper function to flatten multi-generational family trees, rather than nested loops, to calculate total net worth.
+- **Correction on edge cases**: Initially missed handling `null` heirs in the distribution algorithm, which caused a runtime crash; fixed by adding an explicit guard clause that skips invalid entries instead of throwing.

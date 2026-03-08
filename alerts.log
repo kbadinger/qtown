@@ -1164,3 +1164,6 @@ Ralph stopped — needs human debugging
 [2026-03-08 03:42:16 UTC] deploy_ok: Story 267 deployed: Healthy after 0.1s
 [2026-03-08 03:42:33 UTC] story_done: Story 267 complete: Career progression
 [2026-03-08 03:42:33 UTC] story_start: Story 268: NPC retirement
+[2026-03-08 05:08:05 UTC] deploy_ok: Story 268 deployed: Healthy after 0.1s
+[2026-03-08 05:08:22 UTC] story_done: Story 268 complete: NPC retirement
+[2026-03-08 05:08:23 UTC] story_start: Story 269: Family inheritance

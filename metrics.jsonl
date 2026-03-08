@@ -649,3 +649,6 @@
 {"story_id": "267", "attempt": 1, "passed": true, "duration_sec": 39.05, "error": null, "tokens_in": 6475, "tokens_out": 1031, "timestamp": "2026-03-07T22:31:11"}
 {"story_id": "268", "attempt": 1, "passed": false, "duration_sec": 4440.5, "error": "No files written", "tokens_in": 6463, "tokens_out": 125165, "timestamp": "2026-03-07T23:56:37"}
 {"story_id": "268", "attempt": 2, "passed": true, "duration_sec": 42.7, "error": null, "tokens_in": 6463, "tokens_out": 1071, "timestamp": "2026-03-07T23:57:25"}
+{"story_id": "269", "attempt": 1, "passed": true, "duration_sec": 68.93, "error": null, "tokens_in": 6894, "tokens_out": 1932, "timestamp": "2026-03-08T00:09:37"}
+{"story_id": "269", "attempt": 1, "passed": false, "duration_sec": 68.93, "error": "REGRESSION: REGRESSION in Story 090: ============================= test session starts =============================\nplatform win32 -- Python 3.12.8, pytest-9.0.2, pluggy-1.6.0 -- C:\\Users\\kbadi\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\ncachedir: .pytest_cache\nrootdir: D:\\Projects\\qtown\nplugins: anyio-", "tokens_in": 6894, "tokens_out": 1932, "timestamp": "2026-03-08T00:13:19"}
+{"story_id": "269", "attempt": 2, "passed": true, "duration_sec": 40.23, "error": null, "tokens_in": 7118, "tokens_out": 1106, "timestamp": "2026-03-08T00:14:05"}

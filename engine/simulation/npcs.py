@@ -573,9 +573,11 @@ def age_npcs(db: Session) -> None:
     db.commit()
 
 
-def process_inheritance(db: Session) -> None:
+def process_inheritance(db: Session) -> int:
     """Process inheritance for all dead NPCs."""
     from engine.models import NPC, Relationship, Treasury
+    
+    total_gold_distributed = 0
     
     # Get all dead NPCs who still have gold
     dead_npcs = db.query(NPC).filter(NPC.is_dead == 1).filter(NPC.gold > 0).all()
@@ -596,7 +598,9 @@ def process_inheritance(db: Session) -> None:
             share = gold // len(children)
             remainder = gold % len(children)
             for i, child in enumerate(children):
-                child.gold += share + (1 if i < remainder else 0)
+                amount = share + (1 if i < remainder else 0)
+                child.gold += amount
+                total_gold_distributed += amount
         else:
             # Find spouse
             spouse = db.query(NPC).join(
@@ -609,16 +613,19 @@ def process_inheritance(db: Session) -> None:
             if spouse:
                 # Spouse gets all gold
                 spouse.gold += gold
+                total_gold_distributed += gold
             else:
                 # Treasury gets all gold
                 treasury = db.query(Treasury).first()
                 if treasury:
                     treasury.gold_stored += gold
+                    total_gold_distributed += gold
         
         # Clear dead NPC's gold
         dead_npc.gold = 0
     
     db.commit()
+    return total_gold_distributed
 
 
 def check_population_growth(db: Session) -> None:
