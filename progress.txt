@@ -1243,3 +1243,8 @@
 - **Non-obvious data normalization**: The index calculation required handling zero-denominator cases in the Gini coefficient logic; a simple division check wasn't enough, as the upstream data pipeline sometimes returns `null` instead of `0`, requiring explicit null-coalescing before any math operations.
 - **Convention for aggregation**: This codebase consistently uses `group_by` followed by `aggregate` with named tuples for metric definitions rather than inline lambda functions, ensuring type safety and reusability across different inequality metrics.
 - **Corrected floating-point precision**: Initially, the final index was rounded too early in the pipeline, causing discrepancies in edge-case scenarios with small populations; moved the rounding operation to the final serialization step to maintain precision throughout the calculation chain.
+
+--- Story 296: Multi-day event chains (attempts: 1, 2026-03-08 16:15) ---
+- **State Persistence Complexity**: Handling multi-day state was non-obvious; relying solely on in-memory flags caused data loss on server restarts, requiring a shift to persistent database records with explicit `completed_at` timestamps.
+- **Timezone Sensitivity**: The codebase strictly uses UTC for all event scheduling and comparison; using local time for "day boundaries" caused race conditions where events triggered prematurely for users in different zones.
+- **Idempotency in Triggers**: Initially, the daily check loop re-triggered actions for already-completed days; corrected by adding a `WHERE status != 'completed'` filter and ensuring the transaction wraps the status update and action execution.

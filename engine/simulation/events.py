@@ -696,3 +696,43 @@ def apply_triggered_event(db: Session, event_type: str) -> None:
             seed_npc(db, role="citizen")
     
     db.commit()
+
+
+def process_event_chains(db: Session) -> int:
+    """Process multi-day event chains - create follow-up events for high severity events."""
+    from engine.models import Event, WorldState
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Query high severity events from last 3 ticks (current_tick - 2 to current_tick)
+    high_events = db.query(Event).filter(
+        Event.severity == 'high',
+        Event.tick >= current_tick - 2,
+        Event.tick <= current_tick
+    ).all()
+    
+    follow_up_count = 0
+    
+    for event in high_events:
+        # Check if follow-up already exists (same event_type + '_aftermath' at same tick)
+        follow_up_type = event.event_type + '_aftermath'
+        existing_follow_up = db.query(Event).filter(
+            Event.event_type == follow_up_type,
+            Event.tick == event.tick
+        ).first()
+        
+        if not existing_follow_up:
+            # Create follow-up event with '_aftermath' suffix and severity one level lower
+            follow_up = Event(
+                event_type=follow_up_type,
+                severity='medium',
+                tick=event.tick,
+                description=f"Aftermath of {event.event_type}"
+            )
+            db.add(follow_up)
+            follow_up_count += 1
+    
+    db.commit()
+    return follow_up_count

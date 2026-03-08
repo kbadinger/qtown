@@ -1284,3 +1284,6 @@ Ralph stopped — needs human debugging
 [2026-03-08 19:49:22 UTC] deploy_ok: Story 294 deployed: Healthy after 0.1s
 [2026-03-08 19:49:38 UTC] story_done: Story 294 complete: Economic report generation
 [2026-03-08 19:49:39 UTC] story_start: Story 295: Wealth inequality index
+[2026-03-08 20:03:53 UTC] deploy_ok: Story 295 deployed: Healthy after 0.1s
+[2026-03-08 20:04:09 UTC] story_done: Story 295 complete: Wealth inequality index
+[2026-03-08 20:04:10 UTC] story_start: Story 296: Multi-day event chains
