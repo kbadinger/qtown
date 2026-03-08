@@ -1137,3 +1137,6 @@ Ralph stopped — needs human debugging
 [2026-03-07 07:02:51 UTC] stop: Ralph offline — 204/215 stories complete
 [2026-03-08 02:49:52 UTC] start: Ralph online — 204/350 stories complete
 [2026-03-08 02:49:52 UTC] story_start: Story 207: Add NPC dialogue to tick processing
+[2026-03-08 02:52:12 UTC] deploy_ok: Story 207 deployed: Healthy after 0.1s
+[2026-03-08 02:52:39 UTC] story_done: Story 207 complete: Add NPC dialogue to tick processing
+[2026-03-08 02:52:39 UTC] story_start: Story 208: Add dialogue feed to town view

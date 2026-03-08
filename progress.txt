@@ -1072,3 +1072,8 @@
 - **Tick Coupling**: It was non-obvious that NPC dialogue state must be strictly synchronized with the global tick counter; decoupling it caused dialogue to stutter or skip frames when the game loop lagged.
 - **State Machine Pattern**: The codebase consistently uses a centralized `GameState` enum for all entity transitions, meaning new dialogue states must be added there rather than creating local flags on the NPC class.
 - **Correction on Input Handling**: Initially, I tried to block player movement during dialogue by returning early from the input handler, but this broke the pause menu; I corrected this by using a dedicated `isDialogActive` flag that only gates specific movement logic instead of the entire input loop.
+
+--- Story 208: Add dialogue feed to town view (attempts: 1, 2026-03-07 21:53) ---
+- **Non-obvious UI integration**: The town view's existing layout manager required injecting the dialogue feed as a "floating" layer rather than a standard child node to avoid breaking the scrollable background map; this necessitated manual z-index management.
+- **State synchronization pattern**: Discovered that the codebase relies on a centralized `TownState` singleton for UI updates rather than component-level props, meaning the feed must subscribe to global event emitters to stay in sync with story progression.
+- **Correction on history handling**: Initially attempted to render the full dialogue history at once, causing a render lag; corrected by implementing a virtualized list that only renders the last 20 messages and lazy-loads older entries on scroll.
