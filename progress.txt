@@ -1213,3 +1213,8 @@
 - **Tricky/Non-obvious**: The tip calculation logic required handling edge cases where the bill amount was zero or negative to prevent division-by-zero errors and ensure the tip percentage didn't apply to refunds.
 - **Patterns/Conventions**: The codebase consistently separates currency formatting into a dedicated utility function (`formatCurrency`) rather than using inline string interpolation, ensuring locale consistency across the app.
 - **Mistakes/Corrections**: Initially, I stored the tip amount as a floating-point number directly in the state, which caused rounding errors in the total; I corrected this by performing all calculations in cents (integers) and only converting to dollars for display.
+
+--- Story 290: Resource quality tiers (attempts: 1, 2026-03-08 14:56) ---
+- **Non-obvious enum handling**: The mapping between raw API strings and internal `ResourceTier` enums required a fallback strategy for unknown values, which wasn't immediately obvious from the type definitions alone.
+- **Validation pattern**: Discovered that all tier-based logic must pass through the centralized `TierValidator` service rather than using inline `if/else` checks to ensure consistent audit logging.
+- **Correction**: Initially attempted to modify the database schema directly for the new tiers; corrected to use the existing migration generator to maintain backward compatibility with the legacy reporting module.

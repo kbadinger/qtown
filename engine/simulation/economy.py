@@ -9,6 +9,7 @@ from engine.simulation.constants import DEFAULT_BASE_PRICE, DEFAULT_DEMAND, RESO
 import json
 from typing import List
 from collections import defaultdict, Counter
+from typing import Dict
 
 
 def process_work(db: Session) -> None:
@@ -1203,3 +1204,48 @@ def process_tips(db: Session) -> int:
     
     db.commit()
     return total_tips
+
+
+def assign_resource_quality(db: Session) -> Dict[str, str]:
+    """Assign quality tiers to resources based on producing NPC skill.
+    
+    Quality tiers:
+    - skill < 3 = 'basic'
+    - skill 3-7 = 'fine'
+    - skill >= 8 = 'masterwork'
+    
+    Updates Resource name with quality suffix (e.g., 'Food (fine)').
+    masterwork items sell for 2x price.
+    
+    Returns:
+        Dict mapping resource names to their quality tier.
+    """
+    from engine.models import Resource, NPC, Building
+    
+    quality_map = {}
+    resources = db.query(Resource).all()
+    
+    for resource in resources:
+        quality = 'basic'  # default
+        
+        # Find the producing NPC via building
+        if resource.building_id:
+            building = db.query(Building).filter(Building.id == resource.building_id).first()
+            if building:
+                # Find NPC working at this building
+                npc = db.query(NPC).filter(NPC.work_building_id == building.id).first()
+                if npc:
+                    skill = npc.skill
+                    if skill >= 8:
+                        quality = 'masterwork'
+                    elif skill >= 3:
+                        quality = 'fine'
+                    else:
+                        quality = 'basic'
+        
+        # Update resource name with quality suffix
+        resource.name = f"{resource.name} ({quality})"
+        quality_map[resource.name] = quality
+    
+    db.commit()
+    return quality_map
