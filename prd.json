@@ -3746,8 +3746,8 @@
         "tick"
       ],
       "priority": 207,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "208",
@@ -3770,7 +3770,7 @@
     {
       "id": "209",
       "title": "Add building level and upgrade system",
-      "description": "Create upgrade_building(db, building_id) in engine/simulation/buildings.py. Building model already has level field (default 1). The function increases level by 1. Also create POST /api/buildings/{building_id}/upgrade endpoint in engine/routers/buildings.py. Do NOT modify engine/models.py — the level field already exists.",
+      "description": "Create upgrade_building(db, building_id) in engine/simulation/buildings.py. Building model already has level field (default 1). The function increases level by 1. Also create POST /api/buildings/{building_id}/upgrade endpoint in engine/routers/buildings.py. Do NOT modify engine/models.py \u2014 the level field already exists.",
       "acceptance": "Building.level field exists. upgrade_building increases level and deducts cost. Higher level buildings produce more. POST upgrade endpoint works with admin auth.",
       "test_file": "tests/test_buildings.py",
       "context_files": [
@@ -4377,7 +4377,7 @@
     {
       "id": "260",
       "title": "Market building enables trading",
-      "description": "Create check_market_exists(db) in engine/simulation/buildings.py. Return True if any building with building_type='market' exists, False otherwise. This is a utility function used by trade functions to gate trading — no market means no NPC-to-NPC trade.",
+      "description": "Create check_market_exists(db) in engine/simulation/buildings.py. Return True if any building with building_type='market' exists, False otherwise. This is a utility function used by trade functions to gate trading \u2014 no market means no NPC-to-NPC trade.",
       "test_file": "tests/test_buildings.py",
       "context_files": [
         "engine/simulation/buildings.py"
@@ -5147,7 +5147,7 @@
     {
       "id": "310",
       "title": "Legendary event",
-      "description": "Create check_legendary_event(db) in engine/simulation/events.py. If WorldState.tick > 1000 and no Event event_type='legendary' exists ever, 1% chance to trigger. Legendary event: 'dragon_sighting' — all NPCs flee (set target to random edge), all buildings lose 1 capacity, but 500 gold added to Treasury. Create Event and Newspaper. Return True if triggered.",
+      "description": "Create check_legendary_event(db) in engine/simulation/events.py. If WorldState.tick > 1000 and no Event event_type='legendary' exists ever, 1% chance to trigger. Legendary event: 'dragon_sighting' \u2014 all NPCs flee (set target to random edge), all buildings lose 1 capacity, but 500 gold added to Treasury. Create Event and Newspaper. Return True if triggered.",
       "test_file": "tests/test_events.py",
       "context_files": [
         "engine/simulation/events.py"

@@ -1067,3 +1067,8 @@
 - **State Management Complexity**: The trickiest part was ensuring the dialogue system's state (current speaker, active choices) remained isolated from the main game loop to prevent race conditions when players interacted with other systems simultaneously.
 - **Data-Driven Design Pattern**: This codebase heavily favors external JSON/ScriptableObjects for content; hardcoding dialogue logic in C# is discouraged in favor of data-driven configurations to allow designers to iterate without recompiling.
 - **Coroutine Cleanup**: Initially, I forgot to cancel pending dialogue coroutines when an NPC was despawned, causing memory leaks and phantom text to appear; I corrected this by implementing a `StopAllCoroutines` check in the `OnDestroy` lifecycle hook.
+
+--- Story 207: Add NPC dialogue to tick processing (attempts: 1, 2026-03-07 21:50) ---
+- **Tick Coupling**: It was non-obvious that NPC dialogue state must be strictly synchronized with the global tick counter; decoupling it caused dialogue to stutter or skip frames when the game loop lagged.
+- **State Machine Pattern**: The codebase consistently uses a centralized `GameState` enum for all entity transitions, meaning new dialogue states must be added there rather than creating local flags on the NPC class.
+- **Correction on Input Handling**: Initially, I tried to block player movement during dialogue by returning early from the input handler, but this broke the pause menu; I corrected this by using a dedicated `isDialogActive` flag that only gates specific movement logic instead of the entire input loop.
