@@ -112,7 +112,7 @@
   const textureCache = {};
   const failedTextures = {};    // url → timestamp of last failure
   const loadingTextures = new Set();
-  const ASSET_VERSION = "v20";  // Cache-buster for CDN/Cloudflare
+  const ASSET_VERSION = "v21";  // Cache-buster for CDN/Cloudflare
   const RETRY_INTERVAL = 10000; // Retry failed textures every 10s
 
   function tryLoadTexture(url) {
@@ -295,7 +295,8 @@
       const pos = toScreen(npc.x, npc.y);
       const role = (npc.role || "villager").toLowerCase();
       const name = npc.name || role;
-      const spriteUrl = `/static/assets/npcs/${role}.png`;
+      const spriteKey = npc.sprite_id || role;
+      const spriteUrl = `/static/assets/npcs/${spriteKey}.png`;
 
       let sprite = null;
       const tex = tryLoadTexture(spriteUrl);

@@ -151,9 +151,45 @@ def _seed_world():
         init_world_state(db)
         seed_all_buildings(db)
         assign_work_and_homes(db)
+        _assign_sprite_ids(db)
         print("[qtown] World seeded")
     finally:
         db.close()
+
+
+def _assign_sprite_ids(db):
+    """Assign unique sprite_ids to NPCs that don't have one yet."""
+    from engine.models import NPC
+    from pathlib import Path
+
+    # Scan available sprite files
+    npcs_dir = Path("assets/npcs")
+    available = []
+    if npcs_dir.is_dir():
+        for f in sorted(npcs_dir.glob("npc_*.png")):
+            available.append(f.stem)  # e.g., "npc_01"
+
+    if not available:
+        return  # No sprite repository yet
+
+    # Get already-used sprite_ids
+    used = set()
+    for npc in db.query(NPC).filter(NPC.sprite_id.isnot(None)).all():
+        used.add(npc.sprite_id)
+
+    # Assign to NPCs without a sprite_id
+    pool = [s for s in available if s not in used]
+    assigned = 0
+    for npc in db.query(NPC).filter(NPC.sprite_id.is_(None)).all():
+        if not pool:
+            # All unique sprites used — cycle through available
+            pool = list(available)
+        npc.sprite_id = pool.pop(0)
+        assigned += 1
+
+    if assigned:
+        db.commit()
+        print(f"[qtown] Assigned sprite_ids to {assigned} NPCs")
 
 
 def _cleanup_excess_npcs(db):
@@ -445,6 +481,7 @@ def world_state(db: Session = Depends(get_db)):
     npcs = [
         {
             "id": n.id, "name": n.name, "role": n.role,
+            "sprite_id": n.sprite_id,
             "x": n.x, "y": n.y, "gold": n.gold,
             "hunger": n.hunger, "energy": n.energy,
             "happiness": n.happiness, "age": n.age,

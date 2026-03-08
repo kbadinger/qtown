@@ -121,6 +121,7 @@ class NPC(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(64), nullable=False)
     role = Column(String(64), nullable=False)
+    sprite_id = Column(String(32), nullable=True)
     x = Column(Integer, nullable=False)
     y = Column(Integer, nullable=False)
     gold = Column(Integer, default=0)
