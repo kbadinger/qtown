@@ -1168,3 +1168,8 @@
 - **Tricky Aspect**: Determining the correct scope for the celebration event was non-obvious; it required ensuring the trigger only fired for specific NPC archetypes and didn't inadvertently loop for every entity in the scene.
 - **Pattern Discovered**: The codebase consistently uses a `ContextualEvent` wrapper for all dynamic NPC interactions, separating the logic trigger from the visual/audio payload to maintain modularity.
 - **Mistake & Correction**: Initially, I attempted to modify the NPC's state directly within the event handler, which caused race conditions; I corrected this by queuing state changes through the existing `ActionScheduler` to ensure thread safety.
+
+--- Story 280: NPC mourning (attempts: 1, 2026-03-08 12:10) ---
+- **State Propagation in NPC Systems**: The most non-obvious aspect was ensuring the `mourning` state correctly cascaded to dependent AI behaviors; simply flagging the NPC wasn't enough, the logic required a full recalculation of the `social_graph` to prevent orphaned interactions.
+- **Event-Driven Conventions**: This codebase strictly relies on the `OnStateChange` event pattern for side effects rather than polling; I initially tried to force updates in the main loop, which caused race conditions with the dialogue system.
+- **Corrected Memory Leak**: I mistakenly instantiated new `MourningContext` objects for every frame the NPC was grieving, causing a memory spike; I corrected this by reusing a singleton context and only updating its timestamp, aligning with the project's object-pooling standard.

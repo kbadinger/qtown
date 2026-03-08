@@ -1970,3 +1970,60 @@ def check_celebrations(db: Session) -> Optional[str]:
     db.commit()
     
     return celebrating_npc.name
+
+
+def process_mourning(db: Session) -> int:
+    """Process mourning for dead NPCs."""
+    from engine.models import NPC, Relationship
+    import json
+
+    mourners_count = 0
+    
+    # Find all dead NPCs
+    dead_npcs = db.query(NPC).filter(NPC.is_dead == 1).all()
+    
+    for dead_npc in dead_npcs:
+        # Find relationships involving the dead NPC
+        relationships = db.query(Relationship).filter(
+            (Relationship.npc1_id == dead_npc.id) | (Relationship.npc2_id == dead_npc.id)
+        ).all()
+        
+        for rel in relationships:
+            # Identify the potential mourner (the other NPC in the relationship)
+            if rel.npc1_id == dead_npc.id:
+                mourner_id = rel.npc2_id
+            else:
+                mourner_id = rel.npc1_id
+            
+            # Fetch the mourner NPC
+            mourner = db.query(NPC).filter(NPC.id == mourner_id).first()
+            if not mourner:
+                continue
+            
+            # Only living NPCs mourn
+            if mourner.is_dead == 1:
+                continue
+            
+            # Check memory_events for existing mourning entry to avoid duplicates
+            memory_events = []
+            if mourner.memory_events:
+                try:
+                    parsed = json.loads(mourner.memory_events)
+                    if isinstance(parsed, list):
+                        memory_events = parsed
+                except (json.JSONDecodeError, TypeError):
+                    memory_events = []
+            
+            mourning_entry = f"mourning {dead_npc.name}"
+            if mourning_entry in memory_events:
+                continue
+            
+            # Apply mourning effects
+            mourner.happiness = max(0, mourner.happiness - 5)
+            memory_events.append(mourning_entry)
+            mourner.memory_events = json.dumps(memory_events)
+            
+            mourners_count += 1
+    
+    db.commit()
+    return mourners_count

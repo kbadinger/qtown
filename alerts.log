@@ -1230,3 +1230,6 @@ NPC celebration
 [2026-03-08 15:30:37 UTC] CRITICAL critical: Story 279 failed: NPC celebration
 Ralph stopped — needs human debugging
 [2026-03-08 15:30:37 UTC] stop: Ralph offline — 224/450 stories complete
+[2026-03-08 15:57:08 UTC] deploy_ok: Story 279 deployed: Healthy after 0.1s
+[2026-03-08 15:57:27 UTC] story_done: Story 279 complete: NPC celebration
+[2026-03-08 15:57:28 UTC] story_start: Story 280: NPC mourning
