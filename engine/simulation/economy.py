@@ -1114,3 +1114,48 @@ def detect_economic_boom(db: Session) -> bool:
 
     db.commit()
     return is_boom
+
+
+def process_wage_negotiations(db: Session) -> int:
+    """Process wage negotiations for skilled workers.
+    
+    For each living NPC with skill >= 5 and work_building_id set:
+    - 30% chance to negotiate raise
+    - If successful, NPC gets +2 gold per future pay cycle
+    - Store 'wage_bonus' in experience JSON, default 0
+    - Cap wage_bonus at 10
+    
+    Returns:
+        Count of successful negotiations
+    """
+    from engine.models import NPC
+    
+    successful_negotiations = 0
+    
+    # Find all living NPCs with skill >= 5 and a work building assigned
+    qualified_npcs = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.skill >= 5,
+        NPC.work_building_id != None
+    ).all()
+    
+    for npc in qualified_npcs:
+        # 30% chance to negotiate a raise
+        if random.random() < 0.3:
+            # Parse experience JSON
+            try:
+                parsed = json.loads(npc.experience)
+                experience = parsed if isinstance(parsed, dict) else {}
+            except (json.JSONDecodeError, TypeError):
+                experience = {}
+            
+            # Update wage_bonus, capped at 10
+            current_bonus = experience.get('wage_bonus', 0)
+            experience['wage_bonus'] = min(current_bonus + 2, 10)
+            
+            # Save updated experience
+            npc.experience = json.dumps(experience)
+            successful_negotiations += 1
+    
+    db.commit()
+    return successful_negotiations

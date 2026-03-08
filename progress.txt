@@ -1203,3 +1203,8 @@
 - **Non-obvious edge case**: The recession flag logic failed on "V-shaped" recoveries where the GDP dip was shallow but the duration exceeded the threshold; had to explicitly check for *consecutive* quarters of decline rather than just total negative growth.
 - **Codebase convention**: The data layer consistently uses `pandas` rolling windows with a `min_periods` parameter set to the full window size to avoid partial-data artifacts at the start of the series.
 - **Correction**: Initially misclassified a 2001 dip as a recession due to a floating-point precision error in the comparison operator (`<` vs `<=`); fixed by normalizing all inputs to two decimal places before evaluation.
+
+--- Story 288: Wage negotiation (attempts: 1, 2026-03-08 14:25) ---
+- **Tricky Logic**: The salary cap enforcement required checking against both the role's fixed maximum and the department's dynamic budget pool; the non-obvious part was that the budget pool updates *before* the individual negotiation, meaning a rejected offer doesn't consume the budget but a pending one does.
+- **Codebase Patterns**: All financial calculations are wrapped in the `Money` value object to prevent floating-point errors, and validation rules are strictly separated from business logic using the `Policy` pattern in the `WageNegotiation` service.
+- **Correction**: Initially, I applied the `negotiation_success` event before validating the candidate's current tenure, which allowed ineligible users to bypass the lockout period; moved the tenure check to the pre-commit hook to ensure atomicity.

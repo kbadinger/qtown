@@ -1260,3 +1260,6 @@ Ralph stopped — needs human debugging
 [2026-03-08 17:41:55 UTC] stop: Ralph offline — 231/450 stories complete
 [2026-03-08 18:12:59 UTC] start: Ralph online — 232/450 stories complete
 [2026-03-08 18:12:59 UTC] story_start: Story 287: Recession detection
+[2026-03-08 18:13:40 UTC] WARN deploy_fail: Story 287 deploy failed — starting fix cycle
+[2026-03-08 18:14:10 UTC] story_done: Story 287 complete: Recession detection
+[2026-03-08 18:14:10 UTC] story_start: Story 288: Wage negotiation
