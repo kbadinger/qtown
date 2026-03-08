@@ -1082,3 +1082,8 @@
 - **Non-obvious WebSocket lifecycle**: Realized that the server-side `ws` connection must explicitly handle the `close` event to decrement the counter; relying solely on `open` events caused the count to drift upward over time as stale connections accumulated.
 - **Codebase pattern for state**: Discovered the convention of using a centralized `in-memory Map` for transient real-time state rather than the database, ensuring sub-millisecond response times for the counter updates.
 - **Correction on race conditions**: Initially updated the counter directly in the event handler, leading to potential race conditions under high load; corrected this by wrapping the increment/decrement logic in a simple async queue to ensure atomic updates.
+
+--- Story 212: Add visitor event triggers (attempts: 1, 2026-03-07 22:11) ---
+- **Non-obvious Event Propagation**: The visitor event triggers rely on a specific `isInternal` flag check within the middleware; omitting this caused false positives when internal health checks triggered the "new visitor" logic.
+- **Codebase Pattern**: Event handlers in this module strictly follow the `context -> validate -> enrich -> dispatch` pipeline; deviating to handle logic directly in the trigger function broke the existing audit logging chain.
+- **Correction**: Initially attempted to use synchronous database calls inside the event emitter, which blocked the worker thread; corrected by switching to async queueing to maintain system throughput during high-traffic spikes.

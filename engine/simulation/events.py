@@ -654,3 +654,45 @@ def generate_newspaper(db: Session) -> None:
     )
     db.add(newspaper)
     db.commit()
+
+
+def apply_triggered_event(db: Session, event_type: str) -> None:
+    """Apply a triggered event with immediate effects."""
+    from engine.models import WorldState, Event, NPC, Building
+    from datetime import datetime
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Create the event record
+    event = Event(
+        event_type=event_type,
+        description=f"{event_type.replace('_', ' ').title()} triggered",
+        tick=current_tick,
+        severity="info",
+        created_at=datetime.now()
+    )
+    db.add(event)
+    
+    # Apply immediate effects based on event type
+    if event_type == "thunderstorm":
+        # Set weather to storm for 5 ticks
+        if world_state:
+            world_state.weather = "storm"
+            world_state.weather_duration = 5
+    elif event_type == "festival":
+        # Boost all NPC happiness by 20
+        for npc in db.query(NPC).filter(NPC.is_dead == False).all():
+            npc.happiness = min(100, npc.happiness + 20)
+    elif event_type == "gold_rush":
+        # Give all miners +50 gold
+        for npc in db.query(NPC).filter(NPC.role == "miner", NPC.is_dead == False).all():
+            npc.gold = npc.gold + 50
+    elif event_type == "baby_boom":
+        # Spawn 3 new NPCs
+        from engine.simulation.npcs import seed_npc
+        for _ in range(3):
+            seed_npc(db, role="citizen")
+    
+    db.commit()

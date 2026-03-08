@@ -1143,3 +1143,6 @@ Ralph stopped — needs human debugging
 [2026-03-08 02:54:29 UTC] deploy_ok: Story 208 deployed: Healthy after 0.1s
 [2026-03-08 02:54:38 UTC] story_done: Story 208 complete: Add dialogue feed to town view
 [2026-03-08 02:54:38 UTC] story_start: Story 211: Add real-time visitor counter with WebSocket
+[2026-03-08 02:55:54 UTC] deploy_ok: Story 211 deployed: Healthy after 0.4s
+[2026-03-08 02:56:03 UTC] story_done: Story 211 complete: Add real-time visitor counter with WebSocket
+[2026-03-08 02:56:04 UTC] story_start: Story 212: Add visitor event triggers
