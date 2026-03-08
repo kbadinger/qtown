@@ -4763,7 +4763,7 @@
     {
       "id": "286",
       "title": "Economic boom detection",
-      "description": "Create detect_economic_boom(db) in engine/simulation/economy.py. Sum all living NPC gold. Compare to previous sum stored in WorldState metadata or experience. If current > previous * 1.1 (10% growth), create Event event_type='economic_boom'. All NPCs get happiness +3. Return True if boom, False otherwise.",
+      "description": "Create detect_economic_boom(db) in engine/simulation/economy.py. Sum all living NPC gold. Compare to previous sum stored in an Event event_type='gold_snapshot' description (create one each call with current total). If current > previous * 1.1 (10% growth), create Event event_type='economic_boom'. All NPCs get happiness +3. Return True if boom, False otherwise.",
       "test_file": "tests/test_economy.py",
       "context_files": [
         "engine/simulation/economy.py"
@@ -4779,7 +4779,7 @@
     {
       "id": "287",
       "title": "Recession detection",
-      "description": "Create detect_recession(db) in engine/simulation/economy.py. Track total NPC gold over last 3 calls using a 'gold_history' list in WorldState (store in a new column or use existing metadata). If gold decreased for 3 consecutive checks, create Event event_type='recession'. All NPCs happiness -3. Return True if recession, False otherwise.",
+      "description": "Create detect_recession(db) in engine/simulation/economy.py. Track total NPC gold over last 3 calls using Event records event_type='gold_snapshot' (query last 3 by tick descending). If gold decreased for 3 consecutive checks, create Event event_type='recession'. All NPCs happiness -3. Return True if recession, False otherwise.",
       "test_file": "tests/test_economy.py",
       "context_files": [
         "engine/simulation/economy.py"
@@ -4965,8 +4965,8 @@
         "simulation"
       ],
       "priority": 298,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "299",

@@ -889,7 +889,7 @@ def test_s296_process_event_chains(db):
     from engine.simulation import process_event_chains
 
     result = process_event_chains(db)
-    assert result is not None, "process_event_chains should return a value"
+    assert isinstance(result, int), "process_event_chains should return count of follow-ups created"
     db.flush()
 
 
@@ -899,7 +899,7 @@ def test_s297_escalate_events(db):
     from engine.simulation import escalate_events
 
     result = escalate_events(db)
-    assert result is not None, "escalate_events should return a value"
+    assert isinstance(result, int), "escalate_events should return count of escalations"
     db.flush()
 
 
@@ -909,7 +909,7 @@ def test_s298_apply_recovery_bonus(db):
     from engine.simulation import apply_recovery_bonus
 
     result = apply_recovery_bonus(db)
-    assert result is not None, "apply_recovery_bonus should return a value"
+    assert isinstance(result, bool), "apply_recovery_bonus should return True or False"
     db.flush()
 
 
@@ -919,7 +919,7 @@ def test_s299_check_anniversaries(db):
     from engine.simulation import check_anniversaries
 
     result = check_anniversaries(db)
-    assert result is not None, "check_anniversaries should return a value"
+    assert isinstance(result, bool), "check_anniversaries should return True or False"
     db.flush()
 
 
@@ -929,7 +929,7 @@ def test_s300_spawn_visitor_trader(db):
     from engine.simulation import spawn_visitor_trader
 
     result = spawn_visitor_trader(db)
-    assert result is not None, "spawn_visitor_trader should return a value"
+    assert result is None or hasattr(result, 'id'), "spawn_visitor_trader should return visitor NPC or None"
     db.flush()
 
 
@@ -939,7 +939,7 @@ def test_s301_hold_festival_vote(db):
     from engine.simulation import hold_festival_vote
 
     result = hold_festival_vote(db)
-    assert result is not None, "hold_festival_vote should return a value"
+    assert isinstance(result, str), "hold_festival_vote should return winning festival type string"
     db.flush()
 
 
@@ -949,7 +949,7 @@ def test_s302_predict_weather(db):
     from engine.simulation import predict_weather
 
     result = predict_weather(db)
-    assert result is not None, "predict_weather should return a value"
+    assert isinstance(result, str), "predict_weather should return predicted weather string"
     db.flush()
 
 
@@ -959,7 +959,7 @@ def test_s303_calculate_crop_yield(db):
     from engine.simulation import calculate_crop_yield
 
     result = calculate_crop_yield(db)
-    assert result is not None, "calculate_crop_yield should return a value"
+    assert isinstance(result, (int, float)), "calculate_crop_yield should return integer yield"
     db.flush()
 
 
@@ -969,7 +969,7 @@ def test_s304_distribute_famine_relief(db):
     from engine.simulation import distribute_famine_relief
 
     result = distribute_famine_relief(db)
-    assert result is not None, "distribute_famine_relief should return a value"
+    assert isinstance(result, bool), "distribute_famine_relief should return True or False"
     db.flush()
 
 
@@ -979,7 +979,7 @@ def test_s305_apply_event_damage(db):
     from engine.simulation import apply_event_damage
 
     result = apply_event_damage(db)
-    assert result is not None, "apply_event_damage should return a value"
+    assert isinstance(result, int), "apply_event_damage should return count of buildings damaged"
     db.flush()
 
 
@@ -989,7 +989,7 @@ def test_s306_generate_event_news(db):
     from engine.simulation import generate_event_news
 
     result = generate_event_news(db)
-    assert result is not None, "generate_event_news should return a value"
+    assert isinstance(result, int), "generate_event_news should return count of articles created"
     db.flush()
 
 
@@ -999,7 +999,7 @@ def test_s307_create_memorial(db):
     from engine.simulation import create_memorial
 
     result = create_memorial(db)
-    assert result is not None, "create_memorial should return a value"
+    assert result is None or hasattr(result, 'id'), "create_memorial should return memorial building or None"
     db.flush()
 
 
@@ -1009,7 +1009,7 @@ def test_s308_calculate_prevention_chance(db):
     from engine.simulation import calculate_prevention_chance
 
     result = calculate_prevention_chance(db)
-    assert result is not None, "calculate_prevention_chance should return a value"
+    assert isinstance(result, (int, float)), "calculate_prevention_chance should return prevention chance float"
     db.flush()
 
 
@@ -1019,7 +1019,7 @@ def test_s309_process_seasonal_visitors(db):
     from engine.simulation import process_seasonal_visitors
 
     result = process_seasonal_visitors(db)
-    assert result is not None, "process_seasonal_visitors should return a value"
+    assert isinstance(result, int), "process_seasonal_visitors should return count of visitors"
     db.flush()
 
 
@@ -1029,7 +1029,7 @@ def test_s310_check_legendary_event(db):
     from engine.simulation import check_legendary_event
 
     result = check_legendary_event(db)
-    assert result is not None, "check_legendary_event should return a value"
+    assert isinstance(result, bool), "check_legendary_event should return True or False"
     db.flush()
 
 
@@ -1039,7 +1039,7 @@ def test_s343_generate_daily_digest(db):
     from engine.simulation import generate_daily_digest
 
     result = generate_daily_digest(db)
-    assert result is not None, "generate_daily_digest should return a value"
+    assert isinstance(result, dict), "generate_daily_digest should return summary dict"
     db.flush()
 
 
@@ -1049,7 +1049,7 @@ def test_s345_calculate_danger_scores(db):
     from engine.simulation import calculate_danger_scores
 
     result = calculate_danger_scores(db)
-    assert result is not None, "calculate_danger_scores should return a value"
+    assert isinstance(result, dict), "calculate_danger_scores should return dict of {(x,y): score}"
     db.flush()
 
 

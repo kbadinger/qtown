@@ -74,7 +74,7 @@ def test_s031_build_building_via_simulation(db):
 
     init_grid(db)
     result = build_building(db, name="Market", building_type="commerce", x=15, y=15)
-    assert result is not None
+    assert hasattr(result, 'id'), "build_building should return a Building object"
     from engine.models import Building
 
     assert db.query(Building).filter_by(name="Market").first() is not None
@@ -1022,7 +1022,7 @@ def test_s321_calculate_adjacency_bonuses(db):
     from engine.simulation import calculate_adjacency_bonuses
 
     result = calculate_adjacency_bonuses(db)
-    assert result is not None, "calculate_adjacency_bonuses should return a value"
+    assert isinstance(result, dict), "calculate_adjacency_bonuses should return dict of {building_id: bonus}"
     db.flush()
 
 
@@ -1032,7 +1032,7 @@ def test_s322_calculate_road_bonus(db):
     from engine.simulation import calculate_road_bonus
 
     result = calculate_road_bonus(db)
-    assert result is not None, "calculate_road_bonus should return a value"
+    assert isinstance(result, (int, float)), "calculate_road_bonus should return integer percentage bonus"
     db.flush()
 
 
@@ -1054,7 +1054,7 @@ def test_s324_process_building_decay(db):
     from engine.simulation import process_building_decay
 
     result = process_building_decay(db)
-    assert result is not None, "process_building_decay should return a value"
+    assert isinstance(result, int), "process_building_decay should return count of decayed buildings"
     db.flush()
 
 
@@ -1064,7 +1064,7 @@ def test_s325_process_construction(db):
     from engine.simulation import process_construction
 
     result = process_construction(db)
-    assert result is not None, "process_construction should return a value"
+    assert result is None or isinstance(result, str), "process_construction should return project status string or None"
     db.flush()
 
 
@@ -1074,7 +1074,7 @@ def test_s326_process_insurance(db):
     from engine.simulation import process_insurance
 
     result = process_insurance(db)
-    assert result is not None, "process_insurance should return a value"
+    assert isinstance(result, int), "process_insurance should return count of insured buildings"
     db.flush()
 
 
@@ -1084,7 +1084,7 @@ def test_s327_check_landmarks(db):
     from engine.simulation import check_landmarks
 
     result = check_landmarks(db)
-    assert result is not None, "check_landmarks should return a value"
+    assert isinstance(result, int), "check_landmarks should return count of landmarks"
     db.flush()
 
 
@@ -1094,7 +1094,7 @@ def test_s328_inspect_buildings(db):
     from engine.simulation import inspect_buildings
 
     result = inspect_buildings(db)
-    assert result is not None, "inspect_buildings should return a value"
+    assert isinstance(result, list), "inspect_buildings should return list of building status dicts"
     db.flush()
 
 
@@ -1104,7 +1104,7 @@ def test_s329_enforce_storage_limits(db):
     from engine.simulation import enforce_storage_limits
 
     result = enforce_storage_limits(db)
-    assert result is not None, "enforce_storage_limits should return a value"
+    assert isinstance(result, (int, float)), "enforce_storage_limits should return storage_cap value"
     db.flush()
 
 
@@ -1129,7 +1129,7 @@ def test_s342_generate_building_description(db):
     b = db.query(Building).first()
     assert b is not None, "Need seeded buildings"
     result = generate_building_description(db, b.id)
-    assert result is not None, "generate_building_description should return a value"
+    assert isinstance(result, str), "generate_building_description should return description string"
     db.flush()
 
 
@@ -1139,7 +1139,7 @@ def test_s349_get_population_cap(db):
     from engine.simulation import get_population_cap
 
     result = get_population_cap(db)
-    assert result is not None, "get_population_cap should return a value"
+    assert isinstance(result, tuple), "get_population_cap should return tuple (can_spawn, cap)"
     db.flush()
 
 
