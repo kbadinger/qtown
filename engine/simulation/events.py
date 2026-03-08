@@ -947,3 +947,61 @@ def spawn_visitor_trader(db: Session) -> "Optional[NPC]":
     db.flush()
 
     return visitor
+
+
+def hold_festival_vote(db: Session) -> str:
+    """Hold a festival vote based on NPC needs."""
+    from engine.models import NPC, Event, WorldState
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Get all living NPCs
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    if not living_npcs:
+        # No NPCs to vote, default to rest_day
+        event = Event(
+            event_type="rest_day",
+            description="Town festival: Rest Day",
+            tick=current_tick,
+            severity="info",
+            affected_npc_id=None,
+            affected_building_id=None,
+            created_at=datetime.now()
+        )
+        db.add(event)
+        db.commit()
+        return "rest_day"
+    
+    # Tally votes based on lowest stat (highest need)
+    votes = {"food_festival": 0, "music_festival": 0, "rest_day": 0}
+    
+    for npc in living_npcs:
+        # Find the highest need (lowest stat value means highest need)
+        # hunger -> food_festival, happiness -> music_festival, energy -> rest_day
+        if npc.hunger >= npc.happiness and npc.hunger >= npc.energy:
+            votes["food_festival"] += 1
+        elif npc.happiness >= npc.hunger and npc.happiness >= npc.energy:
+            votes["music_festival"] += 1
+        else:
+            votes["rest_day"] += 1
+    
+    # Pick winner (highest votes, with deterministic tiebreaker)
+    winner = max(votes, key=lambda k: (votes[k], k))
+    
+    # Create event with proper tick value
+    event = Event(
+        event_type=winner,
+        description=f"Town festival: {winner.replace('_', ' ').title()}",
+        tick=current_tick,
+        severity="info",
+        affected_npc_id=None,
+        affected_building_id=None,
+        created_at=datetime.now()
+    )
+    db.add(event)
+    db.commit()
+    
+    return winner

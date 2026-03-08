@@ -1258,3 +1258,8 @@
 - **Timezone Handling**: The most non-obvious challenge was ensuring anniversary dates remained consistent across user timezones; the initial implementation relied on local time, causing off-by-one errors for users near midnight.
 - **Date Comparison Convention**: Discovered the codebase standardizes date comparisons by stripping time components and comparing only `YYYY-MM-DD` strings, rather than using raw timestamps or epoch seconds.
 - **Edge Case Correction**: Initially failed to account for users signing up on leap years (Feb 29); corrected by adding logic to default to March 1 for non-leap years instead of skipping the event entirely.
+
+--- Story 301: Festival voting (attempts: 1, 2026-03-08 19:13) ---
+- **Voting Logic Edge Cases**: Handling concurrent votes and preventing double-voting required strict atomic transactions; a simple `SELECT` before `UPDATE` was insufficient without row-level locking or optimistic concurrency checks.
+- **State Consistency Patterns**: The codebase relies heavily on event sourcing for audit trails; any state change must emit a corresponding domain event before updating the aggregate, rather than updating the database directly.
+- **Correction on Validation**: Initially placed validation logic in the controller layer, causing duplication; corrected by moving all business rules (e.g., vote limits, eligibility checks) into the service layer to ensure a single source of truth.
