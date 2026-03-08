@@ -1248,3 +1248,15 @@ Ralph stopped — needs human debugging
 [2026-03-08 17:24:56 UTC] deploy_ok: Story 284 deployed: Healthy after 0.1s
 [2026-03-08 17:25:15 UTC] story_done: Story 284 complete: Commodity futures
 [2026-03-08 17:25:15 UTC] story_start: Story 285: Debt forgiveness
+[2026-03-08 17:37:43 UTC] deploy_ok: Story 285 deployed: Healthy after 0.1s
+[2026-03-08 17:37:58 UTC] story_done: Story 285 complete: Debt forgiveness
+[2026-03-08 17:37:59 UTC] story_start: Story 286: Economic boom detection
+[2026-03-08 17:41:06 UTC] WARN story_fail: Story 286 struggling — attempt 5/12
+Economic boom detection
+[2026-03-08 17:41:54 UTC] CRITICAL loop: Story 286: same error 5x in a row — giving up
+`tests/test_economy.py::test_s286_detect_economic_boom FAILED             [100%]`
+[2026-03-08 17:41:55 UTC] CRITICAL critical: Story 286 failed: Economic boom detection
+Ralph stopped — needs human debugging
+[2026-03-08 17:41:55 UTC] stop: Ralph offline — 231/450 stories complete
+[2026-03-08 18:12:59 UTC] start: Ralph online — 232/450 stories complete
+[2026-03-08 18:12:59 UTC] story_start: Story 287: Recession detection
