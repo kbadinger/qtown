@@ -1203,3 +1203,4 @@ Ralph stopped — needs human debugging
 [2026-03-08 07:13:10 UTC] stop: Ralph offline — 222/450 stories complete
 [2026-03-08 12:44:57 UTC] start: Ralph online — 223/450 stories complete
 [2026-03-08 12:44:58 UTC] story_start: Story 278: NPC fatigue system
+[2026-03-08 12:56:03 UTC] WARN deploy_fail: Story 278 deploy failed — starting fix cycle

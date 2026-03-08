@@ -1899,10 +1899,15 @@ def apply_fatigue(db: Session) -> int:
             if npc.experience is None:
                 npc.experience = {}
             elif isinstance(npc.experience, str):
-                npc.experience = json.loads(npc.experience)
+                try:
+                    npc.experience = json.loads(npc.experience)
+                except (json.JSONDecodeError, TypeError):
+                    npc.experience = {}
             
-            npc.experience['fatigued'] = True
-            fatigued_count += 1
+            # Ensure it's a dict before setting keys
+            if isinstance(npc.experience, dict):
+                npc.experience['fatigued'] = True
+                fatigued_count += 1
             
             # If energy < 5, NPC collapses
             if npc.energy < 5:
@@ -1914,5 +1919,5 @@ def apply_fatigue(db: Session) -> int:
                         npc.y = home.y
                 npc.energy = 0
     
-    db.commit()
+    # Do NOT commit here; let the caller (process_tick or test) handle the commit
     return fatigued_count
