@@ -1418,3 +1418,8 @@
 - **Non-obvious API constraints**: The economic data provider requires strict ISO-8601 date formatting with explicit timezone offsets; omitting the `Z` or `+00:00` suffix causes silent 404s rather than validation errors.
 - **Codebase pattern**: All external API clients in this project follow a `Client -> Service -> DTO` separation, where the Service layer is responsible for flattening nested JSON responses before passing them to the controller.
 - **Correction**: Initially mapped the `currency_code` field directly to the database model, but the API returns a nullable string for historical data; added a default fallback to `USD` in the mapping layer to prevent null pointer exceptions during aggregation.
+
+--- Story 334: Relationship graph API (attempts: 1, 2026-03-09 12:15) ---
+- **Non-obvious traversal logic**: The API required handling recursive graph traversals with depth limits to prevent stack overflows, a constraint not immediately obvious from the initial schema design.
+- **Convention for edge directionality**: The codebase consistently enforces directed edges by always storing relationships as `(source_id, target_id)` tuples, requiring explicit inversion logic for reverse lookups rather than relying on database-level bidirectional indexing.
+- **Correction on N+1 queries**: Initially implemented a naive loop to fetch neighbor details, causing performance degradation; corrected by switching to a single bulk query with `IN` clauses and client-side mapping.
