@@ -1368,3 +1368,8 @@
 - **Non-obvious coupling**: The `SpecializationService` relied on implicit state from the global `Context` object rather than explicit constructor injection, making unit tests brittle and requiring manual context mocking.
 - **Codebase pattern**: The project enforces a strict "Command-Query Separation" where all write operations must return a `Result<T>` wrapper, while read operations return raw entities or `null`, preventing mixed return types in controllers.
 - **Correction**: Initially, I attempted to handle specialization validation in the controller layer; I corrected this by moving the logic into a dedicated `SpecializationValidator` class to adhere to the repository pattern and keep controllers thin.
+
+--- Story 324: Ruin decay system (attempts: 1, 2026-03-09 10:24) ---
+- **Non-obvious state transitions**: The decay logic required careful handling of the "stabilized" state to prevent entities from re-entering decay cycles after repair, which wasn't immediately obvious from the initial schema.
+- **Convention of "Time-Aware" Entities**: The codebase consistently uses a `last_updated_at` timestamp on entity records rather than relying solely on external cron jobs, allowing for lazy evaluation of decay during the next interaction.
+- **Correction on floating-point precision**: Initially used standard floats for decay percentages, causing cumulative drift over long periods; corrected by switching to integer-based fixed-point arithmetic (basis points) for all decay calculations.

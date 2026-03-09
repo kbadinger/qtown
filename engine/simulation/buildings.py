@@ -536,3 +536,49 @@ def set_building_focus(db: Session, building_id: int, focus: str) -> Building:
     
     db.commit()
     return building
+
+
+def process_building_decay(db: Session) -> int:
+    """Process building decay for buildings with no workers.
+    
+    For each building with no workers (no NPC has work_building_id pointing to it),
+    reduce capacity by 1 per call (floor at 1). If capacity reaches 1, rename to 
+    'Ruins of {original_name}' if not already. Create Event for decayed buildings.
+    
+    Returns count of decayed buildings.
+    """
+    from engine.models import Building, NPC, Event, WorldState
+    
+    decayed_count = 0
+    buildings = db.query(Building).all()
+    
+    # Get current tick for events
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    for building in buildings:
+        # Check if any NPC has this building as work_building_id
+        worker_count = db.query(NPC).filter(NPC.work_building_id == building.id).count()
+        
+        if worker_count == 0:
+            # Building has no workers, decay it
+            if building.capacity > 1:
+                building.capacity -= 1
+            
+            # If capacity reaches 1 and not already named as ruins
+            if building.capacity == 1 and not building.name.startswith('Ruins of '):
+                building.name = f'Ruins of {building.name}'
+                decayed_count += 1
+                
+                # Create event for decayed building
+                event = Event(
+                    day=current_tick,
+                    headline=f'{building.name} has decayed',
+                    body=f'{building.name} has no workers and has decayed.',
+                    author_npc_id=None,
+                    tick=current_tick
+                )
+                db.add(event)
+    
+    db.commit()
+    return decayed_count

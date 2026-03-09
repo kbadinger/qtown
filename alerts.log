@@ -1419,3 +1419,6 @@ Uploading..
 [2026-03-09 13:56:26 UTC] deploy_ok: Story 322 deployed: Healthy after 0.1s
 [2026-03-09 13:56:43 UTC] story_done: Story 322 complete: Road network speed bonus
 [2026-03-09 13:56:43 UTC] story_start: Story 323: Building specialization
+[2026-03-09 14:10:32 UTC] deploy_ok: Story 323 deployed: Healthy after 0.1s
+[2026-03-09 14:10:48 UTC] story_done: Story 323 complete: Building specialization
+[2026-03-09 14:10:48 UTC] story_start: Story 324: Ruin decay system
