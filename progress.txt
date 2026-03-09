@@ -1403,3 +1403,8 @@
 - **Tricky Logic**: Handling the race condition where a rename operation could fail silently if the target name already existed; required implementing an explicit existence check before the database update to provide accurate error feedback.
 - **Codebase Pattern**: The existing service layer consistently uses a "validate-then-act" pattern wrapped in a single transactional unit, ensuring that business rule violations (like naming conflicts) are caught before any state changes occur.
 - **Correction**: Initially attempted to validate uniqueness via a database `UNIQUE` constraint alone, but corrected this to include application-level validation to return user-friendly error messages rather than generic database exceptions.
+
+--- Story 331: NPC biography API (attempts: 1, 2026-03-09 12:10) ---
+- **Non-obvious JSON Schema constraints**: The API required strict adherence to nested object structures for `biography` fields; omitting optional keys like `era` or `occupation` caused silent validation failures in the downstream renderer, not just 400 errors.
+- **Codebase convention for ID generation**: Discovered that this project uses a centralized `uuid-v4` helper wrapped in a `generateEntityId()` utility rather than native `crypto.randomUUID()`, ensuring consistent seeding for test environments.
+- **Correction on pagination logic**: Initially implemented cursor-based pagination using raw timestamps, which broke when multiple NPCs shared the same creation date; corrected by appending the `id` to the cursor string to guarantee strict ordering.

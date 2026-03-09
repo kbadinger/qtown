@@ -1447,3 +1447,6 @@ Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and
 [2026-03-09 15:53:44 UTC] deploy_ok: Story 329 deployed: Healthy after 0.2s
 [2026-03-09 15:54:00 UTC] story_done: Story 329 complete: Resource storage limits
 [2026-03-09 15:54:01 UTC] story_start: Story 330: Building rename system
+[2026-03-09 16:10:12 UTC] deploy_ok: Story 330 deployed: Healthy after 0.1s
+[2026-03-09 16:10:37 UTC] story_done: Story 330 complete: Building rename system
+[2026-03-09 16:10:37 UTC] story_start: Story 331: NPC biography API
