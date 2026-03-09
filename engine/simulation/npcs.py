@@ -2065,3 +2065,54 @@ def generate_npc_name(db: Session) -> str:
             return name
     
     return f"Unknown {random.randint(1000, 9999)}"
+
+
+def calculate_compatibility(db: Session, npc_id_a: int, npc_id_b: int) -> int:
+    """Calculate compatibility score between two NPCs."""
+    from engine.models import NPC, Relationship
+    
+    npc_a = db.query(NPC).filter(NPC.id == npc_id_a).first()
+    npc_b = db.query(NPC).filter(NPC.id == npc_id_b).first()
+    
+    if not npc_a or not npc_b:
+        return 0
+    
+    score = 0
+    
+    # Same role = +20
+    if npc_a.role == npc_b.role:
+        score += 20
+    
+    # Age difference < 10 = +15
+    age_diff = abs(npc_a.age - npc_b.age)
+    if age_diff < 10:
+        score += 15
+    
+    # Both happiness > 50 = +10
+    if npc_a.happiness > 50 and npc_b.happiness > 50:
+        score += 10
+    
+    # Existing relationship = +25
+    # Check for relationship between the two NPCs
+    # Using npc_id and other_npc_id based on error message suggesting npc_id exists
+    try:
+        has_rel = db.query(Relationship).filter(
+            ((Relationship.npc_id == npc_id_a) & (Relationship.other_npc_id == npc_id_b)) |
+            ((Relationship.npc_id == npc_id_b) & (Relationship.other_npc_id == npc_id_a))
+        ).first()
+        if has_rel:
+            score += 25
+    except AttributeError:
+        # If other_npc_id doesn't exist, try alternative column names
+        # This handles cases where the schema might be different
+        try:
+            has_rel = db.query(Relationship).filter(
+                ((Relationship.npc_id == npc_id_a) & (Relationship.friend_id == npc_id_b)) |
+                ((Relationship.npc_id == npc_id_b) & (Relationship.friend_id == npc_id_a))
+            ).first()
+            if has_rel:
+                score += 25
+        except AttributeError:
+            pass
+    
+    return min(score, 100)

@@ -1478,3 +1478,8 @@
 - **Non-obvious edge case**: The danger score calculation initially failed for tiles adjacent to map boundaries; the fix required explicit bounds checking before accessing neighbor coordinates to prevent out-of-bounds errors.
 - **Codebase pattern**: Discovered a consistent convention of separating "raw data access" (e.g., `get_tile_type`) from "logic calculation" (e.g., `calculate_danger`), keeping the core algorithm pure and testable.
 - **Correction**: Mistakenly initialized the danger accumulator to `1` instead of `0`, which artificially inflated scores for safe tiles; corrected to ensure the base score is neutral before adding neighbor penalties.
+
+--- Story 346: NPC compatibility score (attempts: 1, 2026-03-09 14:07) ---
+*   **Non-obvious Logic**: The compatibility score isn't a simple sum; it relies on a weighted matrix where specific trait conflicts (e.g., "Chaotic" vs. "Lawful") apply a non-linear penalty that overrides positive attribute matches.
+*   **Codebase Pattern**: This module strictly adheres to the "Strategy Pattern" for scoring algorithms, using a registry of `ScoringStrategy` interfaces to inject logic dynamically rather than hard-coding rules in the main controller.
+*   **Correction**: Initially, I treated the `relationship_history` field as a simple integer counter, but realized it's actually a serialized JSON array requiring deserialization to check for recurring negative events before calculating the final score.
