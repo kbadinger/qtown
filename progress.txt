@@ -1493,3 +1493,8 @@
 *   **Tricky Logic**: Determining "unemployed" status required checking both the `job` field and the `is_active` flag, as NPCs with null jobs but active status were incorrectly skipped in the initial pass.
 *   **Codebase Pattern**: The repository consistently uses a `JobPool` service to manage available roles; direct database queries for job assignment were refactored to use this service to maintain transactional integrity.
 *   **Correction**: Initially, the auto-assignment loop ran synchronously, blocking the main thread; switched to an async background job to prevent UI lag during large NPC population updates.
+
+--- Story 349: Town population cap (attempts: 1, 2026-03-09 14:53) ---
+*   **Non-obvious state coupling**: The population cap logic was tightly coupled with the `Town` entity's internal `capacity` field, requiring a refactor to extract a dedicated `PopulationService` to avoid circular dependencies during migration.
+*   **Codebase convention**: Found that this codebase consistently uses `Result<T, Error>` for domain logic failures but relies on global `try-catch` blocks in the API layer, meaning new validation rules should return errors rather than throwing exceptions.
+*   **Correction**: Initially attempted to enforce the cap via a database constraint, but realized this caused race conditions in concurrent migration scenarios; switched to an application-level check with optimistic locking to ensure data consistency.

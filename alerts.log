@@ -1522,3 +1522,6 @@ Daily digest
 [2026-03-09 18:24:16 UTC] deploy_ok: Story 347 deployed: Healthy after 0.1s
 [2026-03-09 18:24:34 UTC] story_done: Story 347 complete: Auto-assign homeless NPCs
 [2026-03-09 18:24:34 UTC] story_start: Story 348: Auto-assign unemployed NPCs
+[2026-03-09 18:39:33 UTC] deploy_ok: Story 348 deployed: Healthy after 0.1s
+[2026-03-09 18:39:50 UTC] story_done: Story 348 complete: Auto-assign unemployed NPCs
+[2026-03-09 18:39:50 UTC] story_start: Story 349: Town population cap

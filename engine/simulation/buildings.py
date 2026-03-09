@@ -978,3 +978,29 @@ def generate_building_description(db: Session, building_id: int) -> str:
     
     key = (building.building_type, building.level)
     return descriptions.get(key, f"A {building.building_type} at level {building.level}")
+
+
+def get_population_cap(db: Session) -> tuple[bool, int]:
+    """Get town population cap based on residential building capacity.
+    
+    Returns:
+        tuple: (can_spawn: bool, cap: int)
+        - can_spawn: True if current living NPCs < cap, False otherwise
+        - cap: total capacity of all residential buildings
+    """
+    from engine.models import Building, NPC
+    
+    # Residential building types that provide housing capacity
+    residential_types = ["house", "apartment", "dormitory", "residential", "cabin", "shelter", "inn"]
+    
+    # Calculate total residential capacity
+    residential_buildings = db.query(Building).filter(Building.building_type.in_(residential_types)).all()
+    total_capacity = sum(b.capacity for b in residential_buildings)
+    
+    # Count living NPCs (is_dead == 0 for Postgres compatibility)
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).count()
+    
+    # Determine if new NPCs can spawn
+    can_spawn = living_npcs < total_capacity
+    
+    return (can_spawn, total_capacity)
