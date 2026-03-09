@@ -1151,3 +1151,56 @@ def distribute_famine_relief(db: Session) -> bool:
     
     db.commit()
     return True
+
+
+def apply_event_damage(db: Session) -> int:
+    """Apply damage to buildings from critical events in the last 5 ticks.
+    
+    For each Event with severity='critical' in last 5 ticks that has affected_building_id:
+    - Reduce that building's capacity by 3 (floor at 1)
+    - If building capacity drops to 1, create follow-up Event event_type='building_destroyed'
+    
+    Returns count of buildings damaged.
+    """
+    from engine.models import Event, Building, WorldState
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return 0
+    current_tick = world_state.tick
+    
+    # Find all critical events in last 5 ticks with affected_building_id
+    critical_events = db.query(Event).filter(
+        Event.severity == 'critical',
+        Event.affected_building_id != None,
+        Event.tick >= current_tick - 5,
+        Event.tick <= current_tick
+    ).all()
+    
+    buildings_damaged = set()
+    
+    for event in critical_events:
+        building = db.query(Building).filter(
+            Building.id == event.affected_building_id,
+            Building.capacity > 1
+        ).first()
+        
+        if building:
+            # Reduce capacity by 3, floor at 1
+            building.capacity = max(1, building.capacity - 3)
+            buildings_damaged.add(building.id)
+            
+            # If capacity drops to 1, create follow-up event
+            if building.capacity == 1:
+                destroyed_event = Event(
+                    event_type='building_destroyed',
+                    severity='critical',
+                    affected_building_id=building.id,
+                    tick=current_tick,
+                    description=f"Building {building.name} destroyed"
+                )
+                db.add(destroyed_event)
+    
+    db.commit()
+    return len(buildings_damaged)

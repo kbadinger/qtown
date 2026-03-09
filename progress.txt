@@ -1278,3 +1278,8 @@
 - **Non-obvious edge cases**: The distribution logic failed silently when a household's `total_members` was zero due to integer division; added an explicit guard clause to prevent zero-division errors and ensure data integrity.
 - **Codebase convention**: Discovered that all financial calculations must use the `Money` wrapper class (not native `Decimal` or `float`) to handle currency-specific rounding rules automatically; refactored the temporary helper function to align with this pattern.
 - **Correction**: Initially queried the `distribution_log` table before the transaction committed, causing race conditions in concurrent runs; moved the logging step to the post-commit hook to ensure atomicity.
+
+--- Story 305: Building damage from events (attempts: 1, 2026-03-08 20:22) ---
+- **Tricky Logic**: Handling the cascading nature of event-based damage was non-obvious; I initially tried to calculate totals upfront but had to refactor to apply damage incrementally per event to correctly trigger intermediate thresholds.
+- **Codebase Patterns**: The project strictly separates event definitions (data) from damage logic (services), relying on a centralized `EventRegistry` to dispatch handlers rather than direct coupling.
+- **Correction**: I mistakenly treated `building_id` as a unique key for state, causing race conditions in concurrent event processing; I corrected this by using a composite key (`building_id` + `event_timestamp`) for state snapshots.

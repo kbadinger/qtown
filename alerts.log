@@ -1334,3 +1334,11 @@ Ralph stopped — needs human debugging
 [2026-03-08 23:57:59 UTC] deploy_ok: Story 303 deployed: Healthy after 0.1s
 [2026-03-08 23:58:15 UTC] story_done: Story 303 complete: Crop yield calculation
 [2026-03-08 23:58:16 UTC] story_start: Story 304: Famine relief distribution
+[2026-03-09 00:09:45 UTC] WARN deploy_fail: Story 304 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   8452a2d..f0e46e7  main -> main
+
+Indexing...
+Uploading..
+[2026-03-09 00:09:46 UTC] story_done: Story 304 complete: Famine relief distribution
+[2026-03-09 00:09:46 UTC] story_start: Story 305: Building damage from events
