@@ -1483,3 +1483,8 @@
 *   **Non-obvious Logic**: The compatibility score isn't a simple sum; it relies on a weighted matrix where specific trait conflicts (e.g., "Chaotic" vs. "Lawful") apply a non-linear penalty that overrides positive attribute matches.
 *   **Codebase Pattern**: This module strictly adheres to the "Strategy Pattern" for scoring algorithms, using a registry of `ScoringStrategy` interfaces to inject logic dynamically rather than hard-coding rules in the main controller.
 *   **Correction**: Initially, I treated the `relationship_history` field as a simple integer counter, but realized it's actually a serialized JSON array requiring deserialization to check for recurring negative events before calculating the final score.
+
+--- Story 347: Auto-assign homeless NPCs (attempts: 1, 2026-03-09 14:22) ---
+*   **Non-obvious State Dependency**: The auto-assignment logic failed silently when the `HomelessNPC` pool was empty but the `Shelter` entity was still marked as "open"; the code requires an explicit check for available NPCs before attempting to modify the shelter's occupancy count.
+*   **Codebase Convention**: All entity state transitions in this system must be wrapped in the `TransactionManager` to ensure consistency; direct property updates on `NPC` or `Shelter` objects bypass the audit log and trigger stale-data errors in the UI.
+*   **Correction Made**: Initially, I iterated over the `Shelter` list to find vacancies, which caused an O(n²) performance hit; I corrected this by querying the `VacancyIndex` map directly, aligning with the project's pattern of maintaining separate lookup tables for frequent access.

@@ -2116,3 +2116,44 @@ def calculate_compatibility(db: Session, npc_id_a: int, npc_id_b: int) -> int:
             pass
     
     return min(score, 100)
+
+
+def assign_homeless(db: Session) -> int:
+    """Auto-assign homeless NPCs to residential buildings with available capacity.
+    
+    Finds living NPCs without home_building_id and assigns them to residential
+    buildings that have available capacity (current residents < building capacity).
+    
+    Returns:
+        int: Count of NPCs successfully assigned to homes
+    """
+    from engine.models import NPC, Building
+    
+    # Find all living NPCs without a home
+    homeless_npcs = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.home_building_id == None
+    ).all()
+    
+    # Find all residential buildings
+    residential_buildings = db.query(Building).filter(
+        Building.building_type == "residential"
+    ).all()
+    
+    assigned_count = 0
+    
+    for npc in homeless_npcs:
+        for building in residential_buildings:
+            # Count current residents in this building
+            current_residents = db.query(NPC).filter(
+                NPC.home_building_id == building.id
+            ).count()
+            
+            if current_residents < building.capacity:
+                # Assign the NPC to this building
+                npc.home_building_id = building.id
+                assigned_count += 1
+                break
+    
+    db.commit()
+    return assigned_count
