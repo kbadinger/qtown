@@ -1707,3 +1707,68 @@ def launch_public_works(db: Session) -> str | None:
     
     db.commit()
     return building.name
+
+
+def run_census(db: Session) -> dict | None:
+    """Run a census of the town."""
+    from sqlalchemy import func
+    from engine.models import NPC, Building, Event, WorldState
+    import json
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return None
+    
+    current_tick = world_state.tick
+    
+    # Check if census was run in last 50 ticks
+    last_census = db.query(Event).filter(
+        Event.event_type == 'census',
+        Event.tick > current_tick - 50
+    ).first()
+    
+    if last_census:
+        return None
+    
+    # Count living NPCs (is_dead == 0)
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).count()
+    
+    # Count dead NPCs (is_dead == 1)
+    dead_npcs = db.query(NPC).filter(NPC.is_dead == 1).count()
+    
+    # Count total buildings
+    total_buildings = db.query(Building).count()
+    
+    # Total gold (sum of all NPC gold)
+    total_gold_result = db.query(func.sum(NPC.gold)).scalar()
+    total_gold = total_gold_result if total_gold_result is not None else 0
+    
+    # Avg happiness
+    avg_happiness_result = db.query(func.avg(NPC.happiness)).scalar()
+    avg_happiness = avg_happiness_result if avg_happiness_result is not None else 0.0
+    
+    # Avg age
+    avg_age_result = db.query(func.avg(NPC.age)).scalar()
+    avg_age = avg_age_result if avg_age_result is not None else 0.0
+    
+    stats = {
+        "living_npcs": living_npcs,
+        "dead_npcs": dead_npcs,
+        "total_buildings": total_buildings,
+        "total_gold": total_gold,
+        "avg_happiness": avg_happiness,
+        "avg_age": avg_age,
+        "tick": current_tick
+    }
+    
+    # Store as Event
+    new_event = Event(
+        event_type='census',
+        description=json.dumps(stats),
+        tick=current_tick
+    )
+    db.add(new_event)
+    db.commit()
+    
+    return stats

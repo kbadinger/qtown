@@ -1338,3 +1338,8 @@
 - **Non-obvious dependency**: The `ProjectStatus` enum relied on a hidden database trigger to update `last_modified_at` timestamps; manually setting this in tests caused race conditions until I switched to using the repository's `save()` method which respects the trigger.
 - **Convention discovery**: All public works entities follow a strict "Factory + Validator" pattern where the factory handles default values (like `budget_allocation` defaults to 0) and the validator enforces business rules (e.g., `end_date` must be after `start_date`) before any DB interaction.
 - **Correction made**: Initially, I attempted to calculate project completion percentages directly in the view layer; I corrected this by moving the logic to a dedicated `ProjectMetrics` service to ensure consistency across API responses and admin dashboards.
+
+--- Story 318: Census system (attempts: 1, 2026-03-09 08:54) ---
+*   **Non-obvious constraint**: The census aggregation logic required handling overlapping time windows; a simple `GROUP BY` failed, necessitating a windowed calculation to ensure data points weren't double-counted across fiscal quarters.
+*   **Codebase pattern**: The project enforces a strict "repository-agnostic" service layer where all data access must go through a typed `CensusRepository` interface, even for read-only operations, to facilitate future multi-source switching.
+*   **Correction**: Initially, I returned raw entity objects from the API, which exposed internal audit fields; I corrected this by introducing a dedicated `CensusSummaryDTO` projection to strictly control the response schema.

@@ -1390,3 +1390,12 @@ Uploading..
 [2026-03-09 02:59:51 UTC] deploy_ok: Story 315 deployed: Healthy after 0.1s
 [2026-03-09 03:00:08 UTC] story_done: Story 315 complete: Tax revolt
 [2026-03-09 03:00:08 UTC] story_start: Story 316: Public works projects
+[2026-03-09 03:30:11 UTC] deploy_ok: Story 316 deployed: Healthy after 0.1s
+[2026-03-09 03:30:28 UTC] story_done: Story 316 complete: Public works projects
+[2026-03-09 03:30:28 UTC] story_start: Story 317: Diplomatic missions
+[2026-03-09 03:59:27 UTC] CRITICAL loop: Story 317: Qwen returned empty/unparseable output 3x in a row — giving up
+[2026-03-09 03:59:28 UTC] CRITICAL critical: Story 317 failed: Diplomatic missions
+Ralph stopped — needs human debugging
+[2026-03-09 03:59:28 UTC] stop: Ralph offline — 262/450 stories complete
+[2026-03-09 12:39:18 UTC] start: Ralph online — 263/450 stories complete
+[2026-03-09 12:39:19 UTC] story_start: Story 318: Census system
