@@ -1328,3 +1328,8 @@
 - **Tricky**: The interaction between the `Impeachment` state machine and the `LegislativeSession` lifecycle was non-obvious; specifically, the requirement to block all other legislative actions during the "Vote" phase required a global lock that wasn't immediately apparent from the interface.
 - **Patterns**: The codebase consistently uses a "State-First" pattern where domain events (like `MotionPassed`) are emitted before state mutations, ensuring audit logs are always consistent with the current system state.
 - **Mistake**: Initially, I attempted to calculate the vote threshold dynamically based on the current number of senators, which caused race conditions; I corrected this by enforcing the threshold calculation at the start of the session based on the quorum count, not the live roster.
+
+--- Story 315: Tax revolt (attempts: 1, 2026-03-08 22:58) ---
+- **Non-obvious Tax Logic**: The tax calculation wasn't a simple percentage; it required a cascading lookup against a dynamic `TaxBracket` table that changes based on the fiscal year, making the initial assumption of a static rate incorrect.
+- **Codebase Convention**: The project strictly separates domain logic from presentation; all financial calculations must reside in the `FiscalService` class and return immutable `Money` objects, rather than floating-point primitives.
+- **Correction Made**: Initially attempted to handle negative balances by throwing an exception, but realized the domain model requires returning a `Zero` or `Negative` state to allow downstream reporting to aggregate deficits correctly.

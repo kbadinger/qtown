@@ -1587,3 +1587,46 @@ def check_impeachment(db: Session) -> bool:
         return True
     
     return False
+
+
+def check_tax_revolt(db: Session) -> bool:
+    """Check if tax revolt should be triggered based on tax rate and NPC happiness."""
+    from engine.models import WorldState, NPC, Event
+    
+    # Get current world state
+    world = db.query(WorldState).first()
+    if not world:
+        return False
+    
+    # Check if tax rate is too high (> 20%)
+    if world.tax_rate <= 0.2:
+        return False
+    
+    # Calculate average NPC happiness (only living NPCs)
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    if not npcs:
+        return False
+    
+    avg_happiness = sum(npc.happiness for npc in npcs) / len(npcs)
+    
+    # Check if average happiness is too low (< 30)
+    if avg_happiness >= 30:
+        return False
+    
+    # Trigger revolt - NPCs refuse to pay tax for 10 ticks
+    revolt_until_tick = world.tick + 10
+    
+    # Update WorldState with revolt_until_tick
+    world.revolt_until_tick = revolt_until_tick
+    
+    # Create Event for tax revolt
+    event = Event(
+        event_type='tax_revolt',
+        severity='high',
+        description='Tax revolt triggered due to high taxes and low happiness',
+        tick=world.tick
+    )
+    db.add(event)
+    db.commit()
+    
+    return True
