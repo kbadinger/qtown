@@ -1550,3 +1550,40 @@ def check_term_limits(db: Session) -> bool:
         return True
     
     return False
+
+
+def check_impeachment(db: Session) -> bool:
+    """Check if mayor should be impeached due to low public happiness.
+    
+    Finds the mayor, calculates average happiness of living NPCs.
+    If avg < 25, 60% chance of removal. If removed, sets role to 'citizen',
+    triggers election, creates impeachment event.
+    Returns True if mayor was removed.
+    """
+    mayor = db.query(NPC).filter(NPC.role == 'mayor').first()
+    if not mayor:
+        return False
+    
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    if not living_npcs:
+        return False
+    
+    avg_happiness = sum(npc.happiness for npc in living_npcs) / len(living_npcs)
+    
+    if avg_happiness < 25 and random.random() < 0.6:
+        mayor.role = 'citizen'
+        hold_election(db)
+        
+        world_state = db.query(WorldState).first()
+        current_tick = world_state.tick if world_state else 0
+        
+        event = Event(
+            event_type='impeachment',
+            description='Mayor impeached due to low public happiness',
+            tick=current_tick
+        )
+        db.add(event)
+        db.commit()
+        return True
+    
+    return False

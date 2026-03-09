@@ -1323,3 +1323,8 @@
 - **Tricky Logic**: The non-obvious edge case was handling the "current term" calculation when a mayor was elected mid-term; simply comparing `start_date` to `now` failed if the previous term ended exactly on the election day, requiring an explicit `end_date` check to prevent double-counting.
 - **Codebase Patterns**: The repository consistently uses a `PolicyEngine` service layer for all eligibility rules, separating calculation logic from the controller; new rules should always be added as methods here rather than in the model or view.
 - **Correction**: Initially, I attempted to cache the term count at the database level, which caused race conditions during high-concurrency elections; I corrected this by moving the calculation to the application layer to ensure real-time accuracy.
+
+--- Story 314: Impeachment mechanic (attempts: 1, 2026-03-08 22:45) ---
+- **Tricky**: The interaction between the `Impeachment` state machine and the `LegislativeSession` lifecycle was non-obvious; specifically, the requirement to block all other legislative actions during the "Vote" phase required a global lock that wasn't immediately apparent from the interface.
+- **Patterns**: The codebase consistently uses a "State-First" pattern where domain events (like `MotionPassed`) are emitted before state mutations, ensuring audit logs are always consistent with the current system state.
+- **Mistake**: Initially, I attempted to calculate the vote threshold dynamically based on the current number of senators, which caused race conditions; I corrected this by enforcing the threshold calculation at the start of the session based on the quorum count, not the live roster.

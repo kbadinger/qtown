@@ -1381,3 +1381,6 @@ Indexing...
 Uploading..
 [2026-03-09 02:16:38 UTC] story_done: Story 312 complete: Policy proposal queue
 [2026-03-09 02:16:38 UTC] story_start: Story 313: Term limits for mayor
+[2026-03-09 02:30:29 UTC] deploy_ok: Story 313 deployed: Healthy after 0.1s
+[2026-03-09 02:30:46 UTC] story_done: Story 313 complete: Term limits for mayor
+[2026-03-09 02:30:46 UTC] story_start: Story 314: Impeachment mechanic
