@@ -1293,3 +1293,8 @@
 - **Tricky/Non-obvious**: The `Memorial` entity requires a two-phase commit (drafting state before finalization) to ensure data consistency with the `Legacy` service; skipping the intermediate validation step causes silent failures in the notification pipeline.
 - **Patterns/Conventions**: This codebase strictly separates domain logic from infrastructure concerns using the `Command/Handler` pattern; all external API calls for memorial metadata must be wrapped in the `ResilientClient` decorator to handle transient network errors.
 - **Mistakes/Corrections**: Initially attempted to persist the memorial directly in the controller, which violated the repository abstraction; corrected by delegating the creation to the `MemorialService` to ensure the audit trail is properly logged.
+
+--- Story 308: Event prevention by guards (attempts: 1, 2026-03-08 21:09) ---
+*   **Non-obvious Guard Logic**: The `prevent` method relies on a specific `action_type` enum mapping rather than string comparison; passing raw strings caused silent failures until the enum conversion was added.
+*   **Codebase Convention**: Event handlers in this module strictly follow the `check -> log -> block` pattern; skipping the logging step breaks the audit trail integration expected by downstream services.
+*   **Correction**: Initially attempted to modify the event object in-place to block it, which caused race conditions; corrected by returning a `GuardResult` enum to signal the dispatcher to drop the event without mutation.

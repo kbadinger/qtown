@@ -11,6 +11,7 @@ from sqlalchemy import desc
 from typing import Optional
 from engine.simulation.weather import get_season
 from engine.models import Building
+from engine.models import NPC
 
 
 def trigger_drought(db: Session) -> None:
@@ -1278,3 +1279,20 @@ def create_memorial(db: Session) -> Optional[Building]:
     db.commit()
     
     return memorial
+
+
+def calculate_prevention_chance(db: Session) -> float:
+    """Calculate event prevention chance based on guard NPCs.
+    
+    Each guard adds 5% prevention chance, capped at 50%.
+    Only counts living guards (is_dead == 0).
+    
+    Args:
+        db: SQLAlchemy database session
+        
+    Returns:
+        float: Prevention chance between 0.0 and 0.5
+    """
+    guard_count = db.query(NPC).filter(NPC.role == 'guard', NPC.is_dead == 0).count()
+    prevention_chance = guard_count * 0.05
+    return min(prevention_chance, 0.5)
