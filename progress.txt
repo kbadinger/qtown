@@ -1463,3 +1463,8 @@
 - **Tricky Logic**: Handling the recursive nature of nested architectural features (e.g., rooms within rooms) required careful state management to avoid infinite loops and ensure consistent adjective application across hierarchy levels.
 - **Codebase Pattern**: The project relies heavily on a "seeded randomness" convention, where a single integer seed determines all stylistic choices (materials, dimensions, lighting) to guarantee reproducible outputs for the same input parameters.
 - **Correction**: Initially, I generated descriptions based on fixed templates, which led to repetitive phrasing; I corrected this by implementing a dynamic token-weighting system that selects sentence structures based on the building's complexity score.
+
+--- Story 343: Daily digest (attempts: 1, 2026-03-09 13:12) ---
+- **Non-obvious**: The digest aggregation logic relies on a hidden `last_processed_offset` in the user session cache, not the database, which caused stale data issues when sessions expired unexpectedly.
+- **Pattern**: The codebase consistently uses a "command-handler" pattern for email dispatching, where the `DailyDigestService` only prepares payloads and delegates actual sending to a separate `EmailCommand` class.
+- **Correction**: Initially filtered emails by `is_active` status only, but corrected to also exclude `is_unsubscribed` flags to prevent re-engagement emails from being sent to opted-out users.

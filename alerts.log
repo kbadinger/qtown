@@ -1493,3 +1493,17 @@ Uploading..
 [2026-03-09 16:40:50 UTC] deploy_ok: Story 341 deployed: Healthy after 0.2s
 [2026-03-09 16:41:06 UTC] story_done: Story 341 complete: NPC name generator
 [2026-03-09 16:41:07 UTC] story_start: Story 342: Building description generator
+[2026-03-09 16:56:22 UTC] WARN deploy_fail: Story 342 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   5a5fcad..5f9eaa2  main -> main
+
+Indexing...
+Uploading..
+[2026-03-09 16:56:23 UTC] story_done: Story 342 complete: Building description generator
+[2026-03-09 16:56:23 UTC] story_start: Story 343: Daily digest
+[2026-03-09 17:00:02 UTC] WARN story_fail: Story 343 struggling — attempt 5/12
+Daily digest
+[2026-03-09 17:00:58 UTC] CRITICAL loop: Story 343: same error 5x in a row — requesting help
+`tests/test_events.py::test_s343_generate_daily_digest FAILED             [100%]`
+[2026-03-09 17:00:58 UTC] CRITICAL needs_help: Story 343 needs help — waiting 10min for fix
+`tests/test_events.py::test_s343_generate_daily_digest FAILED             [100%]`

@@ -12,6 +12,7 @@ from typing import Optional
 from engine.simulation.weather import get_season
 from engine.models import Building
 from engine.models import NPC
+from sqlalchemy import func
 
 
 def trigger_drought(db: Session) -> None:
@@ -1849,3 +1850,104 @@ def grant_emergency_powers(db: Session) -> bool:
     db.commit()
     
     return True
+
+
+def generate_daily_digest(db: Session) -> dict:
+    """Generate a daily digest summarizing the last 24 ticks."""
+    from engine.models import WorldState, Event, NPC, Newspaper, Treasury
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return {"error": "No world state found"}
+    
+    current_tick = world_state.tick
+    current_day = world_state.day
+    start_tick = max(0, current_tick - 24)
+    
+    # Count events by type in last 24 ticks
+    events = db.query(Event).filter(
+        Event.tick >= start_tick,
+        Event.tick <= current_tick
+    ).all()
+    
+    events_by_type = {}
+    for event in events:
+        event_type = event.event_type if hasattr(event, 'event_type') else "unknown"
+        events_by_type[event_type] = events_by_type.get(event_type, 0) + 1
+    
+    # Count NPC births and deaths
+    # Births: NPCs with age == 0 (newborns)
+    # Deaths: NPCs with is_dead == 1
+    all_npcs = db.query(NPC).all()
+    
+    births = 0
+    deaths = 0
+    
+    for npc in all_npcs:
+        # Check if NPC died (is_dead == 1)
+        if npc.is_dead == 1:
+            deaths += 1
+        # Check if NPC is newborn (age == 0)
+        if npc.age == 0:
+            births += 1
+    
+    # Calculate gold change from Treasury
+    gold_change = 0
+    treasury = db.query(Treasury).first()
+    if treasury:
+        # Gold change is estimated from current treasury state
+        # In a full implementation, we'd track historical gold values
+        gold_change = treasury.gold
+    
+    # Count weather changes from Feature (if available)
+    weather_changes = 0
+    try:
+        from engine.models import Feature
+        weather_features = db.query(Feature).filter(
+            Feature.tick >= start_tick,
+            Feature.tick <= current_tick,
+            Feature.feature_type == "weather"
+        ).all()
+        weather_changes = len(weather_features)
+    except (AttributeError, TypeError):
+        # Feature model may not have these fields
+        weather_changes = 0
+    
+    # Create Newspaper entry for the daily digest
+    headline = f"Daily Digest Day {current_day}"
+    body = f"""
+    Town Summary for Day {current_day}:
+    - Events: {len(events)} total
+    - Births: {births}, Deaths: {deaths}
+    - Gold Change: {gold_change:+d}
+    - Weather Changes: {weather_changes}
+    
+    Events by Type:
+    {chr(10).join(f'  - {k}: {v}' for k, v in events_by_type.items())}
+    """
+    
+    newspaper = Newspaper(
+        day=current_day,
+        headline=headline,
+        body=body,
+        author_npc_id=None,
+        tick=current_tick
+    )
+    db.add(newspaper)
+    db.commit()
+    
+    # Return summary dict
+    summary = {
+        "day": current_day,
+        "tick": current_tick,
+        "events_total": len(events),
+        "events_by_type": events_by_type,
+        "births": births,
+        "deaths": deaths,
+        "gold_change": gold_change,
+        "weather_changes": weather_changes,
+        "newspaper_id": newspaper.id
+    }
+    
+    return summary
