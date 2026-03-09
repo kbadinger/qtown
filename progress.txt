@@ -1388,3 +1388,8 @@
 - **Non-obvious DOM hydration**: The `LandmarkCard` component requires explicit `useEffect` cleanup for the map instance to prevent memory leaks when the user rapidly filters the list, a side effect not immediately obvious from the static props.
 - **API Response Pattern**: The backend consistently wraps landmark data in a `meta` object containing pagination cursors; the frontend must check `meta.has_more` before rendering the "Load More" button to avoid unnecessary API calls.
 - **Corrected Coordinate Handling**: Initially passed raw latitude/longitude strings to the map library, causing rendering failures; fixed by ensuring all coordinates are parsed to `Number` types before being injected into the `MapProvider`.
+
+--- Story 328: Building inspection (attempts: 1, 2026-03-09 11:31) ---
+*   **Tricky Aspect**: The `Building` entity's validation logic for structural integrity was deeply coupled with external API calls, making unit tests brittle; I had to refactor to inject a mockable service interface to isolate the calculation logic.
+*   **Pattern Discovered**: The codebase consistently uses a "Command/Query" separation where read operations return DTOs directly, while write operations (like inspection updates) always return a `Result<T>` wrapper containing a status code and a list of validation errors.
+*   **Mistake Corrected**: I initially attempted to update the inspection status in a single transaction without checking for concurrent modifications, which caused race conditions in the staging environment; I corrected this by implementing optimistic locking using the `version` column.

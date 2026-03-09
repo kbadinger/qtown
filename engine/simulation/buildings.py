@@ -7,6 +7,7 @@ from engine.models import Building
 from typing import Optional
 import json
 from engine.models import Tile, Building, NPC
+from typing import List, Dict
 
 
 def seed_all_buildings(db: Session) -> None:
@@ -717,3 +718,35 @@ def check_landmarks(db: Session) -> int:
     db.commit()
     
     return landmark_count
+
+
+def inspect_buildings(db: Session) -> List[Dict]:
+    """Inspect all buildings and return their status."""
+    from engine.models import Building, NPC
+    from sqlalchemy import func
+    
+    buildings = db.query(Building).all()
+    results = []
+    
+    for building in buildings:
+        # Count workers at this building
+        worker_count = db.query(NPC).filter(NPC.work_building_id == building.id).count()
+        
+        # Determine status based on capacity and workers
+        if worker_count == 0:
+            status = 'abandoned'
+        elif building.capacity < 3:
+            status = 'critical'
+        elif building.capacity < 5:
+            status = 'damaged'
+        else:
+            status = 'operational'
+        
+        results.append({
+            'building_id': building.id,
+            'name': building.name,
+            'status': status,
+            'capacity': building.capacity
+        })
+    
+    return results

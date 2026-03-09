@@ -1431,3 +1431,11 @@ Uploading..
 [2026-03-09 14:57:18 UTC] deploy_ok: Story 326 deployed: Healthy after 0.1s
 [2026-03-09 14:57:35 UTC] story_done: Story 326 complete: Building insurance
 [2026-03-09 14:57:35 UTC] story_start: Story 327: Landmark buildings
+[2026-03-09 15:19:32 UTC] WARN deploy_fail: Story 327 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   05272b7..0e19aa1  main -> main
+
+Indexing...
+Uploading..
+[2026-03-09 15:19:33 UTC] story_done: Story 327 complete: Landmark buildings
+[2026-03-09 15:19:33 UTC] story_start: Story 328: Building inspection
