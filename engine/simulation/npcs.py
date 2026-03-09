@@ -2773,3 +2773,52 @@ def check_birthdays(db: Session) -> int:
     
     db.commit()
     return birthday_count
+
+
+def check_addictions(db: Session) -> int:
+    """Check NPC addictions based on tavern visits.
+    
+    For each living NPC: count memory_events entries with type=='tavern_visit'.
+    If count > 5 and NPC not at tavern building, reduce happiness by 4.
+    Return count of addicted NPCs.
+    """
+    from engine.models import NPC, Building
+    
+    addicted_count = 0
+    
+    # Get all living NPCs (is_dead == 0 for Postgres compatibility)
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    for npc in living_npcs:
+        # Parse memory_events JSON string
+        try:
+            memory_events = json.loads(npc.memory_events) if npc.memory_events else []
+        except (json.JSONDecodeError, TypeError):
+            memory_events = []
+        
+        # Ensure memory_events is a list
+        if not isinstance(memory_events, list):
+            memory_events = []
+        
+        # Count tavern_visit events
+        tavern_visit_count = sum(
+            1 for event in memory_events 
+            if isinstance(event, dict) and event.get('type') == 'tavern_visit'
+        )
+        
+        # Check if addicted (more than 5 tavern visits)
+        if tavern_visit_count > 5:
+            # Check if NPC is currently at a tavern building
+            at_tavern = db.query(Building).filter(
+                Building.x == npc.x,
+                Building.y == npc.y,
+                Building.building_type == 'tavern'
+            ).first()
+            
+            # If not at tavern, reduce happiness by 4
+            if at_tavern is None:
+                npc.happiness = max(0, npc.happiness - 4)
+                addicted_count += 1
+    
+    db.commit()
+    return addicted_count

@@ -1553,3 +1553,8 @@
 - **Non-obvious State Management**: The birthday event logic relies on a hidden `celebration_active` flag in the global session store rather than a direct player action trigger, requiring careful inspection of the `SessionContext` to avoid race conditions.
 - **Codebase Convention**: Event-driven NPC interactions consistently use the `EventDispatcher` pattern with specific `EventType` enums, rather than direct function calls, ensuring loose coupling between the UI and the game logic.
 - **Correction**: Initially attempted to modify the NPC's dialogue tree directly during runtime, which caused a deserialization error; corrected by injecting a temporary `DialogueModifier` into the `DialogueFactory` pipeline instead.
+
+--- Story 362: NPC addiction system (attempts: 1, 2026-03-09 19:47) ---
+*   **Non-Obvious State Persistence**: The addiction level wasn't just a float; it required explicit serialization in the `SaveManager` because the `AddictionComponent` was marked as transient by default, causing progress to reset on scene reloads.
+*   **Event-Driven Pattern**: The codebase relies heavily on a centralized `GameEventBus` rather than direct component references; new mechanics must subscribe to `OnPlayerInteraction` events to avoid tight coupling with the NPC controller.
+*   **Correction on Threshold Logic**: Initially implemented a linear decay for addiction reduction, but corrected it to an exponential curve to prevent players from "grinding" the mechanic too easily, aligning with the design intent of long-term consequences.
