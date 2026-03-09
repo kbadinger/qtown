@@ -1358,3 +1358,8 @@
 *   **Non-obvious dependency**: The adjacency logic required checking the *entire* board state before calculating bonuses, not just the neighbors of the placed piece, to correctly handle cascading effects on existing structures.
 *   **Codebase pattern**: Bonus calculations are consistently encapsulated in pure functions that accept the board grid and return a delta, avoiding direct mutation of the game state within the scoring logic.
 *   **Correction**: Initially failed to account for diagonal adjacency in the "Forest" tile bonus; corrected by standardizing the neighbor-checking utility to use a full 8-directional offset array instead of hardcoding orthogonal checks.
+
+--- Story 322: Road network speed bonus (attempts: 1, 2026-03-09 09:53) ---
+- **Non-obvious logic**: The speed bonus calculation requires clamping the final speed against both the road's maximum limit and the vehicle's physical cap, not just applying a raw multiplier to the current velocity.
+- **Codebase pattern**: All road-specific modifiers are centralized in `RoadNetwork.calculateEffectiveSpeed()` rather than scattered across individual vehicle classes, ensuring consistent behavior for all traffic types.
+- **Correction**: Initially failed to handle negative speed deltas (deceleration) correctly, causing vehicles to momentarily accelerate when entering a "slow zone"; fixed by adding a check to ensure the delta is always non-negative before applying the bonus.

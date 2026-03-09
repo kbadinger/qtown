@@ -1413,3 +1413,6 @@ Indexing...
 Uploading..
 [2026-03-09 13:25:47 UTC] story_done: Story 320 complete: Emergency powers
 [2026-03-09 13:25:47 UTC] story_start: Story 321: Building adjacency bonuses
+[2026-03-09 13:39:28 UTC] deploy_ok: Story 321 deployed: Healthy after 0.1s
+[2026-03-09 13:39:44 UTC] story_done: Story 321 complete: Building adjacency bonuses
+[2026-03-09 13:39:45 UTC] story_start: Story 322: Road network speed bonus

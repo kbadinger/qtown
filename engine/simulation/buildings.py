@@ -495,3 +495,17 @@ def calculate_adjacency_bonuses(db: Session) -> dict:
             bonuses[building.id] = bonus
     
     return bonuses
+
+
+def calculate_road_bonus(db: Session) -> int:
+    """Calculate movement speed bonus based on road network."""
+    from engine.models import Building
+    
+    # Count buildings with type 'road' or 'gate'
+    road_count = db.query(Building).filter(
+        Building.building_type.in_(['road', 'gate'])
+    ).count()
+    
+    # 1% per road, capped at 20%
+    bonus = road_count * 1
+    return min(bonus, 20)
