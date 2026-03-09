@@ -1318,3 +1318,8 @@
 - **Tricky**: The `PolicyProposal` state machine requires explicit handling of the "draft" to "submitted" transition; simply updating the status field bypasses the mandatory `validate_and_queue` hook, causing silent failures in the background worker.
 - **Pattern**: The codebase strictly separates domain logic (in `services/policy/`) from controller concerns; all queue operations must go through the `PolicyQueueService` to ensure audit logging and rate limiting are applied consistently.
 - **Correction**: Initially attempted to bypass the transactional boundary by calling the queue directly from the controller, which led to race conditions; refactored to use the `with_transaction` context manager to ensure data integrity before enqueueing.
+
+--- Story 313: Term limits for mayor (attempts: 1, 2026-03-08 22:29) ---
+- **Tricky Logic**: The non-obvious edge case was handling the "current term" calculation when a mayor was elected mid-term; simply comparing `start_date` to `now` failed if the previous term ended exactly on the election day, requiring an explicit `end_date` check to prevent double-counting.
+- **Codebase Patterns**: The repository consistently uses a `PolicyEngine` service layer for all eligibility rules, separating calculation logic from the controller; new rules should always be added as methods here rather than in the model or view.
+- **Correction**: Initially, I attempted to cache the term count at the database level, which caused race conditions during high-concurrency elections; I corrected this by moving the calculation to the application layer to ensure real-time accuracy.

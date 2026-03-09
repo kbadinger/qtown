@@ -1373,3 +1373,11 @@ Uploading..
 [2026-03-09 02:04:13 UTC] deploy_ok: Story 311 deployed: Healthy after 0.1s
 [2026-03-09 02:04:29 UTC] story_done: Story 311 complete: Political faction system
 [2026-03-09 02:04:30 UTC] story_start: Story 312: Policy proposal queue
+[2026-03-09 02:16:37 UTC] WARN deploy_fail: Story 312 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   01e11c5..1b0c8b8  main -> main
+
+Indexing...
+Uploading..
+[2026-03-09 02:16:38 UTC] story_done: Story 312 complete: Policy proposal queue
+[2026-03-09 02:16:38 UTC] story_start: Story 313: Term limits for mayor

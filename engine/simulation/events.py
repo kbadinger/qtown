@@ -1499,3 +1499,54 @@ def manage_proposal_queue(db: Session) -> int:
             count = count - 1
     
     return count
+
+
+def check_term_limits(db: Session) -> bool:
+    """Check if mayor has reached term limit and trigger election if so."""
+    from engine.models import NPC, WorldState, Event
+    import json
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return False
+    
+    current_tick = world_state.tick
+    
+    # Find mayor
+    mayor = db.query(NPC).filter(
+        NPC.role == 'mayor',
+        NPC.is_dead == 0
+    ).first()
+    
+    if not mayor:
+        return False
+    
+    # Check experience for mayor_since_tick
+    try:
+        parsed = json.loads(mayor.experience)
+        experience = parsed if isinstance(parsed, dict) else {}
+    except (json.JSONDecodeError, TypeError, AttributeError):
+        experience = {}
+    
+    mayor_since_tick = experience.get('mayor_since_tick')
+    
+    if mayor_since_tick is None:
+        return False
+    
+    # Check if term limit reached (> 240 ticks)
+    if current_tick - mayor_since_tick > 240:
+        # Trigger new election
+        hold_election(db)
+        
+        # Create event
+        event = Event(
+            event_type='term_limit_reached',
+            tick=current_tick
+        )
+        db.add(event)
+        db.commit()
+        
+        return True
+    
+    return False
