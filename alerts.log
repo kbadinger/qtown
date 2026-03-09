@@ -1459,3 +1459,6 @@ Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and
 [2026-03-09 16:15:24 UTC] deploy_ok: Story 333 deployed: Healthy after 0.1s
 [2026-03-09 16:15:34 UTC] story_done: Story 333 complete: Economic chart data API
 [2026-03-09 16:15:35 UTC] story_start: Story 334: Relationship graph API
+[2026-03-09 16:16:53 UTC] deploy_ok: Story 334 deployed: Healthy after 0.1s
+[2026-03-09 16:17:04 UTC] story_done: Story 334 complete: Relationship graph API
+[2026-03-09 16:17:04 UTC] story_start: Story 335: Town achievement progress API

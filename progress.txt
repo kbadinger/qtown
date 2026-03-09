@@ -1423,3 +1423,8 @@
 - **Non-obvious traversal logic**: The API required handling recursive graph traversals with depth limits to prevent stack overflows, a constraint not immediately obvious from the initial schema design.
 - **Convention for edge directionality**: The codebase consistently enforces directed edges by always storing relationships as `(source_id, target_id)` tuples, requiring explicit inversion logic for reverse lookups rather than relying on database-level bidirectional indexing.
 - **Correction on N+1 queries**: Initially implemented a naive loop to fetch neighbor details, causing performance degradation; corrected by switching to a single bulk query with `IN` clauses and client-side mapping.
+
+--- Story 335: Town achievement progress API (attempts: 1, 2026-03-09 12:17) ---
+- **Non-obvious API constraints**: The achievement progress endpoint requires a specific `batch_id` in the request body for write operations, which is not documented in the OpenAPI spec but is strictly enforced by the backend validation layer.
+- **Codebase pattern**: All external-facing API responses in this module wrap the actual data payload inside a `meta` object containing `request_id` and `latency_ms`, ensuring consistent tracing and performance monitoring across the service.
+- **Correction**: Initially attempted to use the generic `UserRepository` for fetching achievement states, which caused a race condition during concurrent updates; switched to the dedicated `AchievementStateService` which handles optimistic locking correctly.
