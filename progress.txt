@@ -1543,3 +1543,8 @@
 - **Non-obvious state persistence**: The routine logic relies on a hidden `lastInteraction` timestamp stored in the NPC's extended metadata, not just the visible schedule; failing to check this caused the "idle" state to trigger prematurely after a player interaction.
 - **Convention for time-gating**: This codebase strictly uses `TimeOfDay` enums with a `checkTransition` helper rather than raw integer comparisons, ensuring DST and server-time shifts don't break the daily loop.
 - **Correction on event ordering**: Initially, I placed the `resetInventory` call before the `updateMood` check, which caused NPCs to lose items while still in an "angry" state; moving the reset to the post-transition phase fixed the logic flow.
+
+--- Story 360: NPC pet ownership (attempts: 1, 2026-03-09 19:07) ---
+- **Tricky**: Handling the `Pet` lifecycle required careful state management to ensure ownership transfers correctly without orphaning data or violating the `Owner` invariant during concurrent updates.
+- **Patterns**: The codebase consistently uses a `Repository` abstraction for persistence and `Domain Events` to decouple side effects (like notifications) from the core ownership logic.
+- **Mistakes**: Initially attempted to validate pet capacity directly in the controller; corrected by moving this rule into the `Owner` aggregate root to enforce business logic centrally.

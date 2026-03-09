@@ -2694,3 +2694,37 @@ def apply_daily_routine(db: Session) -> dict:
     db.commit()
     
     return {"going_work": going_work, "working": working, "going_home": going_home}
+
+
+def assign_pets(db: Session) -> int:
+    from engine.models import NPC
+    import json
+    import random
+    
+    new_owners = 0
+    eligible_npcs = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.happiness > 60,
+        NPC.gold > 50
+    ).all()
+    
+    for npc in eligible_npcs:
+        events = []
+        if npc.memory_events:
+            try:
+                parsed = json.loads(npc.memory_events)
+                if isinstance(parsed, list):
+                    events = parsed
+            except (json.JSONDecodeError, TypeError):
+                events = []
+        
+        if "got_pet" not in events:
+            if random.random() < 0.1:
+                events.append("got_pet")
+                npc.memory_events = json.dumps(events)
+                npc.happiness += 5
+                npc.gold -= 20
+                new_owners += 1
+    
+    db.commit()
+    return new_owners
