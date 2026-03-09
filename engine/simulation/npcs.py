@@ -2566,3 +2566,53 @@ def process_grudges(db: Session) -> int:
             
     db.commit()
     return grudges_count
+
+
+def process_mentorship(db: Session) -> int:
+    """Process mentorship between high-skill and low-skill NPCs."""
+    from engine.models import NPC, Relationship
+    
+    mentor_count = 0
+    
+    # Find all living mentors (skill > 80)
+    mentors = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.skill > 80
+    ).all()
+    
+    for mentor in mentors:
+        # Find nearby students (distance <= 3, skill < 40, living)
+        students = db.query(NPC).filter(
+            NPC.is_dead == 0,
+            NPC.skill < 40,
+            NPC.id != mentor.id
+        ).all()
+        
+        for student in students:
+            # Calculate distance
+            distance = abs(mentor.x - student.x) + abs(mentor.y - student.y)
+            
+            if distance <= 3:
+                # Increase student skill by +3
+                student.skill = min(student.skill + 3, 100)
+                mentor_count += 1
+                
+                # Check if mentor relationship already exists
+                existing = db.query(Relationship).filter(
+                    Relationship.npc_id == mentor.id,
+                    Relationship.target_npc_id == student.id,
+                    Relationship.relationship_type == 'mentor'
+                ).first()
+                
+                if not existing:
+                    # Create new mentor relationship
+                    relationship = Relationship(
+                        npc_id=mentor.id,
+                        target_npc_id=student.id,
+                        relationship_type='mentor',
+                        strength=60
+                    )
+                    db.add(relationship)
+    
+    db.commit()
+    return mentor_count

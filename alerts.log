@@ -1566,3 +1566,12 @@ Ralph stopped — needs human debugging
 [2026-03-09 20:34:22 UTC] stop: Ralph offline — 300/450 stories complete
 [2026-03-09 21:11:46 UTC] start: Ralph online — 301/450 stories complete
 [2026-03-09 21:11:46 UTC] story_start: Story 356: NPC grudge system
+[2026-03-09 21:40:27 UTC] WARN deploy_fail: Story 356 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build timed out after 300s
+
+--- Railway Build Logs ---
+
+
+--- Railway Runtime Logs ---
+
+[2026-03-09 21:40:27 UTC] story_done: Story 356 complete: NPC grudge system
+[2026-03-09 21:40:28 UTC] story_start: Story 357: NPC mentorship

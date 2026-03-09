@@ -1528,3 +1528,8 @@
 - **Tricky Logic**: The grudge accumulation logic was non-obvious because it required decoupling the *trigger* (player action) from the *reaction* (NPC state change) to handle delayed consequences and prevent immediate retaliation loops.
 - **Codebase Patterns**: The project heavily favors a "State Machine" pattern for NPC behaviors; grudge levels act as a scalar input that transitions the NPC between `Neutral`, `Hostile`, and `Vengeful` states rather than using hardcoded if/else chains.
 - **Correction**: Initially, I stored grudge data in the global `GameState`, causing persistence issues when reloading saves; I corrected this by migrating the data to the individual `NPC` entity's component to ensure isolated state management.
+
+--- Story 357: NPC mentorship (attempts: 1, 2026-03-09 18:03) ---
+*   **Tricky Aspect**: The mentorship logic required handling state persistence across session boundaries; simply updating the NPC's dialogue flags wasn't enough without explicitly saving the "mentorship tier" to the player's persistent profile to prevent regression on reload.
+*   **Pattern Discovered**: The codebase consistently uses a `MentorRegistry` singleton to manage NPC availability, where new mentors must be registered with a specific `unlockCondition` lambda rather than hardcoding checks in the dialogue tree.
+*   **Correction Made**: Initially, I attempted to trigger the mentorship event via a direct function call during the quest start, which broke the event queue order; I corrected this by queuing the interaction through the standard `QuestEventDispatcher` to ensure proper sequencing with other story beats.
