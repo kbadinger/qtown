@@ -1366,3 +1366,66 @@ def process_seasonal_visitors(db: Session) -> int:
     
     db.commit()
     return visitor_count
+
+
+def check_legendary_event(db: Session) -> bool:
+    """Check and trigger legendary event."""
+    from engine.models import WorldState, Event, NPC, Building, Treasury, Newspaper
+    import random
+
+    world_state = db.query(WorldState).first()
+    if not world_state or world_state.tick <= 1000:
+        return False
+
+    existing_legendary = db.query(Event).filter(Event.event_type == 'legendary').first()
+    if existing_legendary:
+        return False
+
+    if random.random() >= 0.01:
+        return False
+
+    # Trigger legendary event
+    # 1. All NPCs flee (set target to random edge)
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    for npc in npcs:
+        # Random edge: x=0, x=49, y=0, or y=49
+        if random.random() < 0.5:
+            npc.target_x = random.choice([0, 49])
+            npc.target_y = random.randint(0, 49)
+        else:
+            npc.target_x = random.randint(0, 49)
+            npc.target_y = random.choice([0, 49])
+
+    # 2. All buildings lose 1 capacity
+    buildings = db.query(Building).all()
+    for building in buildings:
+        if building.capacity > 0:
+            building.capacity -= 1
+
+    # 3. 500 gold added to Treasury
+    treasury = db.query(Treasury).first()
+    if treasury:
+        treasury.gold += 500
+
+    # 4. Create Event
+    new_event = Event(
+        event_type='legendary',
+        name='dragon_sighting',
+        description='A dragon has been sighted!',
+        tick=world_state.tick,
+        resolved=0
+    )
+    db.add(new_event)
+
+    # 5. Create Newspaper
+    new_paper = Newspaper(
+        day=world_state.tick,
+        headline='Dragon Sighting!',
+        body='A legendary dragon has been spotted near the town!',
+        author_npc_id=None,
+        tick=world_state.tick
+    )
+    db.add(new_paper)
+
+    db.commit()
+    return True

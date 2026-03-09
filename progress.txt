@@ -1303,3 +1303,8 @@
 - **Tricky Logic**: The interaction between `seasonal_override` flags and the base migration schedule was non-obvious; the system prioritizes the override only if the `migration_window` is explicitly open, otherwise it silently defers to the default schedule.
 - **Codebase Patterns**: Migration rules are strictly data-driven, stored in `seasonal_rules.json` rather than hardcoded; the `MigrationEngine` relies on a factory pattern to instantiate specific strategy classes based on the current season key.
 - **Correction**: Initially, I attempted to mutate the shared `current_season` state directly during the test setup, causing race conditions in parallel tests; I corrected this by injecting a scoped `season_context` into the engine constructor instead.
+
+--- Story 310: Legendary event (attempts: 1, 2026-03-08 21:49) ---
+- **Tricky Logic**: The event's "legendary" status relied on a hidden multiplier that only applied if the user's `last_login` was within a specific 15-minute window relative to the event start time, not just the current timestamp.
+- **Codebase Pattern**: This repository consistently uses a `EventContext` wrapper object to pass mutable state between handlers, avoiding global variables and making unit testing of edge cases significantly easier.
+- **Correction**: Initially, I attempted to cache the event result in Redis using the user ID as the key, which caused race conditions during high-concurrency login spikes; switching to a composite key (`user_id:session_id`) resolved the data inconsistency.
