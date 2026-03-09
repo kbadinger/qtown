@@ -1528,3 +1528,6 @@ Daily digest
 [2026-03-09 18:55:06 UTC] deploy_ok: Story 349 deployed: Healthy after 0.1s
 [2026-03-09 18:55:22 UTC] story_done: Story 349 complete: Town population cap
 [2026-03-09 18:55:23 UTC] story_start: Story 350: End-of-day report
+[2026-03-09 19:10:39 UTC] deploy_ok: Story 350 deployed: Healthy after 0.1s
+[2026-03-09 19:10:56 UTC] story_done: Story 350 complete: End-of-day report
+[2026-03-09 19:10:56 UTC] story_start: Story 351: NPC stress system

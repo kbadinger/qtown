@@ -2216,3 +2216,27 @@ def assign_unemployed(db: Session) -> int:
     
     db.commit()
     return assigned_count
+
+
+def calculate_npc_stress(db: Session) -> int:
+    """Calculate stress for all living NPCs and reduce happiness if stressed."""
+    from engine.models import NPC
+    
+    stressed_count = 0
+    
+    for npc in db.query(NPC).filter(NPC.is_dead == 0).all():
+        stress_level = 0
+        
+        if npc.hunger > 70:
+            stress_level += 2
+        if npc.energy < 30:
+            stress_level += 2
+        if npc.gold < 5:
+            stress_level += 2
+        
+        if stress_level >= 4:
+            npc.happiness = max(0, npc.happiness - stress_level)
+            stressed_count += 1
+    
+    db.commit()
+    return stressed_count

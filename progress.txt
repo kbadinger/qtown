@@ -1503,3 +1503,8 @@
 - **Tricky**: The `report_id` generation logic relies on a non-atomic database sequence; without an explicit transaction lock, concurrent end-of-day runs can cause ID collisions or skipped numbers.
 - **Pattern**: This codebase consistently separates data aggregation (DTOs) from formatting (StringBuilders) and stores raw JSON blobs in the `audit_log` table before parsing for the UI.
 - **Correction**: Initially missed the `timezone` parameter in the cron job configuration, causing reports to run in UTC instead of the user's local time; fixed by injecting `ZoneId` from the config service.
+
+--- Story 351: NPC stress system (attempts: 1, 2026-03-09 15:24) ---
+*   **Non-obvious State Coupling**: The stress accumulation logic was tightly coupled to the `InteractionManager` rather than the `NPC` class itself, requiring a refactor to inject stress events as a decoupled service to prevent circular dependencies.
+*   **Codebase Convention**: The project consistently uses a "threshold-trigger" pattern for behavioral changes; stress levels don't modify stats directly but instead toggle specific `BehaviorState` enums that drive the AI decision tree.
+*   **Correction**: Initially, I applied stress decay as a fixed tick-based subtraction, which caused desync on variable frame rates; corrected this to use delta-time (`dt`) normalization to ensure consistent decay regardless of performance.
