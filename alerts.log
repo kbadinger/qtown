@@ -1596,3 +1596,12 @@ Deployment does not have an associated build
 --- R
 [2026-03-09 22:50:09 UTC] story_done: Story 359 complete: NPC daily routine
 [2026-03-09 22:50:10 UTC] story_start: Story 360: NPC pet ownership
+[2026-03-09 23:13:01 UTC] WARN deploy_fail: Story 360 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build timed out after 300s
+
+--- Railway Build Logs ---
+
+
+--- Railway Runtime Logs ---
+
+[2026-03-09 23:13:01 UTC] story_done: Story 360 complete: NPC pet ownership
+[2026-03-09 23:13:02 UTC] story_start: Story 361: NPC birthday celebration

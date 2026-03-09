@@ -1548,3 +1548,8 @@
 - **Tricky**: Handling the `Pet` lifecycle required careful state management to ensure ownership transfers correctly without orphaning data or violating the `Owner` invariant during concurrent updates.
 - **Patterns**: The codebase consistently uses a `Repository` abstraction for persistence and `Domain Events` to decouple side effects (like notifications) from the core ownership logic.
 - **Mistakes**: Initially attempted to validate pet capacity directly in the controller; corrected by moving this rule into the `Owner` aggregate root to enforce business logic centrally.
+
+--- Story 361: NPC birthday celebration (attempts: 1, 2026-03-09 19:28) ---
+- **Non-obvious State Management**: The birthday event logic relies on a hidden `celebration_active` flag in the global session store rather than a direct player action trigger, requiring careful inspection of the `SessionContext` to avoid race conditions.
+- **Codebase Convention**: Event-driven NPC interactions consistently use the `EventDispatcher` pattern with specific `EventType` enums, rather than direct function calls, ensuring loose coupling between the UI and the game logic.
+- **Correction**: Initially attempted to modify the NPC's dialogue tree directly during runtime, which caused a deserialization error; corrected by injecting a temporary `DialogueModifier` into the `DialogueFactory` pipeline instead.

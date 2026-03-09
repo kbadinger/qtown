@@ -2728,3 +2728,48 @@ def assign_pets(db: Session) -> int:
     
     db.commit()
     return new_owners
+
+
+def check_birthdays(db: Session) -> int:
+    """Check and process NPC birthdays."""
+    from engine.models import WorldState, NPC, Event
+    import json
+    
+    # Get current day from WorldState
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return 0
+    
+    current_day = world_state.day
+    
+    # Find all living NPCs with max_age > 0
+    npcs = db.query(NPC).filter(NPC.is_dead == 0, NPC.max_age > 0).all()
+    
+    birthday_count = 0
+    
+    for npc in npcs:
+        # Check if it's the NPC's birthday
+        if (current_day % npc.max_age) == (npc.age % npc.max_age):
+            # Increase happiness (cap at 100)
+            npc.happiness = min(100, npc.happiness + 10)
+            
+            # Add birthday to memory_events
+            parsed = json.loads(npc.memory_events) if npc.memory_events else []
+            if isinstance(parsed, list):
+                parsed.append(f"birthday_{current_day}")
+                npc.memory_events = json.dumps(parsed)
+            else:
+                npc.memory_events = json.dumps([f"birthday_{current_day}"])
+            
+            # Create birthday event
+            birthday_event = Event(
+                event_type='birthday',
+                npc_id=npc.id,
+                description=f"{npc.name} celebrated their birthday!"
+            )
+            db.add(birthday_event)
+            
+            birthday_count += 1
+    
+    db.commit()
+    return birthday_count
