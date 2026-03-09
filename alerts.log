@@ -1580,3 +1580,11 @@ Ralph stopped — needs human debugging
 Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
 [2026-03-09 22:08:52 UTC] story_done: Story 357 complete: NPC mentorship
 [2026-03-09 22:08:52 UTC] story_start: Story 358: NPC homesickness
+[2026-03-09 22:29:46 UTC] WARN deploy_fail: Story 358 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build timed out after 300s
+
+--- Railway Build Logs ---
+Deployment does not have an associated build
+
+--- R
+[2026-03-09 22:29:46 UTC] story_done: Story 358 complete: NPC homesickness
+[2026-03-09 22:29:47 UTC] story_start: Story 359: NPC daily routine

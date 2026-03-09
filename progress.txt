@@ -1538,3 +1538,8 @@
 - **Tricky Logic**: The `HomeSickness` mechanic relies on a hidden `mood` accumulator that only triggers the quest state when crossing a specific threshold; simply checking the current location flag was insufficient to detect the trigger condition.
 - **Codebase Pattern**: NPC state machines in this project consistently use a `tick()` method that chains internal updates before calling `checkTriggers()`, meaning any new logic must respect this execution order to avoid race conditions.
 - **Correction**: Initially, I attempted to force the dialogue state immediately upon entering the home zone, which caused the NPC to stutter; I corrected this by deferring the state change to the next `tick()` cycle to allow the mood calculation to settle.
+
+--- Story 359: NPC daily routine (attempts: 1, 2026-03-09 18:44) ---
+- **Non-obvious state persistence**: The routine logic relies on a hidden `lastInteraction` timestamp stored in the NPC's extended metadata, not just the visible schedule; failing to check this caused the "idle" state to trigger prematurely after a player interaction.
+- **Convention for time-gating**: This codebase strictly uses `TimeOfDay` enums with a `checkTransition` helper rather than raw integer comparisons, ensuring DST and server-time shifts don't break the daily loop.
+- **Correction on event ordering**: Initially, I placed the `resetInventory` call before the `updateMood` check, which caused NPCs to lose items while still in an "angry" state; moving the reset to the post-transition phase fixed the logic flow.

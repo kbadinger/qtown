@@ -2656,3 +2656,41 @@ def check_homesickness(db: Session) -> int:
     
     db.commit()
     return homesick_count
+
+
+def apply_daily_routine(db: Session) -> dict:
+    """Apply daily routine to NPCs based on time of day."""
+    from engine.models import NPC, WorldState
+    
+    # Get current world state
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return {"going_work": 0, "working": 0, "going_home": 0}
+    
+    tick = world_state.tick
+    period = tick % 24
+    
+    going_work = 0
+    working = 0
+    going_home = 0
+    
+    # Get all active NPCs
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    for npc in npcs:
+        if period < 8:  # Morning - go to work
+            if npc.work_building_id:
+                npc.target_x = None
+                npc.target_y = None
+                going_work += 1
+        elif period < 16:  # Afternoon - stay/working
+            working += 1
+        else:  # Evening - go home
+            if npc.home_building_id:
+                npc.target_x = None
+                npc.target_y = None
+                going_home += 1
+    
+    db.commit()
+    
+    return {"going_work": going_work, "working": working, "going_home": going_home}
