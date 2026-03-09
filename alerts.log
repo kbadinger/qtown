@@ -1519,3 +1519,6 @@ Daily digest
 [2026-03-09 18:08:45 UTC] deploy_ok: Story 346 deployed: Healthy after 0.1s
 [2026-03-09 18:09:00 UTC] story_done: Story 346 complete: NPC compatibility score
 [2026-03-09 18:09:01 UTC] story_start: Story 347: Auto-assign homeless NPCs
+[2026-03-09 18:24:16 UTC] deploy_ok: Story 347 deployed: Healthy after 0.1s
+[2026-03-09 18:24:34 UTC] story_done: Story 347 complete: Auto-assign homeless NPCs
+[2026-03-09 18:24:34 UTC] story_start: Story 348: Auto-assign unemployed NPCs

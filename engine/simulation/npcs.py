@@ -2157,3 +2157,62 @@ def assign_homeless(db: Session) -> int:
     
     db.commit()
     return assigned_count
+
+
+def assign_unemployed(db: Session) -> int:
+    """Auto-assign unemployed NPCs to buildings with available worker slots."""
+    from engine.models import NPC, Building
+    
+    # Find living unemployed NPCs who are adults (age >= 18)
+    unemployed_npcs = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.work_building_id == None,
+        NPC.age >= 18
+    ).all()
+    
+    if not unemployed_npcs:
+        return 0
+    
+    # Count current workers per building
+    worker_counts = {}
+    for npc in db.query(NPC).filter(NPC.work_building_id != None).all():
+        bid = npc.work_building_id
+        worker_counts[bid] = worker_counts.get(bid, 0) + 1
+    
+    # Find buildings with available capacity
+    buildings = db.query(Building).all()
+    available_buildings = []
+    for b in buildings:
+        current_workers = worker_counts.get(b.id, 0)
+        if current_workers < b.capacity:
+            available_buildings.append(b)
+    
+    if not available_buildings:
+        return 0
+    
+    # Assign NPCs to buildings, preferring role matches
+    assigned_count = 0
+    for npc in unemployed_npcs:
+        # Try to find a building matching the NPC's role
+        matched_building = None
+        for b in available_buildings:
+            if b.building_type == npc.role:
+                matched_building = b
+                break
+        
+        # If no role match, use any available building
+        if matched_building is None and available_buildings:
+            matched_building = available_buildings[0]
+        
+        if matched_building:
+            npc.work_building_id = matched_building.id
+            assigned_count += 1
+            
+            # Update available capacity tracking
+            current_workers = worker_counts.get(matched_building.id, 0)
+            if current_workers + 1 >= matched_building.capacity:
+                if matched_building in available_buildings:
+                    available_buildings.remove(matched_building)
+    
+    db.commit()
+    return assigned_count

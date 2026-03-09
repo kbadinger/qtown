@@ -1488,3 +1488,8 @@
 *   **Non-obvious State Dependency**: The auto-assignment logic failed silently when the `HomelessNPC` pool was empty but the `Shelter` entity was still marked as "open"; the code requires an explicit check for available NPCs before attempting to modify the shelter's occupancy count.
 *   **Codebase Convention**: All entity state transitions in this system must be wrapped in the `TransactionManager` to ensure consistency; direct property updates on `NPC` or `Shelter` objects bypass the audit log and trigger stale-data errors in the UI.
 *   **Correction Made**: Initially, I iterated over the `Shelter` list to find vacancies, which caused an O(n²) performance hit; I corrected this by querying the `VacancyIndex` map directly, aligning with the project's pattern of maintaining separate lookup tables for frequent access.
+
+--- Story 348: Auto-assign unemployed NPCs (attempts: 1, 2026-03-09 14:38) ---
+*   **Tricky Logic**: Determining "unemployed" status required checking both the `job` field and the `is_active` flag, as NPCs with null jobs but active status were incorrectly skipped in the initial pass.
+*   **Codebase Pattern**: The repository consistently uses a `JobPool` service to manage available roles; direct database queries for job assignment were refactored to use this service to maintain transactional integrity.
+*   **Correction**: Initially, the auto-assignment loop ran synchronously, blocking the main thread; switched to an async background job to prevent UI lag during large NPC population updates.
