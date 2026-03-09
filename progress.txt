@@ -1398,3 +1398,8 @@
 - **Non-obvious constraint propagation**: The storage limit wasn't just a database check; it required validating against a cached in-memory counter before writing to prevent race conditions during high-concurrency uploads.
 - **Convention for quota enforcement**: This codebase consistently uses a "check-then-act" pattern wrapped in a `QuotaGuard` service rather than relying solely on database constraints, ensuring consistent error messaging across different storage backends.
 - **Correction on error handling**: Initially returned a generic 500 error when the limit was hit; corrected to return a specific 413 (Payload Too Large) with a `Retry-After` header to allow clients to gracefully handle the throttling.
+
+--- Story 330: Building rename system (attempts: 1, 2026-03-09 12:08) ---
+- **Tricky Logic**: Handling the race condition where a rename operation could fail silently if the target name already existed; required implementing an explicit existence check before the database update to provide accurate error feedback.
+- **Codebase Pattern**: The existing service layer consistently uses a "validate-then-act" pattern wrapped in a single transactional unit, ensuring that business rule violations (like naming conflicts) are caught before any state changes occur.
+- **Correction**: Initially attempted to validate uniqueness via a database `UNIQUE` constraint alone, but corrected this to include application-level validation to return user-friendly error messages rather than generic database exceptions.

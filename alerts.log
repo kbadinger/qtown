@@ -1444,3 +1444,6 @@ Uploading..
 Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
 [2026-03-09 15:37:12 UTC] story_done: Story 328 complete: Building inspection
 [2026-03-09 15:37:12 UTC] story_start: Story 329: Resource storage limits
+[2026-03-09 15:53:44 UTC] deploy_ok: Story 329 deployed: Healthy after 0.2s
+[2026-03-09 15:54:00 UTC] story_done: Story 329 complete: Resource storage limits
+[2026-03-09 15:54:01 UTC] story_start: Story 330: Building rename system

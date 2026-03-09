@@ -787,3 +787,53 @@ def enforce_storage_limits(db: Session) -> int:
         db.commit()
     
     return storage_cap
+
+
+def rename_building(db: Session, building_id: int, new_name: str) -> Optional[str]:
+    """Rename a building and log the event.
+    
+    Args:
+        db: Database session
+        building_id: ID of the building to rename
+        new_name: New name for the building (1-50 chars, alphanumeric + spaces)
+    
+    Returns:
+        Updated building name or None if invalid
+    """
+    from engine.models import Building, Event, WorldState
+    
+    # Validate new_name: 1-50 chars, alphanumeric + spaces only
+    if not new_name or len(new_name) < 1 or len(new_name) > 50:
+        return None
+    
+    if not all(c.isalnum() or c.isspace() for c in new_name):
+        return None
+    
+    # Get the building
+    building = db.query(Building).filter(Building.id == building_id).first()
+    if not building:
+        return None
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Store old name
+    old_name = building.name
+    
+    # Update the building name
+    building.name = new_name
+    
+    # Create event
+    event = Event(
+        event_type='building_renamed',
+        description=f"Building {building_id} renamed from '{old_name}' to '{new_name}'",
+        tick=current_tick,
+        severity='info',
+        affected_building_id=building_id
+    )
+    db.add(event)
+    
+    db.commit()
+    
+    return new_name
