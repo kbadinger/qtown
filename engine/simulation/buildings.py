@@ -677,3 +677,43 @@ def process_insurance(db: Session) -> int:
     
     db.commit()
     return insured_count
+
+
+def check_landmarks(db: Session) -> int:
+    """Check for landmark buildings and apply town-wide happiness bonus.
+    
+    Buildings with level >= 4 become landmarks.
+    Landmarks give town-wide happiness +1 per landmark (cap +5 total).
+    Creates an Event with type 'landmark_status' listing landmark names.
+    
+    Returns:
+        int: Count of landmarks found.
+    """
+    from engine.models import Building, Event, NPC
+    from sqlalchemy import func
+    
+    # Find all buildings with level >= 4
+    landmarks = db.query(Building).filter(Building.level >= 4).all()
+    landmark_count = len(landmarks)
+    landmark_names = [b.name for b in landmarks]
+    
+    # Calculate happiness bonus (capped at +5)
+    happiness_bonus = min(landmark_count, 5)
+    
+    # Apply happiness bonus to all NPCs
+    if happiness_bonus > 0:
+        db.query(NPC).update({NPC.happiness: func.least(NPC.happiness + happiness_bonus, 100)})
+    
+    # Create event if there are landmarks
+    if landmark_count > 0:
+        event_body = f"Landmarks active: {', '.join(landmark_names)}"
+        event = Event(
+            event_type='landmark_status',
+            description=event_body,
+            severity=0  # 0 = info
+        )
+        db.add(event)
+    
+    db.commit()
+    
+    return landmark_count

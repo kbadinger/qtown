@@ -1428,3 +1428,6 @@ Uploading..
 [2026-03-09 14:42:57 UTC] deploy_ok: Story 325 deployed: Healthy after 0.1s
 [2026-03-09 14:43:13 UTC] story_done: Story 325 complete: Construction queue
 [2026-03-09 14:43:14 UTC] story_start: Story 326: Building insurance
+[2026-03-09 14:57:18 UTC] deploy_ok: Story 326 deployed: Healthy after 0.1s
+[2026-03-09 14:57:35 UTC] story_done: Story 326 complete: Building insurance
+[2026-03-09 14:57:35 UTC] story_start: Story 327: Landmark buildings

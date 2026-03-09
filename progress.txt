@@ -1383,3 +1383,8 @@
 *   **Tricky Logic**: The interaction between `policyEffectiveDate` and `coverageStartDate` was non-obvious; the system requires a 30-day grace period calculation that only triggers if the policy was purchased after the 15th of the month, not just based on the calendar month.
 *   **Codebase Pattern**: All domain entities in this module strictly separate "calculation logic" (in `Calculator` classes) from "state mutation" (in `Service` classes), avoiding direct property modification on entities to ensure audit trail integrity.
 *   **Correction**: Initially, I attempted to reuse the generic `validateAddress` method, but corrected this to use the specialized `validateCommercialAddress` which includes the required Zoning Code check specific to building insurance.
+
+--- Story 327: Landmark buildings (attempts: 1, 2026-03-09 11:19) ---
+- **Non-obvious DOM hydration**: The `LandmarkCard` component requires explicit `useEffect` cleanup for the map instance to prevent memory leaks when the user rapidly filters the list, a side effect not immediately obvious from the static props.
+- **API Response Pattern**: The backend consistently wraps landmark data in a `meta` object containing pagination cursors; the frontend must check `meta.has_more` before rendering the "Load More" button to avoid unnecessary API calls.
+- **Corrected Coordinate Handling**: Initially passed raw latitude/longitude strings to the map library, causing rendering failures; fixed by ensuring all coordinates are parsed to `Number` types before being injected into the `MapProvider`.
