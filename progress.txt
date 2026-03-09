@@ -1433,3 +1433,8 @@
 - **Timezone Handling**: Converting user-local times to UTC for storage while preserving the original timezone offset for display was non-obvious; naive `new Date()` parsing often strips this context, requiring explicit IANA string handling.
 - **Pagination Convention**: The codebase enforces cursor-based pagination over offset-based for large event lists to ensure consistent performance and avoid "hole" issues when events are deleted between requests.
 - **Correction on Overlap Logic**: Initially attempted a simple start/end comparison for conflict detection, which failed for edge cases (e.g., events touching at boundaries); corrected by implementing the standard interval overlap algorithm (`startA < endB && startB < endA`).
+
+--- Story 337: Resource flow API (attempts: 1, 2026-03-09 12:20) ---
+*   **Tricky Aspect**: Handling partial resource updates via `PATCH` was non-obvious; the API required explicit null-coalescing for nested fields to prevent overwriting existing data with `null` values.
+*   **Pattern Discovered**: The codebase enforces a strict "Repository-Service-Controller" separation where the Service layer owns all transaction boundaries and validation logic, keeping Controllers purely for request/response mapping.
+*   **Correction**: Initially missed the requirement to propagate `ResourceFlowId` in the audit log context, which caused traceability gaps; fixed by injecting the ID into the `AuditContext` provider at the service entry point.
