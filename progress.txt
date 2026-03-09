@@ -1273,3 +1273,8 @@
 - **Unit Consistency**: The most non-obvious trap was the implicit unit mismatch between the input sensor data (imperial) and the database schema (metric), requiring explicit conversion before any aggregation logic could run.
 - **Null Handling Pattern**: The codebase consistently uses `Optional` chaining for field access but relies on `ifPresent` with a default value of `0.0` for yield calculations, rather than throwing exceptions on missing data.
 - **Correction on Rounding**: Initially applied rounding to intermediate row-level calculations, which introduced cumulative errors; corrected by performing rounding only on the final aggregated sum to match the precision requirements.
+
+--- Story 304: Famine relief distribution (attempts: 1, 2026-03-08 20:09) ---
+- **Non-obvious edge cases**: The distribution logic failed silently when a household's `total_members` was zero due to integer division; added an explicit guard clause to prevent zero-division errors and ensure data integrity.
+- **Codebase convention**: Discovered that all financial calculations must use the `Money` wrapper class (not native `Decimal` or `float`) to handle currency-specific rounding rules automatically; refactored the temporary helper function to align with this pattern.
+- **Correction**: Initially queried the `distribution_log` table before the transaction committed, causing race conditions in concurrent runs; moved the logging step to the post-commit hook to ensure atomicity.

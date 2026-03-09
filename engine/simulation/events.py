@@ -1113,3 +1113,41 @@ def calculate_crop_yield(db: Session) -> int:
     
     # Return as integer
     return int(yield_value)
+
+
+def distribute_famine_relief(db: Session) -> bool:
+    """Distribute famine relief when food is scarce and population is high."""
+    from sqlalchemy.orm import Session
+    from engine.models import Resource, Treasury, Event, NPC
+    
+    # Check if any Food Resource has quantity < 10
+    food_resources = db.query(Resource).filter(Resource.name == "Food").all()
+    food_low = any(r.quantity < 10 for r in food_resources)
+    
+    # Check if living NPC count > 3 (is_dead == 0 for Postgres compatibility)
+    living_npc_count = db.query(NPC).filter(NPC.is_dead == 0).count()
+    
+    if not food_low or living_npc_count <= 3:
+        return False
+    
+    # Take 30 gold from first Treasury
+    treasuries = db.query(Treasury).all()
+    if treasuries:
+        treasury = treasuries[0]
+        treasury.gold = max(0, treasury.gold - 30)
+    
+    # Add 20 to first Food resource quantity
+    if food_resources:
+        food_resources[0].quantity += 20
+    
+    # Create Event with event_type='famine_relief'
+    event = Event(event_type="famine_relief")
+    db.add(event)
+    
+    # Reduce each NPC hunger by 10 (floor 0)
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    for npc in living_npcs:
+        npc.hunger = max(0, npc.hunger - 10)
+    
+    db.commit()
+    return True
