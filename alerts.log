@@ -1439,3 +1439,8 @@ Indexing...
 Uploading..
 [2026-03-09 15:19:33 UTC] story_done: Story 327 complete: Landmark buildings
 [2026-03-09 15:19:33 UTC] story_start: Story 328: Building inspection
+[2026-03-09 15:37:11 UTC] WARN deploy_fail: Story 328 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build timed out after 300s
+
+Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
+[2026-03-09 15:37:12 UTC] story_done: Story 328 complete: Building inspection
+[2026-03-09 15:37:12 UTC] story_start: Story 329: Resource storage limits

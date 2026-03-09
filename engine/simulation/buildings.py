@@ -750,3 +750,40 @@ def inspect_buildings(db: Session) -> List[Dict]:
         })
     
     return results
+
+
+def enforce_storage_limits(db: Session) -> int:
+    """Enforce storage limits on resources based on warehouse capacity."""
+    from engine.models import Building, Resource, Event, WorldState
+    
+    # Count warehouse buildings
+    warehouse_count = db.query(Building).filter(Building.building_type == 'warehouse').count()
+    
+    # Calculate storage cap (base 200 + 100 per warehouse)
+    storage_cap = 200 + (warehouse_count * 100)
+    
+    # Get all resources
+    resources = db.query(Resource).all()
+    
+    # Track if any were capped
+    any_capped = False
+    
+    for resource in resources:
+        if resource.quantity > storage_cap:
+            resource.quantity = storage_cap
+            any_capped = True
+    
+    # Create event if any resources were capped
+    if any_capped:
+        world_state = db.query(WorldState).first()
+        current_tick = world_state.tick if world_state else 0
+        
+        event = Event(
+            event_type='storage_overflow',
+            description=f'Storage overflow occurred. Cap: {storage_cap}',
+            tick=current_tick
+        )
+        db.add(event)
+        db.commit()
+    
+    return storage_cap

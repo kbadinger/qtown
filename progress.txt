@@ -1393,3 +1393,8 @@
 *   **Tricky Aspect**: The `Building` entity's validation logic for structural integrity was deeply coupled with external API calls, making unit tests brittle; I had to refactor to inject a mockable service interface to isolate the calculation logic.
 *   **Pattern Discovered**: The codebase consistently uses a "Command/Query" separation where read operations return DTOs directly, while write operations (like inspection updates) always return a `Result<T>` wrapper containing a status code and a list of validation errors.
 *   **Mistake Corrected**: I initially attempted to update the inspection status in a single transaction without checking for concurrent modifications, which caused race conditions in the staging environment; I corrected this by implementing optimistic locking using the `version` column.
+
+--- Story 329: Resource storage limits (attempts: 1, 2026-03-09 11:49) ---
+- **Non-obvious constraint propagation**: The storage limit wasn't just a database check; it required validating against a cached in-memory counter before writing to prevent race conditions during high-concurrency uploads.
+- **Convention for quota enforcement**: This codebase consistently uses a "check-then-act" pattern wrapped in a `QuotaGuard` service rather than relying solely on database constraints, ensuring consistent error messaging across different storage backends.
+- **Correction on error handling**: Initially returned a generic 500 error when the limit was hit; corrected to return a specific 413 (Payload Too Large) with a `Retry-After` header to allow clients to gracefully handle the throttling.
