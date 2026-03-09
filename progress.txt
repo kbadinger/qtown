@@ -1413,3 +1413,8 @@
 - **Tricky**: Handling the `history` object lifecycle was non-obvious; simply passing the `history` instance to the API client wasn't enough, as the underlying `fetch` logic needed to be refactored to accept and utilize the `history` parameter for conditional request cancellation.
 - **Patterns**: The codebase consistently separates HTTP transport logic from business logic by injecting dependencies (like `history`) into service constructors rather than relying on global state or singletons.
 - **Mistakes**: Initially attempted to mock the `history` object directly in the API layer, which broke the dependency injection pattern; corrected by creating a dedicated `HistoryProvider` interface to abstract the history management away from the HTTP client.
+
+--- Story 333: Economic chart data API (attempts: 1, 2026-03-09 12:13) ---
+- **Non-obvious API constraints**: The economic data provider requires strict ISO-8601 date formatting with explicit timezone offsets; omitting the `Z` or `+00:00` suffix causes silent 404s rather than validation errors.
+- **Codebase pattern**: All external API clients in this project follow a `Client -> Service -> DTO` separation, where the Service layer is responsible for flattening nested JSON responses before passing them to the controller.
+- **Correction**: Initially mapped the `currency_code` field directly to the database model, but the API returns a nullable string for historical data; added a default fallback to `USD` in the mapping layer to prevent null pointer exceptions during aggregation.
