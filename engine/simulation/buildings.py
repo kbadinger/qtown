@@ -4,6 +4,9 @@ import sys
 from sqlalchemy.orm import Session
 
 from engine.models import Building
+from typing import Optional
+import json
+from engine.models import Tile, Building, NPC
 
 
 def seed_all_buildings(db: Session) -> None:
@@ -582,3 +585,71 @@ def process_building_decay(db: Session) -> int:
     
     db.commit()
     return decayed_count
+
+
+def process_construction(db: Session) -> Optional[str]:
+    """Process construction queue for builders."""
+    # Find builder NPC
+    builder = db.query(NPC).filter(NPC.role == 'builder').first()
+    
+    if not builder:
+        return None
+    
+    # Parse experience JSON
+    try:
+        experience = json.loads(builder.experience)
+        experience = experience if isinstance(experience, dict) else {}
+    except (json.JSONDecodeError, TypeError):
+        experience = {}
+    
+    # Check if builder has a construction project
+    project_id = experience.get('construction_project')
+    
+    if project_id is None:
+        # Find empty tile for new building
+        empty_tile = _find_empty_tile(db)
+        if not empty_tile:
+            return "No empty tiles available"
+        
+        # Create building stub with capacity=0
+        new_building = Building(
+            name=f"Construction Site {db.query(Building).count() + 1}",
+            building_type="construction",
+            x=empty_tile.x,
+            y=empty_tile.y,
+            capacity=0,
+            level=1
+        )
+        db.add(new_building)
+        db.commit()
+        
+        # Assign project to builder
+        experience['construction_project'] = new_building.id
+        builder.experience = json.dumps(experience)
+        db.commit()
+        
+        return f"Started construction at ({empty_tile.x}, {empty_tile.y})"
+    
+    # Builder has an active project
+    project = db.query(Building).filter(Building.id == project_id).first()
+    
+    if not project:
+        # Project was deleted, clear the assignment
+        del experience['construction_project']
+        builder.experience = json.dumps(experience)
+        db.commit()
+        return None
+    
+    # Increase capacity by 1
+    project.capacity += 1
+    db.commit()
+    
+    if project.capacity >= 5:
+        # Building is complete
+        del experience['construction_project']
+        builder.experience = json.dumps(experience)
+        project.building_type = "completed"
+        db.commit()
+        return f"Completed building at ({project.x}, {project.y})"
+    
+    return f"Construction in progress: {project.capacity}/5"

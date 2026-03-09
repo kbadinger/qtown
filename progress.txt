@@ -1373,3 +1373,8 @@
 - **Non-obvious state transitions**: The decay logic required careful handling of the "stabilized" state to prevent entities from re-entering decay cycles after repair, which wasn't immediately obvious from the initial schema.
 - **Convention of "Time-Aware" Entities**: The codebase consistently uses a `last_updated_at` timestamp on entity records rather than relying solely on external cron jobs, allowing for lazy evaluation of decay during the next interaction.
 - **Correction on floating-point precision**: Initially used standard floats for decay percentages, causing cumulative drift over long periods; corrected by switching to integer-based fixed-point arithmetic (basis points) for all decay calculations.
+
+--- Story 325: Construction queue (attempts: 1, 2026-03-09 10:40) ---
+*   **Non-obvious queue state handling**: The construction queue requires explicit state transitions (Pending → Active → Completed) rather than relying solely on timestamp expiration; missing the `finalize` step causes orphaned resources.
+*   **Codebase pattern**: All queue mutations must wrap the database transaction with the `QueueLock` context manager to prevent race conditions during concurrent story updates.
+*   **Correction**: Initially attempted to filter the queue using a simple `WHERE` clause, but realized the `is_locked` flag must be checked at the row level inside the transaction to avoid deadlocks.
