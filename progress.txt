@@ -1438,3 +1438,8 @@
 *   **Tricky Aspect**: Handling partial resource updates via `PATCH` was non-obvious; the API required explicit null-coalescing for nested fields to prevent overwriting existing data with `null` values.
 *   **Pattern Discovered**: The codebase enforces a strict "Repository-Service-Controller" separation where the Service layer owns all transaction boundaries and validation logic, keeping Controllers purely for request/response mapping.
 *   **Correction**: Initially missed the requirement to propagate `ResourceFlowId` in the audit log context, which caused traceability gaps; fixed by injecting the ID into the `AuditContext` provider at the service entry point.
+
+--- Story 338: Leaderboard API (attempts: 1, 2026-03-09 12:20) ---
+- **Non-obvious sorting logic**: The leaderboard requires a composite sort (score descending, then timestamp ascending) to handle ties fairly; a simple `ORDER BY score` was insufficient and required explicit tie-breaking in the query.
+- **Pagination convention**: This codebase consistently uses cursor-based pagination (`limit` + `last_id`) for large datasets rather than offset-based pagination to maintain performance stability as the table grows.
+- **Race condition fix**: Initially, the score update and leaderboard insertion were separate transactions, causing a brief window where the API returned stale data; wrapping them in a single atomic transaction resolved the inconsistency.
