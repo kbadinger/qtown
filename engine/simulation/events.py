@@ -943,13 +943,54 @@ def spawn_visitor_trader(db: Session) -> "Optional[NPC]":
         event_type='visitor_trader',
         description=f"Trader {visitor.name} has arrived at the edge of town",
         tick=db.query(Event).order_by(Event.id.desc()).first().id + 1 if db.query(Event).first() else 1,
-        resolved=0
     )
     db.add(event)
     
     db.flush()
 
     return visitor
+
+
+def send_diplomat(db: Session):
+    """Send the highest-skilled non-mayor NPC on a diplomatic mission."""
+    from engine.models import NPC, Event
+
+    living = db.query(NPC).filter(NPC.is_dead == 0).all()
+    if not living:
+        return None
+
+    # Pick NPC with highest skill value, excluding mayor
+    candidates = [n for n in living if n.role != "mayor"]
+    if not candidates:
+        return None
+
+    diplomat = max(candidates, key=lambda n: len(n.skill or ""))
+
+    # Set target to edge of map
+    diplomat.target_x = 49
+    diplomat.target_y = diplomat.y
+
+    # Record mission in experience
+    import json as _json
+    try:
+        exp = _json.loads(diplomat.experience or "{}")
+    except (ValueError, TypeError):
+        exp = {}
+    if isinstance(exp, list):
+        exp = {}
+    exp["mission_start_tick"] = 0  # will be updated by tick
+    diplomat.experience = _json.dumps(exp)
+
+    # Create event
+    evt = Event(
+        event_type="diplomatic_mission",
+        description=f"{diplomat.name} sent on diplomatic mission",
+        tick=0,
+    )
+    db.add(evt)
+    db.flush()
+
+    return diplomat.name
 
 
 def hold_festival_vote(db: Session) -> str:

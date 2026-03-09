@@ -238,6 +238,13 @@ def call_qwen(prompt: str, label: str = "qwen", think: bool = True) -> tuple[str
 
             think_chars = len(msg.get("thinking", "") or "")
             print(f"  [{_ts()}] Ollama done ({label}, {duration:.0f}s, {tokens_in} in, {tokens_out} out, {len(response_text)} chars response, {think_chars} chars thinking)")
+
+            # Thinking spiral detection: if think mode used all tokens on thinking
+            # with 0 actual response, retry once with think=False
+            if think and len(response_text.strip()) == 0 and think_chars > 5000:
+                print(f"  [{_ts()}] Thinking spiral detected ({think_chars} chars thinking, 0 response) — retrying with think=False")
+                return call_qwen(prompt, label=label + " (no-think retry)", think=False)
+
             return response_text, tokens_in, tokens_out, duration
 
         except requests.RequestException as e:
@@ -650,8 +657,20 @@ def run_story(story: dict) -> bool:
             recent_errors.append("NO_FILES_WRITTEN")
             prev_test_output = None  # No code written, fall back to fresh test run
             if len(recent_errors) >= 3 and all(e == "NO_FILES_WRITTEN" for e in recent_errors[-3:]):
-                alert("loop", f"Story {story_id}: Qwen returned empty/unparseable output 3x in a row — giving up")
-                return False
+                alert("loop", f"Story {story_id}: Qwen returned empty/unparseable output 3x — requesting help")
+                helped = _request_help(story_id, story["title"], "Qwen returned empty/unparseable output 3x in a row", test_file, attempt)
+                if not helped:
+                    return False  # Shutdown requested
+                _autofix_postgres_compat()
+                recent_errors.clear()
+                # Test again after help
+                test_ok, test_output = run_tests(test_file, story_id)
+                if test_ok:
+                    print(f"  [help] External fix resolved the issue!")
+                    passed = True
+                    break
+                prev_test_output = test_output
+                print(f"  [help] Still failing — continuing attempts")
             continue
 
         # 6. Re-run tests
