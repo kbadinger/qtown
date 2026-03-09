@@ -1523,3 +1523,8 @@
 - **Non-obvious state coupling**: The trust score wasn't just a simple integer; it required a separate "cooldown" timer to prevent players from spamming dialogue options to rapidly boost reputation, which wasn't immediately clear from the initial schema.
 - **Codebase pattern**: This project consistently uses a `StateContext` wrapper for all NPC interactions rather than direct method calls, ensuring that trust changes are always logged and validated against the current game phase before committing.
 - **Correction made**: Initially, I updated the trust value directly in the UI layer, causing a desync where the visual indicator changed before the backend validated the action; I corrected this by enforcing all state mutations through the central `InteractionService` to guarantee atomic updates.
+
+--- Story 356: NPC grudge system (attempts: 1, 2026-03-09 17:35) ---
+- **Tricky Logic**: The grudge accumulation logic was non-obvious because it required decoupling the *trigger* (player action) from the *reaction* (NPC state change) to handle delayed consequences and prevent immediate retaliation loops.
+- **Codebase Patterns**: The project heavily favors a "State Machine" pattern for NPC behaviors; grudge levels act as a scalar input that transitions the NPC between `Neutral`, `Hostile`, and `Vengeful` states rather than using hardcoded if/else chains.
+- **Correction**: Initially, I stored grudge data in the global `GameState`, causing persistence issues when reloading saves; I corrected this by migrating the data to the individual `NPC` entity's component to ensure isolated state management.

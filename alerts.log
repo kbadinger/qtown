@@ -1550,3 +1550,19 @@ Uploading..
 [2026-03-09 19:53:41 UTC] deploy_ok: Story 353 deployed: Healthy after 0.1s
 [2026-03-09 19:53:58 UTC] story_done: Story 353 complete: NPC gossip propagation
 [2026-03-09 19:53:58 UTC] story_start: Story 354: NPC trust system
+[2026-03-09 20:11:32 UTC] deploy_ok: Story 354 deployed: Healthy after 0.1s
+[2026-03-09 20:11:49 UTC] story_done: Story 354 complete: NPC trust system
+[2026-03-09 20:11:50 UTC] story_start: Story 355: NPC gift giving
+[2026-03-09 20:20:42 UTC] WARN story_fail: Story 355 struggling — attempt 5/12
+NPC gift giving
+[2026-03-09 20:21:52 UTC] CRITICAL loop: Story 355: same error 5x in a row — requesting help
+`tests/test_npcs.py::test_s355_process_gift_giving FAILED                 [100%]`
+[2026-03-09 20:21:53 UTC] CRITICAL needs_help: Story 355 needs help — waiting 10min for fix
+`tests/test_npcs.py::test_s355_process_gift_giving FAILED                 [100%]`
+[2026-03-09 20:34:22 UTC] CRITICAL critical: Story 355: still failing after help + 3 retries — stopping
+`tests/test_npcs.py::test_s355_process_gift_giving FAILED                 [100%]`
+[2026-03-09 20:34:22 UTC] CRITICAL critical: Story 355 failed: NPC gift giving
+Ralph stopped — needs human debugging
+[2026-03-09 20:34:22 UTC] stop: Ralph offline — 300/450 stories complete
+[2026-03-09 21:11:46 UTC] start: Ralph online — 301/450 stories complete
+[2026-03-09 21:11:46 UTC] story_start: Story 356: NPC grudge system
