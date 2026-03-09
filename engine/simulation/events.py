@@ -1476,3 +1476,26 @@ def assign_factions(db: Session) -> dict:
     
     db.commit()
     return faction_counts
+
+
+def manage_proposal_queue(db: Session) -> int:
+    """Manage the policy proposal queue - keep only 3 active proposals."""
+    from engine.models import Policy
+    
+    # Find all active proposals
+    active_proposals = db.query(Policy).filter(Policy.status == 'proposed').all()
+    count = len(active_proposals)
+    
+    # If more than 3, reject the oldest
+    if count > 3:
+        # Find the oldest proposed policy
+        oldest = db.query(Policy).filter(
+            Policy.status == 'proposed'
+        ).order_by(Policy.tick_proposed.asc()).first()
+        
+        if oldest:
+            oldest.status = 'expired'
+            db.commit()
+            count = count - 1
+    
+    return count

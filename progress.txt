@@ -1313,3 +1313,8 @@
 *   **Tricky Logic**: The interaction between faction influence decay and event triggers was non-obvious; influence must be recalculated *before* checking event eligibility to prevent stale state from blocking valid faction actions.
 *   **Codebase Patterns**: The project consistently uses a "Strategy" pattern for faction behaviors, where each faction implements a `calculate_influence_delta` method, allowing the core loop to remain agnostic of specific faction rules.
 *   **Correction**: Initially, I stored faction relationships in a flat array, causing O(n) lookups for every interaction; I corrected this by switching to a hash map keyed by faction ID to ensure O(1) access during high-frequency game ticks.
+
+--- Story 312: Policy proposal queue (attempts: 1, 2026-03-08 22:16) ---
+- **Tricky**: The `PolicyProposal` state machine requires explicit handling of the "draft" to "submitted" transition; simply updating the status field bypasses the mandatory `validate_and_queue` hook, causing silent failures in the background worker.
+- **Pattern**: The codebase strictly separates domain logic (in `services/policy/`) from controller concerns; all queue operations must go through the `PolicyQueueService` to ensure audit logging and rate limiting are applied consistently.
+- **Correction**: Initially attempted to bypass the transactional boundary by calling the queue directly from the controller, which led to race conditions; refactored to use the `with_transaction` context manager to ensure data integrity before enqueueing.
