@@ -1513,3 +1513,8 @@
 - **State Persistence**: The non-obvious challenge was ensuring hobby selection updates the NPC's internal `state` object immediately while also triggering the correct UI re-render, requiring a strict separation between data mutation and view updates.
 - **Convention**: The codebase consistently uses a `HobbyRegistry` singleton for defining valid options, meaning new hobbies must be registered there before they can be selected, rather than being passed directly into the selection logic.
 - **Correction**: Initially, I attempted to deep-clone the entire NPC object on every selection, which caused performance stutter; I corrected this by mutating only the specific `hobbies` array reference to maintain immutability elsewhere.
+
+--- Story 353: NPC gossip propagation (attempts: 1, 2026-03-09 15:51) ---
+- **Non-obvious dependency**: The gossip propagation logic relies on a hidden `last_updated` timestamp in the `NPC` entity; failing to refresh this before checking the `visited` set caused infinite loops in isolated clusters.
+- **Codebase convention**: Graph traversal in this project consistently uses a "lazy-load" adjacency pattern where neighbor relationships are resolved via a separate `SocialGraph` service rather than direct entity references.
+- **Correction**: Initially assumed gossip spread was synchronous; corrected to use an event-driven queue to prevent blocking the main game loop during high-density NPC encounters.

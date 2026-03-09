@@ -2283,3 +2283,63 @@ def assign_npc_hobbies(db: Session) -> int:
     
     db.commit()
     return count
+
+
+def propagate_gossip(db: Session) -> int:
+    """Propagate gossip between nearby NPCs.
+    
+    For each living NPC with memory_events (JSON list, not empty):
+    - Find other living NPCs within distance 5 (Manhattan distance)
+    - Copy the last memory_event entry to nearby NPC memory_events
+    - Append with max 10 entries per NPC
+    - Return count of gossip transfers
+    """
+    from engine.models import NPC
+    
+    transfers = 0
+    
+    # Get all living NPCs
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    for npc in living_npcs:
+        # Parse memory_events (handle None or invalid JSON)
+        try:
+            memory_events = json.loads(npc.memory_events) if npc.memory_events else []
+        except (json.JSONDecodeError, TypeError):
+            memory_events = []
+        
+        # Skip if no memory events
+        if not memory_events:
+            continue
+        
+        # Get the last memory event to propagate
+        last_event = memory_events[-1]
+        
+        # Find nearby NPCs within distance 5
+        for other_npc in living_npcs:
+            # Skip self
+            if other_npc.id == npc.id:
+                continue
+            
+            # Calculate Manhattan distance
+            distance = abs(npc.x - other_npc.x) + abs(npc.y - other_npc.y)
+            
+            if distance <= 5:
+                # Parse other NPC's memory events
+                try:
+                    other_memory = json.loads(other_npc.memory_events) if other_npc.memory_events else []
+                except (json.JSONDecodeError, TypeError):
+                    other_memory = []
+                
+                # Check if this event is already in their memory (avoid duplicates)
+                if last_event not in other_memory:
+                    # Append if under max limit of 10 entries
+                    if len(other_memory) < 10:
+                        other_memory.append(last_event)
+                        other_npc.memory_events = json.dumps(other_memory)
+                        transfers += 1
+    
+    # Commit all changes
+    db.commit()
+    
+    return transfers
