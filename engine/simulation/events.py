@@ -1808,3 +1808,44 @@ def generate_charter(db: Session) -> list[str]:
     db.commit()
     
     return policy_names
+
+
+def grant_emergency_powers(db: Session) -> bool:
+    """Grant emergency powers to mayor if critical events exist in last 5 ticks."""
+    from engine.models import Event, NPC, WorldState
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return False
+    
+    current_tick = world_state.tick
+    
+    # Check for critical events in last 5 ticks
+    critical_events = db.query(Event).filter(
+        Event.severity == 'critical',
+        Event.tick >= current_tick - 5,
+        Event.tick <= current_tick
+    ).all()
+    
+    if not critical_events:
+        return False
+    
+    # Find mayor NPC
+    mayor = db.query(NPC).filter(NPC.role == 'mayor').first()
+    if not mayor:
+        return False
+    
+    # Parse experience JSON
+    parsed = json.loads(mayor.experience) if mayor.experience else {}
+    experience = parsed if isinstance(parsed, dict) else {}
+    
+    # Grant emergency powers with expiration tick
+    experience['emergency_powers'] = True
+    experience['emergency_powers_expires_at'] = current_tick + 20
+    
+    # Update NPC
+    mayor.experience = json.dumps(experience)
+    db.commit()
+    
+    return True

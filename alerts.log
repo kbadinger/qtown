@@ -1402,3 +1402,6 @@ Ralph stopped — needs human debugging
 [2026-03-09 12:56:00 UTC] deploy_ok: Story 318 deployed: Healthy after 0.1s
 [2026-03-09 12:56:28 UTC] story_done: Story 318 complete: Census system
 [2026-03-09 12:56:28 UTC] story_start: Story 319: Town charter
+[2026-03-09 13:12:22 UTC] deploy_ok: Story 319 deployed: Healthy after 0.1s
+[2026-03-09 13:12:40 UTC] story_done: Story 319 complete: Town charter
+[2026-03-09 13:12:40 UTC] story_start: Story 320: Emergency powers

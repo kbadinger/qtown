@@ -1348,3 +1348,8 @@
 - **Tricky Aspect**: The interaction between the new `TownCharter` schema and the existing `Governance` state machine was non-obvious; specifically, the charter's effective date must be validated against the town's current lifecycle stage to prevent invalid transitions.
 - **Patterns Discovered**: The codebase consistently uses a "draft-first" pattern for legal documents, where a `Charter` is created as a `Draft` entity and only promoted to `Active` upon a specific `RatificationEvent`, rather than being instantiated directly as active.
 - **Mistake & Correction**: Initially attempted to validate charter clauses synchronously during creation, which caused race conditions in the concurrent approval workflow; corrected by moving clause validation to an asynchronous background job triggered after the draft is persisted.
+
+--- Story 320: Emergency powers (attempts: 1, 2026-03-09 09:25) ---
+*   **Tricky**: Handling the race condition between the `EmergencyPower` flag and the `SystemShutdown` routine required explicit locking; simply checking the flag was insufficient due to async context switching.
+*   **Pattern**: The codebase consistently uses the `CircuitBreaker` pattern for all external service calls, wrapping them in a dedicated `ResilienceContext` rather than handling failures inline.
+*   **Correction**: Initially attempted to bypass the audit log for "emergency" paths to save latency, but realized this violates the immutable logging contract; reverted to async logging to maintain compliance without blocking the critical path.
