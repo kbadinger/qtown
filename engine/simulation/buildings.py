@@ -450,3 +450,48 @@ def upgrade_building(db: Session, building_id: int) -> None:
     if building:
         building.level = (building.level or 1) + 1
         db.commit()
+
+
+def calculate_adjacency_bonuses(db: Session) -> dict:
+    """Calculate adjacency bonuses for all buildings.
+    
+    Bonuses:
+    - farm near well = +2 capacity
+    - blacksmith near mine = +2 capacity
+    - tavern near residential = +1 capacity
+    
+    Returns: dict of {building_id: bonus}
+    """
+    from engine.models import Building
+    
+    buildings = db.query(Building).all()
+    bonuses = {}
+    
+    for building in buildings:
+        bonus = 0
+        
+        for other in buildings:
+            if other.id == building.id:
+                continue
+            
+            # Calculate squared Euclidean distance
+            dx = other.x - building.x
+            dy = other.y - building.y
+            distance_sq = dx * dx + dy * dy
+            
+            # Check if within 3 tiles (distance_sq <= 9)
+            if distance_sq > 9:
+                continue
+            
+            # Check for specific adjacency bonuses
+            if building.building_type == "farm" and other.building_type == "well":
+                bonus += 2
+            elif building.building_type == "blacksmith" and other.building_type == "mine":
+                bonus += 2
+            elif building.building_type == "tavern" and other.building_type == "residential":
+                bonus += 1
+        
+        if bonus > 0:
+            bonuses[building.id] = bonus
+    
+    return bonuses

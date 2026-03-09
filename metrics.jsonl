@@ -765,3 +765,4 @@
 {"story_id": "318", "attempt": 1, "passed": true, "duration_sec": 229.12, "error": null, "tokens_in": 6681, "tokens_out": 6379, "timestamp": "2026-03-09T08:43:14"}
 {"story_id": "319", "attempt": 1, "passed": true, "duration_sec": 161.2, "error": null, "tokens_in": 6666, "tokens_out": 4707, "timestamp": "2026-03-09T08:59:16"}
 {"story_id": "320", "attempt": 1, "passed": true, "duration_sec": 58.31, "error": null, "tokens_in": 6728, "tokens_out": 1614, "timestamp": "2026-03-09T09:13:45"}
+{"story_id": "321", "attempt": 1, "passed": true, "duration_sec": 59.79, "error": null, "tokens_in": 6684, "tokens_out": 1666, "timestamp": "2026-03-09T09:26:53"}

@@ -1405,3 +1405,11 @@ Ralph stopped — needs human debugging
 [2026-03-09 13:12:22 UTC] deploy_ok: Story 319 deployed: Healthy after 0.1s
 [2026-03-09 13:12:40 UTC] story_done: Story 319 complete: Town charter
 [2026-03-09 13:12:40 UTC] story_start: Story 320: Emergency powers
+[2026-03-09 13:25:46 UTC] WARN deploy_fail: Story 320 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   5aa3f2c..38fc07b  main -> main
+
+Indexing...
+Uploading..
+[2026-03-09 13:25:47 UTC] story_done: Story 320 complete: Emergency powers
+[2026-03-09 13:25:47 UTC] story_start: Story 321: Building adjacency bonuses

@@ -1353,3 +1353,8 @@
 *   **Tricky**: Handling the race condition between the `EmergencyPower` flag and the `SystemShutdown` routine required explicit locking; simply checking the flag was insufficient due to async context switching.
 *   **Pattern**: The codebase consistently uses the `CircuitBreaker` pattern for all external service calls, wrapping them in a dedicated `ResilienceContext` rather than handling failures inline.
 *   **Correction**: Initially attempted to bypass the audit log for "emergency" paths to save latency, but realized this violates the immutable logging contract; reverted to async logging to maintain compliance without blocking the critical path.
+
+--- Story 321: Building adjacency bonuses (attempts: 1, 2026-03-09 09:38) ---
+*   **Non-obvious dependency**: The adjacency logic required checking the *entire* board state before calculating bonuses, not just the neighbors of the placed piece, to correctly handle cascading effects on existing structures.
+*   **Codebase pattern**: Bonus calculations are consistently encapsulated in pure functions that accept the board grid and return a delta, avoiding direct mutation of the game state within the scoring logic.
+*   **Correction**: Initially failed to account for diagonal adjacency in the "Forest" tile bonus; corrected by standardizing the neighbor-checking utility to use a full 8-directional offset array instead of hardcoding orthogonal checks.
