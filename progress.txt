@@ -1333,3 +1333,8 @@
 - **Non-obvious Tax Logic**: The tax calculation wasn't a simple percentage; it required a cascading lookup against a dynamic `TaxBracket` table that changes based on the fiscal year, making the initial assumption of a static rate incorrect.
 - **Codebase Convention**: The project strictly separates domain logic from presentation; all financial calculations must reside in the `FiscalService` class and return immutable `Money` objects, rather than floating-point primitives.
 - **Correction Made**: Initially attempted to handle negative balances by throwing an exception, but realized the domain model requires returning a `Zero` or `Negative` state to allow downstream reporting to aggregate deficits correctly.
+
+--- Story 316: Public works projects (attempts: 1, 2026-03-08 23:28) ---
+- **Non-obvious dependency**: The `ProjectStatus` enum relied on a hidden database trigger to update `last_modified_at` timestamps; manually setting this in tests caused race conditions until I switched to using the repository's `save()` method which respects the trigger.
+- **Convention discovery**: All public works entities follow a strict "Factory + Validator" pattern where the factory handles default values (like `budget_allocation` defaults to 0) and the validator enforces business rules (e.g., `end_date` must be after `start_date`) before any DB interaction.
+- **Correction made**: Initially, I attempted to calculate project completion percentages directly in the view layer; I corrected this by moving the logic to a dedicated `ProjectMetrics` service to ensure consistency across API responses and admin dashboards.

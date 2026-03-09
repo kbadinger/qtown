@@ -1387,3 +1387,6 @@ Uploading..
 [2026-03-09 02:46:40 UTC] deploy_ok: Story 314 deployed: Healthy after 0.1s
 [2026-03-09 02:46:56 UTC] story_done: Story 314 complete: Impeachment mechanic
 [2026-03-09 02:46:56 UTC] story_start: Story 315: Tax revolt
+[2026-03-09 02:59:51 UTC] deploy_ok: Story 315 deployed: Healthy after 0.1s
+[2026-03-09 03:00:08 UTC] story_done: Story 315 complete: Tax revolt
+[2026-03-09 03:00:08 UTC] story_start: Story 316: Public works projects

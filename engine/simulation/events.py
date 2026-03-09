@@ -1630,3 +1630,39 @@ def check_tax_revolt(db: Session) -> bool:
     db.commit()
     
     return True
+
+
+def launch_public_works(db: Session) -> str | None:
+    """Launch public works project: upgrade lowest capacity building."""
+    from engine.models import Treasury, Building, Event, WorldState
+    
+    # Check Treasury gold
+    treasury = db.query(Treasury).first()
+    if not treasury or treasury.gold <= 100:
+        return None
+    
+    # Find building with lowest capacity
+    building = db.query(Building).order_by(Building.capacity).first()
+    if not building:
+        return None
+    
+    # Spend gold
+    treasury.gold -= 50
+    
+    # Upgrade capacity
+    building.capacity += 3
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Create Event
+    event = Event(
+        event_type='public_works',
+        description=f"Public works upgraded {building.name}",
+        tick=current_tick
+    )
+    db.add(event)
+    
+    db.commit()
+    return building.name
