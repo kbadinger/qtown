@@ -509,3 +509,30 @@ def calculate_road_bonus(db: Session) -> int:
     # 1% per road, capped at 20%
     bonus = road_count * 1
     return min(bonus, 20)
+
+
+def set_building_focus(db: Session, building_id: int, focus: str) -> Building:
+    """Set building specialization focus.
+    
+    Valid focuses: 'production', 'training', 'storage'
+    - Production: +50% output
+    - Training: workers gain +1 skill per cycle
+    - Storage: +5 effective capacity
+    
+    Stores focus as building name suffix.
+    """
+    from engine.models import Building
+    
+    if focus not in ['production', 'training', 'storage']:
+        raise ValueError(f"Invalid focus: {focus}. Must be 'production', 'training', or 'storage'")
+    
+    building = db.query(Building).filter(Building.id == building_id).first()
+    if building is None:
+        raise ValueError(f"Building not found: {building_id}")
+    
+    # Store focus as name suffix
+    if not building.name.endswith(f" ({focus})"):
+        building.name = f"{building.name} ({focus})"
+    
+    db.commit()
+    return building

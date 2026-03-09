@@ -1363,3 +1363,8 @@
 - **Non-obvious logic**: The speed bonus calculation requires clamping the final speed against both the road's maximum limit and the vehicle's physical cap, not just applying a raw multiplier to the current velocity.
 - **Codebase pattern**: All road-specific modifiers are centralized in `RoadNetwork.calculateEffectiveSpeed()` rather than scattered across individual vehicle classes, ensuring consistent behavior for all traffic types.
 - **Correction**: Initially failed to handle negative speed deltas (deceleration) correctly, causing vehicles to momentarily accelerate when entering a "slow zone"; fixed by adding a check to ensure the delta is always non-negative before applying the bonus.
+
+--- Story 323: Building specialization (attempts: 1, 2026-03-09 10:09) ---
+- **Non-obvious coupling**: The `SpecializationService` relied on implicit state from the global `Context` object rather than explicit constructor injection, making unit tests brittle and requiring manual context mocking.
+- **Codebase pattern**: The project enforces a strict "Command-Query Separation" where all write operations must return a `Result<T>` wrapper, while read operations return raw entities or `null`, preventing mixed return types in controllers.
+- **Correction**: Initially, I attempted to handle specialization validation in the controller layer; I corrected this by moving the logic into a dedicated `SpecializationValidator` class to adhere to the repository pattern and keep controllers thin.
