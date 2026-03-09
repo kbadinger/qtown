@@ -1428,3 +1428,8 @@
 - **Non-obvious API constraints**: The achievement progress endpoint requires a specific `batch_id` in the request body for write operations, which is not documented in the OpenAPI spec but is strictly enforced by the backend validation layer.
 - **Codebase pattern**: All external-facing API responses in this module wrap the actual data payload inside a `meta` object containing `request_id` and `latency_ms`, ensuring consistent tracing and performance monitoring across the service.
 - **Correction**: Initially attempted to use the generic `UserRepository` for fetching achievement states, which caused a race condition during concurrent updates; switched to the dedicated `AchievementStateService` which handles optimistic locking correctly.
+
+--- Story 336: Event calendar API (attempts: 1, 2026-03-09 12:18) ---
+- **Timezone Handling**: Converting user-local times to UTC for storage while preserving the original timezone offset for display was non-obvious; naive `new Date()` parsing often strips this context, requiring explicit IANA string handling.
+- **Pagination Convention**: The codebase enforces cursor-based pagination over offset-based for large event lists to ensure consistent performance and avoid "hole" issues when events are deleted between requests.
+- **Correction on Overlap Logic**: Initially attempted a simple start/end comparison for conflict detection, which failed for edge cases (e.g., events touching at boundaries); corrected by implementing the standard interval overlap algorithm (`startA < endB && startB < endA`).
