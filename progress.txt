@@ -1283,3 +1283,8 @@
 - **Tricky Logic**: Handling the cascading nature of event-based damage was non-obvious; I initially tried to calculate totals upfront but had to refactor to apply damage incrementally per event to correctly trigger intermediate thresholds.
 - **Codebase Patterns**: The project strictly separates event definitions (data) from damage logic (services), relying on a centralized `EventRegistry` to dispatch handlers rather than direct coupling.
 - **Correction**: I mistakenly treated `building_id` as a unique key for state, causing race conditions in concurrent event processing; I corrected this by using a composite key (`building_id` + `event_timestamp`) for state snapshots.
+
+--- Story 306: Event newspaper coverage (attempts: 1, 2026-03-08 20:36) ---
+*   **Tricky**: The event date parsing logic required handling multiple locale-specific formats before converting to the canonical ISO string for the database; a naive `Date()` constructor failed silently on non-standard inputs.
+*   **Patterns**: The codebase consistently separates "domain" data models from "view" DTOs, using a dedicated `Mapper` service to transform event entities into the specific shape required for the newspaper article template.
+*   **Correction**: Initially omitted the `status` check when querying events, which caused draft articles to be published; added a strict `status == 'published'` filter to the repository query to prevent leakage of unpublished content.

@@ -1342,3 +1342,6 @@ Indexing...
 Uploading..
 [2026-03-09 00:09:46 UTC] story_done: Story 304 complete: Famine relief distribution
 [2026-03-09 00:09:46 UTC] story_start: Story 305: Building damage from events
+[2026-03-09 00:24:29 UTC] deploy_ok: Story 305 deployed: Healthy after 0.1s
+[2026-03-09 00:24:46 UTC] story_done: Story 305 complete: Building damage from events
+[2026-03-09 00:24:47 UTC] story_start: Story 306: Event newspaper coverage

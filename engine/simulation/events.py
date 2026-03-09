@@ -1204,3 +1204,38 @@ def apply_event_damage(db: Session) -> int:
     
     db.commit()
     return len(buildings_damaged)
+
+
+def generate_event_news(db: Session) -> int:
+    """Generate newspaper coverage for events created in the current tick."""
+    from engine.models import Event, Newspaper, WorldState
+    
+    # Get current tick from world state
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return 0
+    
+    current_tick = world_state.tick
+    
+    # Find events created in current tick
+    events = db.query(Event).filter(Event.tick == current_tick).all()
+    
+    article_count = 0
+    for event in events:
+        # Build headline with BREAKING prefix for critical events
+        headline = f"BREAKING: {event.event_type}" if event.severity == 'critical' else f"{event.event_type}"
+        body = event.description
+        
+        # Create newspaper article
+        article = Newspaper(
+            day=world_state.day,
+            headline=headline,
+            body=body,
+            author_npc_id=None,  # System-generated
+            tick=current_tick
+        )
+        db.add(article)
+        article_count += 1
+    
+    db.commit()
+    return article_count
