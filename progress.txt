@@ -1533,3 +1533,8 @@
 *   **Tricky Aspect**: The mentorship logic required handling state persistence across session boundaries; simply updating the NPC's dialogue flags wasn't enough without explicitly saving the "mentorship tier" to the player's persistent profile to prevent regression on reload.
 *   **Pattern Discovered**: The codebase consistently uses a `MentorRegistry` singleton to manage NPC availability, where new mentors must be registered with a specific `unlockCondition` lambda rather than hardcoding checks in the dialogue tree.
 *   **Correction Made**: Initially, I attempted to trigger the mentorship event via a direct function call during the quest start, which broke the event queue order; I corrected this by queuing the interaction through the standard `QuestEventDispatcher` to ensure proper sequencing with other story beats.
+
+--- Story 358: NPC homesickness (attempts: 1, 2026-03-09 18:24) ---
+- **Tricky Logic**: The `HomeSickness` mechanic relies on a hidden `mood` accumulator that only triggers the quest state when crossing a specific threshold; simply checking the current location flag was insufficient to detect the trigger condition.
+- **Codebase Pattern**: NPC state machines in this project consistently use a `tick()` method that chains internal updates before calling `checkTriggers()`, meaning any new logic must respect this execution order to avoid race conditions.
+- **Correction**: Initially, I attempted to force the dialogue state immediately upon entering the home zone, which caused the NPC to stutter; I corrected this by deferring the state change to the next `tick()` cycle to allow the mood calculation to settle.

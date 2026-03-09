@@ -1575,3 +1575,8 @@ Ralph stopped — needs human debugging
 
 [2026-03-09 21:40:27 UTC] story_done: Story 356 complete: NPC grudge system
 [2026-03-09 21:40:28 UTC] story_start: Story 357: NPC mentorship
+[2026-03-09 22:08:51 UTC] WARN deploy_fail: Story 357 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build timed out after 300s
+
+Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
+[2026-03-09 22:08:52 UTC] story_done: Story 357 complete: NPC mentorship
+[2026-03-09 22:08:52 UTC] story_start: Story 358: NPC homesickness

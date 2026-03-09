@@ -2616,3 +2616,43 @@ def process_mentorship(db: Session) -> int:
     
     db.commit()
     return mentor_count
+
+
+def check_homesickness(db: Session) -> int:
+    """Check and apply homesickness effects to NPCs.
+    
+    For each living NPC with home_building_id set:
+    - Calculate Manhattan distance from NPC to home building
+    - If distance > 20, reduce happiness by 3
+    - If distance > 35, reduce happiness by 5
+    
+    Returns count of homesick NPCs.
+    """
+    from engine.models import NPC, Building
+    
+    homesick_count = 0
+    
+    # Get all living NPCs with home buildings
+    npcs = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.home_building_id.isnot(None)
+    ).all()
+    
+    for npc in npcs:
+        home = db.query(Building).get(npc.home_building_id)
+        if not home:
+            continue
+        
+        # Calculate Manhattan distance
+        distance = abs(npc.x - home.x) + abs(npc.y - home.y)
+        
+        # Apply homesickness effects based on distance thresholds
+        if distance > 35:
+            npc.happiness = max(0, npc.happiness - 5)
+            homesick_count += 1
+        elif distance > 20:
+            npc.happiness = max(0, npc.happiness - 3)
+            homesick_count += 1
+    
+    db.commit()
+    return homesick_count
