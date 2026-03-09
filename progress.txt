@@ -1458,3 +1458,8 @@
 *   **Non-obvious constraint**: The logic for handling "surname reuse" across different character classes was trickier than expected; a simple global set wasn't enough, requiring a per-class frequency map to avoid over-saturation of common names.
 *   **Codebase pattern**: This project heavily favors composition over inheritance for name components (e.g., combining `Prefix`, `Root`, and `Suffix` generators), which keeps the generator logic modular but requires careful state management for uniqueness checks.
 *   **Correction**: Initially, I seeded the random number generator with the current timestamp, causing duplicate names when the script ran multiple times in quick succession; I corrected this by using a cryptographically secure source and a unique context ID per session.
+
+--- Story 342: Building description generator (attempts: 1, 2026-03-09 12:56) ---
+- **Tricky Logic**: Handling the recursive nature of nested architectural features (e.g., rooms within rooms) required careful state management to avoid infinite loops and ensure consistent adjective application across hierarchy levels.
+- **Codebase Pattern**: The project relies heavily on a "seeded randomness" convention, where a single integer seed determines all stylistic choices (materials, dimensions, lighting) to guarantee reproducible outputs for the same input parameters.
+- **Correction**: Initially, I generated descriptions based on fixed templates, which led to repetitive phrasing; I corrected this by implementing a dynamic token-weighting system that selects sentence structures based on the building's complexity score.

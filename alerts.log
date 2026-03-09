@@ -1490,3 +1490,6 @@ Uploading..
 [2026-03-09 16:23:04 UTC] deploy_ok: Story 340 deployed: Healthy after 0.1s
 [2026-03-09 16:23:13 UTC] story_done: Story 340 complete: Simulation config API
 [2026-03-09 16:23:14 UTC] story_start: Story 341: NPC name generator
+[2026-03-09 16:40:50 UTC] deploy_ok: Story 341 deployed: Healthy after 0.2s
+[2026-03-09 16:41:06 UTC] story_done: Story 341 complete: NPC name generator
+[2026-03-09 16:41:07 UTC] story_start: Story 342: Building description generator
