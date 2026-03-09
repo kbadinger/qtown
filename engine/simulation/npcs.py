@@ -14,6 +14,26 @@ from engine.models import Dialogue, NPC, Event, WorldState
 from typing import Optional
 
 
+
+
+FIRST_NAMES = [
+    "Alice", "Bob", "Charlie", "Diana", "Ethan",
+    "Fiona", "George", "Hannah", "Ian", "Julia",
+    "Kevin", "Lily", "Michael", "Nina", "Oscar",
+    "Paula", "Quinn", "Rachel", "Sam", "Tina"
+]
+
+
+
+
+LAST_NAMES = [
+    "Smith", "Johnson", "Williams", "Brown", "Jones",
+    "Garcia", "Miller", "Davis", "Rodriguez", "Martinez",
+    "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson",
+    "Thomas", "Taylor", "Moore", "Jackson", "Martin"
+]
+
+
 def move_npc_toward_target(db: Session, npc: NPC) -> None:
     """Move an NPC one step closer to its target position.
     
@@ -2027,3 +2047,21 @@ def process_mourning(db: Session) -> int:
     
     db.commit()
     return mourners_count
+
+
+def generate_npc_name(db: Session) -> str:
+    """Generate a unique NPC name."""
+    from engine.models import NPC
+    
+    existing_names = set()
+    for npc in db.query(NPC).filter(NPC.is_dead == 0).all():
+        existing_names.add(npc.name)
+    
+    for _ in range(100):
+        first = random.choice(FIRST_NAMES)
+        last = random.choice(LAST_NAMES)
+        name = f"{first} {last}"
+        if name not in existing_names:
+            return name
+    
+    return f"Unknown {random.randint(1000, 9999)}"

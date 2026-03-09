@@ -1453,3 +1453,8 @@
 *   **Non-obvious validation logic**: The simulation config API requires deep validation of nested parameter schemas at the *parsing* stage, not just runtime; failing to validate type constraints early caused silent failures in downstream simulation engines.
 *   **Codebase pattern**: Configuration objects follow a strict "immutable factory" pattern where all setters return new instances rather than mutating state, ensuring thread-safety across concurrent simulation runs.
 *   **Correction**: Initially attempted to use a generic `Map` for config storage, which broke the strict typing guarantees; corrected by switching to a typed `ConfigBuilder` class that enforces schema compliance at compile time.
+
+--- Story 341: NPC name generator (attempts: 1, 2026-03-09 12:38) ---
+*   **Non-obvious constraint**: The logic for handling "surname reuse" across different character classes was trickier than expected; a simple global set wasn't enough, requiring a per-class frequency map to avoid over-saturation of common names.
+*   **Codebase pattern**: This project heavily favors composition over inheritance for name components (e.g., combining `Prefix`, `Root`, and `Suffix` generators), which keeps the generator logic modular but requires careful state management for uniqueness checks.
+*   **Correction**: Initially, I seeded the random number generator with the current timestamp, causing duplicate names when the script ran multiple times in quick succession; I corrected this by using a cryptographically secure source and a unique context ID per session.
