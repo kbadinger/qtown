@@ -1443,3 +1443,8 @@
 - **Non-obvious sorting logic**: The leaderboard requires a composite sort (score descending, then timestamp ascending) to handle ties fairly; a simple `ORDER BY score` was insufficient and required explicit tie-breaking in the query.
 - **Pagination convention**: This codebase consistently uses cursor-based pagination (`limit` + `last_id`) for large datasets rather than offset-based pagination to maintain performance stability as the table grows.
 - **Race condition fix**: Initially, the score update and leaderboard insertion were separate transactions, causing a brief window where the API returned stale data; wrapping them in a single atomic transaction resolved the inconsistency.
+
+--- Story 339: Town history summary API (attempts: 1, 2026-03-09 12:21) ---
+- **Non-obvious constraint**: The `TownHistory` API requires strict date range validation against the `towns` table's `established_at` column; returning an empty array for out-of-bounds queries was initially misinterpreted as a bug rather than expected behavior.
+- **Codebase pattern**: All historical data endpoints follow a "fetch-then-transform" pattern using the `HistoryService` abstraction, which centralizes pagination logic and enforces a consistent JSON structure for timeline events.
+- **Correction made**: Initially exposed raw database IDs in the response payload; corrected by mapping to the `slug` field in the DTO layer to maintain API stability against future schema changes.

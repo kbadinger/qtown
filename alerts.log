@@ -1476,3 +1476,6 @@ Indexing...
 Uploading..
 [2026-03-09 16:20:17 UTC] story_done: Story 337 complete: Resource flow API
 [2026-03-09 16:20:17 UTC] story_start: Story 338: Leaderboard API
+[2026-03-09 16:21:36 UTC] deploy_ok: Story 338 deployed: Healthy after 0.1s
+[2026-03-09 16:21:45 UTC] story_done: Story 338 complete: Leaderboard API
+[2026-03-09 16:21:45 UTC] story_start: Story 339: Town history summary API
