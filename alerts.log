@@ -1510,3 +1510,6 @@ Daily digest
 [2026-03-09 17:17:08 UTC] deploy_ok: Story 343 deployed: Healthy after 0.1s
 [2026-03-09 17:17:24 UTC] story_done: Story 343 complete: Daily digest
 [2026-03-09 17:17:25 UTC] story_start: Story 344: Prosperity score
+[2026-03-09 17:33:29 UTC] deploy_ok: Story 344 deployed: Healthy after 0.1s
+[2026-03-09 17:33:45 UTC] story_done: Story 344 complete: Prosperity score
+[2026-03-09 17:33:46 UTC] story_start: Story 345: Danger score per tile

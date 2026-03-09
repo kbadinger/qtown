@@ -1473,3 +1473,8 @@
 - **Non-obvious aggregation logic**: The prosperity score relies on a weighted geometric mean rather than a simple average, which significantly penalizes zero values in any single sub-metric; this required careful handling of edge cases to avoid `NaN` propagation.
 - **Data normalization convention**: The codebase consistently applies min-max scaling to all raw inputs before calculation, but the normalization bounds are dynamically derived from the last 30 days of data rather than static global constants.
 - **Correction on rounding**: Initially applied rounding to intermediate calculation steps, which introduced cumulative drift; corrected by rounding only at the final output stage to maintain precision throughout the chain.
+
+--- Story 345: Danger score per tile (attempts: 1, 2026-03-09 13:49) ---
+- **Non-obvious edge case**: The danger score calculation initially failed for tiles adjacent to map boundaries; the fix required explicit bounds checking before accessing neighbor coordinates to prevent out-of-bounds errors.
+- **Codebase pattern**: Discovered a consistent convention of separating "raw data access" (e.g., `get_tile_type`) from "logic calculation" (e.g., `calculate_danger`), keeping the core algorithm pure and testable.
+- **Correction**: Mistakenly initialized the danger accumulator to `1` instead of `0`, which artificially inflated scores for safe tiles; corrected to ensure the base score is neutral before adding neighbor penalties.

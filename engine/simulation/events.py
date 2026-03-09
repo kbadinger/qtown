@@ -1951,3 +1951,50 @@ def generate_daily_digest(db: Session) -> dict:
     }
     
     return summary
+
+
+def calculate_danger_scores(db: Session) -> dict:
+    """Calculate danger scores for each tile based on crimes and disasters within 5 tiles.
+    
+    Score = crime_count * 2 + disaster_count * 3
+    Returns dict of {(x,y): danger_score} for tiles with score > 0.
+    """
+    from engine.models import Crime, Event
+    
+    crimes = db.query(Crime).all()
+    events = db.query(Event).all()
+    
+    # Get all unique tile coordinates from crimes and events
+    all_coords = set()
+    for crime in crimes:
+        if hasattr(crime, 'x') and hasattr(crime, 'y'):
+            all_coords.add((crime.x, crime.y))
+    for event in events:
+        if hasattr(event, 'x') and hasattr(event, 'y'):
+            all_coords.add((event.x, event.y))
+    
+    danger_scores = {}
+    
+    for tx, ty in all_coords:
+        crime_count = 0
+        disaster_count = 0
+        
+        for crime in crimes:
+            if hasattr(crime, 'x') and hasattr(crime, 'y'):
+                dx = abs(crime.x - tx)
+                dy = abs(crime.y - ty)
+                if dx <= 5 and dy <= 5:
+                    crime_count += 1
+        
+        for event in events:
+            if hasattr(event, 'x') and hasattr(event, 'y'):
+                dx = abs(event.x - tx)
+                dy = abs(event.y - ty)
+                if dx <= 5 and dy <= 5:
+                    disaster_count += 1
+        
+        score = crime_count * 2 + disaster_count * 3
+        if score > 0:
+            danger_scores[(tx, ty)] = score
+    
+    return danger_scores
