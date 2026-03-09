@@ -1192,9 +1192,8 @@ def process_tips(db: Session) -> int:
                 tip_tx = Transaction(
                     amount=tip_amount,
                     reason='tip',
-                    sender_npc_id=tx.sender_npc_id,
-                    receiver_npc_id=tx.receiver_npc_id,
-                    tick=tx.tick
+                    sender_id=tx.sender_id,
+                    receiver_id=tx.receiver_id,
                 )
                 db.add(tip_tx)
                 

@@ -2398,3 +2398,57 @@ def update_trust_scores(db: Session) -> dict:
     
     db.commit()
     return result
+
+
+def process_gift_giving(db: Session) -> int:
+    """Process gift giving between NPCs."""
+    from engine.models import NPC, Relationship, Transaction
+    
+    gifts_given = 0
+    
+    # Find all living NPCs with happiness > 70 and gold > 100
+    potential_givers = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.happiness > 70,
+        NPC.gold > 100
+    ).all()
+    
+    for giver in potential_givers:
+        # Find friends of this NPC (where this NPC is the source)
+        friend_relationships = db.query(Relationship).filter(
+            Relationship.npc_id == giver.id,
+            Relationship.relationship_type == 'friend'
+        ).all()
+        
+        if not friend_relationships:
+            continue
+        
+        # Get the friend NPCs
+        friend_ids = [rel.target_npc_id for rel in friend_relationships]
+        friends = db.query(NPC).filter(
+            NPC.id.in_(friend_ids),
+            NPC.is_dead == 0
+        ).all()
+        
+        if not friends:
+            continue
+        
+        # Find friend with lowest gold
+        friend_to_gift = min(friends, key=lambda f: f.gold)
+        
+        # Give 10 gold
+        giver.gold -= 10
+        friend_to_gift.gold += 10
+        
+        # Create transaction record
+        transaction = Transaction(
+            sender_id=giver.id,
+            receiver_id=friend_to_gift.id,
+            amount=10,
+            reason='gift'
+        )
+        db.add(transaction)
+        gifts_given += 1
+    
+    db.commit()
+    return gifts_given
