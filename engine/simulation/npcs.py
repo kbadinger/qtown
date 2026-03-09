@@ -2343,3 +2343,58 @@ def propagate_gossip(db: Session) -> int:
     db.commit()
     
     return transfers
+
+
+def update_trust_scores(db: Session) -> dict:
+    """Update trust scores for all NPCs based on relationships.
+    
+    High trust: friend relationship with strength > 50
+    Low trust: rival relationship or strength < 20
+    Trust metric: high_trust_count - low_trust_count per NPC
+    NPCs with trust < 0 get happiness -1
+    
+    Returns: dict of {npc_id: trust_score}
+    """
+    from engine.models import Relationship, NPC
+    
+    # Track trust scores per NPC
+    trust_data = {}  # npc_id -> {'high': int, 'low': int}
+    
+    # Query all relationships
+    relationships = db.query(Relationship).all()
+    
+    for rel in relationships:
+        # Process both NPCs in the relationship
+        for npc_id in [rel.npc1_id, rel.npc2_id]:
+            if npc_id not in trust_data:
+                trust_data[npc_id] = {'high': 0, 'low': 0}
+            
+            # High trust: friend with strength > 50
+            if rel.relationship_type == 'friend' and rel.strength > 50:
+                trust_data[npc_id]['high'] += 1
+            
+            # Low trust: rival or strength < 20
+            if rel.relationship_type == 'rival' or rel.strength < 20:
+                trust_data[npc_id]['low'] += 1
+    
+    # Calculate final trust scores and track NPCs needing happiness update
+    result = {}
+    npcs_needing_update = {}
+    
+    for npc_id, data in trust_data.items():
+        trust_score = data['high'] - data['low']
+        result[npc_id] = trust_score
+        
+        # NPCs with negative trust get happiness penalty
+        if trust_score < 0:
+            npcs_needing_update[npc_id] = trust_score
+    
+    # Apply happiness penalty to NPCs with negative trust
+    if npcs_needing_update:
+        for npc_id in npcs_needing_update.keys():
+            npc = db.query(NPC).filter(NPC.id == npc_id).first()
+            if npc and npc.is_dead == 0:
+                npc.happiness = max(0, npc.happiness - 1)
+    
+    db.commit()
+    return result

@@ -1547,3 +1547,6 @@ Indexing...
 Uploading..
 [2026-03-09 19:38:11 UTC] story_done: Story 352 complete: NPC hobby selection
 [2026-03-09 19:38:11 UTC] story_start: Story 353: NPC gossip propagation
+[2026-03-09 19:53:41 UTC] deploy_ok: Story 353 deployed: Healthy after 0.1s
+[2026-03-09 19:53:58 UTC] story_done: Story 353 complete: NPC gossip propagation
+[2026-03-09 19:53:58 UTC] story_start: Story 354: NPC trust system

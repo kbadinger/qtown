@@ -1518,3 +1518,8 @@
 - **Non-obvious dependency**: The gossip propagation logic relies on a hidden `last_updated` timestamp in the `NPC` entity; failing to refresh this before checking the `visited` set caused infinite loops in isolated clusters.
 - **Codebase convention**: Graph traversal in this project consistently uses a "lazy-load" adjacency pattern where neighbor relationships are resolved via a separate `SocialGraph` service rather than direct entity references.
 - **Correction**: Initially assumed gossip spread was synchronous; corrected to use an event-driven queue to prevent blocking the main game loop during high-density NPC encounters.
+
+--- Story 354: NPC trust system (attempts: 1, 2026-03-09 16:07) ---
+- **Non-obvious state coupling**: The trust score wasn't just a simple integer; it required a separate "cooldown" timer to prevent players from spamming dialogue options to rapidly boost reputation, which wasn't immediately clear from the initial schema.
+- **Codebase pattern**: This project consistently uses a `StateContext` wrapper for all NPC interactions rather than direct method calls, ensuring that trust changes are always logged and validated against the current game phase before committing.
+- **Correction made**: Initially, I updated the trust value directly in the UI layer, causing a desync where the visual indicator changed before the backend validated the action; I corrected this by enforcing all state mutations through the central `InteractionService` to guarantee atomic updates.
