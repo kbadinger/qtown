@@ -2240,3 +2240,46 @@ def calculate_npc_stress(db: Session) -> int:
     
     db.commit()
     return stressed_count
+
+
+def assign_npc_hobbies(db: Session) -> int:
+    """Assign hobbies to idle NPCs by selecting random buildings."""
+    from engine.models import NPC, Building
+    import json
+    import random
+    
+    idle_npcs = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.energy > 50,
+        NPC.work_building_id == None
+    ).all()
+    
+    count = 0
+    all_buildings = db.query(Building).all()
+    
+    for npc in idle_npcs:
+        home_id = npc.home_building_id
+        available = [b for b in all_buildings if b.id != home_id]
+        
+        if not available:
+            continue
+        
+        hobby_building = random.choice(available)
+        current_favorites = []
+        
+        if npc.favorite_buildings:
+            try:
+                current_favorites = json.loads(npc.favorite_buildings)
+                if not isinstance(current_favorites, list):
+                    current_favorites = []
+            except (json.JSONDecodeError, TypeError):
+                current_favorites = []
+        
+        if hobby_building.id not in current_favorites:
+            current_favorites.append(hobby_building.id)
+            current_favorites = current_favorites[:3]
+            npc.favorite_buildings = json.dumps(current_favorites)
+            count += 1
+    
+    db.commit()
+    return count

@@ -1531,3 +1531,11 @@ Daily digest
 [2026-03-09 19:10:39 UTC] deploy_ok: Story 350 deployed: Healthy after 0.1s
 [2026-03-09 19:10:56 UTC] story_done: Story 350 complete: End-of-day report
 [2026-03-09 19:10:56 UTC] story_start: Story 351: NPC stress system
+[2026-03-09 19:24:33 UTC] WARN deploy_fail: Story 351 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   298551a..212e4f7  main -> main
+
+Indexing...
+Uploading..
+[2026-03-09 19:24:34 UTC] story_done: Story 351 complete: NPC stress system
+[2026-03-09 19:24:34 UTC] story_start: Story 352: NPC hobby selection
