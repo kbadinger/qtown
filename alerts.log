@@ -1425,3 +1425,6 @@ Uploading..
 [2026-03-09 14:26:23 UTC] deploy_ok: Story 324 deployed: Healthy after 0.2s
 [2026-03-09 14:26:40 UTC] story_done: Story 324 complete: Ruin decay system
 [2026-03-09 14:26:40 UTC] story_start: Story 325: Construction queue
+[2026-03-09 14:42:57 UTC] deploy_ok: Story 325 deployed: Healthy after 0.1s
+[2026-03-09 14:43:13 UTC] story_done: Story 325 complete: Construction queue
+[2026-03-09 14:43:14 UTC] story_start: Story 326: Building insurance

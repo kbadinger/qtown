@@ -1378,3 +1378,8 @@
 *   **Non-obvious queue state handling**: The construction queue requires explicit state transitions (Pending → Active → Completed) rather than relying solely on timestamp expiration; missing the `finalize` step causes orphaned resources.
 *   **Codebase pattern**: All queue mutations must wrap the database transaction with the `QueueLock` context manager to prevent race conditions during concurrent story updates.
 *   **Correction**: Initially attempted to filter the queue using a simple `WHERE` clause, but realized the `is_locked` flag must be checked at the row level inside the transaction to avoid deadlocks.
+
+--- Story 326: Building insurance (attempts: 1, 2026-03-09 10:55) ---
+*   **Tricky Logic**: The interaction between `policyEffectiveDate` and `coverageStartDate` was non-obvious; the system requires a 30-day grace period calculation that only triggers if the policy was purchased after the 15th of the month, not just based on the calendar month.
+*   **Codebase Pattern**: All domain entities in this module strictly separate "calculation logic" (in `Calculator` classes) from "state mutation" (in `Service` classes), avoiding direct property modification on entities to ensure audit trail integrity.
+*   **Correction**: Initially, I attempted to reuse the generic `validateAddress` method, but corrected this to use the specialized `validateCommercialAddress` which includes the required Zoning Code check specific to building insurance.

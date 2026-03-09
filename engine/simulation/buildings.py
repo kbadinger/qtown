@@ -653,3 +653,27 @@ def process_construction(db: Session) -> Optional[str]:
         return f"Completed building at ({project.x}, {project.y})"
     
     return f"Construction in progress: {project.capacity}/5"
+
+
+def process_insurance(db: Session) -> int:
+    """Process insurance for all buildings."""
+    from engine.models import Building, Treasury
+    
+    insured_count = 0
+    buildings = db.query(Building).all()
+    
+    for building in buildings:
+        # Check if building is insured (flag in name)
+        if "insured" in building.name.lower():
+            insured_count += 1
+            
+            # Auto-repair: add +2 capacity for insured buildings
+            building.capacity = building.capacity + 2
+            
+            # Deduct insurance cost from Treasury (5 gold per insured building)
+            treasury = db.query(Treasury).first()
+            if treasury and treasury.gold >= 5:
+                treasury.gold = treasury.gold - 5
+    
+    db.commit()
+    return insured_count
