@@ -751,3 +751,4 @@
 {"story_id": "310", "attempt": 1, "passed": true, "duration_sec": 52.28, "error": null, "tokens_in": 6621, "tokens_out": 1433, "timestamp": "2026-03-08T21:24:53"}
 {"story_id": "310", "attempt": 1, "passed": false, "duration_sec": 52.28, "error": "REGRESSION: REGRESSION in Story 300: ============================= test session starts =============================\nplatform win32 -- Python 3.12.8, pytest-9.0.2, pluggy-1.6.0 -- C:\\Users\\kbadi\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\ncachedir: .pytest_cache\nrootdir: D:\\Projects\\qtown\nplugins: anyio-", "tokens_in": 6621, "tokens_out": 1433, "timestamp": "2026-03-08T21:34:58"}
 {"story_id": "310", "attempt": 2, "passed": true, "duration_sec": 250.3, "error": null, "tokens_in": 6843, "tokens_out": 6894, "timestamp": "2026-03-08T21:39:13"}
+{"story_id": "311", "attempt": 1, "passed": true, "duration_sec": 43.4, "error": null, "tokens_in": 6636, "tokens_out": 1161, "timestamp": "2026-03-08T21:52:14"}

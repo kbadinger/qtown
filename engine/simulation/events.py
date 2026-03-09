@@ -1429,3 +1429,50 @@ def check_legendary_event(db: Session) -> bool:
 
     db.commit()
     return True
+
+
+def assign_factions(db: Session) -> dict:
+    """Assign political factions to NPCs based on their attributes."""
+    from engine.models import NPC
+    import json
+    
+    faction_counts = {
+        'merchants_guild': 0,
+        'artisans_guild': 0,
+        'reform_party': 0,
+        'independents': 0
+    }
+    
+    # Get all living NPCs
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    for npc in npcs:
+        # Parse experience JSON
+        experience = {}
+        if npc.experience:
+            parsed = json.loads(npc.experience)
+            experience = parsed if isinstance(parsed, dict) else {}
+        
+        # Skip if already has a faction
+        if 'faction' in experience:
+            continue
+        
+        # Assign faction based on priority
+        if npc.gold > 50:
+            faction = 'merchants_guild'
+        elif npc.skill > 5:
+            faction = 'artisans_guild'
+        elif npc.happiness < 40:
+            faction = 'reform_party'
+        else:
+            faction = 'independents'
+        
+        # Update experience with faction
+        experience['faction'] = faction
+        npc.experience = json.dumps(experience)
+        
+        # Count the faction
+        faction_counts[faction] += 1
+    
+    db.commit()
+    return faction_counts

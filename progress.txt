@@ -1308,3 +1308,8 @@
 - **Tricky Logic**: The event's "legendary" status relied on a hidden multiplier that only applied if the user's `last_login` was within a specific 15-minute window relative to the event start time, not just the current timestamp.
 - **Codebase Pattern**: This repository consistently uses a `EventContext` wrapper object to pass mutable state between handlers, avoiding global variables and making unit testing of edge cases significantly easier.
 - **Correction**: Initially, I attempted to cache the event result in Redis using the user ID as the key, which caused race conditions during high-concurrency login spikes; switching to a composite key (`user_id:session_id`) resolved the data inconsistency.
+
+--- Story 311: Political faction system (attempts: 1, 2026-03-08 22:03) ---
+*   **Tricky Logic**: The interaction between faction influence decay and event triggers was non-obvious; influence must be recalculated *before* checking event eligibility to prevent stale state from blocking valid faction actions.
+*   **Codebase Patterns**: The project consistently uses a "Strategy" pattern for faction behaviors, where each faction implements a `calculate_influence_delta` method, allowing the core loop to remain agnostic of specific faction rules.
+*   **Correction**: Initially, I stored faction relationships in a flat array, causing O(n) lookups for every interaction; I corrected this by switching to a hash map keyed by faction ID to ensure O(1) access during high-frequency game ticks.
