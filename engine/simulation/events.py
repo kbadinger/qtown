@@ -10,6 +10,7 @@ from datetime import datetime
 from sqlalchemy import desc
 from typing import Optional
 from engine.simulation.weather import get_season
+from engine.models import Building
 
 
 def trigger_drought(db: Session) -> None:
@@ -1239,3 +1240,41 @@ def generate_event_news(db: Session) -> int:
     
     db.commit()
     return article_count
+
+
+def create_memorial(db: Session) -> Optional[Building]:
+    """Create a memorial building after a critical event that affected a building."""
+    from engine.models import Event
+    
+    # Find the most recent critical event that affected a building
+    critical_event_types = ['fire', 'flood', 'earthquake', 'bandit_raid']
+    event = db.query(Event).filter(
+        Event.affected_building_id.isnot(None),
+        Event.event_type.in_(critical_event_types)
+    ).order_by(Event.tick.desc()).first()
+    
+    if not event:
+        return None
+    
+    # Find the affected building
+    affected_building = db.query(Building).filter(Building.id == event.affected_building_id).first()
+    if not affected_building:
+        return None
+    
+    # Calculate memorial position (near affected building, capped at 49)
+    memorial_x = min(affected_building.x + 1, 49)
+    memorial_y = min(affected_building.y + 1, 49)
+    
+    # Create memorial building
+    memorial = Building(
+        building_type='memorial',
+        name=f'Memorial for {event.event_type}',
+        x=memorial_x,
+        y=memorial_y,
+        capacity=1,
+        level=1
+    )
+    db.add(memorial)
+    db.commit()
+    
+    return memorial

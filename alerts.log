@@ -1345,3 +1345,11 @@ Uploading..
 [2026-03-09 00:24:29 UTC] deploy_ok: Story 305 deployed: Healthy after 0.1s
 [2026-03-09 00:24:46 UTC] story_done: Story 305 complete: Building damage from events
 [2026-03-09 00:24:47 UTC] story_start: Story 306: Event newspaper coverage
+[2026-03-09 00:36:08 UTC] WARN deploy_fail: Story 306 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   3c32df4..f123100  main -> main
+
+Indexing...
+Uploading..
+[2026-03-09 00:36:09 UTC] story_done: Story 306 complete: Event newspaper coverage
+[2026-03-09 00:36:09 UTC] story_start: Story 307: Memorial creation
