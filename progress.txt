@@ -1498,3 +1498,8 @@
 *   **Non-obvious state coupling**: The population cap logic was tightly coupled with the `Town` entity's internal `capacity` field, requiring a refactor to extract a dedicated `PopulationService` to avoid circular dependencies during migration.
 *   **Codebase convention**: Found that this codebase consistently uses `Result<T, Error>` for domain logic failures but relies on global `try-catch` blocks in the API layer, meaning new validation rules should return errors rather than throwing exceptions.
 *   **Correction**: Initially attempted to enforce the cap via a database constraint, but realized this caused race conditions in concurrent migration scenarios; switched to an application-level check with optimistic locking to ensure data consistency.
+
+--- Story 350: End-of-day report (attempts: 1, 2026-03-09 15:08) ---
+- **Tricky**: The `report_id` generation logic relies on a non-atomic database sequence; without an explicit transaction lock, concurrent end-of-day runs can cause ID collisions or skipped numbers.
+- **Pattern**: This codebase consistently separates data aggregation (DTOs) from formatting (StringBuilders) and stores raw JSON blobs in the `audit_log` table before parsing for the UI.
+- **Correction**: Initially missed the `timezone` parameter in the cron job configuration, causing reports to run in UTC instead of the user's local time; fixed by injecting `ZoneId` from the config service.

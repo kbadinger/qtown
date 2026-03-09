@@ -26,6 +26,9 @@ from engine.simulation.effects import (
 from engine.simulation.economy import (
     process_work, collect_taxes, track_inflation,
 )
+import json
+from sqlalchemy import func
+from engine.models import Event
 
 
 def process_tick(db: Session) -> None:
@@ -155,3 +158,48 @@ def process_tick(db: Session) -> None:
         hold_election(db)
     
     db.commit()
+
+
+def generate_end_of_day_report(db: Session) -> dict | None:
+    """Generate end-of-day report every 24 ticks.
+    
+    Compiles: population, total_gold, avg_happiness, events_today (last 24 ticks), weather.
+    Creates Event event_type='end_of_day_report' with all stats in description JSON.
+    Returns stats dict or None if not end of day.
+    """
+    from engine.models import WorldState, NPC
+    
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return None
+    
+    # Check if it's end of day (every 24 ticks)
+    if world_state.tick % 24 != 0:
+        return None
+    
+    # Compile stats
+    population = db.query(NPC).filter(NPC.is_dead == 0).count()
+    total_gold = db.query(NPC).filter(NPC.is_dead == 0).with_entities(func.sum(NPC.gold)).scalar() or 0
+    avg_happiness = db.query(NPC).filter(NPC.is_dead == 0).with_entities(func.avg(NPC.happiness)).scalar() or 0
+    
+    # Get events from last 24 ticks
+    events_today = db.query(Event).filter(Event.tick >= world_state.tick - 24).all()
+    events_list = [{"id": e.id, "event_type": e.event_type, "description": e.description} for e in events_today]
+    
+    stats = {
+        "population": population,
+        "total_gold": total_gold,
+        "avg_happiness": avg_happiness,
+        "events_today": events_list,
+        "weather": world_state.weather
+    }
+    
+    # Create Event with stats in description JSON
+    event = Event(
+        event_type='end_of_day_report',
+        description=json.dumps(stats),
+        tick=world_state.tick
+    )
+    db.add(event)
+    
+    return stats
