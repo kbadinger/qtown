@@ -1,16 +1,16 @@
 {
-  "total_stories": 296,
-  "total_attempts": 1333,
-  "total_tokens_in": 7473966,
-  "total_tokens_out": 3627734,
-  "total_gpu_hours": 38.63359895156487,
+  "total_stories": 297,
+  "total_attempts": 1336,
+  "total_tokens_in": 7480740,
+  "total_tokens_out": 3628958,
+  "total_gpu_hours": 38.65038340893054,
   "total_idle_hours": 0.2773464320765601,
   "qwen_electricity_usd": 3.1,
-  "opus46_equivalent_usd": 128.06,
-  "opus4_equivalent_usd": 384.19,
-  "gpt4o_equivalent_usd": 54.96,
+  "opus46_equivalent_usd": 128.13,
+  "opus4_equivalent_usd": 384.38,
+  "gpt4o_equivalent_usd": 54.99,
   "sonnet_equivalent_usd": 0.0,
   "savings_vs_opus46_pct": 97.6,
-  "last_updated": "2026-03-09T13:12:30",
-  "sonnet45_equivalent_usd": 76.84
+  "last_updated": "2026-03-09T13:30:36",
+  "sonnet45_equivalent_usd": 76.88
 }

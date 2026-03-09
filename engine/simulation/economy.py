@@ -1458,3 +1458,51 @@ def calculate_gini(db: Session) -> float:
     db.commit()
     
     return gini
+
+
+def calculate_prosperity(db: Session) -> int:
+    """Calculate composite prosperity score 0-100 and store in WorldState."""
+    from sqlalchemy import func
+    from engine.models import NPC, Building, Crime, WorldState
+    
+    # 1. Calculate average happiness
+    happiness_result = db.query(func.avg(NPC.happiness)).filter(NPC.is_dead == 0).first()
+    avg_happiness = happiness_result[0] if happiness_result and happiness_result[0] is not None else 0
+    
+    # 2. Calculate average gold
+    gold_result = db.query(func.avg(NPC.gold)).filter(NPC.is_dead == 0).first()
+    avg_gold = gold_result[0] if gold_result and gold_result[0] is not None else 0
+    
+    # 3. Count buildings
+    building_count = db.query(Building).count()
+    
+    # 4. Calculate crime rate (recent crimes / total potential)
+    crime_count = db.query(Crime).count()
+    total_npcs = db.query(NPC).filter(NPC.is_dead == 0).count()
+    crime_rate = crime_count / max(total_npcs, 1) if total_npcs > 0 else 0
+    
+    # Calculate composite score
+    # avg_happiness * 0.3
+    happiness_score = avg_happiness * 0.3
+    
+    # (avg_gold/10 capped at 30) * 0.3
+    gold_score = min(avg_gold / 10, 30) * 0.3
+    
+    # (building_count/30 capped at 1.0) * 0.2
+    building_score = min(building_count / 30, 1.0) * 0.2
+    
+    # (1.0 - crime_rate) * 0.2
+    safety_score = (1.0 - crime_rate) * 0.2
+    
+    prosperity = happiness_score + gold_score + building_score + safety_score
+    
+    # Clamp to 0-100 range
+    prosperity = max(0, min(100, prosperity))
+    
+    # Store in WorldState
+    world_state = db.query(WorldState).first()
+    if world_state:
+        world_state.prosperity_score = int(prosperity)
+        db.commit()
+    
+    return int(prosperity)

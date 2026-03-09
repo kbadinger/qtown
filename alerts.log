@@ -1507,3 +1507,6 @@ Daily digest
 `tests/test_events.py::test_s343_generate_daily_digest FAILED             [100%]`
 [2026-03-09 17:00:58 UTC] CRITICAL needs_help: Story 343 needs help — waiting 10min for fix
 `tests/test_events.py::test_s343_generate_daily_digest FAILED             [100%]`
+[2026-03-09 17:17:08 UTC] deploy_ok: Story 343 deployed: Healthy after 0.1s
+[2026-03-09 17:17:24 UTC] story_done: Story 343 complete: Daily digest
+[2026-03-09 17:17:25 UTC] story_start: Story 344: Prosperity score

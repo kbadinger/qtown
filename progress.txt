@@ -1468,3 +1468,8 @@
 - **Non-obvious**: The digest aggregation logic relies on a hidden `last_processed_offset` in the user session cache, not the database, which caused stale data issues when sessions expired unexpectedly.
 - **Pattern**: The codebase consistently uses a "command-handler" pattern for email dispatching, where the `DailyDigestService` only prepares payloads and delegates actual sending to a separate `EmailCommand` class.
 - **Correction**: Initially filtered emails by `is_active` status only, but corrected to also exclude `is_unsubscribed` flags to prevent re-engagement emails from being sent to opted-out users.
+
+--- Story 344: Prosperity score (attempts: 1, 2026-03-09 13:30) ---
+- **Non-obvious aggregation logic**: The prosperity score relies on a weighted geometric mean rather than a simple average, which significantly penalizes zero values in any single sub-metric; this required careful handling of edge cases to avoid `NaN` propagation.
+- **Data normalization convention**: The codebase consistently applies min-max scaling to all raw inputs before calculation, but the normalization bounds are dynamically derived from the last 30 days of data rather than static global constants.
+- **Correction on rounding**: Initially applied rounding to intermediate calculation steps, which introduced cumulative drift; corrected by rounding only at the final output stage to maintain precision throughout the chain.
