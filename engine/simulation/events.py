@@ -1296,3 +1296,73 @@ def calculate_prevention_chance(db: Session) -> float:
     guard_count = db.query(NPC).filter(NPC.role == 'guard', NPC.is_dead == 0).count()
     prevention_chance = guard_count * 0.05
     return min(prevention_chance, 0.5)
+
+
+def process_seasonal_visitors(db: Session) -> int:
+    """Process seasonal migration of tourists."""
+    from engine.models import NPC, Event
+    
+    season = get_season(db)
+    visitor_count = 0
+    
+    if season == 'summer':
+        # 10% chance to spawn a visitor NPC
+        import random
+        if random.random() < 0.1:
+            # Spawn a tourist NPC
+            tourist = NPC(
+                name=f"Tourist {db.query(NPC).count() + 1}",
+                role='tourist',
+                gold=50,
+                hunger=50,
+                energy=50,
+                happiness=50,
+                age=30,
+                max_age=80,
+                is_dead=0,
+                is_bankrupt=0,
+                illness_severity=0,
+                illness=0,
+                x=25,
+                y=25,
+                target_x=25,
+                target_y=25,
+                personality='friendly',
+                skill='sightseeing',
+                memory_events='[]',
+                favorite_buildings='[]',
+                avoided_areas='[]',
+                experience='{}'
+            )
+            db.add(tourist)
+            
+            # Create event for arrival
+            event = Event(
+                event_type='visitor_arrival',
+                description=f"A tourist has arrived in town",
+                tick=db.query(Feature).filter_by(feature_name='current_tick').first().value if db.query(Feature).filter_by(feature_name='current_tick').first() else 0,
+                resolved=0
+            )
+            db.add(event)
+            
+            visitor_count += 1
+    
+    elif season == 'winter':
+        # Any existing tourist NPCs leave (set is_dead=1)
+        tourists = db.query(NPC).filter_by(role='tourist').all()
+        for tourist in tourists:
+            tourist.is_dead = 1
+            
+            # Create event for departure
+            event = Event(
+                event_type='visitor_departure',
+                description=f"{tourist.name} has left town for winter",
+                tick=db.query(Feature).filter_by(feature_name='current_tick').first().value if db.query(Feature).filter_by(feature_name='current_tick').first() else 0,
+                resolved=0
+            )
+            db.add(event)
+            
+            visitor_count += 1
+    
+    db.commit()
+    return visitor_count

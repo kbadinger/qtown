@@ -1298,3 +1298,8 @@
 *   **Non-obvious Guard Logic**: The `prevent` method relies on a specific `action_type` enum mapping rather than string comparison; passing raw strings caused silent failures until the enum conversion was added.
 *   **Codebase Convention**: Event handlers in this module strictly follow the `check -> log -> block` pattern; skipping the logging step breaks the audit trail integration expected by downstream services.
 *   **Correction**: Initially attempted to modify the event object in-place to block it, which caused race conditions; corrected by returning a `GuardResult` enum to signal the dispatcher to drop the event without mutation.
+
+--- Story 309: Seasonal migration (attempts: 1, 2026-03-08 21:22) ---
+- **Tricky Logic**: The interaction between `seasonal_override` flags and the base migration schedule was non-obvious; the system prioritizes the override only if the `migration_window` is explicitly open, otherwise it silently defers to the default schedule.
+- **Codebase Patterns**: Migration rules are strictly data-driven, stored in `seasonal_rules.json` rather than hardcoded; the `MigrationEngine` relies on a factory pattern to instantiate specific strategy classes based on the current season key.
+- **Correction**: Initially, I attempted to mutate the shared `current_season` state directly during the test setup, causing race conditions in parallel tests; I corrected this by injecting a scoped `season_context` into the engine constructor instead.

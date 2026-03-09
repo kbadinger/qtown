@@ -1361,3 +1361,6 @@ Indexing...
 Uploading..
 [2026-03-09 00:58:21 UTC] story_done: Story 307 complete: Memorial creation
 [2026-03-09 00:58:22 UTC] story_start: Story 308: Event prevention by guards
+[2026-03-09 01:10:32 UTC] deploy_ok: Story 308 deployed: Healthy after 0.1s
+[2026-03-09 01:10:47 UTC] story_done: Story 308 complete: Event prevention by guards
+[2026-03-09 01:10:48 UTC] story_start: Story 309: Seasonal migration
