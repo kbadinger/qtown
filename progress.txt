@@ -1343,3 +1343,8 @@
 *   **Non-obvious constraint**: The census aggregation logic required handling overlapping time windows; a simple `GROUP BY` failed, necessitating a windowed calculation to ensure data points weren't double-counted across fiscal quarters.
 *   **Codebase pattern**: The project enforces a strict "repository-agnostic" service layer where all data access must go through a typed `CensusRepository` interface, even for read-only operations, to facilitate future multi-source switching.
 *   **Correction**: Initially, I returned raw entity objects from the API, which exposed internal audit fields; I corrected this by introducing a dedicated `CensusSummaryDTO` projection to strictly control the response schema.
+
+--- Story 319: Town charter (attempts: 1, 2026-03-09 09:10) ---
+- **Tricky Aspect**: The interaction between the new `TownCharter` schema and the existing `Governance` state machine was non-obvious; specifically, the charter's effective date must be validated against the town's current lifecycle stage to prevent invalid transitions.
+- **Patterns Discovered**: The codebase consistently uses a "draft-first" pattern for legal documents, where a `Charter` is created as a `Draft` entity and only promoted to `Active` upon a specific `RatificationEvent`, rather than being instantiated directly as active.
+- **Mistake & Correction**: Initially attempted to validate charter clauses synchronously during creation, which caused race conditions in the concurrent approval workflow; corrected by moving clause validation to an asynchronous background job triggered after the draft is persisted.

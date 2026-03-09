@@ -1399,3 +1399,6 @@ Ralph stopped — needs human debugging
 [2026-03-09 03:59:28 UTC] stop: Ralph offline — 262/450 stories complete
 [2026-03-09 12:39:18 UTC] start: Ralph online — 263/450 stories complete
 [2026-03-09 12:39:19 UTC] story_start: Story 318: Census system
+[2026-03-09 12:56:00 UTC] deploy_ok: Story 318 deployed: Healthy after 0.1s
+[2026-03-09 12:56:28 UTC] story_done: Story 318 complete: Census system
+[2026-03-09 12:56:28 UTC] story_start: Story 319: Town charter

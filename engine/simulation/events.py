@@ -1772,3 +1772,39 @@ def run_census(db: Session) -> dict | None:
     db.commit()
     
     return stats
+
+
+def generate_charter(db: Session) -> list[str]:
+    """Generate town charter newspaper from enacted policies."""
+    from engine.models import Policy, Newspaper, WorldState
+    
+    # Get current world state
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    current_day = world_state.day if world_state else 1
+    
+    # Fetch enacted policies
+    policies = db.query(Policy).filter(Policy.status == 'enacted').all()
+    policy_names = [policy.name for policy in policies]
+    
+    # Construct newspaper body
+    if policy_names:
+        body_lines = ["Town Charter Updated", "", "Enacted Policies:"]
+        for name in policy_names:
+            body_lines.append(f"- {name}")
+        body = "\n".join(body_lines)
+    else:
+        body = "Town Charter Updated\n\nNo enacted policies found."
+    
+    # Create newspaper entry
+    newspaper = Newspaper(
+        day=current_day,
+        headline="Town Charter Updated",
+        body=body,
+        author_npc_id=None,
+        tick=current_tick
+    )
+    db.add(newspaper)
+    db.commit()
+    
+    return policy_names
