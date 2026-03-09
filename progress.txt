@@ -1408,3 +1408,8 @@
 - **Non-obvious JSON Schema constraints**: The API required strict adherence to nested object structures for `biography` fields; omitting optional keys like `era` or `occupation` caused silent validation failures in the downstream renderer, not just 400 errors.
 - **Codebase convention for ID generation**: Discovered that this project uses a centralized `uuid-v4` helper wrapped in a `generateEntityId()` utility rather than native `crypto.randomUUID()`, ensuring consistent seeding for test environments.
 - **Correction on pagination logic**: Initially implemented cursor-based pagination using raw timestamps, which broke when multiple NPCs shared the same creation date; corrected by appending the `id` to the cursor string to guarantee strict ordering.
+
+--- Story 332: Building history API (attempts: 1, 2026-03-09 12:12) ---
+- **Tricky**: Handling the `history` object lifecycle was non-obvious; simply passing the `history` instance to the API client wasn't enough, as the underlying `fetch` logic needed to be refactored to accept and utilize the `history` parameter for conditional request cancellation.
+- **Patterns**: The codebase consistently separates HTTP transport logic from business logic by injecting dependencies (like `history`) into service constructors rather than relying on global state or singletons.
+- **Mistakes**: Initially attempted to mock the `history` object directly in the API layer, which broke the dependency injection pattern; corrected by creating a dedicated `HistoryProvider` interface to abstract the history management away from the HTTP client.

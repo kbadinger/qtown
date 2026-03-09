@@ -5492,7 +5492,7 @@
         "api"
       ],
       "priority": 331,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
@@ -5507,8 +5507,8 @@
         "api"
       ],
       "priority": 332,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "333",
