@@ -2043,3 +2043,35 @@ def run_auction(db: Session) -> int:
     
     db.commit()
     return auction_count
+
+
+def calculate_wage_disparity(db: Session) -> float:
+    """Calculate wage disparity ratio and log event if high."""
+    from engine.models import NPC, Event, WorldState
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Query working NPCs (not dead, has job)
+    working_npcs = db.query(NPC).filter(NPC.is_dead == 0, NPC.work_building_id != None).all()
+    
+    if not working_npcs:
+        return 1.0
+        
+    golds = [npc.gold for npc in working_npcs]
+    max_gold = max(golds)
+    min_gold = min(golds)
+    
+    disparity = max_gold / max(1, min_gold)
+    
+    if disparity > 10:
+        event = Event(
+            event_type='wage_inequality',
+            tick=current_tick,
+            description=f"Wage disparity detected: {disparity:.2f}"
+        )
+        db.add(event)
+        db.commit()
+        
+    return disparity

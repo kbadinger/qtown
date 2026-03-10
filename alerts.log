@@ -1726,3 +1726,11 @@ Uploading..
 [2026-03-10 13:54:37 UTC] deploy_ok: Story 382 deployed: Healthy after 0.1s
 [2026-03-10 13:54:53 UTC] story_done: Story 382 complete: Resource spoilage
 [2026-03-10 13:54:53 UTC] story_start: Story 383: Auction system
+[2026-03-10 14:11:15 UTC] WARN deploy_fail: Story 383 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   46c570a..db4a847  main -> main
+
+Indexing...
+Uploading..
+[2026-03-10 14:11:15 UTC] story_done: Story 383 complete: Auction system
+[2026-03-10 14:11:15 UTC] story_start: Story 384: Wage disparity tracking

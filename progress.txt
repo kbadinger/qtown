@@ -1658,3 +1658,8 @@
 - **Tricky Logic**: Handling the atomicity of bid placement was non-obvious; ensuring the `current_bid` check and `bidder` update happen within a single database transaction was critical to prevent race conditions where two users could bid simultaneously on the same item.
 - **Codebase Patterns**: The existing codebase strictly enforces the "Service Layer" pattern for all business logic, keeping controllers thin and delegating all state mutations (like bid validation and winner determination) to dedicated service classes.
 - **Mistake & Correction**: Initially, I attempted to calculate the final winner by iterating through the bid list in memory, which failed on large datasets; I corrected this by switching to a single SQL query using `ORDER BY amount DESC LIMIT 1` to efficiently fetch the highest valid bid.
+
+--- Story 384: Wage disparity tracking (attempts: 1, 2026-03-10 10:28) ---
+- **Non-obvious aggregation logic**: The wage disparity calculation required a multi-step window function to handle part-time vs. full-time normalization before grouping, which wasn't immediately clear from the schema alone.
+- **Codebase convention**: This project consistently isolates complex SQL logic in CTEs named `base_metrics` before applying final business rules, ensuring raw data remains untouched in the main query.
+- **Correction**: Initially missed the `NULL` handling for employees with no recorded hours in the current period, which caused division-by-zero errors; fixed by using `COALESCE` with a zero-fill strategy in the denominator.
