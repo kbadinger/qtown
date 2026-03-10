@@ -1584,3 +1584,63 @@ def process_black_market(db: Session) -> int:
         
     db.commit()
     return count
+
+
+def process_insurance_payouts(db: Session) -> int:
+    """Process insurance payouts for disaster events from last 24 ticks."""
+    from engine.models import Event, NPC, Transaction, Treasury, WorldState
+    
+    # Get current tick from world state
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Query disaster events from last 24 ticks with affected buildings
+    disaster_events = db.query(Event).filter(
+        Event.event_type.in_(['fire', 'earthquake', 'flood']),
+        Event.affected_building_id.isnot(None),
+        Event.tick > (current_tick - 24)
+    ).all()
+    
+    total_paid = 0
+    paid_buildings = set()
+    
+    # Get treasury
+    treasury = db.query(Treasury).first()
+    if not treasury:
+        return 0
+    
+    for event in disaster_events:
+        building_id = event.affected_building_id
+        
+        # Skip if we already paid for this building
+        if building_id in paid_buildings:
+            continue
+        
+        paid_buildings.add(building_id)
+        
+        # Find worker NPCs at this building (not dead)
+        workers = db.query(NPC).filter(
+            NPC.work_building_id == building_id,
+            NPC.is_dead == 0
+        ).all()
+        
+        # Pay each worker 50 gold from treasury
+        for worker in workers:
+            if treasury.gold >= 50:
+                treasury.gold -= 50
+                worker.gold += 50
+                
+                # Create transaction record
+                transaction = Transaction(
+                    reason='insurance',
+                    amount=50,
+                    from_id='treasury',
+                    to_id=worker.id,
+                    tick=current_tick
+                )
+                db.add(transaction)
+                
+                total_paid += 50
+    
+    db.commit()
+    return total_paid

@@ -1608,3 +1608,8 @@
 - **Non-obvious state synchronization**: The black market inventory relies on a deferred commit pattern where `pending_transactions` must be reconciled against `global_ledger` before any item is actually marked as sold; failing to check the ledger lock first causes race conditions in high-concurrency tests.
 - **Convention for illicit pricing**: All price calculations in this module use a `multiplier` derived from `risk_factor` rather than direct currency values, and the codebase consistently expects these multipliers to be floats between 1.0 and 5.0, not integers.
 - **Correction on validation logic**: Initially, I validated user inventory before checking the market's availability, which allowed "ghost purchases" if the market sold out between checks; I corrected this by moving the atomic check-and-reserve block to the start of the transaction handler.
+
+--- Story 373: Insurance payout (attempts: 1, 2026-03-10 00:13) ---
+- **Tricky Logic**: The payout calculation required handling a "deductible threshold" that only applied if the claim date fell within a specific fiscal quarter; missing this conditional check caused overpayment in edge cases.
+- **Codebase Patterns**: Discovered a consistent use of `Money` value objects instead of raw decimals for all financial calculations, ensuring precision and preventing floating-point errors throughout the module.
+- **Correction**: Initially attempted to mutate the `Claim` entity directly during the payout process; corrected this by creating a separate `PayoutRecord` entity to maintain an immutable audit trail of the original claim state.
