@@ -92,6 +92,8 @@ def process_tick(db: Session) -> None:
     # 5. Wander + movement (snow halves movement - every other tick)
     weather = world_state.weather
     if weather != 'snow' or world_state.tick % 2 == 0:
+        # Re-query NPCs fresh to avoid stale session state
+        npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
         for npc in npcs:
             wander(db, npc)
             move_npc_toward_target(db, npc)
