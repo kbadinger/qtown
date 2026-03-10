@@ -1683,3 +1683,11 @@ Uploading..
 [2026-03-10 05:20:21 UTC] deploy_ok: Story 376 deployed: Healthy after 0.1s
 [2026-03-10 05:20:38 UTC] story_done: Story 376 complete: Cooperative formation
 [2026-03-10 05:20:39 UTC] story_start: Story 377: Savings interest
+[2026-03-10 05:37:11 UTC] WARN deploy_fail: Story 377 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   e60c2e2..0a7a17e  main -> main
+
+Indexing...
+Uploading..
+[2026-03-10 05:37:12 UTC] story_done: Story 377 complete: Savings interest
+[2026-03-10 05:37:12 UTC] story_start: Story 378: Bankruptcy recovery program

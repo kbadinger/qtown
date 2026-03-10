@@ -1633,3 +1633,8 @@
 - **Non-obvious rounding behavior**: The `decimal` type's default rounding mode (`HalfEven`) caused unexpected results in interest calculations compared to the standard "round half up" expected by finance teams; explicit `MidpointRounding` was required.
 - **Pattern: Domain-driven value objects**: The codebase strictly avoids primitive types for monetary values, wrapping all currency amounts in a `Money` struct that handles precision and currency code validation internally.
 - **Correction**: Initially attempted to store interest rates as `double`, which introduced floating-point drift; corrected by switching to `decimal` and storing rates as basis points (integers) to ensure exact arithmetic.
+
+--- Story 378: Bankruptcy recovery program (attempts: 1, 2026-03-10 01:51) ---
+*   **Tricky Aspect**: The interaction between the `BankruptcyRecovery` state machine and the existing `LoanStatus` enum was non-obvious; a recovery plan can be active while the loan status remains "Defaulted," requiring separate tracking rather than a direct status transition.
+*   **Pattern Discovered**: The codebase consistently uses a `DomainEvent` pattern for financial state changes (e.g., `RecoveryPlanApproved`), which must be published *before* updating the aggregate root to ensure audit trail consistency.
+*   **Correction**: Initially, I attempted to calculate the new repayment schedule synchronously within the controller; I corrected this by moving the logic to a dedicated `RecoveryScheduler` service to handle complex interest recalculation rules without blocking the API response.

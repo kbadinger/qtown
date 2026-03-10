@@ -1807,3 +1807,52 @@ def apply_savings_interest(db: Session) -> int:
     
     db.commit()
     return total_interest
+
+
+def process_bankruptcy_recovery(db: Session) -> int:
+    """Process bankruptcy recovery for NPCs.
+    
+    For each living NPC with is_bankrupt==1:
+    - increment experience counter by 1
+    - If experience >= 50: set gold=10, is_bankrupt=0, experience=0
+    - Create Event(event_type='bankruptcy_recovery')
+    
+    Returns: count of recovered NPCs
+    """
+    from engine.models import NPC, Event
+    import json
+    
+    recovered_count = 0
+    
+    # Get all bankrupt living NPCs
+    # IMPORTANT: is_dead and is_bankrupt are Integer columns, compare with == 0 or == 1
+    bankrupt_npcs = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.is_bankrupt == 1
+    ).all()
+    
+    for npc in bankrupt_npcs:
+        # Parse experience (defaults to '[]' JSON list string)
+        parsed = json.loads(npc.experience) if npc.experience else '[]'
+        experience = parsed if isinstance(parsed, dict) else {}
+        
+        # Increment bankruptcy recovery experience counter
+        bankruptcy_exp = experience.get('bankruptcy_recovery', 0) + 1
+        experience['bankruptcy_recovery'] = bankruptcy_exp
+        
+        # Check if recovered (experience >= 50)
+        if bankruptcy_exp >= 50:
+            npc.gold = 10
+            npc.is_bankrupt = 0  # IMPORTANT: Integer column, use 0 not False
+            experience['bankruptcy_recovery'] = 0
+            recovered_count += 1
+            
+            # Create recovery event
+            event = Event(event_type='bankruptcy_recovery', npc_id=npc.id)
+            db.add(event)
+        
+        # Update experience back to JSON string
+        npc.experience = json.dumps(experience)
+    
+    db.commit()
+    return recovered_count
