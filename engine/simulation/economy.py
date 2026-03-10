@@ -1505,3 +1505,36 @@ def calculate_prosperity(db: Session) -> int:
         db.commit()
     
     return int(prosperity)
+
+
+def calculate_merchant_reputation(db: Session) -> dict:
+    """Calculate reputation for each living merchant NPC based on transaction count.
+    
+    Args:
+        db: SQLAlchemy database session
+        
+    Returns:
+        dict mapping npc_id to reputation score (0-100)
+    """
+    from engine.models import NPC, Transaction
+    
+    result = {}
+    
+    # Get all living merchant NPCs
+    merchants = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.role == "merchant"
+    ).all()
+    
+    for merchant in merchants:
+        # Count transactions where this merchant is the sender
+        transaction_count = db.query(Transaction).filter(
+            Transaction.sender_id == merchant.id
+        ).count()
+        
+        # Calculate reputation: min(100, transaction_count * 2)
+        reputation = min(100, transaction_count * 2)
+        
+        result[merchant.id] = reputation
+    
+    return result

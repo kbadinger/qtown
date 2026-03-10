@@ -1598,3 +1598,8 @@
 - **State Transition Logic**: The trickiest part was handling race conditions where an NPC's goal state could flip mid-execution; implementing a strict "lock-and-check" pattern before committing state changes was necessary to prevent logic gaps.
 - **Data-Driven Configuration**: Discovered a strong convention of defining goal behaviors entirely in JSON/YAML rather than hardcoding logic, allowing designers to tweak priorities and cooldowns without touching the C++/C# core.
 - **Memory Leak Correction**: Initially allocated new goal instances on every tick without pooling; corrected this by switching to an object pool pattern to prevent frame-time spikes during high-density NPC scenarios.
+
+--- Story 371: Merchant reputation (attempts: 1, 2026-03-09 23:37) ---
+*   **Tricky Logic**: The reputation calculation required handling non-linear decay rates based on transaction frequency, which was non-obvious and initially caused edge-case failures for high-volume merchants.
+*   **Codebase Patterns**: The project strictly separates read/write concerns by using distinct DTOs for the `MerchantReputation` entity versus the API response, avoiding direct entity exposure in controllers.
+*   **Correction**: I initially cached reputation scores at the user level instead of the merchant level, leading to stale data for shared merchants; fixed by shifting the cache key to `merchant_id` with a shorter TTL.

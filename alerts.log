@@ -1657,3 +1657,6 @@ Reset to 'pending' in prd.json to retry
 [2026-03-10 02:59:46 UTC] stop: Ralph offline — 315/450 stories complete
 [2026-03-10 03:00:30 UTC] start: Ralph online — 315/450 stories complete
 [2026-03-10 03:00:30 UTC] story_start: Story 370: NPC goal system
+[2026-03-10 03:22:17 UTC] deploy_ok: Story 370 deployed: Healthy after 0.1s
+[2026-03-10 03:22:34 UTC] story_done: Story 370 complete: NPC goal system
+[2026-03-10 03:22:34 UTC] story_start: Story 371: Merchant reputation
