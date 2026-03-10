@@ -10,6 +10,7 @@ import json
 from typing import List
 from collections import defaultdict, Counter
 from typing import Dict
+from engine.models import Crime, Resource, Event, Building
 
 
 def process_work(db: Session) -> None:
@@ -1856,3 +1857,44 @@ def process_bankruptcy_recovery(db: Session) -> int:
     
     db.commit()
     return recovered_count
+
+
+def apply_trade_embargo(db: Session) -> int:
+    """Apply trade embargo to buildings with 3+ unresolved crimes.
+    
+    1. Find buildings where 3+ unresolved Crimes exist at workers.
+    2. Reduce Resource quantities at those buildings by 50%.
+    3. Create an Event(event_type='trade_embargo').
+    4. Return count of embargoed buildings.
+    """
+    # Find buildings with 3+ unresolved crimes (via NPC work_building_id)
+    # Join Crime to NPC, then filter by NPC's work_building_id
+    embargoed_building_ids = db.query(NPC.work_building_id).join(
+        Crime, Crime.criminal_npc_id == NPC.id
+    ).filter(
+        Crime.resolved == 0
+    ).group_by(NPC.work_building_id).having(func.count() >= 3).all()
+    
+    # Extract building IDs (filter out None values)
+    embargoed_building_ids = [bid[0] for bid in embargoed_building_ids if bid[0] is not None]
+    
+    if not embargoed_building_ids:
+        return 0
+    
+    # Reduce Resource quantities at these buildings by 50%
+    for building_id in embargoed_building_ids:
+        resources = db.query(Resource).filter(Resource.building_id == building_id).all()
+        for res in resources:
+            res.quantity = int(res.quantity * 0.5)
+    
+    # Create Event
+    event = Event(
+        event_type='trade_embargo',
+        description=f"Trade embargo applied to {len(embargoed_building_ids)} buildings due to high crime.",
+        tick=0,
+    )
+    db.add(event)
+    
+    db.commit()
+    
+    return len(embargoed_building_ids)

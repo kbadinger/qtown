@@ -160,27 +160,21 @@ def _seed_world():
 
 
 def _fix_null_columns(db):
-    """Fix NPC rows with NULL in integer columns (legacy data before defaults)."""
+    """Ensure all NPCs are alive and have valid columns on every startup."""
     from sqlalchemy import text
-    # Count NPCs with NULL is_dead
-    result = db.execute(text("SELECT COUNT(*) FROM npcs WHERE is_dead IS NULL"))
-    null_count = result.scalar()
-    print(f"[qtown] NPCs with NULL is_dead: {null_count}")
-    # Count total NPCs
-    result2 = db.execute(text("SELECT COUNT(*) FROM npcs"))
-    total = result2.scalar()
-    print(f"[qtown] Total NPCs: {total}")
-    # Check is_dead values
-    result3 = db.execute(text("SELECT id, name, is_dead FROM npcs"))
-    for row in result3:
-        print(f"[qtown]   NPC {row[0]} ({row[1]}): is_dead={row[2]}")
-    # Force fix ALL NPCs - set is_dead to 0 unconditionally
+    # Revive all NPCs — Qwen story functions sometimes kill everyone
     db.execute(text("UPDATE npcs SET is_dead = 0"))
-    db.execute(text("UPDATE npcs SET is_bankrupt = 0 WHERE is_bankrupt IS NULL"))
-    db.execute(text("UPDATE npcs SET illness = 0 WHERE illness IS NULL"))
+    db.execute(text("UPDATE npcs SET is_bankrupt = 0 WHERE is_bankrupt IS NULL OR is_bankrupt = 1"))
+    db.execute(text("UPDATE npcs SET illness = 0 WHERE illness IS NULL OR illness = 1"))
     db.execute(text("UPDATE npcs SET illness_severity = 0 WHERE illness_severity IS NULL"))
+    db.execute(text("UPDATE npcs SET age = 25 WHERE age IS NULL"))
+    db.execute(text("UPDATE npcs SET max_age = 75 WHERE max_age IS NULL"))
+    db.execute(text("UPDATE npcs SET energy = 80 WHERE energy < 10"))
+    db.execute(text("UPDATE npcs SET hunger = 20 WHERE hunger > 90"))
+    db.execute(text("UPDATE npcs SET happiness = 50 WHERE happiness IS NULL OR happiness < 10"))
     db.commit()
-    print(f"[qtown] Fixed all NPC columns")
+    living = db.execute(text("SELECT COUNT(*) FROM npcs WHERE is_dead = 0")).scalar()
+    print(f"[qtown] {living} NPCs alive after startup fix")
 
 
 def _reset_world_state(db):

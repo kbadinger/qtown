@@ -90,18 +90,12 @@ def process_tick(db: Session) -> None:
         calculate_happiness(db, npc.id)
     
     # 5. Wander + movement (snow halves movement - every other tick)
-    import logging as _wlog
-    _wl = _wlog.getLogger("uvicorn.error")
     weather = world_state.weather
     if weather != 'snow' or world_state.tick % 2 == 0:
         # Re-query NPCs fresh to avoid stale session state from earlier commits
         npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
-        _wl.info("[wander] %d NPCs found, weather=%s", len(npcs), weather)
         for npc in npcs:
-            old_tx, old_ty = npc.target_x, npc.target_y
             wander(db, npc)
-            if npc.target_x != old_tx:
-                _wl.info("[wander] %s now heading to (%s,%s)", npc.name, npc.target_x, npc.target_y)
             move_npc_toward_target(db, npc)
     
     # 6. Process production
