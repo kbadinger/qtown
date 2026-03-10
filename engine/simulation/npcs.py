@@ -34,9 +34,53 @@ LAST_NAMES = [
 ]
 
 
+def wander(db: Session, npc) -> None:
+    """Give an idle NPC somewhere to walk to.
+
+    50% chance per tick when no target is set.  Picks from:
+      - home building   (30%)
+      - work building   (30%)
+      - random building (20%)
+      - random nearby   (20%)
+    """
+    import random as _rnd
+    from engine.models import Building
+
+    if npc.target_x is not None:
+        return  # already heading somewhere
+
+    if _rnd.random() > 0.50:
+        return  # stay put this tick
+
+    roll = _rnd.random()
+
+    if roll < 0.30 and npc.home_building_id:
+        b = db.query(Building).get(npc.home_building_id)
+        if b:
+            npc.target_x, npc.target_y = b.x, b.y
+            return
+
+    if roll < 0.60 and npc.work_building_id:
+        b = db.query(Building).get(npc.work_building_id)
+        if b:
+            npc.target_x, npc.target_y = b.x, b.y
+            return
+
+    if roll < 0.80:
+        buildings = db.query(Building).all()
+        if buildings:
+            b = _rnd.choice(buildings)
+            npc.target_x, npc.target_y = b.x, b.y
+            return
+
+    # Random nearby spot (within 8 tiles)
+    npc.target_x = max(0, min(49, npc.x + _rnd.randint(-8, 8)))
+    npc.target_y = max(0, min(49, npc.y + _rnd.randint(-8, 8)))
+
+
 def move_npc_toward_target(db: Session, npc: NPC) -> None:
     """Move an NPC one step closer to its target position.
-    
+
     If target_x/target_y are set, move 1 step closer per tick.
     If x < target_x, x += 1. If x > target_x, x -= 1. Same for y.
     Clamp to 0-49. Clear target when reached.

@@ -7,7 +7,7 @@ from engine.simulation.init import init_world_state, assign_work_and_homes
 from engine.simulation.buildings import seed_all_buildings
 from engine.simulation.weather import update_weather, apply_weather_effects
 from engine.simulation.npcs import (
-    eat, sleep_npc, calculate_happiness, move_npc_toward_target,
+    eat, sleep_npc, calculate_happiness, move_npc_toward_target, wander,
     update_relationships, check_marriage, check_population_growth, age_npcs,
 )
 from engine.simulation.production import (
@@ -89,10 +89,11 @@ def process_tick(db: Session) -> None:
         # Calculate happiness
         calculate_happiness(db, npc.id)
     
-    # 5. Process movement (snow halves movement - every other tick)
+    # 5. Wander + movement (snow halves movement - every other tick)
     weather = world_state.weather
     if weather != 'snow' or world_state.tick % 2 == 0:
         for npc in npcs:
+            wander(db, npc)
             move_npc_toward_target(db, npc)
     
     # 6. Process production
