@@ -45,13 +45,18 @@ def wander(db: Session, npc) -> None:
       - random nearby   (20%)
     """
     import random as _rnd
+    import logging
     from engine.models import Building
+
+    _log = logging.getLogger("uvicorn.error")
 
     if npc.target_x is not None:
         return  # already heading somewhere
 
     if _rnd.random() > 0.50:
         return  # stay put this tick
+
+    _log.info("[wander] %s rolling for destination", npc.name)
 
     roll = _rnd.random()
 
