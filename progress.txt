@@ -1583,3 +1583,8 @@
 - **Tricky Logic**: Determining "loneliness" required distinguishing between *physical isolation* (no neighbors) and *social isolation* (no active interactions), as the initial heuristic incorrectly flagged NPCs in sparsely populated but socially active zones.
 - **Codebase Pattern**: The engine relies heavily on the `SocialGraph` component for relationship state; direct distance checks are discouraged in favor of querying this graph to avoid race conditions during dynamic world updates.
 - **Correction**: Initially, I updated the loneliness flag synchronously during the main loop, causing frame drops; I corrected this by deferring the calculation to the `EndOfTick` event and batching the results for the AI scheduler.
+
+--- Story 368: NPC work ethic (attempts: 1, 2026-03-09 22:17) ---
+*   **Tricky**: Determining the correct scope for the `WorkEthic` trait was non-obvious; it initially conflicted with the existing `IdleState` machine, requiring a refactor to treat work ethic as a modifier rather than a standalone state.
+*   **Pattern**: The codebase consistently uses the `EntityComponentSystem` pattern where behavioral traits are injected via `Script` components, avoiding direct inheritance for NPC behaviors to maintain runtime flexibility.
+*   **Mistake**: Initially hardcoded the `workDuration` threshold, which broke the dynamic difficulty scaling; corrected by pulling the value from the `GameConfig` singleton to ensure it adapts to the current world state.

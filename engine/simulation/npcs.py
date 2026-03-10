@@ -3059,3 +3059,26 @@ def detect_loneliness(db: Session) -> int:
     
     db.commit()
     return lonely_count
+
+
+def apply_work_ethic(db: Session) -> int:
+    """Apply work ethic bonuses to working NPCs."""
+    from engine.models import NPC, Transaction
+    
+    total_gold = 0
+    living_workers = db.query(NPC).filter(NPC.is_dead == 0, NPC.work_building_id != None).all()
+    
+    for npc in living_workers:
+        gold = 10  # base
+        if npc.personality and 'diligent' in npc.personality:
+            gold = 12
+        elif npc.personality and 'lazy' in npc.personality:
+            gold = 8
+        
+        npc.gold += gold
+        total_gold += gold
+        
+        db.add(Transaction(npc_id=npc.id, reason='work_ethic', amount=gold))
+    
+    db.commit()
+    return total_gold
