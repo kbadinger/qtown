@@ -177,6 +177,34 @@ def _fix_null_columns(db):
     living = db.execute(text("SELECT COUNT(*) FROM npcs WHERE is_dead = 0")).scalar()
     print(f"[qtown] {living} NPCs alive after startup fix")
 
+    # Ensure minimum population of 11
+    MIN_POP = 11
+    if living < MIN_POP:
+        import random
+        names = ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank",
+                 "Grace", "Henry", "Ivy", "Jack", "Kate", "Leo",
+                 "Mia", "Noah", "Olive", "Pete", "Quinn", "Rose"]
+        roles = ["farmer", "baker", "guard", "merchant", "priest",
+                 "blacksmith", "miner", "fisher", "carpenter", "artist"]
+        for i in range(MIN_POP - living):
+            name = random.choice(names)
+            role = random.choice(roles)
+            sid = f"npc_{living + i + 1:02d}"
+            db.execute(text(
+                "INSERT INTO npcs (name, role, x, y, gold, hunger, energy, happiness, "
+                "age, max_age, is_dead, is_bankrupt, illness, illness_severity, "
+                "sprite_id, personality, skill, memory_events, favorite_buildings, avoided_areas, experience) "
+                "VALUES (:name, :role, :x, :y, 50, 0, 100, 60, :age, :max_age, 0, 0, 0, 0, "
+                ":sid, '{}', :skill, '[]', '[]', '[]', '{}')"
+            ), {
+                "name": name, "role": role,
+                "x": random.randint(5, 45), "y": random.randint(5, 45),
+                "age": random.randint(18, 35), "max_age": random.randint(65, 85),
+                "sid": sid, "skill": random.choice(["farming", "trading", "crafting", "mining", "cooking"]),
+            })
+        db.commit()
+        print(f"[qtown] Spawned {MIN_POP - living} NPCs to reach minimum population of {MIN_POP}")
+
 
 def _reset_world_state(db):
     """One-time reset: fix runaway tick/gold/mayors from 5s tick era."""
