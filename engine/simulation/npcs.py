@@ -719,16 +719,32 @@ def check_population_growth(db: Session) -> None:
     avg_happiness = sum(npc.happiness for npc in npcs) / len(npcs)
 
     if avg_happiness > 40 and len(npcs) < 30:
-        names = ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank",
-                 "Grace", "Henry", "Ivy", "Jack", "Kate", "Leo",
-                 "Mia", "Noah", "Olive", "Pete", "Quinn", "Rose",
-                 "Sam", "Tina", "Uma", "Vince", "Wendy", "Xander"]
+        male_names = ["Bob", "Charlie", "Frank", "Henry", "Jack", "Leo",
+                      "Noah", "Pete", "Sam", "Vince", "Xander", "Marcus",
+                      "Edmund", "Thomas", "William", "George", "Arthur"]
+        female_names = ["Alice", "Diana", "Eve", "Grace", "Ivy", "Kate",
+                        "Mia", "Olive", "Rose", "Tina", "Uma", "Wendy",
+                        "Clara", "Elena", "Sophia", "Martha", "Helen"]
         roles = ["farmer", "baker", "guard", "merchant", "priest",
                  "blacksmith", "miner", "fisher", "carpenter", "artist"]
+        # Sprite gender: F slots are 01,06,10,11,13,15,17,19,21,23,25,27
+        female_sprites = {1, 6, 10, 11, 13, 15, 17, 19, 21, 23, 25, 27}
+
+        # Pick next available sprite slot
+        used_sprites = {n.sprite_id for n in npcs if n.sprite_id}
+        sprite_num = None
+        for s in range(1, 31):
+            sid = f"npc_{s:02d}"
+            if sid not in used_sprites:
+                sprite_num = s
+                break
+        is_female = sprite_num in female_sprites if sprite_num else random.random() < 0.5
+        name = random.choice(female_names if is_female else male_names)
 
         new_npc = NPC(
-            name=random.choice(names),
+            name=name,
             role=random.choice(roles),
+            sprite_id=f"npc_{sprite_num:02d}" if sprite_num else None,
             x=random.randint(5, 45),
             y=random.randint(5, 45),
             gold=50,

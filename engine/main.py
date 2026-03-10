@@ -182,15 +182,19 @@ def _fix_null_columns(db):
     if living < MIN_POP:
       try:
         import random
-        names = ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank",
-                 "Grace", "Henry", "Ivy", "Jack", "Kate", "Leo",
-                 "Mia", "Noah", "Olive", "Pete", "Quinn", "Rose"]
+        male_names = ["Bob", "Charlie", "Frank", "Henry", "Jack", "Leo",
+                      "Noah", "Pete", "Marcus", "Edmund", "Thomas", "William"]
+        female_names = ["Alice", "Diana", "Eve", "Grace", "Kate",
+                        "Clara", "Elena", "Sophia", "Martha", "Helen"]
         roles = ["farmer", "baker", "guard", "merchant", "priest",
                  "blacksmith", "miner", "fisher", "carpenter", "artist"]
+        female_sprites = {1, 6, 10, 11, 13, 15, 17, 19, 21, 23, 25, 27}
         for i in range(MIN_POP - living):
-            name = random.choice(names)
+            sprite_num = living + i + 1
+            sid = f"npc_{sprite_num:02d}"
+            is_female = sprite_num in female_sprites
+            name = random.choice(female_names if is_female else male_names)
             role = random.choice(roles)
-            sid = f"npc_{living + i + 1:02d}"
             db.execute(text(
                 "INSERT INTO npcs (name, role, x, y, gold, hunger, energy, happiness, "
                 "age, max_age, is_dead, is_bankrupt, illness, illness_severity, "
