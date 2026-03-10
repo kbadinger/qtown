@@ -1663,3 +1663,8 @@
 - **Non-obvious aggregation logic**: The wage disparity calculation required a multi-step window function to handle part-time vs. full-time normalization before grouping, which wasn't immediately clear from the schema alone.
 - **Codebase convention**: This project consistently isolates complex SQL logic in CTEs named `base_metrics` before applying final business rules, ensuring raw data remains untouched in the main query.
 - **Correction**: Initially missed the `NULL` handling for employees with no recorded hours in the current period, which caused division-by-zero errors; fixed by using `COALESCE` with a zero-fill strategy in the denominator.
+
+--- Story 385: Economic stimulus (attempts: 1, 2026-03-10 10:56) ---
+*   **Non-obvious complexity**: The interaction between the stimulus multiplier and existing debt ceilings wasn't linear; the simulation required a recursive check to prevent infinite loop scenarios when the stimulus triggered new borrowing limits.
+*   **Codebase patterns**: Discovered a strict separation of concerns where all economic calculations are isolated in `EconomicEngine` classes, while `PolicyTrigger` handlers only manage state transitions without direct math logic.
+*   **Correction**: Initially missed a floating-point precision edge case where small stimulus values resulted in zero impact due to integer truncation; fixed by switching to `Decimal` arithmetic for all currency operations in this module.

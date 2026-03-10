@@ -1734,3 +1734,11 @@ Indexing...
 Uploading..
 [2026-03-10 14:11:15 UTC] story_done: Story 383 complete: Auction system
 [2026-03-10 14:11:15 UTC] story_start: Story 384: Wage disparity tracking
+[2026-03-10 14:28:18 UTC] WARN deploy_fail: Story 384 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   db4a847..4c06f61  main -> main
+
+Indexing...
+Uploading..
+[2026-03-10 14:28:19 UTC] story_done: Story 384 complete: Wage disparity tracking
+[2026-03-10 14:28:19 UTC] story_start: Story 385: Economic stimulus

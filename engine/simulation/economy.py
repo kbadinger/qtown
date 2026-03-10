@@ -2075,3 +2075,65 @@ def calculate_wage_disparity(db: Session) -> float:
         db.commit()
         
     return disparity
+
+
+def apply_economic_stimulus(db: Session) -> int:
+    """Apply economic stimulus if conditions are met.
+    
+    If WorldState.economic_status=='recession' or avg NPC gold < 20:
+    distribute 5 gold each from Treasury. Create Event(event_type='economic_stimulus').
+    Return total distributed or 0.
+    """
+    from engine.models import WorldState, NPC, Event, Treasury
+    
+    # Get world state
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return 0
+    
+    # Get all living NPCs
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    if not npcs:
+        return 0
+    
+    # Calculate average NPC gold
+    total_gold = sum(npc.gold for npc in npcs)
+    avg_gold = total_gold / len(npcs)
+    
+    # Check if stimulus is needed
+    needs_stimulus = (world_state.economic_status == 'recession') or (avg_gold < 20)
+    
+    if not needs_stimulus:
+        return 0
+    
+    # Get treasury
+    treasury = db.query(Treasury).first()
+    if not treasury:
+        return 0
+    
+    # Calculate total to distribute (5 gold per NPC)
+    amount_per_npc = 5
+    total_distributed = len(npcs) * amount_per_npc
+    
+    # Check if treasury has enough gold
+    if treasury.gold < total_distributed:
+        total_distributed = treasury.gold
+    
+    # Distribute gold to each NPC
+    distributed_per_npc = total_distributed / len(npcs) if npcs else 0
+    for npc in npcs:
+        npc.gold += distributed_per_npc
+    
+    # Deduct from treasury
+    treasury.gold -= total_distributed
+    
+    # Create event
+    event = Event(
+        event_type='economic_stimulus',
+        description=f'Economic stimulus distributed: {total_distributed} gold to {len(npcs)} NPCs'
+    )
+    db.add(event)
+    
+    db.commit()
+    
+    return total_distributed
