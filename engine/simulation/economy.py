@@ -1936,3 +1936,38 @@ def process_luxury_purchases(db: Session) -> int:
     
     db.commit()
     return count
+
+
+def get_economic_advice(db: Session) -> dict:
+    """Economic advisor recommendation."""
+    from sqlalchemy import func
+    from engine.models import NPC, WorldState
+
+    # Find living merchant with highest skill
+    advisor = db.query(NPC).filter(NPC.role == 'merchant', NPC.is_dead == 0).order_by(NPC.skill.desc()).first()
+    advisor_id = advisor.id if advisor else None
+
+    # Calculate average NPC gold
+    avg_gold_result = db.query(func.avg(NPC.gold)).filter(NPC.is_dead == 0).scalar()
+    avg_gold = avg_gold_result if avg_gold_result else 0.0
+
+    # Get inflation rate
+    world_state = db.query(WorldState).first()
+    inflation_rate = world_state.inflation_rate if world_state else 0.0
+    if inflation_rate is None:
+        inflation_rate = 0.0
+
+    # Determine recommendation
+    if avg_gold < 50:
+        recommendation = 'lower_tax'
+    elif avg_gold > 200:
+        recommendation = 'raise_tax'
+    elif inflation_rate > 1.5:
+        recommendation = 'tighten_money'
+    else:
+        recommendation = 'maintain'
+
+    return {
+        'advisor_npc_id': advisor_id,
+        'recommendation': recommendation
+    }

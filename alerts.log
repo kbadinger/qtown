@@ -1712,3 +1712,11 @@ Ralph stopped — needs human debugging
 [2026-03-10 06:25:34 UTC] stop: Ralph offline — 324/450 stories complete
 [2026-03-10 12:56:05 UTC] start: Ralph online — 325/450 stories complete
 [2026-03-10 12:56:05 UTC] story_start: Story 380: Luxury goods system
+[2026-03-10 13:15:30 UTC] WARN deploy_fail: Story 380 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   f045821..2989f88  main -> main
+
+Indexing...
+Uploading..
+[2026-03-10 13:15:31 UTC] story_done: Story 380 complete: Luxury goods system
+[2026-03-10 13:15:31 UTC] story_start: Story 381: Economic advisor

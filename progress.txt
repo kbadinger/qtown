@@ -1643,3 +1643,8 @@
 - **Non-obvious pricing logic**: The luxury tier calculation requires applying the `premium_multiplier` *before* tax, but only if the `brand_tier` matches the specific `luxury_registry` list; applying it globally breaks the standard SKU pricing.
 - **Codebase pattern**: Inventory checks for luxury items always bypass the standard `check_stock` method and instead call `reserve_luxury_slot` to handle the mandatory 48-hour hold period before finalizing the order.
 - **Correction made**: Initially implemented the `luxury_tax` as a flat percentage, but corrected it to use the dynamic `region_based_luxury_rate` lookup to comply with the new cross-border compliance rules.
+
+--- Story 381: Economic advisor (attempts: 1, 2026-03-10 09:36) ---
+- **Non-obvious dependency**: The `EconomicAdvisor` service relied on a hidden global state for inflation rates, which caused flaky tests when the mock wasn't explicitly reset between runs.
+- **Codebase pattern**: Financial calculations consistently use `Decimal` types with explicit `quantize()` calls to avoid floating-point errors, a convention I initially missed in the `project_growth` helper.
+- **Correction**: I initially implemented the logic using standard floats, leading to precision drift in the final report; refactored to use the project's `Money` wrapper class to ensure strict 2-decimal enforcement.
