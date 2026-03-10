@@ -161,15 +161,36 @@ def _seed_world():
 
 def _fix_null_columns(db):
     """Fix NPC rows with NULL in integer columns (legacy data before defaults)."""
-    from sqlalchemy import text
-    db.execute(text("UPDATE npcs SET is_dead = 0 WHERE is_dead IS NULL"))
-    db.execute(text("UPDATE npcs SET is_bankrupt = 0 WHERE is_bankrupt IS NULL"))
-    db.execute(text("UPDATE npcs SET illness = 0 WHERE illness IS NULL"))
-    db.execute(text("UPDATE npcs SET illness_severity = 0 WHERE illness_severity IS NULL"))
-    db.execute(text("UPDATE npcs SET age = 25 WHERE age IS NULL"))
-    db.execute(text("UPDATE npcs SET max_age = 75 WHERE max_age IS NULL"))
-    db.execute(text("UPDATE npcs SET happiness = 50 WHERE happiness IS NULL"))
-    db.commit()
+    from engine.models import NPC
+    fixed = 0
+    for npc in db.query(NPC).all():
+        changed = False
+        if npc.is_dead is None:
+            npc.is_dead = 0
+            changed = True
+        if npc.is_bankrupt is None:
+            npc.is_bankrupt = 0
+            changed = True
+        if npc.illness is None:
+            npc.illness = 0
+            changed = True
+        if npc.illness_severity is None:
+            npc.illness_severity = 0
+            changed = True
+        if npc.age is None:
+            npc.age = 25
+            changed = True
+        if npc.max_age is None:
+            npc.max_age = 75
+            changed = True
+        if npc.happiness is None:
+            npc.happiness = 50
+            changed = True
+        if changed:
+            fixed += 1
+    if fixed:
+        db.commit()
+        print(f"[qtown] Fixed {fixed} NPCs with NULL columns")
 
 
 def _reset_world_state(db):
