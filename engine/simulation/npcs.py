@@ -2822,3 +2822,40 @@ def check_addictions(db: Session) -> int:
     
     db.commit()
     return addicted_count
+
+
+def escalate_rivalries(db: Session) -> int:
+    """Escalate rivalries that have high strength."""
+    from engine.models import Relationship, Crime, WorldState
+    
+    escalated_count = 0
+    
+    # Get current tick from world state
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Find all rival relationships with strength > 80
+    rivalries = db.query(Relationship).filter(
+        Relationship.relationship_type == 'rival',
+        Relationship.strength > 80
+    ).all()
+    
+    for relationship in rivalries:
+        # 15% chance of escalation
+        if random.random() < 0.15:
+            # Create crime record for assault
+            crime = Crime(
+                npc_id=relationship.npc1_id,
+                crime_type='assault',
+                severity=1,
+                resolved=0,
+                tick=current_tick
+            )
+            db.add(crime)
+            
+            # Reduce relationship strength by 20
+            relationship.strength = max(0, relationship.strength - 20)
+            escalated_count += 1
+    
+    db.commit()
+    return escalated_count

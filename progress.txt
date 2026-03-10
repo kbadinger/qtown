@@ -1558,3 +1558,8 @@
 *   **Non-Obvious State Persistence**: The addiction level wasn't just a float; it required explicit serialization in the `SaveManager` because the `AddictionComponent` was marked as transient by default, causing progress to reset on scene reloads.
 *   **Event-Driven Pattern**: The codebase relies heavily on a centralized `GameEventBus` rather than direct component references; new mechanics must subscribe to `OnPlayerInteraction` events to avoid tight coupling with the NPC controller.
 *   **Correction on Threshold Logic**: Initially implemented a linear decay for addiction reduction, but corrected it to an exponential curve to prevent players from "grinding" the mechanic too easily, aligning with the design intent of long-term consequences.
+
+--- Story 363: NPC rivalry escalation (attempts: 1, 2026-03-09 20:02) ---
+- **Tricky**: The rivalry escalation logic required careful handling of state persistence; simply updating the `rivalry_level` wasn't enough—I had to ensure the `trigger_history` array was pruned to prevent stale events from re-triggering conflicts in subsequent turns.
+- **Patterns**: The codebase consistently uses a `check_and_resolve()` pattern for all NPC interactions, where side effects (like reputation changes) are queued in a `pending_actions` list rather than applied immediately, ensuring atomic transaction safety.
+- **Correction**: Initially, I updated the NPC's `mood` state before validating the `player_reputation` threshold, causing the rival to become hostile even when the player had sufficient standing; I fixed this by moving the validation check to the start of the resolution block.
