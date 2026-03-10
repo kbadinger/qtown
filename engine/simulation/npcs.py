@@ -2929,3 +2929,29 @@ def discover_talents(db: Session) -> int:
     
     db.commit()
     return count
+
+
+def check_social_circles(db: Session) -> dict:
+    """Check social circles and update happiness for NPCs with 3+ friends."""
+    from engine.models import NPC, Relationship
+    
+    result = {}
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    for npc in living_npcs:
+        friend_count = db.query(func.count()).filter(
+            (Relationship.npc_id == npc.id) & 
+            (Relationship.relationship_type == 'friend')
+        ).scalar()
+        
+        if friend_count is None:
+            friend_count = 0
+            
+        result[npc.id] = friend_count
+        
+        if friend_count >= 3:
+            npc.happiness += 3
+            db.add(npc)
+            
+    db.commit()
+    return result

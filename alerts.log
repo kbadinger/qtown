@@ -1622,3 +1622,13 @@ Uploading..
 [2026-03-10 00:21:03 UTC] deploy_ok: Story 364 deployed: Healthy after 0.1s
 [2026-03-10 00:21:20 UTC] story_done: Story 364 complete: NPC forgiveness
 [2026-03-10 00:21:21 UTC] story_start: Story 365: NPC talent discovery
+[2026-03-10 00:46:06 UTC] WARN deploy_fail: Story 365 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   54c6b24..2928533  main -> main
+
+Indexing...
+Uploading..
+[2026-03-10 00:46:06 UTC] story_done: Story 365 complete: NPC talent discovery
+[2026-03-10 00:46:07 UTC] story_start: Story 366: NPC social circles
+[2026-03-10 01:07:54 UTC] WARN story_fail: Story 366 struggling — attempt 5/12
+NPC social circles

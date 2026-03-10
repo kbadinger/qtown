@@ -1573,3 +1573,8 @@
 - **Non-obvious state coupling**: The talent discovery logic relied on implicit `actor` context from the global event bus rather than explicit function arguments, making unit tests fragile and requiring careful mocking of the event stream.
 - **Codebase convention**: Talent checks follow a strict "Guard -> Calculate -> Apply" pattern where guards are always pure functions returning booleans, while side effects (like UI updates) are strictly isolated in the `Apply` phase.
 - **Correction**: Initially conflated "discovery" (finding the talent) with "activation" (triggering the effect); refactored to separate these into distinct events to prevent duplicate triggers when the same talent is re-scanned.
+
+--- Story 366: NPC social circles (attempts: 1, 2026-03-09 21:27) ---
+- **Non-obvious coupling**: The social circle logic is tightly coupled with the `RelationshipGraph` traversal; changes to distance thresholds require updating both the graph algorithm and the circle filtering logic simultaneously.
+- **Convention**: This codebase consistently uses a "lazy-evaluation" pattern for social queries, where circles are only recalculated when a character's status changes, rather than on every render frame.
+- **Correction**: Initially, I attempted to clone the entire relationship graph for each NPC to avoid side effects, which caused memory spikes; I corrected this by passing read-only views of the graph instead.
