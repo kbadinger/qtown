@@ -1538,3 +1538,49 @@ def calculate_merchant_reputation(db: Session) -> dict:
         result[merchant.id] = reputation
     
     return result
+
+
+def process_black_market(db: Session) -> int:
+    """Process black market activities from unresolved theft crimes."""
+    from engine.models import Crime, Resource, PriceHistory, Building, WorldState
+    import random
+    
+    # Query unresolved theft crimes (resolved is Boolean, compare with 0)
+    crimes = db.query(Crime).filter(Crime.type == 'theft', Crime.resolved == 0).all()
+    
+    if not crimes:
+        return 0
+        
+    # Get available buildings for loot placement
+    buildings = db.query(Building).all()
+    
+    if not buildings:
+        return 0
+        
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    count = 0
+    for crime in crimes:
+        # Pick random building
+        building = random.choice(buildings)
+        
+        # Create Resource
+        resource = Resource(name='stolen_goods', quantity=1, building_id=building.id)
+        db.add(resource)
+        
+        # Create PriceHistory
+        price_history = PriceHistory(
+            resource_name='stolen_goods', 
+            price=50, 
+            supply=1, 
+            demand=0, 
+            tick=current_tick
+        )
+        db.add(price_history)
+        
+        count += 1
+        
+    db.commit()
+    return count

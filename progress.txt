@@ -1603,3 +1603,8 @@
 *   **Tricky Logic**: The reputation calculation required handling non-linear decay rates based on transaction frequency, which was non-obvious and initially caused edge-case failures for high-volume merchants.
 *   **Codebase Patterns**: The project strictly separates read/write concerns by using distinct DTOs for the `MerchantReputation` entity versus the API response, avoiding direct entity exposure in controllers.
 *   **Correction**: I initially cached reputation scores at the user level instead of the merchant level, leading to stale data for shared merchants; fixed by shifting the cache key to `merchant_id` with a shorter TTL.
+
+--- Story 372: Black market system (attempts: 1, 2026-03-09 23:57) ---
+- **Non-obvious state synchronization**: The black market inventory relies on a deferred commit pattern where `pending_transactions` must be reconciled against `global_ledger` before any item is actually marked as sold; failing to check the ledger lock first causes race conditions in high-concurrency tests.
+- **Convention for illicit pricing**: All price calculations in this module use a `multiplier` derived from `risk_factor` rather than direct currency values, and the codebase consistently expects these multipliers to be floats between 1.0 and 5.0, not integers.
+- **Correction on validation logic**: Initially, I validated user inventory before checking the market's availability, which allowed "ghost purchases" if the market sold out between checks; I corrected this by moving the atomic check-and-reserve block to the start of the transaction handler.
