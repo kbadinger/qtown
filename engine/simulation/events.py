@@ -297,9 +297,9 @@ def trigger_bandit_raid(db: Session) -> None:
     db.commit()
 
 
-def trigger_earthquake(db: Session) -> None:
-    """Trigger an earthquake event that damages all buildings."""
-    from engine.models import Building, Event, WorldState
+def trigger_earthquake(db: Session) -> int:
+    """Trigger an earthquake event that damages 1-3 random buildings."""
+    from engine.models import Building, Event, WorldState, NPC
     import random
     
     # Get world state for tick
@@ -311,26 +311,32 @@ def trigger_earthquake(db: Session) -> None:
         event_type="earthquake",
         description="An earthquake has shaken the town, damaging buildings",
         tick=current_tick,
-        severity="high"
+        severity=3
     )
     db.add(earthquake_event)
     
-    # Damage all buildings
+    # Pick 1-3 random buildings
     buildings = db.query(Building).all()
-    stone_building_types = ['wall', 'gate', 'guard_tower', 'watchtower']
+    if not buildings:
+        db.commit()
+        return 0
     
-    for building in buildings:
-        if building.building_type in stone_building_types:
-            # Stone buildings take less damage (10-25%)
-            damage_percent = random.uniform(0.10, 0.25)
-        else:
-            # Regular buildings take more damage (10-50%)
-            damage_percent = random.uniform(0.10, 0.50)
-        
-        new_capacity = int(building.capacity * (1 - damage_percent))
-        building.capacity = max(1, new_capacity)  # Ensure capacity stays at least 1
+    num_to_damage = random.randint(1, min(3, len(buildings)))
+    damaged_buildings = random.sample(buildings, num_to_damage)
+    
+    damaged_count = 0
+    for building in damaged_buildings:
+        if building.level > 1:
+            building.level -= 1
+        damaged_count += 1
+    
+    # Reduce all NPCs happiness by 5
+    npcs = db.query(NPC).all()
+    for npc in npcs:
+        npc.happiness = max(0, npc.happiness - 5)
     
     db.commit()
+    return damaged_count
 
 
 def trigger_market_crash(db: Session) -> None:
