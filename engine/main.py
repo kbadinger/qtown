@@ -153,9 +153,23 @@ def _seed_world():
         assign_work_and_homes(db)
         _assign_sprite_ids(db)
         _reset_world_state(db)
+        _fix_null_columns(db)
         print("[qtown] World seeded")
     finally:
         db.close()
+
+
+def _fix_null_columns(db):
+    """Fix NPC rows with NULL in integer columns (legacy data before defaults)."""
+    from sqlalchemy import text
+    db.execute(text("UPDATE npcs SET is_dead = 0 WHERE is_dead IS NULL"))
+    db.execute(text("UPDATE npcs SET is_bankrupt = 0 WHERE is_bankrupt IS NULL"))
+    db.execute(text("UPDATE npcs SET illness = 0 WHERE illness IS NULL"))
+    db.execute(text("UPDATE npcs SET illness_severity = 0 WHERE illness_severity IS NULL"))
+    db.execute(text("UPDATE npcs SET age = 25 WHERE age IS NULL"))
+    db.execute(text("UPDATE npcs SET max_age = 75 WHERE max_age IS NULL"))
+    db.execute(text("UPDATE npcs SET happiness = 50 WHERE happiness IS NULL"))
+    db.commit()
 
 
 def _reset_world_state(db):
