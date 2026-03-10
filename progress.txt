@@ -1623,3 +1623,8 @@
 - **Non-obvious state synchronization**: The simulation's "panic selling" logic required a custom event loop to prevent race conditions between price updates and order book modifications, which standard async/await patterns failed to handle correctly.
 - **Codebase convention for volatility**: The project enforces a strict "snapshot-before-mutation" pattern for all market data structures to ensure deterministic replayability, a constraint I initially overlooked.
 - **Correction on edge-case handling**: I initially assumed zero-volume markets would halt the simulation, but discovered the codebase expects a "stall" state that still processes background fees; I refactored the termination condition to handle this gracefully.
+
+--- Story 376: Cooperative formation (attempts: 1, 2026-03-10 01:19) ---
+- **Non-obvious dependency**: The cooperative formation logic requires explicit initialization of the `MemberRegistry` singleton before any `Coop` instances can be created; failing to do so silently returns a null reference rather than throwing an exception.
+- **Codebase pattern**: This module consistently uses the "Builder" pattern for complex `Coop` configurations, separating immutable core properties from mutable operational settings to ensure thread safety during formation.
+- **Correction**: Initially attempted to validate member eligibility inside the constructor, which caused race conditions; moved validation to a dedicated `pre-formation` hook that runs within the transactional context.

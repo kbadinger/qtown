@@ -1736,3 +1736,46 @@ def simulate_market_crash(db: Session) -> int:
     db.commit()
     
     return affected_count
+
+
+def form_cooperatives(db: Session) -> int:
+    """Form cooperatives among NPCs working at the same building."""
+    import json
+    from engine.models import NPC
+
+    # Find all living NPCs with a work building
+    npcs = db.query(NPC).filter(NPC.is_dead == 0, NPC.work_building_id.isnot(None)).all()
+
+    # Group by work_building_id
+    groups: dict = {}
+    for npc in npcs:
+        if npc.work_building_id not in groups:
+            groups[npc.work_building_id] = []
+        groups[npc.work_building_id].append(npc)
+
+    cooperatives_formed = 0
+
+    for building_id, members in groups.items():
+        if len(members) >= 3:
+            cooperatives_formed += 1
+            for member in members:
+                # Pool 10% of gold
+                contribution = int(member.gold * 0.1)
+                if member.gold >= contribution:
+                    member.gold -= contribution
+                
+                # Update memory_events
+                try:
+                    events = json.loads(member.memory_events) if member.memory_events else []
+                except (json.JSONDecodeError, TypeError):
+                    events = []
+                
+                events.append({
+                    "type": "cooperative_formed",
+                    "building_id": building_id,
+                    "members": [m.id for m in members]
+                })
+                member.memory_events = json.dumps(events)
+    
+    db.commit()
+    return cooperatives_formed

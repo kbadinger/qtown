@@ -1677,3 +1677,6 @@ Indexing...
 Uploading..
 [2026-03-10 04:31:41 UTC] story_done: Story 374 complete: Economic bubble detection
 [2026-03-10 04:31:41 UTC] story_start: Story 375: Market crash simulation
+[2026-03-10 04:47:55 UTC] deploy_ok: Story 375 deployed: Healthy after 0.1s
+[2026-03-10 04:48:12 UTC] story_done: Story 375 complete: Market crash simulation
+[2026-03-10 04:48:12 UTC] story_start: Story 376: Cooperative formation
