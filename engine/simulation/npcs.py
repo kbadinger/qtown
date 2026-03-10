@@ -39,10 +39,10 @@ def wander(db: Session, npc) -> None:
     """Give an idle NPC somewhere to walk to.
 
     50% chance per tick when no target is set.  Picks from:
-      - home building   (30%)
-      - work building   (30%)
+      - work building   (40%)  — bias toward work so NPCs earn gold
+      - home building   (25%)
       - random building (20%)
-      - random nearby   (20%)
+      - random nearby   (15%)
     """
     import random as _rnd
     from engine.models import Building
@@ -55,21 +55,21 @@ def wander(db: Session, npc) -> None:
 
     roll = _rnd.random()
 
-    if roll < 0.30 and npc.home_building_id:
-        b = db.query(Building).get(npc.home_building_id)
-        if b:
-            npc.target_x, npc.target_y = b.x, b.y
-            db.flush()
-            return
-
-    if roll < 0.60 and npc.work_building_id:
+    if roll < 0.40 and npc.work_building_id:
         b = db.query(Building).get(npc.work_building_id)
         if b:
             npc.target_x, npc.target_y = b.x, b.y
             db.flush()
             return
 
-    if roll < 0.80:
+    if roll < 0.65 and npc.home_building_id:
+        b = db.query(Building).get(npc.home_building_id)
+        if b:
+            npc.target_x, npc.target_y = b.x, b.y
+            db.flush()
+            return
+
+    if roll < 0.85:
         buildings = db.query(Building).all()
         if buildings:
             b = _rnd.choice(buildings)
