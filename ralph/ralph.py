@@ -236,8 +236,19 @@ def call_qwen(prompt: str, label: str = "qwen", think: bool = True) -> tuple[str
             tokens_in = data.get("prompt_eval_count", 0)
             tokens_out = data.get("eval_count", 0)
 
-            think_chars = len(msg.get("thinking", "") or "")
+            thinking_text = msg.get("thinking", "") or ""
+            think_chars = len(thinking_text)
             print(f"  [{_ts()}] Ollama done ({label}, {duration:.0f}s, {tokens_in} in, {tokens_out} out, {len(response_text)} chars response, {think_chars} chars thinking)")
+
+            # Show thinking preview (first 200 chars)
+            if thinking_text.strip():
+                preview = thinking_text.strip().replace('\n', ' ')[:200]
+                print(f"  [THINK] {preview}...")
+
+            # Show response preview (first 300 chars)
+            if response_text.strip():
+                preview = response_text.strip().replace('\n', ' ')[:300]
+                print(f"  [QWEN]  {preview}...")
 
             # Thinking spiral detection: if think mode used all tokens on thinking
             # with 0 actual response, retry once with think=False
@@ -676,6 +687,13 @@ def run_story(story: dict) -> bool:
         # 6. Re-run tests
         test_passed, test_output = run_tests(test_file, story_id)
         log_metric(story_id, attempt, test_passed, gpu_time, None if test_passed else test_output[:500], tokens_in, tokens_out)
+
+        if not test_passed:
+            # Show the key error line for the log viewer
+            for line in test_output.splitlines():
+                if line.strip().startswith(("E ", "FAILED", "Error", "TypeError", "NameError", "AttributeError", "ImportError", "KeyError", "ValueError")):
+                    print(f"  [ERROR] {line.strip()[:200]}")
+                    break
 
         if test_passed:
             # Regression gate: check all previous stories still pass
