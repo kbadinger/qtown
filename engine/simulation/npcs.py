@@ -2859,3 +2859,35 @@ def escalate_rivalries(db: Session) -> int:
     
     db.commit()
     return escalated_count
+
+
+def process_forgiveness(db: Session) -> int:
+    """Process forgiveness for rival relationships.
+    
+    For each Relationship with relationship_type=='rival':
+    - reduce strength by 1
+    - If strength reaches 0, change relationship_type to 'neutral'
+    
+    Returns count of forgiven rivalries.
+    """
+    from engine.models import Relationship
+    
+    forgiven_count = 0
+    
+    # Get all rival relationships
+    rival_relationships = db.query(Relationship).filter(
+        Relationship.relationship_type == 'rival'
+    ).all()
+    
+    for rel in rival_relationships:
+        # Reduce strength by 1
+        rel.strength -= 1
+        
+        # If strength reaches 0 or below, change to neutral
+        if rel.strength <= 0:
+            rel.relationship_type = 'neutral'
+            rel.strength = 0
+            forgiven_count += 1
+    
+    db.commit()
+    return forgiven_count

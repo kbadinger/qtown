@@ -1563,3 +1563,8 @@
 - **Tricky**: The rivalry escalation logic required careful handling of state persistence; simply updating the `rivalry_level` wasn't enough—I had to ensure the `trigger_history` array was pruned to prevent stale events from re-triggering conflicts in subsequent turns.
 - **Patterns**: The codebase consistently uses a `check_and_resolve()` pattern for all NPC interactions, where side effects (like reputation changes) are queued in a `pending_actions` list rather than applied immediately, ensuring atomic transaction safety.
 - **Correction**: Initially, I updated the NPC's `mood` state before validating the `player_reputation` threshold, causing the rival to become hostile even when the player had sufficient standing; I fixed this by moving the validation check to the start of the resolution block.
+
+--- Story 364: NPC forgiveness (attempts: 1, 2026-03-09 20:19) ---
+- **Non-obvious state coupling**: The forgiveness logic was tightly coupled to the `QuestTracker`'s internal history list, not just the current quest status; accessing the raw history array directly caused race conditions that required wrapping all mutations in a transactional lock.
+- **Convention for side effects**: This codebase consistently isolates narrative side effects (like reputation changes or dialogue flags) in separate `EventEmitter` handlers rather than inline within the quest completion logic, ensuring the core state machine remains pure.
+- **Correction on edge cases**: Initially missed the scenario where an NPC is already forgiven but the player re-encounters the hostile trigger; corrected by adding an idempotency check that prevents re-triggering the forgiveness animation if the `forgiven` flag is already set.
