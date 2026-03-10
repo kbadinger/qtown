@@ -1643,3 +1643,17 @@ NPC loneliness detection
 [2026-03-10 02:18:51 UTC] deploy_ok: Story 368 deployed: Healthy after 0.1s
 [2026-03-10 02:19:09 UTC] story_done: Story 368 complete: NPC work ethic
 [2026-03-10 02:19:09 UTC] story_start: Story 369: NPC fear system
+[2026-03-10 02:39:47 UTC] deploy_ok: Story 369 deployed: Healthy after 0.1s
+[2026-03-10 02:40:04 UTC] story_done: Story 369 complete: NPC fear system
+[2026-03-10 02:40:04 UTC] stop: Ralph offline — 315/450 stories complete
+[2026-03-10 02:40:19 UTC] start: Ralph online — 315/450 stories complete
+[2026-03-10 02:40:19 UTC] story_start: Story 370: NPC goal system
+[2026-03-10 02:57:38 UTC] CRITICAL critical: Story 370 failed: NPC goal system
+Ralph stopped — needs human debugging
+[2026-03-10 02:57:38 UTC] stop: Ralph offline — 315/450 stories complete
+[2026-03-10 02:59:45 UTC] start: Ralph online — 315/450 stories complete
+[2026-03-10 02:59:46 UTC] CRITICAL critical: Blocked by failed stories: 370
+Reset to 'pending' in prd.json to retry
+[2026-03-10 02:59:46 UTC] stop: Ralph offline — 315/450 stories complete
+[2026-03-10 03:00:30 UTC] start: Ralph online — 315/450 stories complete
+[2026-03-10 03:00:30 UTC] story_start: Story 370: NPC goal system

@@ -1593,3 +1593,8 @@
 *   **Non-obvious State Coupling**: The fear system's `fear_decay` logic was tightly coupled with the global `time_scale` variable, causing NPCs to "recover" too quickly during slow-motion sequences; decoupling this via a dedicated `fear_timer` component fixed the timing inconsistency.
 *   **Codebase Pattern**: The project strictly separates *perception* (line-of-sight checks) from *reaction* (state machine transitions); fear is a reaction modifier, not a perception filter, meaning NPCs still "see" threats but their decision tree weights shift based on the fear level.
 *   **Correction**: Initially, I applied fear as a global scalar to all movement speeds, which broke pathfinding when NPCs tried to navigate tight corners while fleeing; switching to a vector-based `flee_force` applied only to the velocity vector preserved navigation logic while altering behavior.
+
+--- Story 370: NPC goal system (attempts: 1, 2026-03-09 23:20) ---
+- **State Transition Logic**: The trickiest part was handling race conditions where an NPC's goal state could flip mid-execution; implementing a strict "lock-and-check" pattern before committing state changes was necessary to prevent logic gaps.
+- **Data-Driven Configuration**: Discovered a strong convention of defining goal behaviors entirely in JSON/YAML rather than hardcoding logic, allowing designers to tweak priorities and cooldowns without touching the C++/C# core.
+- **Memory Leak Correction**: Initially allocated new goal instances on every tick without pooling; corrected this by switching to an object pool pattern to prevent frame-time spikes during high-density NPC scenarios.
