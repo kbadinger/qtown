@@ -38,7 +38,7 @@ def process_work(db: Session) -> None:
     
     for npc in npcs:
         building = npc.work_building
-        if building and npc.x == building.x and npc.y == building.y:
+        if building and abs(npc.x - building.x) <= 5 and abs(npc.y - building.y) <= 5:
             # All NPCs earn base_wage gold at work
             npc.gold += base_wage
             

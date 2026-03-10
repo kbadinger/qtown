@@ -172,6 +172,7 @@ def _fix_null_columns(db):
     db.execute(text("UPDATE npcs SET energy = 80 WHERE energy < 10"))
     db.execute(text("UPDATE npcs SET hunger = 20 WHERE hunger > 90"))
     db.execute(text("UPDATE npcs SET happiness = 50 WHERE happiness IS NULL OR happiness < 10"))
+    db.execute(text("UPDATE npcs SET gold = 50 WHERE gold < 5"))
     db.commit()
     living = db.execute(text("SELECT COUNT(*) FROM npcs WHERE is_dead = 0")).scalar()
     print(f"[qtown] {living} NPCs alive after startup fix")
