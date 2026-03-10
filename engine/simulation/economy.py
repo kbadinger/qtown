@@ -1676,3 +1676,63 @@ def detect_economic_bubble(db: Session) -> list[str]:
             bubble_resources.append(resource_name)
     
     return bubble_resources
+
+
+def simulate_market_crash(db: Session) -> int:
+    """Simulate a market crash.
+    
+    Call detect_economic_bubble(db). If bubbles:
+    - Create PriceHistory entries at 60% of latest
+    - Reduce all NPC gold by 10%
+    - Create Event(event_type='market_crash')
+    
+    Return count of affected resources or 0.
+    """
+    from engine.models import PriceHistory, NPC, Event, WorldState
+    
+    bubbles = detect_economic_bubble(db)
+    
+    if not bubbles:
+        return 0
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    affected_count = 0
+    
+    # For each bubble resource, create PriceHistory at 60% of latest
+    for resource_name in bubbles:
+        # Get latest price for this resource
+        latest_entry = db.query(PriceHistory).filter(
+            PriceHistory.resource_name == resource_name
+        ).order_by(PriceHistory.tick.desc()).first()
+        
+        if latest_entry:
+            new_price = latest_entry.price * 0.6
+            new_entry = PriceHistory(
+                resource_name=resource_name,
+                price=new_price,
+                supply=latest_entry.supply,
+                demand=latest_entry.demand,
+                tick=current_tick
+            )
+            db.add(new_entry)
+            affected_count += 1
+    
+    # Reduce all NPC gold by 10%
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    for npc in npcs:
+        npc.gold = int(npc.gold * 0.9)
+    
+    # Create market crash event
+    crash_event = Event(
+        event_type='market_crash',
+        description='Market crash detected - prices plummeted',
+        tick=current_tick
+    )
+    db.add(crash_event)
+    
+    db.commit()
+    
+    return affected_count

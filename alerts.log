@@ -1669,3 +1669,11 @@ Reset to 'pending' in prd.json to retry
 [2026-03-10 04:16:08 UTC] deploy_ok: Story 373 deployed: Healthy after 0.1s
 [2026-03-10 04:16:24 UTC] story_done: Story 373 complete: Insurance payout
 [2026-03-10 04:16:25 UTC] story_start: Story 374: Economic bubble detection
+[2026-03-10 04:31:40 UTC] WARN deploy_fail: Story 374 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   2b4df5c..8d01e83  main -> main
+
+Indexing...
+Uploading..
+[2026-03-10 04:31:41 UTC] story_done: Story 374 complete: Economic bubble detection
+[2026-03-10 04:31:41 UTC] story_start: Story 375: Market crash simulation
