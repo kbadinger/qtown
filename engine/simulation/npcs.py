@@ -2891,3 +2891,41 @@ def process_forgiveness(db: Session) -> int:
     
     db.commit()
     return forgiven_count
+
+
+def discover_talents(db: Session) -> int:
+    """Discover talents for NPCs with low skill."""
+    from sqlalchemy.orm import Session
+    from engine.models import NPC
+    
+    count = 0
+    # Get all living NPCs with skill < 50
+    candidates = db.query(NPC).filter(NPC.is_dead == 0, NPC.skill < 50).all()
+    
+    import random
+    
+    for npc in candidates:
+        # 5% chance to discover talent
+        if random.random() < 0.05:
+            skill_increase = 5
+            
+            # Check personality for bonuses
+            if npc.personality:
+                if 'creative' in npc.personality:
+                    skill_increase = 10
+                elif 'diligent' in npc.personality:
+                    skill_increase = 8
+            
+            npc.skill += skill_increase
+            
+            # Add talent_discovered to memory_events
+            if npc.memory_events:
+                if 'talent_discovered' not in npc.memory_events:
+                    npc.memory_events.append('talent_discovered')
+            else:
+                npc.memory_events = ['talent_discovered']
+            
+            count += 1
+    
+    db.commit()
+    return count

@@ -1568,3 +1568,8 @@
 - **Non-obvious state coupling**: The forgiveness logic was tightly coupled to the `QuestTracker`'s internal history list, not just the current quest status; accessing the raw history array directly caused race conditions that required wrapping all mutations in a transactional lock.
 - **Convention for side effects**: This codebase consistently isolates narrative side effects (like reputation changes or dialogue flags) in separate `EventEmitter` handlers rather than inline within the quest completion logic, ensuring the core state machine remains pure.
 - **Correction on edge cases**: Initially missed the scenario where an NPC is already forgiven but the player re-encounters the hostile trigger; corrected by adding an idempotency check that prevents re-triggering the forgiveness animation if the `forgiven` flag is already set.
+
+--- Story 365: NPC talent discovery (attempts: 1, 2026-03-09 20:46) ---
+- **Non-obvious state coupling**: The talent discovery logic relied on implicit `actor` context from the global event bus rather than explicit function arguments, making unit tests fragile and requiring careful mocking of the event stream.
+- **Codebase convention**: Talent checks follow a strict "Guard -> Calculate -> Apply" pattern where guards are always pure functions returning booleans, while side effects (like UI updates) are strictly isolated in the `Apply` phase.
+- **Correction**: Initially conflated "discovery" (finding the talent) with "activation" (triggering the effect); refactored to separate these into distinct events to prevent duplicate triggers when the same talent is re-scanned.
