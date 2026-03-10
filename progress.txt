@@ -1628,3 +1628,8 @@
 - **Non-obvious dependency**: The cooperative formation logic requires explicit initialization of the `MemberRegistry` singleton before any `Coop` instances can be created; failing to do so silently returns a null reference rather than throwing an exception.
 - **Codebase pattern**: This module consistently uses the "Builder" pattern for complex `Coop` configurations, separating immutable core properties from mutable operational settings to ensure thread safety during formation.
 - **Correction**: Initially attempted to validate member eligibility inside the constructor, which caused race conditions; moved validation to a dedicated `pre-formation` hook that runs within the transactional context.
+
+--- Story 377: Savings interest (attempts: 1, 2026-03-10 01:37) ---
+- **Non-obvious rounding behavior**: The `decimal` type's default rounding mode (`HalfEven`) caused unexpected results in interest calculations compared to the standard "round half up" expected by finance teams; explicit `MidpointRounding` was required.
+- **Pattern: Domain-driven value objects**: The codebase strictly avoids primitive types for monetary values, wrapping all currency amounts in a `Money` struct that handles precision and currency code validation internally.
+- **Correction**: Initially attempted to store interest rates as `double`, which introduced floating-point drift; corrected by switching to `decimal` and storing rates as basis points (integers) to ensure exact arithmetic.

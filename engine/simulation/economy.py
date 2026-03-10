@@ -1779,3 +1779,31 @@ def form_cooperatives(db: Session) -> int:
     
     db.commit()
     return cooperatives_formed
+
+
+def apply_savings_interest(db: Session) -> int:
+    """Apply savings interest to all living NPCs with gold > 200."""
+    from engine.models import NPC, Transaction
+    from datetime import datetime
+    
+    total_interest = 0
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0, NPC.gold > 200).all()
+    
+    for npc in living_npcs:
+        interest = max(1, npc.gold // 100)
+        npc.gold += interest
+        total_interest += interest
+        
+        # Create transaction record for the interest payment
+        # NPC receives interest from the bank (using npc.id as sender for system transaction)
+        transaction = Transaction(
+            sender_id=npc.id,
+            receiver_id=npc.id,
+            amount=interest,
+            reason='savings_interest',
+            created_at=datetime.utcnow()
+        )
+        db.add(transaction)
+    
+    db.commit()
+    return total_interest
