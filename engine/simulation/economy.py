@@ -1644,3 +1644,35 @@ def process_insurance_payouts(db: Session) -> int:
     
     db.commit()
     return total_paid
+
+
+def detect_economic_bubble(db: Session) -> list[str]:
+    """Detect economic bubbles in resources.
+    
+    For each resource_name in PriceHistory: get avg price and latest price.
+    If latest > 3 * avg, resource is in bubble.
+    Return list of bubble resource names.
+    Return empty list if none.
+    """
+    from engine.models import PriceHistory
+    
+    bubble_resources = []
+    
+    # Get all unique resource names from PriceHistory
+    resource_names = db.query(PriceHistory.resource_name).distinct().all()
+    
+    for (resource_name,) in resource_names:
+        # Get all prices for this resource, ordered by tick descending
+        prices = db.query(PriceHistory).filter(PriceHistory.resource_name == resource_name).order_by(PriceHistory.tick.desc()).all()
+        
+        if not prices:
+            continue
+        
+        price_values = [p.price for p in prices]
+        avg_price = sum(price_values) / len(price_values)
+        latest_price = prices[0].price  # First one is latest (highest tick)
+        
+        if latest_price > 3 * avg_price:
+            bubble_resources.append(resource_name)
+    
+    return bubble_resources

@@ -1666,3 +1666,6 @@ Reset to 'pending' in prd.json to retry
 [2026-03-10 03:58:18 UTC] deploy_ok: Story 372 deployed: Healthy after 0.1s
 [2026-03-10 03:58:34 UTC] story_done: Story 372 complete: Black market system
 [2026-03-10 03:58:34 UTC] story_start: Story 373: Insurance payout
+[2026-03-10 04:16:08 UTC] deploy_ok: Story 373 deployed: Healthy after 0.1s
+[2026-03-10 04:16:24 UTC] story_done: Story 373 complete: Insurance payout
+[2026-03-10 04:16:25 UTC] story_start: Story 374: Economic bubble detection
