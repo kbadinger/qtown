@@ -696,15 +696,15 @@ def process_inheritance(db: Session) -> int:
 def check_population_growth(db: Session) -> None:
     """Spawn a new NPC if conditions are right.
 
-    Throttled: only checks every 100 ticks with a 25% chance.
-    Requires avg happiness > 60 and living population < 20.
+    Throttled: only checks every 25 ticks with a 40% chance.
+    Requires avg happiness > 40 and living population < 30.
     """
     from engine.models import WorldState
     ws = db.query(WorldState).first()
-    if not ws or ws.tick % 100 != 0:
+    if not ws or ws.tick % 25 != 0:
         return
 
-    if random.random() > 0.25:
+    if random.random() > 0.40:
         return
 
     npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
@@ -713,21 +713,35 @@ def check_population_growth(db: Session) -> None:
 
     avg_happiness = sum(npc.happiness for npc in npcs) / len(npcs)
 
-    if avg_happiness > 60 and len(npcs) < 20:
+    if avg_happiness > 40 and len(npcs) < 30:
         names = ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank",
-                 "Grace", "Henry", "Ivy", "Jack"]
-        roles = ["farmer", "baker", "guard", "merchant", "priest"]
+                 "Grace", "Henry", "Ivy", "Jack", "Kate", "Leo",
+                 "Mia", "Noah", "Olive", "Pete", "Quinn", "Rose",
+                 "Sam", "Tina", "Uma", "Vince", "Wendy", "Xander"]
+        roles = ["farmer", "baker", "guard", "merchant", "priest",
+                 "blacksmith", "miner", "fisher", "carpenter", "artist"]
 
         new_npc = NPC(
             name=random.choice(names),
             role=random.choice(roles),
             x=random.randint(5, 45),
             y=random.randint(5, 45),
-            gold=0,
+            gold=50,
             hunger=0,
             energy=100,
-            happiness=50,
+            happiness=60,
+            age=random.randint(18, 35),
+            max_age=random.randint(65, 85),
+            is_dead=0,
+            is_bankrupt=0,
+            illness=0,
+            illness_severity=0,
             personality=_generate_personality(),
+            skill=random.choice(["farming", "trading", "crafting", "mining", "cooking"]),
+            memory_events='[]',
+            favorite_buildings='[]',
+            avoided_areas='[]',
+            experience='{}',
         )
         db.add(new_npc)
         db.commit()
@@ -2999,3 +3013,49 @@ def check_social_circles(db: Session) -> dict:
             
     db.commit()
     return result
+
+
+def detect_loneliness(db: Session) -> int:
+    """Detect lonely NPCs and update their state."""
+    from engine.models import NPC, Relationship
+    import json
+    
+    lonely_count = 0
+    
+    # Get all living NPCs
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    for npc in living_npcs:
+        # Count relationships for this NPC (check both directions)
+        try:
+            relationship_count = db.query(Relationship).filter(
+                (Relationship.npc_id == npc.id) | (Relationship.other_npc_id == npc.id)
+            ).count()
+        except AttributeError:
+            # Fallback if column names are different
+            relationship_count = db.query(Relationship).filter(
+                Relationship.npc_id == npc.id
+            ).count()
+        
+        if relationship_count == 0:
+            # NPC is lonely
+            lonely_count += 1
+            
+            # Reduce happiness
+            npc.happiness = max(0, npc.happiness - 5)
+            
+            # Add lonely entry to memory_events if not present
+            memory_events = npc.memory_events if npc.memory_events else "[]"
+            try:
+                events_list = json.loads(memory_events)
+                if not isinstance(events_list, list):
+                    events_list = []
+            except (json.JSONDecodeError, TypeError):
+                events_list = []
+            
+            if "lonely" not in events_list:
+                events_list.append("lonely")
+                npc.memory_events = json.dumps(events_list)
+    
+    db.commit()
+    return lonely_count
