@@ -180,6 +180,7 @@ def _fix_null_columns(db):
     # Ensure minimum population of 11
     MIN_POP = 11
     if living < MIN_POP:
+      try:
         import random
         names = ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank",
                  "Grace", "Henry", "Ivy", "Jack", "Kate", "Leo",
@@ -200,10 +201,13 @@ def _fix_null_columns(db):
                 "name": name, "role": role,
                 "x": random.randint(5, 45), "y": random.randint(5, 45),
                 "age": random.randint(18, 35), "max_age": random.randint(65, 85),
-                "sid": sid, "skill": random.choice(["farming", "trading", "crafting", "mining", "cooking"]),
+                "sid": sid, "skill": random.randint(1, 10),
             })
         db.commit()
         print(f"[qtown] Spawned {MIN_POP - living} NPCs to reach minimum population of {MIN_POP}")
+      except Exception as e:
+        print(f"[qtown] ERROR spawning NPCs: {e}")
+        db.rollback()
 
 
 def _reset_world_state(db):
