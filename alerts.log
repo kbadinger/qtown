@@ -1632,3 +1632,8 @@ Uploading..
 [2026-03-10 00:46:07 UTC] story_start: Story 366: NPC social circles
 [2026-03-10 01:07:54 UTC] WARN story_fail: Story 366 struggling — attempt 5/12
 NPC social circles
+[2026-03-10 01:29:01 UTC] deploy_ok: Story 366 deployed: Healthy after 0.1s
+[2026-03-10 01:29:18 UTC] story_done: Story 366 complete: NPC social circles
+[2026-03-10 01:29:19 UTC] story_start: Story 367: NPC loneliness detection
+[2026-03-10 01:42:49 UTC] WARN story_fail: Story 367 struggling — attempt 5/12
+NPC loneliness detection

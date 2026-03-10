@@ -1578,3 +1578,8 @@
 - **Non-obvious coupling**: The social circle logic is tightly coupled with the `RelationshipGraph` traversal; changes to distance thresholds require updating both the graph algorithm and the circle filtering logic simultaneously.
 - **Convention**: This codebase consistently uses a "lazy-evaluation" pattern for social queries, where circles are only recalculated when a character's status changes, rather than on every render frame.
 - **Correction**: Initially, I attempted to clone the entire relationship graph for each NPC to avoid side effects, which caused memory spikes; I corrected this by passing read-only views of the graph instead.
+
+--- Story 367: NPC loneliness detection (attempts: 1, 2026-03-09 22:00) ---
+- **Tricky Logic**: Determining "loneliness" required distinguishing between *physical isolation* (no neighbors) and *social isolation* (no active interactions), as the initial heuristic incorrectly flagged NPCs in sparsely populated but socially active zones.
+- **Codebase Pattern**: The engine relies heavily on the `SocialGraph` component for relationship state; direct distance checks are discouraged in favor of querying this graph to avoid race conditions during dynamic world updates.
+- **Correction**: Initially, I updated the loneliness flag synchronously during the main loop, causing frame drops; I corrected this by deferring the calculation to the `EndOfTick` event and batching the results for the AI scheduler.
