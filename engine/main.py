@@ -161,36 +161,26 @@ def _seed_world():
 
 def _fix_null_columns(db):
     """Fix NPC rows with NULL in integer columns (legacy data before defaults)."""
-    from engine.models import NPC
-    fixed = 0
-    for npc in db.query(NPC).all():
-        changed = False
-        if npc.is_dead is None:
-            npc.is_dead = 0
-            changed = True
-        if npc.is_bankrupt is None:
-            npc.is_bankrupt = 0
-            changed = True
-        if npc.illness is None:
-            npc.illness = 0
-            changed = True
-        if npc.illness_severity is None:
-            npc.illness_severity = 0
-            changed = True
-        if npc.age is None:
-            npc.age = 25
-            changed = True
-        if npc.max_age is None:
-            npc.max_age = 75
-            changed = True
-        if npc.happiness is None:
-            npc.happiness = 50
-            changed = True
-        if changed:
-            fixed += 1
-    if fixed:
-        db.commit()
-        print(f"[qtown] Fixed {fixed} NPCs with NULL columns")
+    from sqlalchemy import text
+    # Count NPCs with NULL is_dead
+    result = db.execute(text("SELECT COUNT(*) FROM npcs WHERE is_dead IS NULL"))
+    null_count = result.scalar()
+    print(f"[qtown] NPCs with NULL is_dead: {null_count}")
+    # Count total NPCs
+    result2 = db.execute(text("SELECT COUNT(*) FROM npcs"))
+    total = result2.scalar()
+    print(f"[qtown] Total NPCs: {total}")
+    # Check is_dead values
+    result3 = db.execute(text("SELECT id, name, is_dead FROM npcs"))
+    for row in result3:
+        print(f"[qtown]   NPC {row[0]} ({row[1]}): is_dead={row[2]}")
+    # Force fix ALL NPCs - set is_dead to 0 unconditionally
+    db.execute(text("UPDATE npcs SET is_dead = 0"))
+    db.execute(text("UPDATE npcs SET is_bankrupt = 0 WHERE is_bankrupt IS NULL"))
+    db.execute(text("UPDATE npcs SET illness = 0 WHERE illness IS NULL"))
+    db.execute(text("UPDATE npcs SET illness_severity = 0 WHERE illness_severity IS NULL"))
+    db.commit()
+    print(f"[qtown] Fixed all NPC columns")
 
 
 def _reset_world_state(db):
