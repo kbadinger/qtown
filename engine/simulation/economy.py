@@ -1971,3 +1971,29 @@ def get_economic_advice(db: Session) -> dict:
         'advisor_npc_id': advisor_id,
         'recommendation': recommendation
     }
+
+
+def process_resource_spoilage(db: Session) -> int:
+    """Process spoilage for food-related resources."""
+    from engine.models import Resource
+    
+    # Find all food-related resources (name contains food, grain, or bread)
+    food_resources = db.query(Resource).filter(
+        Resource.name.like("%food%") | 
+        Resource.name.like("%grain%") | 
+        Resource.name.like("%bread%")
+    ).all()
+    
+    spoiled_count = 0
+    for resource in food_resources:
+        # Reduce quantity by 5% (minimum 1)
+        spoilage_amount = max(1, int(resource.quantity * 0.05))
+        resource.quantity -= spoilage_amount
+        spoiled_count += 1
+        
+        # Delete if quantity reaches 0
+        if resource.quantity <= 0:
+            db.delete(resource)
+    
+    db.commit()
+    return spoiled_count

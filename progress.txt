@@ -1648,3 +1648,8 @@
 - **Non-obvious dependency**: The `EconomicAdvisor` service relied on a hidden global state for inflation rates, which caused flaky tests when the mock wasn't explicitly reset between runs.
 - **Codebase pattern**: Financial calculations consistently use `Decimal` types with explicit `quantize()` calls to avoid floating-point errors, a convention I initially missed in the `project_growth` helper.
 - **Correction**: I initially implemented the logic using standard floats, leading to precision drift in the final report; refactored to use the project's `Money` wrapper class to ensure strict 2-decimal enforcement.
+
+--- Story 382: Resource spoilage (attempts: 1, 2026-03-10 09:53) ---
+*   **Tricky Logic**: The spoilage calculation required handling floating-point precision carefully; using integer milliseconds for timestamps instead of doubles prevented drift errors over long simulation periods.
+*   **Codebase Pattern**: Resource lifecycle events consistently follow a `State -> Event -> Validation -> Mutation` flow, with all state changes routed through the central `ResourceRegistry` rather than direct object mutation.
+*   **Correction**: Initially applied spoilage rates as a percentage of the *original* quantity; corrected to use the *current* remaining quantity to accurately model exponential decay.

@@ -1720,3 +1720,6 @@ Indexing...
 Uploading..
 [2026-03-10 13:15:31 UTC] story_done: Story 380 complete: Luxury goods system
 [2026-03-10 13:15:31 UTC] story_start: Story 381: Economic advisor
+[2026-03-10 13:37:31 UTC] deploy_ok: Story 381 deployed: Healthy after 0.4s
+[2026-03-10 13:38:00 UTC] story_done: Story 381 complete: Economic advisor
+[2026-03-10 13:38:01 UTC] story_start: Story 382: Resource spoilage
