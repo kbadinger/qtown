@@ -59,12 +59,14 @@ def wander(db: Session, npc) -> None:
         b = db.query(Building).get(npc.home_building_id)
         if b:
             npc.target_x, npc.target_y = b.x, b.y
+            db.flush()
             return
 
     if roll < 0.60 and npc.work_building_id:
         b = db.query(Building).get(npc.work_building_id)
         if b:
             npc.target_x, npc.target_y = b.x, b.y
+            db.flush()
             return
 
     if roll < 0.80:
@@ -72,11 +74,13 @@ def wander(db: Session, npc) -> None:
         if buildings:
             b = _rnd.choice(buildings)
             npc.target_x, npc.target_y = b.x, b.y
+            db.flush()
             return
 
     # Random nearby spot (within 8 tiles)
     npc.target_x = max(0, min(49, npc.x + _rnd.randint(-8, 8)))
     npc.target_y = max(0, min(49, npc.y + _rnd.randint(-8, 8)))
+    db.flush()
 
 
 def move_npc_toward_target(db: Session, npc: NPC) -> None:
@@ -3118,3 +3122,33 @@ def apply_fear_response(db: Session) -> int:
     
     db.commit()
     return len(affected_ids)
+
+
+def process_npc_goals(db: Session) -> int:
+    """Process goals for all living NPCs."""
+    from engine.models import NPC
+    
+    achieved_count = 0
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    for npc in npcs:
+        events = json.loads(npc.memory_events) if npc.memory_events else []
+        goal = next((e for e in events if e.get("type") == "goal"), None)
+        
+        if goal:
+            target_gold = goal.get("target_gold", 0)
+            is_achieved = goal.get("achieved", False)
+            
+            if not is_achieved and npc.gold >= target_gold:
+                goal["achieved"] = True
+                npc.happiness += 10
+                npc.memory_events = json.dumps(events)
+                achieved_count += 1
+        else:
+            target_gold = npc.gold + 100
+            new_goal = {"type": "goal", "target_gold": target_gold, "achieved": False}
+            events.append(new_goal)
+            npc.memory_events = json.dumps(events)
+            
+    db.commit()
+    return achieved_count
