@@ -1997,3 +1997,49 @@ def process_resource_spoilage(db: Session) -> int:
     
     db.commit()
     return spoiled_count
+
+
+def run_auction(db: Session) -> int:
+    """Run auction for saturated resources."""
+    from engine.models import Resource, NPC, Transaction
+    
+    # Find saturated resources (is_saturated == 1 for Postgres compatibility)
+    saturated_resources = db.query(Resource).filter(Resource.is_saturated == 1).all()
+    
+    auction_count = 0
+    
+    for resource in saturated_resources:
+        # Find richest merchant (not dead, not bankrupt)
+        merchant = db.query(NPC).filter(
+            NPC.role == 'merchant',
+            NPC.is_dead == 0,
+            NPC.is_bankrupt == 0
+        ).order_by(NPC.gold.desc()).first()
+        
+        if merchant and resource.quantity > 0:
+            # Calculate payment
+            payment = resource.quantity * 10
+            
+            # Check if merchant has enough gold
+            if merchant.gold >= payment:
+                # Deduct gold from merchant
+                merchant.gold -= payment
+                
+                # Record transaction
+                db.add(Transaction(
+                    npc_id=merchant.id,
+                    amount=-payment,
+                    reason='auction'
+                ))
+                
+                # Transfer resource to merchant's building
+                if merchant.home_building_id:
+                    resource.building_id = merchant.home_building_id
+                
+                # Mark resource as not saturated
+                resource.is_saturated = 0
+                
+                auction_count += 1
+    
+    db.commit()
+    return auction_count

@@ -1653,3 +1653,8 @@
 *   **Tricky Logic**: The spoilage calculation required handling floating-point precision carefully; using integer milliseconds for timestamps instead of doubles prevented drift errors over long simulation periods.
 *   **Codebase Pattern**: Resource lifecycle events consistently follow a `State -> Event -> Validation -> Mutation` flow, with all state changes routed through the central `ResourceRegistry` rather than direct object mutation.
 *   **Correction**: Initially applied spoilage rates as a percentage of the *original* quantity; corrected to use the *current* remaining quantity to accurately model exponential decay.
+
+--- Story 383: Auction system (attempts: 1, 2026-03-10 10:11) ---
+- **Tricky Logic**: Handling the atomicity of bid placement was non-obvious; ensuring the `current_bid` check and `bidder` update happen within a single database transaction was critical to prevent race conditions where two users could bid simultaneously on the same item.
+- **Codebase Patterns**: The existing codebase strictly enforces the "Service Layer" pattern for all business logic, keeping controllers thin and delegating all state mutations (like bid validation and winner determination) to dedicated service classes.
+- **Mistake & Correction**: Initially, I attempted to calculate the final winner by iterating through the bid list in memory, which failed on large datasets; I corrected this by switching to a single SQL query using `ORDER BY amount DESC LIMIT 1` to efficiently fetch the highest valid bid.
