@@ -12,6 +12,7 @@ import heapq
 from sqlalchemy import func
 from engine.models import Dialogue, NPC, Event, WorldState
 from typing import Optional
+from engine.models import Crime
 
 
 
@@ -3082,3 +3083,38 @@ def apply_work_ethic(db: Session) -> int:
     
     db.commit()
     return total_gold
+
+
+def apply_fear_response(db: Session) -> int:
+    """Apply fear response to NPCs near unresolved crimes."""
+    crimes = db.query(Crime).filter(Crime.resolved == 0).all()
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    affected_ids = set()
+    
+    for crime in crimes:
+        if not crime.criminal_npc_id:
+            continue
+        criminal = db.query(NPC).get(crime.criminal_npc_id)
+        if not criminal or criminal.is_dead == 1:
+            continue
+        
+        for npc in living_npcs:
+            if npc.id == criminal.id:
+                continue
+            dist = abs(npc.x - criminal.x) + abs(npc.y - criminal.y)
+            if dist <= 10:
+                affected_ids.add(npc.id)
+                npc.happiness = max(0, npc.happiness - 2)
+                
+                try:
+                    areas = json.loads(npc.avoided_areas) if npc.avoided_areas else []
+                except (json.JSONDecodeError, TypeError):
+                    areas = []
+                
+                loc = [criminal.x, criminal.y]
+                if loc not in areas:
+                    areas.append(loc)
+                    npc.avoided_areas = json.dumps(areas)
+    
+    db.commit()
+    return len(affected_ids)

@@ -1640,3 +1640,6 @@ NPC loneliness detection
 [2026-03-10 02:01:40 UTC] deploy_ok: Story 367 deployed: Healthy after 0.1s
 [2026-03-10 02:01:58 UTC] story_done: Story 367 complete: NPC loneliness detection
 [2026-03-10 02:01:58 UTC] story_start: Story 368: NPC work ethic
+[2026-03-10 02:18:51 UTC] deploy_ok: Story 368 deployed: Healthy after 0.1s
+[2026-03-10 02:19:09 UTC] story_done: Story 368 complete: NPC work ethic
+[2026-03-10 02:19:09 UTC] story_start: Story 369: NPC fear system
