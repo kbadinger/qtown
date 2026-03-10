@@ -1691,3 +1691,24 @@ Indexing...
 Uploading..
 [2026-03-10 05:37:12 UTC] story_done: Story 377 complete: Savings interest
 [2026-03-10 05:37:12 UTC] story_start: Story 378: Bankruptcy recovery program
+[2026-03-10 05:52:14 UTC] WARN deploy_fail: Story 378 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   0a7a17e..9f33c05  main -> main
+
+Indexing...
+Uploading..
+[2026-03-10 05:52:14 UTC] story_done: Story 378 complete: Bankruptcy recovery program
+[2026-03-10 05:52:15 UTC] story_start: Story 379: Trade embargo
+[2026-03-10 06:06:14 UTC] WARN story_fail: Story 379 struggling — attempt 5/12
+Trade embargo
+[2026-03-10 06:12:22 UTC] CRITICAL loop: Story 379: same error 5x in a row — requesting help
+`tests/test_economy.py::test_s379_apply_trade_embargo FAILED              [100%]`
+[2026-03-10 06:12:22 UTC] CRITICAL needs_help: Story 379 needs help — waiting 10min for fix
+`tests/test_economy.py::test_s379_apply_trade_embargo FAILED              [100%]`
+[2026-03-10 06:25:34 UTC] CRITICAL critical: Story 379: still failing after help + 3 retries — stopping
+`tests/test_economy.py::test_s379_apply_trade_embargo FAILED              [100%]`
+[2026-03-10 06:25:34 UTC] CRITICAL critical: Story 379 failed: Trade embargo
+Ralph stopped — needs human debugging
+[2026-03-10 06:25:34 UTC] stop: Ralph offline — 324/450 stories complete
+[2026-03-10 12:56:05 UTC] start: Ralph online — 325/450 stories complete
+[2026-03-10 12:56:05 UTC] story_start: Story 380: Luxury goods system

@@ -1898,3 +1898,41 @@ def apply_trade_embargo(db: Session) -> int:
     db.commit()
     
     return len(embargoed_building_ids)
+
+
+def process_luxury_purchases(db: Session) -> int:
+    """Process luxury purchases for eligible NPCs.
+    
+    For each living NPC with gold > 200 and happiness < 70:
+    - gold -= 50
+    - happiness += 10
+    - Create Transaction(reason='luxury_purchase', amount=50)
+    
+    Returns count of purchases made.
+    """
+    from engine.models import NPC, Transaction
+    from datetime import datetime
+    
+    count = 0
+    eligible_npcs = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.gold > 200,
+        NPC.happiness < 70
+    ).all()
+    
+    for npc in eligible_npcs:
+        npc.gold -= 50
+        npc.happiness += 10
+        
+        transaction = Transaction(
+            sender_id=npc.id,
+            receiver_id=npc.id,
+            amount=50,
+            reason='luxury_purchase',
+            created_at=datetime.now()
+        )
+        db.add(transaction)
+        count += 1
+    
+    db.commit()
+    return count

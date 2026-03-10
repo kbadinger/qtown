@@ -1638,3 +1638,8 @@
 *   **Tricky Aspect**: The interaction between the `BankruptcyRecovery` state machine and the existing `LoanStatus` enum was non-obvious; a recovery plan can be active while the loan status remains "Defaulted," requiring separate tracking rather than a direct status transition.
 *   **Pattern Discovered**: The codebase consistently uses a `DomainEvent` pattern for financial state changes (e.g., `RecoveryPlanApproved`), which must be published *before* updating the aggregate root to ensure audit trail consistency.
 *   **Correction**: Initially, I attempted to calculate the new repayment schedule synchronously within the controller; I corrected this by moving the logic to a dedicated `RecoveryScheduler` service to handle complex interest recalculation rules without blocking the API response.
+
+--- Story 380: Luxury goods system (attempts: 1, 2026-03-10 09:14) ---
+- **Non-obvious pricing logic**: The luxury tier calculation requires applying the `premium_multiplier` *before* tax, but only if the `brand_tier` matches the specific `luxury_registry` list; applying it globally breaks the standard SKU pricing.
+- **Codebase pattern**: Inventory checks for luxury items always bypass the standard `check_stock` method and instead call `reserve_luxury_slot` to handle the mandatory 48-hour hold period before finalizing the order.
+- **Correction made**: Initially implemented the `luxury_tax` as a flat percentage, but corrected it to use the dynamic `region_based_luxury_rate` lookup to comply with the new cross-border compliance rules.
