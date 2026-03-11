@@ -1873,3 +1873,8 @@
 - **Tricky Aspect**: The non-obvious coupling between the `StructuralIntegrity` module and the `EmergencyEvacuation` service; a race condition occurred when collapse events triggered before the integrity check fully propagated, causing duplicate alert signals.
 - **Patterns Discovered**: The codebase consistently uses a "fail-fast" strategy with `CircuitBreaker` wrappers around all external sensor data ingestion, and domain events are always published asynchronously via a local in-memory queue before state mutation.
 - **Mistakes & Corrections**: Initially, I assumed the `Building` entity was immutable after construction, leading to a bug where partial updates failed silently; I corrected this by implementing explicit `version` checks and refactoring the update logic to handle optimistic locking.
+
+--- Story 397: Comet sighting (attempts: 5, 2026-03-11 18:36) ---
+*   **Non-obvious state handling**: The comet visibility logic required checking both the `ephemeris` timestamp and the user's local timezone offset simultaneously; relying solely on UTC caused false negatives for edge-case sightings.
+*   **Codebase convention**: All astronomical calculations are isolated in the `utils/astro` module and return immutable data structures, preventing accidental mutation of the global simulation state.
+*   **Correction made**: Initially, I cached the comet's position in the component state, leading to stale data during rapid zoom events; switched to computing position on-demand from the `simulationEngine` to ensure real-time accuracy.
