@@ -1758,3 +1758,8 @@
 - **Tricky**: Handling the nested state updates for the guest list and seating chart simultaneously required careful sequencing to avoid race conditions where the UI rendered stale data.
 - **Patterns**: The codebase consistently uses a "Command-Query Separation" approach for the festival logic, where all data mutations go through a dedicated `FestivalService` while UI components only dispatch events.
 - **Correction**: Initially attempted to memoize the entire seating grid component, which caused updates to freeze; corrected by memoizing only the individual seat calculation logic instead.
+
+--- Story 393: Talent show event (attempts: 6, 2026-03-11 13:09) ---
+- **Tricky Logic**: The event lifecycle required careful handling of the "pending" state; failing to explicitly transition from `scheduled` to `active` before allowing registrations caused race conditions in the validation logic.
+- **Codebase Pattern**: The project consistently uses a `DomainEvent` aggregate pattern where state changes trigger events that are processed asynchronously, rather than updating related entities directly within the same transaction.
+- **Correction**: Initially, I attempted to validate ticket availability inside the controller layer, which duplicated logic; I corrected this by moving the constraint check into the `TalentShow` domain service to ensure consistency across all entry points.

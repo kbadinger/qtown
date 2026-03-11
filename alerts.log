@@ -1919,3 +1919,68 @@ Uploading..
 [2026-03-11 15:55:52 UTC] deploy_ok: Story 392 deployed: Healthy after 0.1s
 [2026-03-11 15:56:01 UTC] story_done: Story 392 complete: Wedding festival
 [2026-03-11 15:56:02 UTC] story_start: Story 393: Talent show event
+[2026-03-11 15:57:42 UTC] WARN story_fail: Story 393 struggling — attempt 5/12
+Talent show event
+[2026-03-11 16:01:09 UTC] deploy_ok: Story 392 deployed: Healthy after 0.1s
+[2026-03-11 16:01:30 UTC] CRITICAL loop: Story 393: same error 5x in a row — requesting help
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 16:01:31 UTC] CRITICAL needs_help: Story 393 needs help — waiting 10min for fix
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 16:01:32 UTC] story_done: Story 392 complete: Wedding festival
+[2026-03-11 16:01:32 UTC] story_start: Story 393: Talent show event
+[2026-03-11 16:13:21 UTC] WARN story_fail: Story 393 struggling — attempt 5/12
+Talent show event
+[2026-03-11 16:14:56 UTC] WARN story_fail: Story 393 struggling — attempt 5/12
+Talent show event
+[2026-03-11 16:17:07 UTC] CRITICAL loop: Story 393: same error 5x in a row — requesting help
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 16:17:08 UTC] CRITICAL needs_help: Story 393 needs help — waiting 10min for fix
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 16:26:09 UTC] WARN story_fail: Story 393 struggling — attempt 5/12
+Talent show event
+[2026-03-11 16:29:52 UTC] WARN story_fail: Story 393 struggling — attempt 5/12
+Talent show event
+[2026-03-11 16:30:23 UTC] CRITICAL critical: Story 393: still failing after help + 3 retries — stopping
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 16:30:23 UTC] CRITICAL critical: Story 393 failed: Talent show event
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 16:30:53 UTC] story_start: Story 393: Talent show event
+[2026-03-11 16:31:01 UTC] CRITICAL loop: Story 393: same error 5x in a row — requesting help
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 16:31:01 UTC] CRITICAL needs_help: Story 393 needs help — waiting 10min for fix
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 16:33:06 UTC] WARN story_fail: Story 393 struggling — attempt 5/12
+Talent show event
+[2026-03-11 16:33:31 UTC] CRITICAL loop: Story 393: same error 5x in a row — requesting help
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 16:33:31 UTC] CRITICAL needs_help: Story 393 needs help — waiting 10min for fix
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 16:36:46 UTC] CRITICAL loop: Story 393: same error 5x in a row — requesting help
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 16:36:46 UTC] CRITICAL needs_help: Story 393 needs help — waiting 10min for fix
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 16:38:04 UTC] CRITICAL loop: Story 393: same error 5x in a row — requesting help
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 16:38:05 UTC] CRITICAL needs_help: Story 393 needs help — waiting 10min for fix
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 16:38:36 UTC] CRITICAL critical: Story 393: still failing after help + 3 retries — stopping
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 16:38:36 UTC] CRITICAL critical: Story 393 failed: Talent show event
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 16:39:07 UTC] story_start: Story 393: Talent show event
+[2026-03-11 17:04:19 UTC] WARN story_fail: Story 393 struggling — attempt 5/12
+Talent show event
+[2026-03-11 17:06:58 UTC] CRITICAL critical: Story 393: still failing after help + 3 retries — stopping
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 17:06:59 UTC] CRITICAL critical: Story 393 failed: Talent show event
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 17:07:27 UTC] CRITICAL critical: Story 393: still failing after help + 3 retries — stopping
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 17:07:28 UTC] CRITICAL critical: Story 393 failed: Talent show event
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 17:07:58 UTC] story_start: Story 393: Talent show event
+[2026-03-11 17:08:43 UTC] CRITICAL critical: Story 393: still failing after help + 3 retries — stopping
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 17:08:44 UTC] CRITICAL critical: Story 393 failed: Talent show event
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 17:08:59 UTC] story_start: Story 393: Talent show event
