@@ -1863,3 +1863,8 @@
 - **Tricky Aspect**: The recursive nature of the `calculate_load_distribution` function caused a stack overflow on deep nesting; the non-obvious fix was switching to an iterative approach with an explicit stack to handle the 50+ level building structures.
 - **Pattern Discovered**: The codebase consistently separates "structural integrity" logic from "rendering" logic, using a dedicated `PhysicsEngine` singleton that all building components query, rather than embedding physics calculations directly in the component classes.
 - **Mistake & Correction**: Initially, I treated `MaterialStrength` as a static constant, which failed when the story introduced dynamic weather effects; I corrected this by refactoring it to a context-aware method that adjusts strength based on the current `EnvironmentState`.
+
+--- Story 398: Building collapse (attempts: 1, 2026-03-11 18:36) ---
+*   **Tricky**: The collapse logic relied on a hidden dependency where `structuralIntegrity` was only recalculated if `loadFactor` exceeded a threshold, causing silent failures when loads were applied incrementally.
+*   **Patterns**: The codebase consistently uses a "fail-fast" sentinel pattern for state transitions, where any invalid state immediately triggers a rollback to the last known good configuration rather than attempting partial repairs.
+*   **Mistakes**: Initially assumed `debrisField` was a static list; corrected this after realizing it's a reactive observable that must be unsubscribed from to prevent memory leaks during rapid simulation restarts.
