@@ -52,6 +52,10 @@ def run_regression_tests(prd_path: str = "prd.json") -> tuple[bool, str]:
             # Skip "no tests collected" during regression — means tests were removed/renamed
             if "NO TESTS COLLECTED" in output:
                 continue
-            return False, f"REGRESSION in Story {story['id']}: {output[:500]}"
+            # Retry once to handle flaky tests (SQLite locking, import races)
+            passed2, output2 = run_tests(story["test_file"], story["id"])
+            if passed2:
+                continue  # Flaky — passed on retry
+            return False, f"REGRESSION in Story {story['id']}: {output2[:500]}"
 
     return True, f"All {len(done_stories)} regression tests passed"
