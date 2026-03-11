@@ -1798,3 +1798,8 @@
 - **Non-obvious state synchronization**: The caravan arrival logic required manually triggering a `WorldEvent` to update the market inventory; relying solely on the `Caravan` entity's internal state caused the shop UI to remain stale until a manual refresh.
 - **Codebase convention for dynamic pricing**: Discovered that all trade modifiers (distance, rarity, faction relations) must be applied via the `PriceCalculator` service using a chain of `Modifier` objects, rather than direct arithmetic in the controller, to ensure audit logging works correctly.
 - **Correction on transactional boundaries**: Initially wrapped the entire arrival sequence in a single database transaction, which caused deadlocks when multiple caravans arrived simultaneously; corrected by splitting the logic into separate transactions for inventory updates and ledger entries.
+
+--- Story 394: Trade caravan arrival (attempts: 1, 2026-03-11 14:50) ---
+- **Tricky Logic**: The caravan arrival logic required careful handling of state transitions; simply adding goods wasn't enough—I had to ensure the `isArrived` flag was toggled *after* the inventory merge to prevent race conditions with the UI rendering.
+- **Codebase Patterns**: This story reinforced the convention of using `EventBus` for cross-module notifications (e.g., notifying the Market module) rather than direct service calls, keeping the Caravan module loosely coupled.
+- **Correction**: I initially placed the random loot generation inside the main `arrive()` method, which made unit testing difficult; I refactored it into a dedicated `LootGenerator` service to allow for deterministic seeding in tests.

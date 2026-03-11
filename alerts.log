@@ -2062,3 +2062,12 @@ Uploading..
 [2026-03-11 18:26:23 UTC] deploy_ok: Story 394 deployed: Healthy after 0.1s
 [2026-03-11 18:26:43 UTC] story_done: Story 394 complete: Trade caravan arrival
 [2026-03-11 18:26:43 UTC] story_start: Story 395: Bandit raid
+[2026-03-11 18:35:34 UTC] deploy_ok: Story 395 deployed: Healthy after 0.1s
+[2026-03-11 18:35:51 UTC] story_done: Story 395 complete: Bandit raid
+[2026-03-11 18:35:51 UTC] story_start: Story 396: Miracle event
+[2026-03-11 18:36:28 UTC] deploy_ok: Story 395 deployed: Healthy after 0.1s
+[2026-03-11 18:36:37 UTC] story_done: Story 395 complete: Bandit raid
+[2026-03-11 18:36:37 UTC] story_start: Story 396: Miracle event
+[2026-03-11 18:37:09 UTC] deploy_ok: Story 394 deployed: Healthy after 0.1s
+[2026-03-11 18:37:18 UTC] story_done: Story 394 complete: Trade caravan arrival
+[2026-03-11 18:37:18 UTC] story_start: Story 396: Miracle event
