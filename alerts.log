@@ -2093,3 +2093,23 @@ Miracle event
 [2026-03-11 19:39:11 UTC] deploy_ok: Story 396 deployed: Healthy after 0.1s
 [2026-03-11 19:39:28 UTC] story_done: Story 396 complete: Miracle event
 [2026-03-11 19:39:29 UTC] story_start: Story 397: Comet sighting
+[2026-03-11 20:00:11 UTC] WARN deploy_fail: Story 396 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   9dc8942..79113ec  main -> main
+
+Indexing...
+Uploading..
+[2026-03-11 20:00:12 UTC] story_done: Story 396 complete: Miracle event
+[2026-03-11 20:00:12 UTC] story_start: Story 397: Comet sighting
+[2026-03-11 20:09:12 UTC] WARN story_fail: Story 396 failed after 12 attempts: Miracle event
+[2026-03-11 20:09:13 UTC] CRITICAL critical: Story 396 failed: Miracle event
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 20:09:43 UTC] story_start: Story 397: Comet sighting
+[2026-03-11 20:19:49 UTC] WARN story_fail: Story 396 failed after 12 attempts: Miracle event
+[2026-03-11 20:19:49 UTC] CRITICAL critical: Story 396 failed: Miracle event
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 20:20:20 UTC] story_start: Story 397: Comet sighting
+[2026-03-11 20:24:49 UTC] WARN story_fail: Story 396 failed after 12 attempts: Miracle event
+[2026-03-11 20:24:50 UTC] CRITICAL critical: Story 396 failed: Miracle event
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 20:25:20 UTC] story_start: Story 397: Comet sighting

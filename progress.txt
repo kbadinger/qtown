@@ -1823,3 +1823,8 @@
 - **Tricky/Non-obvious**: The "miracle" logic relies on a hidden race condition in the event queue; the outcome depends on the order of `onComplete` callbacks, not just the final state of the data.
 - **Patterns/Conventions**: This codebase consistently uses `EventBus` for cross-module communication but expects all listeners to be registered in a strict `init()` phase before any async operations begin.
 - **Mistakes corrected**: Initially assumed the event payload was immutable, leading to a bug where modifying the object in one listener affected others; fixed by deep-cloning the payload at the dispatch source.
+
+--- Story 397: Comet sighting (attempts: 1, 2026-03-11 16:55) ---
+- **Timezone handling in astronomical calculations**: The conversion between UTC and local observer time was non-obvious; the codebase expects all internal calculations in UTC, requiring explicit `DateTime` localization only at the final display layer to avoid drift.
+- **Observer location caching**: Discovered a pattern where `Observer` objects are cached by coordinate hash to prevent redundant trigonometric lookups during rapid successive sightings.
+- **Initial error in angle normalization**: Mistakenly used `atan2` without clamping inputs to the [-1, 1] range for edge-case horizon calculations, causing `NaN` outputs; corrected by adding explicit bounds checking before the inverse trig function.
