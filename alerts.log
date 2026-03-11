@@ -2143,3 +2143,11 @@ Comet sighting
 [2026-03-11 22:19:32 UTC] story_start: Story 398: Building collapse
 [2026-03-11 22:22:17 UTC] WARN story_fail: Story 396 struggling — attempt 5/12
 Miracle event
+[2026-03-11 22:29:35 UTC] WARN deploy_fail: Story 397 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   0dac832..a219eee  main -> main
+
+Indexing...
+Uploading..
+[2026-03-11 22:29:36 UTC] story_done: Story 397 complete: Comet sighting
+[2026-03-11 22:29:36 UTC] story_start: Story 398: Building collapse

@@ -1848,3 +1848,8 @@
 - **Tricky Logic**: Handling the ephemeral nature of comet data required careful management of state expiration; the non-obvious part was ensuring the "sighting" event didn't trigger duplicate notifications if the user refreshed the page mid-calculation.
 - **Codebase Patterns**: Discovered a strict convention of using `useEffect` cleanup functions to clear timers for transient astronomical events, preventing memory leaks in long-running sessions.
 - **Correction**: Initially hardcoded the comet's visibility window, which broke for edge-case dates; corrected this by refactoring to use the dynamic `ephemeris` utility function to calculate visibility based on the user's local timezone.
+
+--- Story 397: Comet sighting (attempts: 3, 2026-03-11 18:30) ---
+*   **Non-obvious edge case**: The comet's trajectory calculation fails silently when the observation timestamp is outside the ephemeris window; added explicit bounds checking before interpolation.
+*   **Codebase pattern**: Discovered that all astronomical coordinate transformations rely on the shared `CelestialFrame` utility, which handles both J2000 and ICRF conversions automatically.
+*   **Correction**: Initially passed raw floating-point angles to the rendering engine, causing visual jitter; fixed by normalizing angles to the `[0, 360)` range using the standard utility function.
