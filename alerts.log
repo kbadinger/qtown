@@ -1869,3 +1869,19 @@ Harvest festival
 Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
 [2026-03-11 14:46:48 UTC] story_done: Story 389 complete: Harvest festival
 [2026-03-11 14:46:49 UTC] story_start: Story 391: Flood event
+[2026-03-11 14:58:56 UTC] WARN deploy_fail: Story 391 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   fca3392..76dbf32  main -> main
+
+Indexing...
+Uploading..
+[2026-03-11 14:58:57 UTC] story_done: Story 391 complete: Flood event
+[2026-03-11 14:58:57 UTC] story_start: Story 392: Wedding festival
+[2026-03-11 14:59:02 UTC] WARN deploy_fail: Story 391 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   76dbf32..955bdfa  main -> main
+
+Indexing...
+Uploading..
+[2026-03-11 14:59:02 UTC] story_done: Story 391 complete: Flood event
+[2026-03-11 14:59:02 UTC] story_start: Story 392: Wedding festival

@@ -1713,3 +1713,8 @@
 - **Tricky**: The `FloodEvent` logic required handling a race condition where the `water_level` threshold check and the `alert_dispatch` could execute in different orders under high load, necessitating a re-entrant lock on the sensor data stream.
 - **Patterns**: The codebase consistently uses the `EventSourcing` pattern for all environmental sensors; state is never mutated directly but derived from an immutable stream of `SensorReading` events.
 - **Mistakes**: Initially, I attempted to persist the `FloodEvent` to the main database before the event was fully validated, causing a transaction rollback; corrected by moving validation to the pre-commit hook within the event handler.
+
+--- Story 391: Flood event (attempts: 1, 2026-03-11 10:59) ---
+- **Tricky/Non-obvious**: The `FloodEvent` service relies on a hidden dependency on the `HydrologyCache` singleton for rate-limiting; bypassing the cache in tests caused false positives in the alert threshold logic.
+- **Patterns/Conventions**: Event-driven modules consistently use the `DomainEvent` base class with a `timestamp` and `correlationId` for tracing, and all external API calls are wrapped in the `CircuitBreaker` decorator to prevent cascading failures.
+- **Mistakes & Corrections**: Initially, I treated flood levels as absolute values instead of relative to the local baseline, causing false alerts in high-elevation zones; corrected by normalizing inputs against the `LocalBaseline` service before comparison.
