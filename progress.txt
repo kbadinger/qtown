@@ -1708,3 +1708,8 @@
 - **Tricky/Non-obvious**: The `FloodEvent` logic relies on a non-deterministic `water_level` threshold that shifts based on the `season` enum, requiring careful handling of edge cases where `current_level` equals the dynamic threshold exactly.
 - **Patterns/Conventions**: The codebase consistently uses a "Command-Query Separation" pattern for event processing, where state mutations are isolated in `EventProcessor` classes and read-only analytics are handled by separate `EventReader` services.
 - **Mistakes/Corrections**: Initially missed the requirement to persist intermediate state snapshots during the flood simulation loop; corrected by introducing a `Checkpoint` mechanism before each iteration to allow for safe rollback on validation failure.
+
+--- Story 391: Flood event (attempts: 2, 2026-03-11 10:58) ---
+- **Tricky**: The `FloodEvent` logic required handling a race condition where the `water_level` threshold check and the `alert_dispatch` could execute in different orders under high load, necessitating a re-entrant lock on the sensor data stream.
+- **Patterns**: The codebase consistently uses the `EventSourcing` pattern for all environmental sensors; state is never mutated directly but derived from an immutable stream of `SensorReading` events.
+- **Mistakes**: Initially, I attempted to persist the `FloodEvent` to the main database before the event was fully validated, causing a transaction rollback; corrected by moving validation to the pre-commit hook within the event handler.
