@@ -309,14 +309,16 @@ def test_s115_earthquake_damages_buildings(db):
     buildings_before = db.query(Building).count()
     assert buildings_before > 0, "Need seeded buildings"
 
-    trigger_earthquake(db)
+    # Set buildings to level 3 so earthquake damage (level -= 1) is detectable
+    for b in db.query(Building).all():
+        b.level = 3
     db.flush()
 
-    damaged = [
-        b for b in db.query(Building).all()
-        if getattr(b, "hp", b.capacity) < getattr(b, "max_hp", 10)
-        or b.capacity < 10
-    ]
+    result = trigger_earthquake(db)
+    db.flush()
+
+    # Earthquake should damage at least one building (reduce level)
+    damaged = [b for b in db.query(Building).all() if b.level < 3]
     assert len(damaged) > 0, "Earthquake must damage at least one building"
 
 
