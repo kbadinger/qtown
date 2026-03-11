@@ -1688,3 +1688,8 @@
 *   **Tricky Logic**: The festival inventory reconciliation required handling floating-point precision for partial crate counts; switching to integer-based "units" (e.g., grams) prevented rounding errors during the final yield calculation.
 *   **Codebase Pattern**: The repository consistently uses a `DomainEvent` abstraction for all state changes in the `Festival` aggregate, ensuring audit logs are generated automatically without cluttering the core logic.
 *   **Correction**: Initially attempted to validate user permissions directly inside the `HarvestService`; corrected by moving this check to a dedicated `FestivalGate` middleware to align with the existing separation of concerns.
+
+--- Story 389: Harvest festival (attempts: 2, 2026-03-11 10:41) ---
+- **Tricky Logic**: The date calculation for the festival cycle was non-obvious; it required handling leap years and timezone offsets to ensure the "Harvest Day" aligned correctly across different server regions.
+- **Codebase Patterns**: Discovered a consistent convention of using `EventContext` objects to pass mutable state through the middleware chain, avoiding global variable pollution in the event handlers.
+- **Correction**: Initially failed to validate the `inventory_count` before rendering the festival UI, causing a crash on empty inventories; fixed by adding a guard clause and a fallback "No Harvest" view.
