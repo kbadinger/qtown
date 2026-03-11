@@ -1788,3 +1788,8 @@
 - **Non-obvious State Handling**: The raid logic relies on a hidden `loot_pool` state that persists across turns; failing to check this before calculating drop rates caused incorrect inventory updates.
 - **Codebase Convention**: Enemy AI in this module uses a "greedy" pattern where it always targets the unit with the lowest HP first, regardless of threat level, which differs from the standard "highest threat" logic in other stories.
 - **Correction**: Initially assumed the `Bandit` class inherited the `Flee` method from `Mob`, but discovered it overrides it to `HoldPosition` when the raid leader is alive; fixed the simulation by explicitly checking for the leader's existence before allowing retreat.
+
+--- Story 395: Bandit raid (attempts: 2, 2026-03-11 14:33) ---
+*   **Tricky Logic**: The raid resolution order was non-obvious; loot distribution must occur *before* checking for bandit escape conditions, or the escape flag gets incorrectly reset by the loot calculation loop.
+*   **Codebase Pattern**: This project consistently uses a `GameContext` singleton for all state mutations rather than passing state through function arguments, which simplifies refactoring but requires careful thread-safety checks in concurrent scenarios.
+*   **Correction**: Initially implemented the bandit spawn logic using a static probability check, which caused infinite spawning loops during edge cases; corrected by switching to a deterministic seed-based RNG tied to the current turn count.
