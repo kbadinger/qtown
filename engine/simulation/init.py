@@ -38,15 +38,16 @@ def init_grid(db: Session) -> None:
     """Initialize the 50x50 tile grid."""
     from engine.models import Tile
     
-    # Check if grid already exists by looking for any tile
-    existing_tile = db.query(Tile).first()
-    if existing_tile:
-        return  # Already initialized
+    # Check if any tiles already exist
+    existing_count = db.query(Tile).count()
+    if existing_count > 0:
+        return  # Grid already initialized
     
-    # Create all tiles
+    # Create 50x50 grid
     for x in range(50):
         for y in range(50):
-            db.add(Tile(x=x, y=y, terrain="grass"))
+            tile = Tile(x=x, y=y, terrain="grass")
+            db.add(tile)
     
     db.commit()
 

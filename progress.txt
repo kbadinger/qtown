@@ -1733,3 +1733,8 @@
 - **Non-obvious State Management**: The wedding guest list filtering logic relied on a hidden `isConfirmed` flag nested within the `EventStatus` enum, which initially caused the RSVP count to lag behind UI updates until the state synchronization hook was explicitly triggered.
 - **Codebase Convention**: Discovered a strict pattern where all festival-related date calculations must use the `FestivalTimezone` utility rather than native `Date` objects to handle the custom "ceremony time" offsets correctly.
 - **Correction on Race Conditions**: Initially implemented the invitation email dispatch as a synchronous action, causing UI blocking; corrected by refactoring to an async queue with retry logic to handle network flakiness during high-traffic festival events.
+
+--- Story 391: Flood event (attempts: 5, 2026-03-11 11:44) ---
+- **Non-obvious edge case**: The flood logic failed when `water_level` hit exactly the `max_capacity` threshold due to a strict `>` comparison; switching to `>=` fixed the overflow trigger.
+- **Codebase pattern**: Event handlers consistently use a `context` object passed through the chain rather than global state, ensuring isolation between concurrent flood simulations.
+- **Correction**: Initially calculated damage based on peak height only, but the requirements specify integrating duration; refactored to use the `time_exceeded_threshold` accumulator.
