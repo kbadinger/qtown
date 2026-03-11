@@ -1769,3 +1769,78 @@ Ralph stopped — needs human debugging
 [2026-03-11 00:18:13 UTC] WARN story_fail: Story 388 struggling — attempt 5/12
 Plague outbreak
 [2026-03-11 00:25:43 UTC] conflict_resolved: Story 388: Auto-resolved test conflict with Story 112
+[2026-03-11 00:26:06 UTC] WARN deploy_fail: Story 388 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   5de1992..12459e5  main -> main
+
+Indexing...
+Uploading..
+[2026-03-11 00:26:07 UTC] story_done: Story 388 complete: Plague outbreak
+[2026-03-11 00:26:07 UTC] story_start: Story 389: Harvest festival
+[2026-03-11 00:38:45 UTC] WARN story_fail: Story 389 struggling — attempt 5/12
+Harvest festival
+[2026-03-11 01:16:00 UTC] WARN story_fail: Story 389 failed after 12 attempts: Harvest festival
+[2026-03-11 01:16:01 UTC] WARN story_skip: Story 389 failed after 12 attempts: Harvest festival — skipping (1 consecutive fails)
+[2026-03-11 01:16:01 UTC] story_start: Story 390: Fire event
+[2026-03-11 01:47:29 UTC] WARN story_fail: Story 390 struggling — attempt 5/12
+Fire event
+[2026-03-11 02:27:38 UTC] WARN story_fail: Story 390 failed after 12 attempts: Fire event
+[2026-03-11 02:27:39 UTC] WARN story_skip: Story 390 failed after 12 attempts: Fire event — skipping (2 consecutive fails)
+[2026-03-11 02:27:39 UTC] story_start: Story 391: Flood event
+[2026-03-11 02:50:05 UTC] WARN story_fail: Story 391 struggling — attempt 5/12
+Flood event
+[2026-03-11 03:34:10 UTC] WARN story_fail: Story 391 failed after 12 attempts: Flood event
+[2026-03-11 03:34:10 UTC] WARN story_skip: Story 391 failed after 12 attempts: Flood event — skipping (3 consecutive fails)
+[2026-03-11 03:34:11 UTC] story_start: Story 392: Wedding festival
+[2026-03-11 03:57:15 UTC] WARN story_fail: Story 392 struggling — attempt 5/12
+Wedding festival
+[2026-03-11 05:05:24 UTC] WARN story_fail: Story 392 failed after 12 attempts: Wedding festival
+[2026-03-11 05:05:25 UTC] WARN story_skip: Story 392 failed after 12 attempts: Wedding festival — skipping (4 consecutive fails)
+[2026-03-11 05:05:25 UTC] story_start: Story 393: Talent show event
+[2026-03-11 05:11:55 UTC] WARN story_fail: Story 393 struggling — attempt 5/12
+Talent show event
+[2026-03-11 05:12:37 UTC] CRITICAL loop: Story 393: same error 5x in a row — requesting help
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 05:12:38 UTC] CRITICAL needs_help: Story 393 needs help — waiting 10min for fix
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 05:24:37 UTC] CRITICAL critical: Story 393: still failing after help + 3 retries — stopping
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 05:24:38 UTC] WARN story_skip: Story 393 failed after 12 attempts: Talent show event — skipping (5 consecutive fails)
+[2026-03-11 05:24:38 UTC] CRITICAL critical: 5 consecutive story failures — Ralph stopping for human debug
+[2026-03-11 05:24:38 UTC] stop: Ralph offline — 334/450 stories complete
+[2026-03-11 12:17:24 UTC] start: Ralph online — 334/450 stories complete
+[2026-03-11 12:17:24 UTC] story_start: Story 389: Harvest festival
+[2026-03-11 12:44:41 UTC] WARN story_fail: Story 389 struggling — attempt 5/12
+Harvest festival
+[2026-03-11 13:02:06 UTC] start: Ralph online — 334/450 stories complete
+[2026-03-11 13:02:07 UTC] story_start: Story 389: Harvest festival
+[2026-03-11 13:14:00 UTC] WARN story_fail: Story 389 failed after 12 attempts: Harvest festival
+[2026-03-11 13:14:01 UTC] CRITICAL critical: Story 389 failed: Harvest festival
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 13:14:31 UTC] story_start: Story 389: Harvest festival
+[2026-03-11 13:16:43 UTC] WARN story_fail: Story 389 struggling — attempt 5/12
+Harvest festival
+[2026-03-11 13:23:45 UTC] WARN story_fail: Story 389 struggling — attempt 5/12
+Harvest festival
+[2026-03-11 13:44:44 UTC] start: Ralph online — 334/450 stories complete
+[2026-03-11 13:44:45 UTC] story_start: Story 389: Harvest festival
+[2026-03-11 13:51:27 UTC] start: Ralph online — 334/450 stories complete
+[2026-03-11 13:51:27 UTC] story_start: Story 389: Harvest festival
+[2026-03-11 13:52:33 UTC] WARN story_fail: Story 389 failed after 12 attempts: Harvest festival
+[2026-03-11 13:52:34 UTC] CRITICAL critical: Story 389 failed: Harvest festival
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 13:53:04 UTC] story_start: Story 389: Harvest festival
+[2026-03-11 14:02:27 UTC] WARN story_fail: Story 389 failed after 12 attempts: Harvest festival
+[2026-03-11 14:02:28 UTC] CRITICAL critical: Story 389 failed: Harvest festival
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 14:02:58 UTC] story_start: Story 389: Harvest festival
+[2026-03-11 14:03:04 UTC] start: Ralph online — 334/450 stories complete
+[2026-03-11 14:03:05 UTC] story_start: Story 389: Harvest festival
+[2026-03-11 14:13:15 UTC] WARN story_fail: Story 389 struggling — attempt 5/12
+Harvest festival
+[2026-03-11 14:25:41 UTC] start: Ralph online — 335/450 stories complete
+[2026-03-11 14:25:41 UTC] story_start: Story 390: Fire event
+[2026-03-11 14:31:29 UTC] WARN story_fail: Story 389 struggling — attempt 5/12
+Harvest festival
+[2026-03-11 14:31:30 UTC] WARN story_fail: Story 389 struggling — attempt 5/12
+Harvest festival

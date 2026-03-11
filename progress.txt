@@ -1673,3 +1673,8 @@
 - **Non-obvious state propagation**: The plague logic relies on a delayed, event-driven update cycle rather than immediate state mutation; missing the `onTick` debounce caused race conditions where infection counts doubled before the simulation step resolved.
 - **Codebase convention**: All disease mechanics must extend the `BasePathogen` abstract class and implement the `calculateTransmissionRate` hook; direct manipulation of the `population` array without using the `InfectionManager` utility breaks the undo/redo history stack.
 - **Correction**: Initially hardcoded the `R0` factor directly in the view layer, causing UI desyncs; moved the calculation to the `EpidemicModel` service to ensure the simulation state and the visualizer stay in lockstep.
+
+--- Story 390: Fire event (attempts: 1, 2026-03-11 10:34) ---
+- **Non-obvious state propagation**: The fire event's `isResolved` flag didn't automatically clear the `activeAlert` state in the UI layer, requiring an explicit side-effect handler to prevent stale notifications from persisting after the backend event finished.
+- **Codebase convention**: Event handlers in this module consistently use a `try/catch` block that swallows specific `EventTimeout` errors to avoid crashing the worker, while logging them to the `audit` stream for silent degradation.
+- **Correction**: Initially attempted to mutate the event object directly within the reducer; corrected by creating a new immutable state copy to ensure the Redux dev tools correctly tracked the state transition history.
