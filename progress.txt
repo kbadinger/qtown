@@ -1738,3 +1738,8 @@
 - **Non-obvious edge case**: The flood logic failed when `water_level` hit exactly the `max_capacity` threshold due to a strict `>` comparison; switching to `>=` fixed the overflow trigger.
 - **Codebase pattern**: Event handlers consistently use a `context` object passed through the chain rather than global state, ensuring isolation between concurrent flood simulations.
 - **Correction**: Initially calculated damage based on peak height only, but the requirements specify integrating duration; refactored to use the `time_exceeded_threshold` accumulator.
+
+--- Story 392: Wedding festival (attempts: 3, 2026-03-11 11:44) ---
+- **Non-obvious constraint**: The wedding festival logic required handling "circular" guest seating arrangements where the head table's position dynamically shifts based on the number of VIPs, a dependency not explicitly documented in the schema.
+- **Codebase pattern**: Discovered a recurring convention of using `EventContext` objects to pass mutable state between festival stages, avoiding global variables but requiring strict initialization checks to prevent race conditions.
+- **Correction**: Initially attempted to optimize guest list filtering with a single-pass loop, which broke the "family grouping" requirement; corrected by refactoring into a two-phase approach (grouping first, then filtering) to preserve relational integrity.
