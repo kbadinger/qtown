@@ -1743,3 +1743,8 @@
 - **Non-obvious constraint**: The wedding festival logic required handling "circular" guest seating arrangements where the head table's position dynamically shifts based on the number of VIPs, a dependency not explicitly documented in the schema.
 - **Codebase pattern**: Discovered a recurring convention of using `EventContext` objects to pass mutable state between festival stages, avoiding global variables but requiring strict initialization checks to prevent race conditions.
 - **Correction**: Initially attempted to optimize guest list filtering with a single-pass loop, which broke the "family grouping" requirement; corrected by refactoring into a two-phase approach (grouping first, then filtering) to preserve relational integrity.
+
+--- Story 392: Wedding festival (attempts: 5, 2026-03-11 11:52) ---
+*   **Tricky Logic**: Handling the "guest capacity overflow" edge case required a custom validation hook rather than relying on standard form constraints, as the backend expects a specific error payload structure that the frontend must mirror.
+*   **Codebase Pattern**: Discovered a recurring convention where all event-related state mutations go through a centralized `EventDispatcher` service instead of direct Redux actions, ensuring audit logs are automatically generated.
+*   **Correction**: Initially attempted to memoize the guest list rendering with `React.memo`, which caused stale data issues due to the dynamic filtering logic; switched to `useCallback` with proper dependency arrays to resolve the re-rendering lag.
