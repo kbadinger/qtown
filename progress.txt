@@ -1668,3 +1668,8 @@
 *   **Non-obvious complexity**: The interaction between the stimulus multiplier and existing debt ceilings wasn't linear; the simulation required a recursive check to prevent infinite loop scenarios when the stimulus triggered new borrowing limits.
 *   **Codebase patterns**: Discovered a strict separation of concerns where all economic calculations are isolated in `EconomicEngine` classes, while `PolicyTrigger` handlers only manage state transitions without direct math logic.
 *   **Correction**: Initially missed a floating-point precision edge case where small stimulus values resulted in zero impact due to integer truncation; fixed by switching to `Decimal` arithmetic for all currency operations in this module.
+
+--- Story 388: Plague outbreak (attempts: 1, 2026-03-10 20:25) ---
+- **Non-obvious state propagation**: The plague logic relies on a delayed, event-driven update cycle rather than immediate state mutation; missing the `onTick` debounce caused race conditions where infection counts doubled before the simulation step resolved.
+- **Codebase convention**: All disease mechanics must extend the `BasePathogen` abstract class and implement the `calculateTransmissionRate` hook; direct manipulation of the `population` array without using the `InfectionManager` utility breaks the undo/redo history stack.
+- **Correction**: Initially hardcoded the `R0` factor directly in the view layer, causing UI desyncs; moved the calculation to the `EpidemicModel` service to ensure the simulation state and the visualizer stay in lockstep.

@@ -1742,3 +1742,30 @@ Indexing...
 Uploading..
 [2026-03-10 14:28:19 UTC] story_done: Story 384 complete: Wage disparity tracking
 [2026-03-10 14:28:19 UTC] story_start: Story 385: Economic stimulus
+[2026-03-10 14:56:40 UTC] WARN deploy_fail: Story 385 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   4c06f61..ac8353c  main -> main
+
+Indexing...
+Uploading..
+[2026-03-10 14:56:41 UTC] story_done: Story 385 complete: Economic stimulus
+[2026-03-10 14:56:41 UTC] story_start: Story 386: Earthquake event
+[2026-03-10 15:20:50 UTC] WARN story_fail: Story 386 struggling — attempt 5/12
+Earthquake event
+[2026-03-10 15:44:35 UTC] WARN story_fail: Story 386 failed after 12 attempts: Earthquake event
+[2026-03-10 15:44:35 UTC] CRITICAL critical: Story 386 failed: Earthquake event
+Ralph stopped — needs human debugging
+[2026-03-10 15:44:35 UTC] stop: Ralph offline — 331/450 stories complete
+[2026-03-10 17:44:46 UTC] start: Ralph online — 332/450 stories complete
+[2026-03-10 17:44:46 UTC] story_start: Story 387: Festival of lights
+[2026-03-10 17:48:17 UTC] WARN story_fail: Story 387 struggling — attempt 5/12
+Festival of lights
+[2026-03-10 18:10:36 UTC] WARN story_fail: Story 387 failed after 12 attempts: Festival of lights
+[2026-03-10 18:10:36 UTC] CRITICAL critical: Story 387 failed: Festival of lights
+Ralph stopped — needs human debugging
+[2026-03-10 18:10:37 UTC] stop: Ralph offline — 332/450 stories complete
+[2026-03-11 00:04:40 UTC] start: Ralph online — 333/450 stories complete
+[2026-03-11 00:04:40 UTC] story_start: Story 388: Plague outbreak
+[2026-03-11 00:18:13 UTC] WARN story_fail: Story 388 struggling — attempt 5/12
+Plague outbreak
+[2026-03-11 00:25:43 UTC] conflict_resolved: Story 388: Auto-resolved test conflict with Story 112

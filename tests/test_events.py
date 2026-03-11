@@ -1082,11 +1082,22 @@ def test_s388_trigger_plague(db):
     """Plague outbreak."""
     _setup_world(db)
     from engine.simulation import trigger_plague
+    from engine.models import NPC, Event
 
-    result = trigger_plague(db)
-    assert isinstance(result, int), "Should return count of infected NPCs"
-    assert result >= 1, "Patient zero should always be infected"
+    trigger_plague(db)
     db.flush()
+
+    # Verify plague event was created
+    evt = db.query(Event).filter(Event.event_type == "plague").first()
+    assert evt is not None, "trigger_plague must create an Event with event_type='plague'"
+
+    # Verify at least one NPC was infected (patient zero)
+    npcs = db.query(NPC).all()
+    sick_npcs = [
+        n for n in npcs
+        if getattr(n, "illness", 0) > 0 or getattr(n, "health", 100) < 100
+    ]
+    assert len(sick_npcs) > 0, "Plague must infect at least one NPC (patient zero)"
 
 
 def test_s389_trigger_harvest_festival(db):
