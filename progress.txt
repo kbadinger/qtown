@@ -1838,3 +1838,8 @@
 - **Tricky/Non-obvious**: The "miracle" event logic relies on a hidden global state flag that persists across test runs; failing to reset this flag between scenarios caused intermittent flakiness in the validation suite.
 - **Patterns/Conventions**: The codebase strictly separates event *dispatching* from *handling* using a dedicated `EventBus` interface, ensuring no direct coupling between the trigger source and the business logic consumers.
 - **Mistakes & Corrections**: Initially attempted to mock the entire event bus for unit tests, which broke integration coverage; corrected by switching to a lightweight in-memory bus implementation that allows real event propagation within the test context.
+
+--- Story 396: Miracle event (attempts: 1, 2026-03-11 18:17) ---
+- **Tricky Logic**: Handling the "miracle" state transition required careful sequencing to ensure the database transaction committed only after the external event webhook was successfully validated, preventing orphaned records.
+- **Codebase Pattern**: The project consistently uses a "Command/Handler" separation where domain logic is isolated from controller code, meaning new event triggers must implement the specific `IEventTrigger` interface rather than calling services directly.
+- **Correction**: Initially attempted to retry failed webhooks synchronously, causing timeouts; corrected by offloading retries to the background job queue with exponential backoff.

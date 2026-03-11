@@ -2270,3 +2270,80 @@ def trigger_miracle(db: Session) -> int | None:
     db.commit()
     
     return sick_npc.id
+
+
+def check_building_collapse(db: Session) -> int:
+    """Check for building collapses (5% chance for level 1 buildings with capacity > 0)."""
+    from engine.models import Building, NPC, Event
+    import random
+    
+    collapse_count = 0
+    
+    # Find all buildings with level==1 and capacity > 0
+    buildings = db.query(Building).filter(
+        Building.level == 1,
+        Building.capacity > 0
+    ).all()
+    
+    for building in buildings:
+        # 5% chance to collapse
+        if random.random() < 0.05:
+            # Set capacity to 0
+            building.capacity = 0
+            
+            # Unassign workers from this building
+            db.query(NPC).filter(NPC.work_building_id == building.id).update(
+                {"work_building_id": None}
+            )
+            
+            # Create event record
+            event = Event(
+                event_type='building_collapse',
+                severity=4,
+                building_id=building.id
+            )
+            db.add(event)
+            collapse_count += 1
+    
+    db.commit()
+    return collapse_count
+
+
+def trigger_comet_sighting(db: Session) -> bool:
+    """Trigger a comet sighting event with 2% random chance."""
+    import random
+    import json
+    
+    if random.random() < 0.02:
+        from engine.models import NPC, Event
+        
+        # Get all living NPCs
+        living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+        
+        for npc in living_npcs:
+            # Parse memory_events (stored as JSON string)
+            memory_events = npc.memory_events or []
+            if isinstance(memory_events, str):
+                try:
+                    memory_events = json.loads(memory_events)
+                except (json.JSONDecodeError, TypeError):
+                    memory_events = []
+            if not isinstance(memory_events, list):
+                memory_events = []
+            
+            # Add comet_sighting if not already present
+            if 'comet_sighting' not in memory_events:
+                memory_events.append('comet_sighting')
+                npc.memory_events = json.dumps(memory_events)
+            
+            # Increase happiness by 3 (capped at 100)
+            npc.happiness = min(100, npc.happiness + 3)
+        
+        # Create event record
+        event = Event(event_type='comet_sighting')
+        db.add(event)
+        
+        db.commit()
+        return True
+    
+    return False
