@@ -206,13 +206,13 @@ def trigger_plague(db: Session) -> None:
 
 
 def trigger_harvest_festival(db: Session) -> None:
-    """Trigger a harvest festival event that increases NPC happiness."""
-    from engine.models import NPC, WorldState
-    
+    """Trigger a harvest festival event that increases NPC happiness and doubles food."""
+    from engine.models import NPC, WorldState, Resource
+
     # Get world state for tick
     world_state = db.query(WorldState).first()
     current_tick = world_state.tick if world_state else 0
-    
+
     # Create harvest festival event
     festival_event = Event(
         event_type="harvest_festival",
@@ -221,12 +221,19 @@ def trigger_harvest_festival(db: Session) -> None:
         severity="low"
     )
     db.add(festival_event)
-    
+
     # Increase happiness for all NPCs (capped at 100)
     npcs = db.query(NPC).all()
     for npc in npcs:
         npc.happiness = min(100, npc.happiness + 20)
-    
+
+    # Double food/grain resources
+    food_resources = db.query(Resource).filter(
+        Resource.name.ilike("%food%") | Resource.name.ilike("%grain%")
+    ).all()
+    for resource in food_resources:
+        resource.quantity *= 2
+
     db.commit()
 
 
