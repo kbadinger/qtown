@@ -1728,3 +1728,8 @@
 - **Tricky/Non-obvious**: The flood simulation logic relies on a `max_water_level` threshold that triggers a cascade of `drain` operations; missing the asynchronous `await` on the initial sensor read caused the entire simulation to skip the overflow check entirely.
 - **Patterns/Conventions**: The codebase consistently uses a `StateSnapshot` pattern for all event-driven simulations, requiring explicit cloning of the `Grid` object before any mutation to ensure deterministic replayability.
 - **Mistakes & Corrections**: Initially attempted to modify the grid in-place during the iteration loop, which caused race conditions with the neighbor-checking logic; corrected by switching to a double-buffer approach (current vs. next state) as seen in Story 385.
+
+--- Story 392: Wedding festival (attempts: 4, 2026-03-11 11:20) ---
+- **Non-obvious State Management**: The wedding guest list filtering logic relied on a hidden `isConfirmed` flag nested within the `EventStatus` enum, which initially caused the RSVP count to lag behind UI updates until the state synchronization hook was explicitly triggered.
+- **Codebase Convention**: Discovered a strict pattern where all festival-related date calculations must use the `FestivalTimezone` utility rather than native `Date` objects to handle the custom "ceremony time" offsets correctly.
+- **Correction on Race Conditions**: Initially implemented the invitation email dispatch as a synchronous action, causing UI blocking; corrected by refactoring to an async queue with retry logic to handle network flakiness during high-traffic festival events.
