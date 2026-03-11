@@ -1778,3 +1778,8 @@
 *   **Non-obvious state synchronization**: The talent show leaderboard required a manual `useEffect` to sync with the global `eventStatus` context; relying solely on prop drilling caused stale data during rapid event state transitions.
 *   **Codebase convention**: All event-specific components must export a `validateEntry` helper function alongside the main component to be compatible with the shared `EventOrchestrator` wrapper.
 *   **Correction**: Initially implemented the "voting" logic as a synchronous API call, which blocked the UI thread; refactored to use `async/await` with optimistic UI updates to maintain responsiveness during high-traffic voting periods.
+
+--- Story 394: Trade caravan arrival (attempts: 4, 2026-03-11 14:24) ---
+- **Non-obvious state coupling**: The caravan arrival logic implicitly depends on the `MarketStability` global flag; failing to check this before processing goods caused silent inventory corruption when stability was low.
+- **Codebase convention**: Event handlers in this module must always return a `Result<CaravanStatus, Error>` rather than throwing, ensuring the UI can gracefully degrade instead of crashing on invalid trade data.
+- **Correction**: Initially, I applied trade discounts based on the *current* player level, but the spec requires using the *caravan's* origin level; fixed by extracting the origin metadata before calculating final prices.
