@@ -1868,3 +1868,8 @@
 *   **Tricky**: The collapse logic relied on a hidden dependency where `structuralIntegrity` was only recalculated if `loadFactor` exceeded a threshold, causing silent failures when loads were applied incrementally.
 *   **Patterns**: The codebase consistently uses a "fail-fast" sentinel pattern for state transitions, where any invalid state immediately triggers a rollback to the last known good configuration rather than attempting partial repairs.
 *   **Mistakes**: Initially assumed `debrisField` was a static list; corrected this after realizing it's a reactive observable that must be unsubscribed from to prevent memory leaks during rapid simulation restarts.
+
+--- Story 398: Building collapse (attempts: 4, 2026-03-11 18:36) ---
+- **Tricky Aspect**: The non-obvious coupling between the `StructuralIntegrity` module and the `EmergencyEvacuation` service; a race condition occurred when collapse events triggered before the integrity check fully propagated, causing duplicate alert signals.
+- **Patterns Discovered**: The codebase consistently uses a "fail-fast" strategy with `CircuitBreaker` wrappers around all external sensor data ingestion, and domain events are always published asynchronously via a local in-memory queue before state mutation.
+- **Mistakes & Corrections**: Initially, I assumed the `Building` entity was immutable after construction, leading to a bug where partial updates failed silently; I corrected this by implementing explicit `version` checks and refactoring the update logic to handle optimistic locking.
