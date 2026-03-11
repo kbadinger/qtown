@@ -2105,3 +2105,53 @@ def trigger_wedding_festival(db: Session) -> int:
     db.commit()
     
     return len(couples)
+
+
+def trigger_talent_show(db: Session) -> Optional[int]:
+    """Trigger a talent show event.
+    
+    Find living NPC with highest skill. Award 50 gold, happiness += 10.
+    Create Event and Transaction(reason='talent_show_prize').
+    Return winner NPC id or None.
+    """
+    from engine.models import NPC, Event, Transaction, WorldState
+    
+    # Find living NPC with highest skill
+    winner = db.query(NPC).filter(
+        NPC.is_dead == 0
+    ).order_by(NPC.skill.desc()).first()
+    
+    if not winner:
+        return None
+    
+    # Award prize - 50 gold
+    winner.gold = winner.gold + 50
+    
+    # Increase happiness by 10 (cap at 100)
+    winner.happiness = min(winner.happiness + 10, 100)
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Create transaction from treasury (from_npc_id=None) to winner
+    transaction = Transaction(
+        from_npc_id=None,
+        to_npc_id=winner.id,
+        amount=50,
+        reason='talent_show_prize',
+        tick=current_tick
+    )
+    db.add(transaction)
+    
+    # Create event
+    event = Event(
+        event_type='talent_show',
+        description=f'{winner.name} won the talent show!',
+        tick=current_tick
+    )
+    db.add(event)
+    
+    db.commit()
+    
+    return winner.id

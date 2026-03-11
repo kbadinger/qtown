@@ -1753,3 +1753,8 @@
 *   **Tricky Logic**: The date validation for the festival required handling edge cases where the calculated date fell on a weekend, necessitating a fallback logic that wasn't immediately obvious from the requirements.
 *   **Codebase Patterns**: Discovered a strict convention of using `EventFactory` for all date-dependent objects to ensure timezone consistency, rather than instantiating them directly.
 *   **Correction**: Initially attempted to modify the `User` model directly to track festival attendance, but corrected this by creating a separate `FestivalRegistration` join table to maintain data integrity and support future multi-event scenarios.
+
+--- Story 392: Wedding festival (attempts: 1, 2026-03-11 11:57) ---
+- **Tricky**: Handling the nested state updates for the guest list and seating chart simultaneously required careful sequencing to avoid race conditions where the UI rendered stale data.
+- **Patterns**: The codebase consistently uses a "Command-Query Separation" approach for the festival logic, where all data mutations go through a dedicated `FestivalService` while UI components only dispatch events.
+- **Correction**: Initially attempted to memoize the entire seating grid component, which caused updates to freeze; corrected by memoizing only the individual seat calculation logic instead.
