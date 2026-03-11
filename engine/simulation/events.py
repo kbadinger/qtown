@@ -68,7 +68,7 @@ def trigger_drought(db: Session) -> None:
 
 def trigger_flood(db: Session) -> None:
     """Trigger a flood event that damages all buildings and causes price spike."""
-    from engine.models import Building
+    from engine.models import Building, NPC, WorldState, Event
     
     # Create flood event
     world_state = db.query(WorldState).first()

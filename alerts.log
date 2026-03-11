@@ -1855,3 +1855,17 @@ Harvest festival
 [2026-03-11 14:40:11 UTC] WARN ollama_bad_response: Ollama bad response: 'charmap' codec can't encode character '\u2705' in position 134: character maps to <undefined>
 [2026-03-11 14:40:12 UTC] WARN story_fail: Story 389 struggling — attempt 5/12
 Harvest festival
+[2026-03-11 14:43:50 UTC] deploy_ok: Story 389 deployed: Healthy after 0.4s
+[2026-03-11 14:44:01 UTC] story_done: Story 389 complete: Harvest festival
+[2026-03-11 14:44:01 UTC] story_start: Story 391: Flood event
+[2026-03-11 14:44:48 UTC] deploy_ok: Story 389 deployed: Healthy after 0.1s
+[2026-03-11 14:44:58 UTC] story_done: Story 389 complete: Harvest festival
+[2026-03-11 14:44:58 UTC] story_start: Story 391: Flood event
+[2026-03-11 14:46:12 UTC] deploy_ok: Story 389 deployed: Healthy after 0.1s
+[2026-03-11 14:46:22 UTC] story_done: Story 389 complete: Harvest festival
+[2026-03-11 14:46:22 UTC] story_start: Story 391: Flood event
+[2026-03-11 14:46:48 UTC] WARN deploy_fail: Story 389 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build timed out after 300s
+
+Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
+[2026-03-11 14:46:48 UTC] story_done: Story 389 complete: Harvest festival
+[2026-03-11 14:46:49 UTC] story_start: Story 391: Flood event

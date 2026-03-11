@@ -1703,3 +1703,8 @@
 - **Event State Management**: The most non-obvious challenge was handling the race condition where the festival event timer could expire while a user was mid-transaction; I resolved this by adding a "locked" state flag that persists until the transaction fully commits or rolls back.
 - **Data Consistency Pattern**: Discovered that this codebase relies heavily on a "snapshot" pattern for historical data rather than direct DB updates for reporting, ensuring the festival stats remain immutable even if underlying inventory changes.
 - **Correction on Null Handling**: Initially assumed `user.inventory` would always exist during the harvest logic, causing a crash for new accounts; corrected this by implementing a safe-guard check and initializing a default empty inventory object if missing.
+
+--- Story 391: Flood event (attempts: 6, 2026-03-11 10:58) ---
+- **Tricky/Non-obvious**: The `FloodEvent` logic relies on a non-deterministic `water_level` threshold that shifts based on the `season` enum, requiring careful handling of edge cases where `current_level` equals the dynamic threshold exactly.
+- **Patterns/Conventions**: The codebase consistently uses a "Command-Query Separation" pattern for event processing, where state mutations are isolated in `EventProcessor` classes and read-only analytics are handled by separate `EventReader` services.
+- **Mistakes/Corrections**: Initially missed the requirement to persist intermediate state snapshots during the flood simulation loop; corrected by introducing a `Checkpoint` mechanism before each iteration to allow for safe rollback on validation failure.
