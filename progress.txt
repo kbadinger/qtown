@@ -1763,3 +1763,8 @@
 - **Tricky Logic**: The event lifecycle required careful handling of the "pending" state; failing to explicitly transition from `scheduled` to `active` before allowing registrations caused race conditions in the validation logic.
 - **Codebase Pattern**: The project consistently uses a `DomainEvent` aggregate pattern where state changes trigger events that are processed asynchronously, rather than updating related entities directly within the same transaction.
 - **Correction**: Initially, I attempted to validate ticket availability inside the controller layer, which duplicated logic; I corrected this by moving the constraint check into the `TalentShow` domain service to ensure consistency across all entry points.
+
+--- Story 394: Trade caravan arrival (attempts: 2, 2026-03-11 14:00) ---
+- **Non-obvious State Synchronization**: The caravan arrival logic relies on a deferred event queue rather than immediate state updates; failing to check the `pending_arrivals` buffer before processing caused race conditions in inventory updates.
+- **Convention for Resource Injection**: This codebase consistently injects external data (like caravan manifests) via a `Context` object passed to the `handle_event` method, rather than using global singletons or direct service calls.
+- **Correction on Validation Scope**: Initially validated only the caravan's total weight, but corrected to also validate individual item `category` flags against the `allowed_trade_goods` whitelist to prevent invalid items from entering the market simulation.

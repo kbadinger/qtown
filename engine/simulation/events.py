@@ -2134,13 +2134,10 @@ def trigger_talent_show(db: Session) -> Optional[int]:
     world_state = db.query(WorldState).first()
     current_tick = world_state.tick if world_state else 0
     
-    # Create transaction from treasury (from_npc_id=None) to winner
+    # Create transaction for the prize
     transaction = Transaction(
-        from_npc_id=None,
-        to_npc_id=winner.id,
         amount=50,
-        reason='talent_show_prize',
-        tick=current_tick
+        reason='talent_show_prize'
     )
     db.add(transaction)
     

@@ -1984,3 +1984,48 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-11 17:08:44 UTC] CRITICAL critical: Story 393 failed: Talent show event
 Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-11 17:08:59 UTC] story_start: Story 393: Talent show event
+[2026-03-11 17:09:37 UTC] WARN deploy_fail: Story 393 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   cd69ada..1bff143  main -> main
+
+Indexing...
+Uploading..
+[2026-03-11 17:09:37 UTC] story_done: Story 393 complete: Talent show event
+[2026-03-11 17:09:38 UTC] story_start: Story 394: Trade caravan arrival
+[2026-03-11 17:14:58 UTC] WARN story_fail: Story 393 struggling — attempt 5/12
+Talent show event
+[2026-03-11 17:28:46 UTC] CRITICAL loop: Story 393: same error 5x in a row — requesting help
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 17:28:46 UTC] CRITICAL needs_help: Story 393 needs help — waiting 10min for fix
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 17:29:56 UTC] CRITICAL loop: Story 393: same error 5x in a row — requesting help
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 17:29:57 UTC] CRITICAL needs_help: Story 393 needs help — waiting 10min for fix
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 17:31:59 UTC] WARN story_fail: Story 393 struggling — attempt 5/12
+Talent show event
+[2026-03-11 17:42:21 UTC] WARN story_fail: Story 393 struggling — attempt 5/12
+Talent show event
+[2026-03-11 17:42:45 UTC] CRITICAL loop: Story 393: same error 5x in a row — requesting help
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 17:42:45 UTC] CRITICAL needs_help: Story 393 needs help — waiting 10min for fix
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 17:45:01 UTC] CRITICAL loop: Story 393: same error 5x in a row — requesting help
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 17:45:01 UTC] CRITICAL needs_help: Story 393 needs help — waiting 10min for fix
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 17:53:05 UTC] CRITICAL critical: Story 393: still failing after help + 3 retries — stopping
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 17:53:06 UTC] CRITICAL critical: Story 393 failed: Talent show event
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 17:53:21 UTC] CRITICAL critical: Story 393: still failing after help + 3 retries — stopping
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 17:53:21 UTC] CRITICAL critical: Story 393 failed: Talent show event
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 17:54:22 UTC] story_start: Story 394: Trade caravan arrival
+[2026-03-11 17:54:36 UTC] story_start: Story 394: Trade caravan arrival
+[2026-03-11 17:54:44 UTC] story_start: Story 394: Trade caravan arrival
+[2026-03-11 18:00:21 UTC] CRITICAL critical: Story 393: still failing after help + 3 retries — stopping
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 18:00:22 UTC] CRITICAL critical: Story 393 failed: Talent show event
+Waiting for fix — reset story to 'pending' in prd.json when ready
