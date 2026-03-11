@@ -1678,3 +1678,8 @@
 - **Non-obvious state propagation**: The fire event's `isResolved` flag didn't automatically clear the `activeAlert` state in the UI layer, requiring an explicit side-effect handler to prevent stale notifications from persisting after the backend event finished.
 - **Codebase convention**: Event handlers in this module consistently use a `try/catch` block that swallows specific `EventTimeout` errors to avoid crashing the worker, while logging them to the `audit` stream for silent degradation.
 - **Correction**: Initially attempted to mutate the event object directly within the reducer; corrected by creating a new immutable state copy to ensure the Redux dev tools correctly tracked the state transition history.
+
+--- Story 389: Harvest festival (attempts: 1, 2026-03-11 10:37) ---
+*   **Non-obvious date handling**: The festival logic relies on a localized `Date` object that shifts based on the user's timezone, causing off-by-one errors if not explicitly normalized to UTC before comparing against the event schedule.
+*   **Codebase pattern**: Event-driven state updates in this module strictly follow the `Action -> Reducer -> SideEffect` chain; direct state mutation in the controller layer triggers silent failures in the analytics tracker.
+*   **Correction made**: Initially attempted to cache the harvest list in a static variable, which caused stale data for concurrent users; corrected by switching to a scoped `Map` keyed by session ID to ensure data isolation.

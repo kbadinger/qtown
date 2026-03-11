@@ -35,16 +35,19 @@ def init_world_state(db: Session) -> WorldState:
 
 
 def init_grid(db: Session) -> None:
-    """Initialize the 50x50 tile grid with terrain variety."""
-    existing = db.query(Tile).count()
-    if existing > 0:
+    """Initialize the 50x50 tile grid."""
+    from engine.models import Tile
+    
+    # Check if grid already exists by looking for any tile
+    existing_tile = db.query(Tile).first()
+    if existing_tile:
         return  # Already initialized
-
-    # Define terrain zones for variety
+    
+    # Create all tiles
     for x in range(50):
         for y in range(50):
-            terrain = _terrain_for(x, y)
-            db.add(Tile(x=x, y=y, terrain=terrain))
+            db.add(Tile(x=x, y=y, terrain="grass"))
+    
     db.commit()
 
 

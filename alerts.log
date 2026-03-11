@@ -1844,3 +1844,8 @@ Harvest festival
 Harvest festival
 [2026-03-11 14:31:30 UTC] WARN story_fail: Story 389 struggling — attempt 5/12
 Harvest festival
+[2026-03-11 14:35:22 UTC] WARN story_fail: Story 389 struggling — attempt 5/12
+Harvest festival
+[2026-03-11 14:36:31 UTC] deploy_ok: Story 390 deployed: Healthy after 0.1s
+[2026-03-11 14:37:00 UTC] story_done: Story 390 complete: Fire event
+[2026-03-11 14:37:15 UTC] story_start: Story 391: Flood event
