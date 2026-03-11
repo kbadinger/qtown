@@ -1813,3 +1813,8 @@
 - **Non-obvious state synchronization**: The talent show scoring logic required careful handling of asynchronous API responses to prevent race conditions where the leaderboard updated before all judges' scores were fully processed.
 - **Codebase convention for event-driven UI**: Discovered a strict pattern where all user-triggered UI changes in this module must emit a custom `TalentEvent` rather than directly mutating state, ensuring the analytics middleware captures every interaction.
 - **Correction on validation logic**: Initially placed score validation on the frontend only, leading to invalid data ingestion; corrected by moving the schema validation to the backend service layer and adding a retry mechanism for transient network failures.
+
+--- Story 396: Miracle event (attempts: 5, 2026-03-11 15:37) ---
+*   **Non-obvious state propagation**: The "miracle" trigger relies on a race condition between the event bus and the UI render cycle; wrapping the handler in a `requestAnimationFrame` was required to prevent the state from being overwritten before the visual effect could register.
+*   **Codebase convention**: This module strictly adheres to the "Event-Source-Separation" pattern where data mutations happen in the `store` layer and side effects (like animations or logging) are exclusively handled in the `observer` layer, never mixed in the same function.
+*   **Correction made**: Initially attempted to directly mutate the `eventQueue` array inside the loop, causing a silent infinite loop; corrected by using immutable spread syntax (`[...queue]`) and filtering out the processed event before re-assigning.

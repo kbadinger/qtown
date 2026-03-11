@@ -2083,3 +2083,10 @@ Talent show event
 Miracle event
 [2026-03-11 19:11:03 UTC] WARN story_fail: Story 396 struggling — attempt 5/12
 Miracle event
+[2026-03-11 19:16:32 UTC] deploy_ok: Story 393 deployed: Healthy after 0.1s
+[2026-03-11 19:16:50 UTC] story_done: Story 393 complete: Talent show event
+[2026-03-11 19:16:50 UTC] story_start: Story 396: Miracle event
+[2026-03-11 19:23:08 UTC] WARN story_fail: Story 396 struggling — attempt 5/12
+Miracle event
+[2026-03-11 19:36:43 UTC] WARN story_fail: Story 396 struggling — attempt 5/12
+Miracle event
