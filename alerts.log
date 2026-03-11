@@ -1885,3 +1885,11 @@ Indexing...
 Uploading..
 [2026-03-11 14:59:02 UTC] story_done: Story 391 complete: Flood event
 [2026-03-11 14:59:02 UTC] story_start: Story 392: Wedding festival
+[2026-03-11 14:59:32 UTC] WARN deploy_fail: Story 391 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   955bdfa..5db9018  main -> main
+
+Indexing...
+Uploading..
+[2026-03-11 14:59:32 UTC] story_done: Story 391 complete: Flood event
+[2026-03-11 14:59:33 UTC] story_start: Story 392: Wedding festival

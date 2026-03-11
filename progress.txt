@@ -1718,3 +1718,8 @@
 - **Tricky/Non-obvious**: The `FloodEvent` service relies on a hidden dependency on the `HydrologyCache` singleton for rate-limiting; bypassing the cache in tests caused false positives in the alert threshold logic.
 - **Patterns/Conventions**: Event-driven modules consistently use the `DomainEvent` base class with a `timestamp` and `correlationId` for tracing, and all external API calls are wrapped in the `CircuitBreaker` decorator to prevent cascading failures.
 - **Mistakes & Corrections**: Initially, I treated flood levels as absolute values instead of relative to the local baseline, causing false alerts in high-elevation zones; corrected by normalizing inputs against the `LocalBaseline` service before comparison.
+
+--- Story 391: Flood event (attempts: 4, 2026-03-11 11:15) ---
+*   **Tricky Logic**: The flood propagation algorithm required careful handling of diagonal vs. orthogonal movement to prevent infinite loops; using a visited set keyed by `(x, y, depth)` was non-obvious but critical for termination.
+*   **Codebase Patterns**: The project consistently uses a `Grid` wrapper class with immutable state transitions rather than mutating arrays in place, ensuring easier debugging of simulation steps.
+*   **Correction**: Initially, I applied water level updates before checking boundary conditions, causing index-out-of-bounds errors; refactored to validate coordinates within the `step()` method before any state mutation.
