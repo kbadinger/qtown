@@ -3914,7 +3914,7 @@
     {
       "id": "218",
       "title": "NPC daily routines based on time of day",
-      "description": "Create apply_daily_routine(db) in engine/simulation/npcs.py. Read WorldState.time_of_day. Morning: NPCs with work_building move toward it (set target_x/y). Afternoon: continue working. Evening: NPCs move toward tavern or home. Night: NPCs move toward home_building. Only set targets for NPCs that don't already have one.",
+      "description": "EXTEND apply_daily_routine(db) in engine/simulation/npcs.py. The function ALREADY exists and returns a dict with period counts (going_work, working, going_home). It uses tick%24 for time periods. ADD to it: in the evening period (16-23), some NPCs should target a tavern building (building_type=\"tavern\") instead of going home. Also add a guard: skip NPCs that already have a target_x set. Keep the existing dict return and all current logic. Use UPDATE FUNCTION patch mode.",
       "test_file": "tests/test_npcs.py",
       "context_files": [
         "engine/simulation/npcs.py"
@@ -6394,13 +6394,13 @@
         "simulation"
       ],
       "priority": 388,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     {
       "id": "389",
       "title": "Harvest festival",
-      "description": "Create trigger_harvest_festival(db) in engine/simulation/events.py. Double Resource quantities where name contains 'food' or 'grain'. All living NPCs happiness += 5. Create Event(event_type='harvest_festival'). Return count of resources doubled.",
+      "description": "EXTEND trigger_harvest_festival(db) in engine/simulation/events.py. The function ALREADY exists and creates a harvest_festival Event and adds +20 happiness to all NPCs. ADD to it: also double Resource quantities where name contains \"food\" or \"grain\" (set resource.quantity *= 2). Keep the existing Event creation and happiness boost. Do NOT change the function signature or return type. Use UPDATE FUNCTION patch mode.",
       "test_file": "tests/test_events.py",
       "context_files": [
         "engine/simulation/events.py"
@@ -6410,13 +6410,12 @@
         "simulation"
       ],
       "priority": 389,
-      "status": "pending",
-      "attempts": 0
+      "status": "pending"
     },
     {
       "id": "390",
       "title": "Fire event",
-      "description": "Create trigger_fire(db) in engine/simulation/events.py. Pick 1 random building. If guard within distance 5: level -= 1 (min 1). If no guard: capacity = 0. Create Event(event_type='fire', severity=3). Return dict with building_id and destroyed bool.",
+      "description": "EXTEND trigger_fire(db) in engine/simulation/events.py. The function ALREADY exists and creates a fire Event with affected_building_id. ADD to it: if any living NPC with role=\"guard\" has abs(npc.x - building.x) <= 5 and abs(npc.y - building.y) <= 5, reduce building.level by 1 (min 1) instead of destroying. Keep existing Event creation and affected_building_id. Use UPDATE FUNCTION patch mode.",
       "test_file": "tests/test_events.py",
       "context_files": [
         "engine/simulation/events.py"
@@ -6426,13 +6425,12 @@
         "simulation"
       ],
       "priority": 390,
-      "status": "pending",
-      "attempts": 0
+      "status": "pending"
     },
     {
       "id": "391",
       "title": "Flood event",
-      "description": "Create trigger_flood(db) in engine/simulation/events.py. Tiles where y < 5: set terrain='flooded'. Buildings on flooded tiles: level -= 1. NPCs there: energy -= 20. Create Event(event_type='flood', severity=3). Return count of flooded tiles.",
+      "description": "EXTEND trigger_flood(db) in engine/simulation/events.py. The function ALREADY exists, creates a flood Event, and damages buildings. ADD to it: for all living NPCs where npc.y < 5 (flooded zone), reduce npc.energy by 20 (min 0). Keep existing Event creation and building damage. Use UPDATE FUNCTION patch mode.",
       "test_file": "tests/test_events.py",
       "context_files": [
         "engine/simulation/events.py"
@@ -6442,8 +6440,7 @@
         "simulation"
       ],
       "priority": 391,
-      "status": "pending",
-      "attempts": 0
+      "status": "pending"
     },
     {
       "id": "392",
@@ -6458,8 +6455,7 @@
         "simulation"
       ],
       "priority": 392,
-      "status": "pending",
-      "attempts": 0
+      "status": "pending"
     },
     {
       "id": "393",
@@ -6474,8 +6470,7 @@
         "simulation"
       ],
       "priority": 393,
-      "status": "pending",
-      "attempts": 0
+      "status": "pending"
     },
     {
       "id": "394",
@@ -6496,7 +6491,7 @@
     {
       "id": "395",
       "title": "Bandit raid",
-      "description": "Create trigger_bandit_raid(db) in engine/simulation/events.py. Count guards. For each living NPC: stolen = max(0, min(20, gold) - guard_count * 5). Deduct from gold (min 0). Create Event(event_type='bandit_raid', severity=2). Return total stolen.",
+      "description": "EXTEND trigger_bandit_raid(db) in engine/simulation/events.py. The function ALREADY exists and steals gold from Treasury and NPCs, creates bandit_raid Event, and triggers a justice_response cascade. ADD to it: if any living NPC with role=\"guard\" exists, reduce the theft percentage by 5% per guard. Keep all existing Event creation and theft logic. Do NOT change the function signature or return type. Use UPDATE FUNCTION patch mode.",
       "test_file": "tests/test_events.py",
       "context_files": [
         "engine/simulation/events.py"

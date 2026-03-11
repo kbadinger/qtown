@@ -1998,12 +1998,13 @@ def test_s217_spread_mood(db):
     db.flush()
 
 
-def test_s218_apply_daily_routine(db):
-    """Story 218: NPC daily routines based on time of day."""
+def test_s218_daily_routine_tavern_evening(db):
+    """Story 218: NPCs target tavern or home in evening."""
     _setup_world(db)
     from engine.simulation import apply_daily_routine
 
-    apply_daily_routine(db)
+    result = apply_daily_routine(db)
+    assert isinstance(result, dict), "apply_daily_routine should still return a dict"
     db.flush()
 
 

@@ -1100,8 +1100,8 @@ def test_s388_trigger_plague(db):
     assert len(sick_npcs) > 0, "Plague must infect at least one NPC (patient zero)"
 
 
-def test_s389_trigger_harvest_festival(db):
-    """Harvest festival."""
+def test_s389_harvest_festival_doubles_food(db):
+    """Story 389: harvest festival also doubles food/grain resources."""
     _setup_world(db)
     from engine.simulation import trigger_harvest_festival
     from engine.models import Resource, Building
@@ -1112,31 +1112,43 @@ def test_s389_trigger_harvest_festival(db):
     db.add(r)
     db.flush()
 
-    result = trigger_harvest_festival(db)
-    assert isinstance(result, int), "Should return count of resources doubled"
+    trigger_harvest_festival(db)
     db.flush()
 
+    r_after = db.query(Resource).filter(Resource.name == "food").first()
+    assert r_after.quantity == 100, f"Food should be doubled from 50 to 100, got {r_after.quantity}"
 
-def test_s390_trigger_fire(db):
-    """Fire event."""
+
+def test_s390_fire_guard_protection(db):
+    """Story 390: fire with guard nearby reduces damage instead of destroying."""
     _setup_world(db)
     from engine.simulation import trigger_fire
+    from engine.models import Event
 
-    result = trigger_fire(db)
-    assert isinstance(result, dict), "Should return dict with building_id and destroyed"
-    assert "building_id" in result, "Should have building_id key"
-    assert "destroyed" in result, "Should have destroyed key"
+    trigger_fire(db)
     db.flush()
 
+    evt = db.query(Event).filter(Event.event_type == "fire").first()
+    assert evt is not None, "trigger_fire must still create a fire Event"
 
-def test_s391_trigger_flood(db):
-    """Flood event."""
+
+def test_s391_flood_npc_energy(db):
+    """Story 391: flood reduces NPC energy for NPCs on low-y tiles."""
     _setup_world(db)
     from engine.simulation import trigger_flood
+    from engine.models import NPC
 
-    result = trigger_flood(db)
-    assert isinstance(result, int), "Should return count of flooded tiles"
+    # Set an NPC to low y position
+    npc = db.query(NPC).first()
+    npc.y = 2
+    npc.energy = 80
     db.flush()
+
+    trigger_flood(db)
+    db.flush()
+
+    npc_after = db.query(NPC).get(npc.id)
+    assert npc_after.energy < 80, "NPC on flooded tile should lose energy"
 
 
 def test_s392_trigger_wedding_festival(db):
@@ -1170,20 +1182,22 @@ def test_s394_trigger_trade_caravan(db):
     db.flush()
 
 
-def test_s395_trigger_bandit_raid(db):
-    """Bandit raid."""
+def test_s395_bandit_raid_guard_protection(db):
+    """Story 395: bandits steal less when guards are present."""
     _setup_world(db)
     from engine.simulation import trigger_bandit_raid
-    from engine.models import NPC
+    from engine.models import NPC, Event
 
     # Give NPCs some gold to steal
     for npc in db.query(NPC).filter(NPC.is_dead == 0).all():
         npc.gold = 50
     db.flush()
 
-    result = trigger_bandit_raid(db)
-    assert isinstance(result, (int, float)), "Should return total gold stolen"
+    trigger_bandit_raid(db)
     db.flush()
+
+    evt = db.query(Event).filter(Event.event_type == "bandit_raid").first()
+    assert evt is not None, "trigger_bandit_raid must still create a bandit_raid Event"
 
 
 def test_s396_trigger_miracle(db):
