@@ -1858,3 +1858,8 @@
 - **Tricky**: The cascade failure logic required careful handling of shared state references; a naive deep copy of the building structure caused memory leaks during the simulation loop.
 - **Patterns**: The codebase consistently uses a "Command-Query Separation" pattern where structural integrity checks are pure functions, while state mutations are isolated in dedicated `CollapseEvent` handlers.
 - **Correction**: Initially, I attempted to validate the entire grid synchronously, causing a timeout on large inputs; switching to a breadth-first traversal with early-exit conditions resolved the performance bottleneck.
+
+--- Story 398: Building collapse (attempts: 2, 2026-03-11 18:36) ---
+- **Tricky Aspect**: The recursive nature of the `calculate_load_distribution` function caused a stack overflow on deep nesting; the non-obvious fix was switching to an iterative approach with an explicit stack to handle the 50+ level building structures.
+- **Pattern Discovered**: The codebase consistently separates "structural integrity" logic from "rendering" logic, using a dedicated `PhysicsEngine` singleton that all building components query, rather than embedding physics calculations directly in the component classes.
+- **Mistake & Correction**: Initially, I treated `MaterialStrength` as a static constant, which failed when the story introduced dynamic weather effects; I corrected this by refactoring it to a context-aware method that adjusts strength based on the current `EnvironmentState`.
