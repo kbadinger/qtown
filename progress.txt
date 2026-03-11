@@ -1773,3 +1773,8 @@
 - **Non-obvious state coupling**: The caravan arrival logic unexpectedly triggers a global `MarketStability` recalculation, which cascades into inventory re-pricing; this side effect was not documented in the `Caravan` service interface.
 - **Convention discovery**: The codebase consistently uses the `EventBus` for cross-module notifications (e.g., `CaravanArrivedEvent`) rather than direct method calls, ensuring loose coupling between logistics and economy modules.
 - **Correction**: Initially attempted to update stock levels synchronously within the arrival handler, causing a race condition with concurrent trade requests; corrected by deferring inventory updates to a background job triggered by the event.
+
+--- Story 393: Talent show event (attempts: 1, 2026-03-11 14:24) ---
+*   **Non-obvious state synchronization**: The talent show leaderboard required a manual `useEffect` to sync with the global `eventStatus` context; relying solely on prop drilling caused stale data during rapid event state transitions.
+*   **Codebase convention**: All event-specific components must export a `validateEntry` helper function alongside the main component to be compatible with the shared `EventOrchestrator` wrapper.
+*   **Correction**: Initially implemented the "voting" logic as a synchronous API call, which blocked the UI thread; refactored to use `async/await` with optimistic UI updates to maintain responsiveness during high-traffic voting periods.

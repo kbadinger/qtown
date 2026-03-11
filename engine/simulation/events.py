@@ -2190,17 +2190,22 @@ def trigger_talent_show(db: Session) -> Optional[int]:
 
 
 def trigger_trade_caravan(db: Session) -> int:
-    """Trigger a trade caravan arrival event."""
+    """Trigger a trade caravan arrival event.
+    
+    Finds the market building. If it exists, adds 3 Resources with name='caravan_goods'
+    and quantity=20. Creates an Event with event_type='trade_caravan'.
+    Returns the count of resources added (3) or 0 if no market exists.
+    """
+    from sqlalchemy.orm import Session
     from engine.models import Building, Resource, Event
-    from sqlalchemy import func
-
-    # Find market building
+    
+    # Find the market building
     market = db.query(Building).filter(Building.building_type == "market").first()
     
     if not market:
         return 0
-
-    # Add 3 Resources with name 'caravan_goods' and quantity 20
+    
+    # Add 3 resources of type 'caravan_goods' with quantity 20
     resources_added = 0
     for _ in range(3):
         new_resource = Resource(
@@ -2210,13 +2215,14 @@ def trigger_trade_caravan(db: Session) -> int:
         )
         db.add(new_resource)
         resources_added += 1
-
-    # Create Event
+    
+    # Create the event
     new_event = Event(
         event_type="trade_caravan",
         description="A trade caravan has arrived at the market!"
     )
     db.add(new_event)
+    
     db.commit()
-
+    
     return resources_added
