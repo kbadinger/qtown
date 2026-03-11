@@ -2029,3 +2029,17 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 `tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
 [2026-03-11 18:00:22 UTC] CRITICAL critical: Story 393 failed: Talent show event
 Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 18:00:52 UTC] story_start: Story 394: Trade caravan arrival
+[2026-03-11 18:01:05 UTC] WARN deploy_fail: Story 394 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   1bff143..331ff6f  main -> main
+
+Indexing...
+Uploading..
+[2026-03-11 18:01:05 UTC] story_done: Story 394 complete: Trade caravan arrival
+[2026-03-11 18:01:06 UTC] story_start: Story 393: Talent show event
+[2026-03-11 18:10:53 UTC] CRITICAL critical: Story 393: still failing after help + 3 retries — stopping
+`tests/test_events.py::test_s393_trigger_talent_show FAILED               [100%]`
+[2026-03-11 18:10:53 UTC] CRITICAL critical: Story 393 failed: Talent show event
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 18:11:24 UTC] story_start: Story 393: Talent show event

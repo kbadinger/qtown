@@ -2134,8 +2134,43 @@ def trigger_talent_show(db: Session) -> Optional[int]:
     world_state = db.query(WorldState).first()
     current_tick = world_state.tick if world_state else 0
     
+    # Find or create a town representative NPC for the sender
+    town_npc = db.query(NPC).filter(
+        NPC.name == 'Town Treasury',
+        NPC.is_dead == 0
+    ).first()
+    
+    if not town_npc:
+        # Create a town treasury NPC if it doesn't exist
+        town_npc = NPC(
+            name='Town Treasury',
+            role='town',
+            x=0,
+            y=0,
+            gold=0,
+            hunger=0,
+            energy=100,
+            happiness=100,
+            age=100,
+            max_age=150,
+            is_dead=0,
+            is_bankrupt=0,
+            illness_severity=0,
+            illness=0,
+            personality='[]',
+            skill=0,
+            memory_events='[]',
+            favorite_buildings='[]',
+            avoided_areas='[]',
+            experience='{}'
+        )
+        db.add(town_npc)
+        db.flush()
+    
     # Create transaction for the prize
     transaction = Transaction(
+        sender_id=town_npc.id,
+        receiver_id=winner.id,
         amount=50,
         reason='talent_show_prize'
     )
@@ -2152,3 +2187,36 @@ def trigger_talent_show(db: Session) -> Optional[int]:
     db.commit()
     
     return winner.id
+
+
+def trigger_trade_caravan(db: Session) -> int:
+    """Trigger a trade caravan arrival event."""
+    from engine.models import Building, Resource, Event
+    from sqlalchemy import func
+
+    # Find market building
+    market = db.query(Building).filter(Building.building_type == "market").first()
+    
+    if not market:
+        return 0
+
+    # Add 3 Resources with name 'caravan_goods' and quantity 20
+    resources_added = 0
+    for _ in range(3):
+        new_resource = Resource(
+            name="caravan_goods",
+            quantity=20,
+            building_id=market.id
+        )
+        db.add(new_resource)
+        resources_added += 1
+
+    # Create Event
+    new_event = Event(
+        event_type="trade_caravan",
+        description="A trade caravan has arrived at the market!"
+    )
+    db.add(new_event)
+    db.commit()
+
+    return resources_added
