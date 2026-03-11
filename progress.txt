@@ -1853,3 +1853,8 @@
 *   **Non-obvious edge case**: The comet's trajectory calculation fails silently when the observation timestamp is outside the ephemeris window; added explicit bounds checking before interpolation.
 *   **Codebase pattern**: Discovered that all astronomical coordinate transformations rely on the shared `CelestialFrame` utility, which handles both J2000 and ICRF conversions automatically.
 *   **Correction**: Initially passed raw floating-point angles to the rendering engine, causing visual jitter; fixed by normalizing angles to the `[0, 360)` range using the standard utility function.
+
+--- Story 398: Building collapse (attempts: 3, 2026-03-11 18:36) ---
+- **Tricky**: The cascade failure logic required careful handling of shared state references; a naive deep copy of the building structure caused memory leaks during the simulation loop.
+- **Patterns**: The codebase consistently uses a "Command-Query Separation" pattern where structural integrity checks are pure functions, while state mutations are isolated in dedicated `CollapseEvent` handlers.
+- **Correction**: Initially, I attempted to validate the entire grid synchronously, causing a timeout on large inputs; switching to a breadth-first traversal with early-exit conditions resolved the performance bottleneck.
