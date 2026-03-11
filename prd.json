@@ -6378,8 +6378,8 @@
         "simulation"
       ],
       "priority": 387,
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     {
       "id": "388",

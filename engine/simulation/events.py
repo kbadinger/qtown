@@ -2004,3 +2004,53 @@ def calculate_danger_scores(db: Session) -> dict:
             danger_scores[(tx, ty)] = score
     
     return danger_scores
+
+
+def trigger_festival_of_lights(db: Session) -> int:
+    """
+    Trigger the Festival of Lights event.
+    
+    - Creates Event with event_type='festival_of_lights', severity=0
+    - Increases happiness by 10 for all living NPCs
+    - Adds 'festival_of_lights' to each NPC's memory_events
+    - Returns count of NPCs affected
+    """
+    import json
+    
+    # Create the event record
+    from engine.models import WorldState
+    ws = db.query(WorldState).first()
+    current_tick = ws.tick if ws else 0
+
+    event = Event(
+        event_type='festival_of_lights',
+        description='The town celebrates the Festival of Lights!',
+        tick=current_tick,
+        severity=0
+    )
+    db.add(event)
+
+    # Find all living NPCs
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    affected_count = 0
+    
+    for npc in living_npcs:
+        # Increase happiness
+        npc.happiness = min(100, npc.happiness + 10)
+        
+        # Add to memory_events
+        try:
+            memory_events = json.loads(npc.memory_events) if npc.memory_events else []
+        except (json.JSONDecodeError, TypeError):
+            memory_events = []
+        
+        if 'festival_of_lights' not in memory_events:
+            memory_events.append('festival_of_lights')
+            npc.memory_events = json.dumps(memory_events)
+        
+        affected_count += 1
+    
+    db.commit()
+    
+    return affected_count

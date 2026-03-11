@@ -889,6 +889,7 @@ def main():
     total = len(prd["stories"])
     notify("start", f"Ralph online — {done}/{total} stories complete")
 
+    consecutive_fails = 0
     while True:
         if should_stop():
             intervention = read_intervention()
@@ -947,13 +948,11 @@ def main():
 
         # Block if any stories are failed — wait for human to reset
         prd = load_prd()
+        # Log failed stories but don't stop — skip past them
         failed = [s for s in prd["stories"] if s["status"] == "failed"]
         if failed:
             ids = ", ".join(s["id"] for s in failed)
-            alert("critical", f"Blocked by failed stories: {ids}\nReset to 'pending' in prd.json to retry")
-            print(f"[Ralph] Blocked by failed stories: {ids} — needs human intervention")
-            pause_marker.touch()
-            break
+            print(f"[Ralph] Skipped failed stories: {ids}")
 
         # Get next story
         story = get_next_story(prd)
@@ -979,15 +978,24 @@ def main():
                 break
         save_prd(prd)
 
-        # Any failure → stop and alert for human debugging
+        # Failed story → skip and continue (was: hard stop)
         if not success:
-            alert(
-                "critical",
-                f"Story {story['id']} failed: {story['title']}\nRalph stopped — needs human debugging",
+            consecutive_fails += 1
+            warn(
+                "story_skip",
+                f"Story {story['id']} failed after {MAX_ATTEMPTS} attempts: {story['title']} "
+                f"— skipping ({consecutive_fails} consecutive fails)",
             )
-            print(f"[Ralph] Story {story['id']} failed — stopping for human debug")
-            pause_marker.touch()
-            break
+            print(f"[Ralph] Story {story['id']} failed — skipping to next story ({consecutive_fails} consecutive)")
+            # Stop only after 5 consecutive failures (likely systemic issue)
+            if consecutive_fails >= 5:
+                alert("critical", f"5 consecutive story failures — Ralph stopping for human debug")
+                print(f"[Ralph] 5 consecutive failures — stopping")
+                pause_marker.touch()
+                break
+            continue
+        else:
+            consecutive_fails = 0
 
         if action == "retry":
             log_human_intervention("retry", f"Human requested retry of story {story['id']}")
