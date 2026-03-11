@@ -1803,3 +1803,8 @@
 - **Tricky Logic**: The caravan arrival logic required careful handling of state transitions; simply adding goods wasn't enough—I had to ensure the `isArrived` flag was toggled *after* the inventory merge to prevent race conditions with the UI rendering.
 - **Codebase Patterns**: This story reinforced the convention of using `EventBus` for cross-module notifications (e.g., notifying the Market module) rather than direct service calls, keeping the Caravan module loosely coupled.
 - **Correction**: I initially placed the random loot generation inside the main `arrive()` method, which made unit testing difficult; I refactored it into a dedicated `LootGenerator` service to allow for deterministic seeding in tests.
+
+--- Story 395: Bandit raid (attempts: 3, 2026-03-11 14:52) ---
+*   **Non-obvious state mutation**: The raid logic relies on a shared `WorldState` singleton that mutates inventory references directly; failing to clone the state before applying temporary raid effects caused persistent data leaks in subsequent turns.
+*   **Convention for event sequencing**: Combat resolution strictly follows the `PreCheck` → `Resolve` → `PostCheck` pattern; inserting logic between `Resolve` and `PostCheck` bypasses the global loot distribution hook, breaking the economy balance.
+*   **Correction on boundary checks**: Initially assumed `BanditCount` was always positive; added a guard clause to handle the edge case where a raid is triggered with zero bandits, which previously caused a division-by-zero error in the damage calculation.
