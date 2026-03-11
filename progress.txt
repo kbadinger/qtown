@@ -1808,3 +1808,8 @@
 *   **Non-obvious state mutation**: The raid logic relies on a shared `WorldState` singleton that mutates inventory references directly; failing to clone the state before applying temporary raid effects caused persistent data leaks in subsequent turns.
 *   **Convention for event sequencing**: Combat resolution strictly follows the `PreCheck` → `Resolve` → `PostCheck` pattern; inserting logic between `Resolve` and `PostCheck` bypasses the global loot distribution hook, breaking the economy balance.
 *   **Correction on boundary checks**: Initially assumed `BanditCount` was always positive; added a guard clause to handle the edge case where a raid is triggered with zero bandits, which previously caused a division-by-zero error in the damage calculation.
+
+--- Story 393: Talent show event (attempts: 1, 2026-03-11 15:14) ---
+- **Non-obvious state synchronization**: The talent show scoring logic required careful handling of asynchronous API responses to prevent race conditions where the leaderboard updated before all judges' scores were fully processed.
+- **Codebase convention for event-driven UI**: Discovered a strict pattern where all user-triggered UI changes in this module must emit a custom `TalentEvent` rather than directly mutating state, ensuring the analytics middleware captures every interaction.
+- **Correction on validation logic**: Initially placed score validation on the frontend only, leading to invalid data ingestion; corrected by moving the schema validation to the backend service layer and adding a retry mechanism for transient network failures.
