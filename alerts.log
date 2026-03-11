@@ -1849,3 +1849,9 @@ Harvest festival
 [2026-03-11 14:36:31 UTC] deploy_ok: Story 390 deployed: Healthy after 0.1s
 [2026-03-11 14:37:00 UTC] story_done: Story 390 complete: Fire event
 [2026-03-11 14:37:15 UTC] story_start: Story 391: Flood event
+[2026-03-11 14:39:13 UTC] deploy_ok: Story 389 deployed: Healthy after 0.1s
+[2026-03-11 14:39:22 UTC] story_done: Story 389 complete: Harvest festival
+[2026-03-11 14:39:23 UTC] story_start: Story 391: Flood event
+[2026-03-11 14:40:11 UTC] WARN ollama_bad_response: Ollama bad response: 'charmap' codec can't encode character '\u2705' in position 134: character maps to <undefined>
+[2026-03-11 14:40:12 UTC] WARN story_fail: Story 389 struggling — attempt 5/12
+Harvest festival

@@ -1683,3 +1683,8 @@
 *   **Non-obvious date handling**: The festival logic relies on a localized `Date` object that shifts based on the user's timezone, causing off-by-one errors if not explicitly normalized to UTC before comparing against the event schedule.
 *   **Codebase pattern**: Event-driven state updates in this module strictly follow the `Action -> Reducer -> SideEffect` chain; direct state mutation in the controller layer triggers silent failures in the analytics tracker.
 *   **Correction made**: Initially attempted to cache the harvest list in a static variable, which caused stale data for concurrent users; corrected by switching to a scoped `Map` keyed by session ID to ensure data isolation.
+
+--- Story 389: Harvest festival (attempts: 1, 2026-03-11 10:41) ---
+*   **Tricky Logic**: The festival inventory reconciliation required handling floating-point precision for partial crate counts; switching to integer-based "units" (e.g., grams) prevented rounding errors during the final yield calculation.
+*   **Codebase Pattern**: The repository consistently uses a `DomainEvent` abstraction for all state changes in the `Festival` aggregate, ensuring audit logs are generated automatically without cluttering the core logic.
+*   **Correction**: Initially attempted to validate user permissions directly inside the `HarvestService`; corrected by moving this check to a dedicated `FestivalGate` middleware to align with the existing separation of concerns.
