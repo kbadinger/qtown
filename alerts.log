@@ -2090,3 +2090,6 @@ Miracle event
 Miracle event
 [2026-03-11 19:36:43 UTC] WARN story_fail: Story 396 struggling — attempt 5/12
 Miracle event
+[2026-03-11 19:39:11 UTC] deploy_ok: Story 396 deployed: Healthy after 0.1s
+[2026-03-11 19:39:28 UTC] story_done: Story 396 complete: Miracle event
+[2026-03-11 19:39:29 UTC] story_start: Story 397: Comet sighting

@@ -1818,3 +1818,8 @@
 *   **Non-obvious state propagation**: The "miracle" trigger relies on a race condition between the event bus and the UI render cycle; wrapping the handler in a `requestAnimationFrame` was required to prevent the state from being overwritten before the visual effect could register.
 *   **Codebase convention**: This module strictly adheres to the "Event-Source-Separation" pattern where data mutations happen in the `store` layer and side effects (like animations or logging) are exclusively handled in the `observer` layer, never mixed in the same function.
 *   **Correction made**: Initially attempted to directly mutate the `eventQueue` array inside the loop, causing a silent infinite loop; corrected by using immutable spread syntax (`[...queue]`) and filtering out the processed event before re-assigning.
+
+--- Story 396: Miracle event (attempts: 4, 2026-03-11 15:59) ---
+- **Tricky/Non-obvious**: The "miracle" logic relies on a hidden race condition in the event queue; the outcome depends on the order of `onComplete` callbacks, not just the final state of the data.
+- **Patterns/Conventions**: This codebase consistently uses `EventBus` for cross-module communication but expects all listeners to be registered in a strict `init()` phase before any async operations begin.
+- **Mistakes corrected**: Initially assumed the event payload was immutable, leading to a bug where modifying the object in one listener affected others; fixed by deep-cloning the payload at the dispatch source.
