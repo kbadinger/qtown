@@ -1723,3 +1723,8 @@
 *   **Tricky Logic**: The flood propagation algorithm required careful handling of diagonal vs. orthogonal movement to prevent infinite loops; using a visited set keyed by `(x, y, depth)` was non-obvious but critical for termination.
 *   **Codebase Patterns**: The project consistently uses a `Grid` wrapper class with immutable state transitions rather than mutating arrays in place, ensuring easier debugging of simulation steps.
 *   **Correction**: Initially, I applied water level updates before checking boundary conditions, causing index-out-of-bounds errors; refactored to validate coordinates within the `step()` method before any state mutation.
+
+--- Story 391: Flood event (attempts: 3, 2026-03-11 11:15) ---
+- **Tricky/Non-obvious**: The flood simulation logic relies on a `max_water_level` threshold that triggers a cascade of `drain` operations; missing the asynchronous `await` on the initial sensor read caused the entire simulation to skip the overflow check entirely.
+- **Patterns/Conventions**: The codebase consistently uses a `StateSnapshot` pattern for all event-driven simulations, requiring explicit cloning of the `Grid` object before any mutation to ensure deterministic replayability.
+- **Mistakes & Corrections**: Initially attempted to modify the grid in-place during the iteration loop, which caused race conditions with the neighbor-checking logic; corrected by switching to a double-buffer approach (current vs. next state) as seen in Story 385.

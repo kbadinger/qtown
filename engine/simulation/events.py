@@ -2066,3 +2066,42 @@ def trigger_festival_of_lights(db: Session) -> int:
     db.commit()
     
     return affected_count
+
+
+def trigger_wedding_festival(db: Session) -> int:
+    """Trigger a wedding festival event for all married couples."""
+    from engine.models import NPC, Relationship, Event
+    
+    # Query all spouse relationships
+    couples = db.query(Relationship).filter(
+        Relationship.relationship_type == "spouse"
+    ).all()
+    
+    if not couples:
+        return 0
+    
+    # Get unique NPC IDs involved in marriages to avoid double counting happiness
+    married_npc_ids = set()
+    for rel in couples:
+        married_npc_ids.add(rel.npc_id_1)
+        married_npc_ids.add(rel.npc_id_2)
+    
+    # Increase happiness for all living married NPCs
+    living_married = db.query(NPC).filter(
+        NPC.id.in_(married_npc_ids),
+        NPC.is_dead == 0
+    ).all()
+    
+    for npc in living_married:
+        npc.happiness = min(npc.happiness + 5, 100)
+    
+    # Create the event
+    event = Event(
+        event_type="wedding_festival",
+        description="A town-wide wedding celebration!"
+    )
+    db.add(event)
+    
+    db.commit()
+    
+    return len(couples)
