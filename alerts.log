@@ -2122,3 +2122,16 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-11 21:20:50 UTC] story_start: Story 396: Miracle event
 [2026-03-11 21:21:41 UTC] WARN story_fail: Story 397 struggling — attempt 5/12
 Comet sighting
+[2026-03-11 21:23:34 UTC] deploy_ok: Story 397 deployed: Healthy after 0.1s
+[2026-03-11 21:23:51 UTC] story_done: Story 397 complete: Comet sighting
+[2026-03-11 21:23:52 UTC] story_start: Story 396: Miracle event
+[2026-03-11 21:28:46 UTC] WARN story_fail: Story 397 struggling — attempt 5/12
+Comet sighting
+[2026-03-11 21:52:46 UTC] WARN story_fail: Story 396 struggling — attempt 5/12
+Miracle event
+[2026-03-11 21:54:38 UTC] WARN story_fail: Story 397 struggling — attempt 5/12
+Comet sighting
+[2026-03-11 21:57:42 UTC] CRITICAL loop: Story 396: same error 5x in a row — requesting help
+`tests/test_events.py::test_s396_trigger_miracle FAILED                   [100%]`
+[2026-03-11 21:57:42 UTC] CRITICAL needs_help: Story 396 needs help — waiting 10min for fix
+`tests/test_events.py::test_s396_trigger_miracle FAILED                   [100%]`

@@ -2227,3 +2227,46 @@ def trigger_trade_caravan(db: Session) -> int:
     db.commit()
     
     return resources_added
+
+
+def trigger_miracle(db: Session) -> int | None:
+    """
+    Trigger a miracle event that heals a random sick NPC.
+    
+    Finds a living NPC with an illness, heals them completely,
+    increases their happiness, and logs the event.
+    
+    Args:
+        db: Database session
+        
+    Returns:
+        Healed NPC id or None if no sick NPC found
+    """
+    # Find a living NPC with an illness (illness is not None and illness_severity > 0)
+    sick_npc = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.illness != None,
+        NPC.illness_severity > 0
+    ).first()
+    
+    if sick_npc is None:
+        return None
+    
+    # Heal the NPC
+    old_illness = sick_npc.illness
+    sick_npc.illness = None
+    sick_npc.illness_severity = 0
+    
+    # Increase happiness (cap at reasonable max)
+    sick_npc.happiness = min(sick_npc.happiness + 15, 100)
+    
+    # Create the miracle event
+    event = Event(
+        event_type='miracle',
+        description=f"A miracle occurred! {sick_npc.name} was healed from {old_illness}."
+    )
+    db.add(event)
+    
+    db.commit()
+    
+    return sick_npc.id

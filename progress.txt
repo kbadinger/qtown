@@ -1833,3 +1833,8 @@
 *   **Non-obvious Time Zone Handling**: The comet sighting logic required converting UTC timestamps to local observer time using IANA timezone strings, which failed silently if the `pytz` library wasn't explicitly imported for dynamic zone resolution.
 *   **Codebase Convention**: The project enforces a strict separation where all astronomical calculations live in `core/astro.py`, while data persistence is handled exclusively by the `services` layer using dependency injection.
 *   **Correction**: Initially, I hardcoded the visibility window in seconds; I corrected this to use the `datetime.timedelta` object to ensure the logic remains readable and compatible with the existing time-series filtering functions.
+
+--- Story 396: Miracle event (attempts: 1, 2026-03-11 18:11) ---
+- **Tricky/Non-obvious**: The "miracle" event logic relies on a hidden global state flag that persists across test runs; failing to reset this flag between scenarios caused intermittent flakiness in the validation suite.
+- **Patterns/Conventions**: The codebase strictly separates event *dispatching* from *handling* using a dedicated `EventBus` interface, ensuring no direct coupling between the trigger source and the business logic consumers.
+- **Mistakes & Corrections**: Initially attempted to mock the entire event bus for unit tests, which broke integration coverage; corrected by switching to a lightweight in-memory bus implementation that allows real event propagation within the test context.
