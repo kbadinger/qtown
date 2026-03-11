@@ -1828,3 +1828,8 @@
 - **Timezone handling in astronomical calculations**: The conversion between UTC and local observer time was non-obvious; the codebase expects all internal calculations in UTC, requiring explicit `DateTime` localization only at the final display layer to avoid drift.
 - **Observer location caching**: Discovered a pattern where `Observer` objects are cached by coordinate hash to prevent redundant trigonometric lookups during rapid successive sightings.
 - **Initial error in angle normalization**: Mistakenly used `atan2` without clamping inputs to the [-1, 1] range for edge-case horizon calculations, causing `NaN` outputs; corrected by adding explicit bounds checking before the inverse trig function.
+
+--- Story 397: Comet sighting (attempts: 2, 2026-03-11 17:21) ---
+*   **Non-obvious Time Zone Handling**: The comet sighting logic required converting UTC timestamps to local observer time using IANA timezone strings, which failed silently if the `pytz` library wasn't explicitly imported for dynamic zone resolution.
+*   **Codebase Convention**: The project enforces a strict separation where all astronomical calculations live in `core/astro.py`, while data persistence is handled exclusively by the `services` layer using dependency injection.
+*   **Correction**: Initially, I hardcoded the visibility window in seconds; I corrected this to use the `datetime.timedelta` object to ensure the logic remains readable and compatible with the existing time-series filtering functions.

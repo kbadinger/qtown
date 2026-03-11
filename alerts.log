@@ -2113,3 +2113,12 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-11 20:24:50 UTC] CRITICAL critical: Story 396 failed: Miracle event
 Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-11 20:25:20 UTC] story_start: Story 397: Comet sighting
+[2026-03-11 20:56:47 UTC] deploy_ok: Story 397 deployed: Healthy after 0.1s
+[2026-03-11 20:57:14 UTC] story_done: Story 397 complete: Comet sighting
+[2026-03-11 20:57:15 UTC] story_start: Story 396: Miracle event
+[2026-03-11 21:20:19 UTC] WARN story_fail: Story 396 failed after 12 attempts: Miracle event
+[2026-03-11 21:20:19 UTC] CRITICAL critical: Story 396 failed: Miracle event
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 21:20:50 UTC] story_start: Story 396: Miracle event
+[2026-03-11 21:21:41 UTC] WARN story_fail: Story 397 struggling — attempt 5/12
+Comet sighting
