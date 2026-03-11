@@ -87,6 +87,11 @@ def trigger_flood(db: Session) -> None:
     for building in buildings:
         building.capacity = max(1, building.capacity // 2)
     
+    # Reduce energy for living NPCs in flooded zone (y < 5)
+    flooded_npcs = db.query(NPC).filter(NPC.y < 5, NPC.is_dead == 0).all()
+    for npc in flooded_npcs:
+        npc.energy = max(0, npc.energy - 20)
+    
     # Cascade: trigger price spike event
     price_spike_event = Event(
         event_type="price_spike",

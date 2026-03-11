@@ -1693,3 +1693,8 @@
 - **Tricky Logic**: The date calculation for the festival cycle was non-obvious; it required handling leap years and timezone offsets to ensure the "Harvest Day" aligned correctly across different server regions.
 - **Codebase Patterns**: Discovered a consistent convention of using `EventContext` objects to pass mutable state through the middleware chain, avoiding global variable pollution in the event handlers.
 - **Correction**: Initially failed to validate the `inventory_count` before rendering the festival UI, causing a crash on empty inventories; fixed by adding a guard clause and a fallback "No Harvest" view.
+
+--- Story 389: Harvest festival (attempts: 1, 2026-03-11 10:43) ---
+- **Non-obvious state mutation**: The festival inventory system relies on a shared `EventContext` singleton that mutates in place; failing to reset this context between test runs caused flaky assertions.
+- **Naming convention**: Domain events follow the `EventName` (noun) pattern for the class but use `on<EventName>` (verb-noun) for listener methods, which differs from the standard `handle` prefix used elsewhere.
+- **Correction**: Initially attempted to validate harvest quantities using a simple integer check, but corrected this to use the `Currency` wrapper to handle potential overflow and negative value edge cases.
