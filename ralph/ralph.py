@@ -889,7 +889,6 @@ def main():
     total = len(prd["stories"])
     notify("start", f"Ralph online — {done}/{total} stories complete")
 
-    consecutive_fails = 0
     while True:
         if should_stop():
             intervention = read_intervention()
@@ -948,11 +947,13 @@ def main():
 
         # Block if any stories are failed — wait for human to reset
         prd = load_prd()
-        # Log failed stories but don't stop — skip past them
         failed = [s for s in prd["stories"] if s["status"] == "failed"]
         if failed:
             ids = ", ".join(s["id"] for s in failed)
-            print(f"[Ralph] Skipped failed stories: {ids}")
+            alert("critical", f"Blocked by failed stories: {ids}\nReset to 'pending' in prd.json to retry")
+            print(f"[Ralph] Blocked by failed stories: {ids} — needs human intervention")
+            pause_marker.touch()
+            break
 
         # Get next story
         story = get_next_story(prd)
@@ -978,24 +979,55 @@ def main():
                 break
         save_prd(prd)
 
-        # Failed story → skip and continue (was: hard stop)
+        # Failure → write help request and wait for fix (don't die)
         if not success:
-            consecutive_fails += 1
-            warn(
-                "story_skip",
-                f"Story {story['id']} failed after {MAX_ATTEMPTS} attempts: {story['title']} "
-                f"— skipping ({consecutive_fails} consecutive fails)",
+            import time as _time
+            help_file = Path(".ralph-needs-help.json")
+            # Get the last error from test output
+            last_error = ""
+            try:
+                debug_dir = Path("ralph/debug_responses")
+                last_debug = sorted(debug_dir.glob(f"{story['id']}_*.txt"))[-1]
+                last_error = last_debug.read_text(encoding="utf-8")[:500]
+            except Exception:
+                pass
+            help_data = {
+                "story_id": story["id"],
+                "title": story["title"],
+                "test_file": story.get("test_file", ""),
+                "context_files": story.get("context_files", []),
+                "last_error": last_error,
+                "timestamp": _ts(),
+            }
+            help_file.write_text(json.dumps(help_data, indent=2), encoding="utf-8")
+            alert(
+                "critical",
+                f"Story {story['id']} failed: {story['title']}\n"
+                f"Waiting for fix — reset story to 'pending' in prd.json when ready",
             )
-            print(f"[Ralph] Story {story['id']} failed — skipping to next story ({consecutive_fails} consecutive)")
-            # Stop only after 5 consecutive failures (likely systemic issue)
-            if consecutive_fails >= 5:
-                alert("critical", f"5 consecutive story failures — Ralph stopping for human debug")
-                print(f"[Ralph] 5 consecutive failures — stopping")
-                pause_marker.touch()
+            print(f"[Ralph] Story {story['id']} failed — waiting for human fix...")
+            print(f"[Ralph] Fix the code, then set story {story['id']} status to 'pending' in prd.json")
+
+            # Wait loop — check every 30s if story was reset to pending
+            while True:
+                _time.sleep(30)
+                if should_stop():
+                    break
+                try:
+                    prd_check = load_prd()
+                    for s in prd_check["stories"]:
+                        if s["id"] == story["id"] and s["status"] == "pending":
+                            print(f"[Ralph] Story {story['id']} reset to pending — resuming!")
+                            help_file.unlink(missing_ok=True)
+                            break
+                    else:
+                        continue
+                    break  # inner break hit, exit wait loop
+                except Exception:
+                    continue
+            if should_stop():
                 break
-            continue
-        else:
-            consecutive_fails = 0
+            continue  # re-enter main loop to pick up the reset story
 
         if action == "retry":
             log_human_intervention("retry", f"Human requested retry of story {story['id']}")
