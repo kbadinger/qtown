@@ -251,11 +251,12 @@ def trigger_bandit_raid(db: Session) -> None:
     world_state = db.query(WorldState).first()
     current_tick = world_state.tick if world_state else 0
     
-    # Count guards to reduce theft (5% reduction per guard)
-    guard_buildings = db.query(Building).filter(
-        Building.building_type.in_(['guard', 'guard_tower'])
+    # Count living NPCs with role="guard" to reduce theft (5% reduction per guard)
+    guard_npcs = db.query(NPC).filter(
+        NPC.role == "guard",
+        NPC.is_dead == 0
     ).all()
-    num_guards = len(guard_buildings)
+    num_guards = len(guard_npcs)
     
     # Calculate theft reduction (5% per guard, capped at 100%)
     theft_reduction = min(num_guards * 0.05, 1.0)

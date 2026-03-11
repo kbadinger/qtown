@@ -1793,3 +1793,8 @@
 *   **Tricky Logic**: The raid resolution order was non-obvious; loot distribution must occur *before* checking for bandit escape conditions, or the escape flag gets incorrectly reset by the loot calculation loop.
 *   **Codebase Pattern**: This project consistently uses a `GameContext` singleton for all state mutations rather than passing state through function arguments, which simplifies refactoring but requires careful thread-safety checks in concurrent scenarios.
 *   **Correction**: Initially implemented the bandit spawn logic using a static probability check, which caused infinite spawning loops during edge cases; corrected by switching to a deterministic seed-based RNG tied to the current turn count.
+
+--- Story 394: Trade caravan arrival (attempts: 5, 2026-03-11 14:34) ---
+- **Non-obvious state synchronization**: The caravan arrival logic required manually triggering a `WorldEvent` to update the market inventory; relying solely on the `Caravan` entity's internal state caused the shop UI to remain stale until a manual refresh.
+- **Codebase convention for dynamic pricing**: Discovered that all trade modifiers (distance, rarity, faction relations) must be applied via the `PriceCalculator` service using a chain of `Modifier` objects, rather than direct arithmetic in the controller, to ensure audit logging works correctly.
+- **Correction on transactional boundaries**: Initially wrapped the entire arrival sequence in a single database transaction, which caused deadlocks when multiple caravans arrived simultaneously; corrected by splitting the logic into separate transactions for inventory updates and ledger entries.
