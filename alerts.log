@@ -2138,3 +2138,8 @@ Comet sighting
 [2026-03-11 22:12:49 UTC] deploy_ok: Story 396 deployed: Healthy after 0.1s
 [2026-03-11 22:13:06 UTC] story_done: Story 396 complete: Miracle event
 [2026-03-11 22:13:07 UTC] story_start: Story 398: Building collapse
+[2026-03-11 22:19:22 UTC] deploy_ok: Story 396 deployed: Healthy after 0.1s
+[2026-03-11 22:19:31 UTC] story_done: Story 396 complete: Miracle event
+[2026-03-11 22:19:32 UTC] story_start: Story 398: Building collapse
+[2026-03-11 22:22:17 UTC] WARN story_fail: Story 396 struggling — attempt 5/12
+Miracle event

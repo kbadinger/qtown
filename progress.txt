@@ -1843,3 +1843,8 @@
 - **Tricky Logic**: Handling the "miracle" state transition required careful sequencing to ensure the database transaction committed only after the external event webhook was successfully validated, preventing orphaned records.
 - **Codebase Pattern**: The project consistently uses a "Command/Handler" separation where domain logic is isolated from controller code, meaning new event triggers must implement the specific `IEventTrigger` interface rather than calling services directly.
 - **Correction**: Initially attempted to retry failed webhooks synchronously, causing timeouts; corrected by offloading retries to the background job queue with exponential backoff.
+
+--- Story 397: Comet sighting (attempts: 4, 2026-03-11 18:29) ---
+- **Tricky Logic**: Handling the ephemeral nature of comet data required careful management of state expiration; the non-obvious part was ensuring the "sighting" event didn't trigger duplicate notifications if the user refreshed the page mid-calculation.
+- **Codebase Patterns**: Discovered a strict convention of using `useEffect` cleanup functions to clear timers for transient astronomical events, preventing memory leaks in long-running sessions.
+- **Correction**: Initially hardcoded the comet's visibility window, which broke for edge-case dates; corrected this by refactoring to use the dynamic `ephemeris` utility function to calculate visibility based on the user's local timezone.
