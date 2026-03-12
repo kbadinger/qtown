@@ -2204,3 +2204,39 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-12 00:09:10 UTC] CRITICAL critical: Story 399 failed: Spring bloom
 Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-12 00:09:41 UTC] story_start: Story 399: Spring bloom
+[2026-03-12 00:14:13 UTC] deploy_ok: Story 399 deployed: Healthy after 0.1s
+[2026-03-12 00:14:40 UTC] story_done: Story 399 complete: Spring bloom
+[2026-03-12 00:14:41 UTC] story_start: Story 400: Drought relief
+[2026-03-12 00:15:57 UTC] WARN story_fail: Story 399 struggling — attempt 5/12
+Spring bloom
+[2026-03-12 00:16:14 UTC] WARN story_fail: Story 399 struggling — attempt 5/12
+Spring bloom
+[2026-03-12 00:22:12 UTC] WARN story_fail: Story 396 failed after 12 attempts: Miracle event
+[2026-03-12 00:22:13 UTC] CRITICAL critical: Story 396 failed: Miracle event
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-12 00:22:43 UTC] story_start: Story 400: Drought relief
+[2026-03-12 00:23:23 UTC] WARN story_fail: Story 399 struggling — attempt 5/12
+Spring bloom
+[2026-03-12 00:38:28 UTC] WARN story_fail: Story 399 failed after 12 attempts: Spring bloom
+[2026-03-12 00:38:28 UTC] CRITICAL critical: Story 399 failed: Spring bloom
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-12 00:38:59 UTC] story_start: Story 400: Drought relief
+[2026-03-12 01:06:29 UTC] WARN story_fail: Story 400 struggling — attempt 5/12
+Drought relief
+[2026-03-12 01:06:48 UTC] WARN story_fail: Story 399 failed after 12 attempts: Spring bloom
+[2026-03-12 01:06:48 UTC] CRITICAL critical: Story 399 failed: Spring bloom
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-12 01:07:19 UTC] story_start: Story 400: Drought relief
+[2026-03-12 01:07:58 UTC] WARN story_fail: Story 399 failed after 12 attempts: Spring bloom
+[2026-03-12 01:07:58 UTC] CRITICAL critical: Story 399 failed: Spring bloom
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-12 01:08:24 UTC] WARN story_fail: Story 400 struggling — attempt 5/12
+Drought relief
+[2026-03-12 01:08:29 UTC] story_start: Story 400: Drought relief
+[2026-03-12 01:10:05 UTC] WARN story_fail: Story 399 failed after 12 attempts: Spring bloom
+[2026-03-12 01:10:06 UTC] CRITICAL critical: Story 399 failed: Spring bloom
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-12 01:10:36 UTC] story_start: Story 400: Drought relief
+[2026-03-12 01:23:11 UTC] WARN story_fail: Story 400 struggling — attempt 5/12
+Drought relief
+[2026-03-12 01:37:56 UTC] WARN ollama_bad_response: Ollama bad response: 'charmap' codec can't encode character '\u2192' in position 127: character maps to <undefined>

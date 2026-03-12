@@ -1883,3 +1883,6 @@
 - **Tricky Aspect**: Handling the asynchronous timing of the bloom animation required careful synchronization with the `useEffect` cleanup to prevent memory leaks when the component unmounts before the animation completes.
 - **Pattern Discovered**: The codebase consistently uses a centralized `themeConfig` object for all seasonal color palettes, rather than hardcoding values in individual components, ensuring global consistency.
 - **Mistake & Correction**: Initially applied CSS transitions directly to the `opacity` property on the container, causing layout shifts; corrected by isolating the transition to the child elements and using `will-change` for better performance.
+
+--- Story 400: Drought relief (attempts: 3, 2026-03-11 21:37) ---
+
