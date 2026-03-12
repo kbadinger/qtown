@@ -504,31 +504,36 @@ def review_policy_effectiveness(db: Session) -> list[dict]:
 
 
 def hold_war_council(db: Session) -> dict | None:
-    """Hold a war council if there are enough guards."""
-    from engine.models import NPC, Event, Crime
+    """Hold a war council if enough guards are present."""
+    from engine.models import NPC, Event, Crime, WorldState
     
-    # Count living guards
+    # Count living guards (is_dead is Integer, compare with 0)
     guard_count = db.query(NPC).filter(
         NPC.role == 'guard',
         NPC.is_dead == 0
     ).count()
-    
+
     if guard_count < 3:
         return None
-    
+
     # Count crimes
     crime_count = db.query(Crime).count()
-    
-    # Create event
+
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+
+    # Create Event
     event = Event(
         event_type='war_council',
-        description=f"War council held with {guard_count} guards. {crime_count} crimes reported."
+        tick=current_tick,
+        description="War council held"
     )
     db.add(event)
     db.commit()
-    
+
     return {
-        "action": "war_council",
+        "action": "war_council_held",
         "guard_count": guard_count,
         "crime_count": crime_count
     }

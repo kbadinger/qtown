@@ -2201,3 +2201,8 @@
 - **Tricky/Non-obvious**: The policy effectiveness calculation relies on a non-deterministic `mock_date` injection in the test suite, which caused flaky results when I assumed the current system time was used for the "30-day window" logic.
 - **Patterns/Conventions**: The codebase strictly separates policy definition (static YAML) from evaluation logic (dynamic Python), using a shared `PolicyContext` dataclass to pass state between layers without global variables.
 - **Mistakes/Corrections**: Initially, I treated the `policy_id` as a unique string across all tenants, but discovered it's only unique within a `tenant_id` scope; I corrected the query to include a composite index check to prevent data leakage.
+
+--- Story 406: Policy effectiveness review (attempts: 4, 2026-03-12 07:14) ---
+- **Tricky Aspect**: The `PolicyEvaluator` relies on a non-deterministic mock for time-based expiration checks, requiring explicit `Clock` injection to ensure consistent test results.
+- **Codebase Pattern**: Policy rules are strictly defined as immutable data classes, while enforcement logic is separated into distinct service layers to allow for hot-swappable strategies without touching the core domain model.
+- **Correction**: Initially attempted to modify policy state directly within the audit logger; corrected by injecting a read-only snapshot of the policy to prevent race conditions during concurrent reviews.
