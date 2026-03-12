@@ -2286,3 +2286,8 @@
 *   **Non-obvious Date Handling**: The holiday logic relies on a specific `Calendar` instance rather than `Date` objects, requiring explicit timezone conversion before checking against the static holiday list to avoid off-by-one errors.
 *   **Codebase Convention**: Public holiday declarations follow a "repository pattern" where the `HolidayService` aggregates rules from both a static JSON config and a dynamic database lookup, always prioritizing the database for overrides.
 *   **Correction Made**: Initially attempted to memoize the holiday list at startup, which failed for dynamic admin updates; corrected by implementing a cache-invalidation hook triggered on configuration changes.
+
+--- Story 410: Town expansion vote (attempts: 1, 2026-03-12 09:38) ---
+*   **Voting Logic Edge Cases**: The calculation for "majority" was non-obvious when handling abstentions; the codebase requires explicitly checking `total_votes > 0` before dividing to avoid skewing results, rather than relying on simple `votes > threshold` logic.
+*   **Event-Driven Expansion**: The codebase consistently uses a `TownExpansionEvent` dispatcher rather than direct method calls; new expansion features must subscribe to this event to ensure they trigger alongside legacy systems like `RoadPaving` and `WaterSupply`.
+*   **State Persistence Correction**: Initially, I updated the `Town` entity in memory without persisting the `expansion_level` to the database, causing the UI to revert on refresh; I corrected this by wrapping the update logic in the `TownRepository.save()` transaction block.

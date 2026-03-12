@@ -600,10 +600,18 @@ def declare_public_holiday(db: Session) -> int:
     - target_x=None, target_y=None
     - Returns count of rested NPCs
     """
-    from engine.models import NPC, Event
+    from engine.models import NPC, Event, WorldState
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
     
     # Create the event
-    event = Event(event_type="public_holiday", description="Public Holiday Declared")
+    event = Event(
+        event_type="public_holiday", 
+        description="Public Holiday Declared",
+        tick=current_tick
+    )
     db.add(event)
     
     # Update all living NPCs
