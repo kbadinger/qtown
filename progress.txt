@@ -2041,3 +2041,8 @@
 - **Tricky**: The `Speech` domain logic required strict separation between validation (parsing) and rendering; initially conflating them caused race conditions when updating the speech text while the UI was still calculating character counts.
 - **Patterns**: The codebase consistently uses the `Presenter` pattern for view updates, where the ViewModel never holds direct references to UI components, only data states that the View observes.
 - **Mistakes**: I initially implemented the "auto-save" feature as a synchronous block, freezing the main thread; corrected by switching to an async worker queue with debouncing to handle rapid text input.
+
+--- Story 404: Public speech (attempts: 6, 2026-03-11 23:25) ---
+- **Non-obvious state management**: The speech transcript wasn't just a static string; it required syncing the `isSpeaking` flag with the `text-to-speech` engine's lifecycle to prevent race conditions when the user interrupted the playback.
+- **Codebase convention**: The project strictly separates "presentation logic" (React components) from "speech orchestration" (custom hooks in `hooks/speech`), meaning all TTS API calls must go through the `useSpeechEngine` hook, not directly in the view.
+- **Correction**: Initially, I rendered the full transcript in the DOM immediately, causing a layout shift; I corrected this by implementing a "lazy-load" strategy where the text only renders after the audio buffer is ready.
