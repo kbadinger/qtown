@@ -1981,3 +1981,8 @@
 *   **Non-obvious complexity**: The approval rating calculation required handling `NULL` values in the `poll_date` field to prevent skewing the rolling average, which wasn't immediately apparent from the schema alone.
 *   **Codebase pattern**: Discovered a consistent convention of wrapping all external API calls (like the polling service) in a `RetryableService` wrapper with exponential backoff, rather than handling retries inline.
 *   **Correction**: Initially filtered results by `status = 'active'` before joining the `polls` table, which excluded historical data needed for trend analysis; corrected by moving the status filter to the `WHERE` clause after the join.
+
+--- Story 402: Corruption detection (attempts: 3, 2026-03-11 22:33) ---
+- **Non-obvious state coupling**: The corruption flag was tightly coupled with the transaction ledger's internal validation logic, making it easy to miss that a failed checksum didn't automatically trigger the `Corrupted` status without an explicit state transition.
+- **Codebase convention**: Error handling in this module consistently uses a "fail-fast" pattern where validation functions throw custom exceptions rather than returning booleans, ensuring that partial state updates are impossible during corruption checks.
+- **Correction made**: Initially attempted to patch the detection logic by adding a flag check in the UI layer; corrected this by moving the validation into the core `LedgerService` to ensure the corruption state is authoritative before any data is rendered or persisted.
