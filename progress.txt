@@ -1966,3 +1966,8 @@
 - **Tricky/Non-obvious**: The approval rating calculation required handling `NULL` values in the `polling_data` table differently than expected; a simple `AVG()` would silently ignore them, but the business logic required treating missing data as a specific "no opinion" flag before aggregation.
 - **Patterns/Conventions**: This codebase consistently uses repository wrappers for all database queries, even for simple aggregations, to ensure consistent error handling and logging; direct raw SQL queries are avoided in favor of the ORM's fluent interface.
 - **Mistakes/Corrections**: Initially, I cached the approval rating at the user level, which caused stale data when polls were updated; I corrected this by moving the cache key to include the `poll_date` range, ensuring the rating refreshes when new data enters the window.
+
+--- Story 401: Political approval rating (attempts: 6, 2026-03-11 22:28) ---
+*   **Tricky Aspect**: Handling the aggregation of approval ratings across different polling sources required careful normalization of date ranges and sample sizes to avoid skewing the final metric.
+*   **Pattern Discovered**: The codebase consistently uses a "repository-adapter" pattern for external polling data, isolating API-specific logic behind a standardized interface to facilitate mocking in tests.
+*   **Correction**: Initially, I calculated the moving average using a fixed window without accounting for missing data points; I corrected this by implementing a gap-filling strategy before applying the rolling calculation.
