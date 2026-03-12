@@ -2336,3 +2336,8 @@
 - **Timezone Handling**: The non-obvious part was ensuring holiday dates are evaluated in the *local* timezone of the user's region, not UTC, to correctly handle early-morning cutoffs for day-of-week logic.
 - **Convention**: The codebase consistently uses a `HolidayRepository` interface with a `getHolidays(year)` method, expecting results sorted chronologically before being passed to the `HolidayService`.
 - **Correction**: Initially, I attempted to calculate the "next" holiday by iterating through the entire list; I corrected this to use a binary search on the sorted repository data to improve performance for large date ranges.
+
+--- Story 414: Policy sunset (attempts: 1, 2026-03-12 11:03) ---
+- **Non-obvious dependency**: The sunset logic relied on a hidden `feature_flag` service that wasn't initialized in the standard test harness, causing intermittent failures until I manually mocked the context.
+- **Codebase pattern**: The project enforces a strict "read-only" approach for deprecated entities; all sunset operations must create a tombstone record rather than performing hard deletes to preserve audit trails.
+- **Correction**: Initially attempted to batch-process sunsets in a single transaction, which caused database lock contention; switched to an async background job with chunked processing to avoid blocking user traffic.
