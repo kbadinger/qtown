@@ -2066,3 +2066,8 @@
 - **Tricky/Non-obvious**: The `SpeechService` requires the `AudioContext` to be resumed explicitly after a user interaction; initializing it on page load often results in silent playback due to browser autoplay policies.
 - **Patterns/Conventions**: This codebase strictly separates speech synthesis logic (Web Speech API) from audio playback (Web Audio API), routing all text-to-speech requests through a centralized `VoiceManager` singleton to handle queueing and cancellation.
 - **Mistakes/Corrections**: Initially, I passed raw HTML strings directly to the `speak()` method, causing syntax errors in the TTS engine; I corrected this by implementing a `sanitizeText()` utility that strips tags and normalizes whitespace before processing.
+
+--- Story 405: Opposition leader (attempts: 4, 2026-03-11 23:46) ---
+- **Tricky**: The opposition leader's logic required handling a "ghost" state where the leader exists in the database but lacks an active party affiliation, which initially caused null-pointer exceptions during the campaign rendering pipeline.
+- **Patterns**: The codebase consistently uses a `RoleContext` wrapper for all political actor interactions, ensuring that permissions and status checks are centralized rather than scattered across individual service methods.
+- **Correction**: Initially attempted to validate the leader's eligibility by checking the raw `party_id` field directly; corrected to use the `is_eligible()` helper method, which properly accounts for temporary suspensions and pending resignations.
