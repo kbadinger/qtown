@@ -2141,3 +2141,8 @@
 *   **Non-obvious state coupling**: The "gift" status wasn't isolated; it relied on a hidden dependency in the `DiplomacyEngine` that only updated when the `Ambassador` object was explicitly serialized, causing race conditions during rapid succession events.
 *   **Codebase convention**: The project enforces a strict "Event-First" pattern where all state changes must emit a domain event before updating the database, even for simple flag toggles, to ensure audit trail consistency.
 *   **Correction**: Initially attempted to bypass the event bus for performance, which broke the notification chain for allied factions; reverted to the standard `emit-and-persist` flow and added a background job for bulk processing instead.
+
+--- Story 408: Diplomatic gift (attempts: 3, 2026-03-12 05:54) ---
+*   **Non-obvious constraint**: The `DiplomaticGift` schema requires a `sanctioned_origin` check *before* the `gift_type` validation; skipping this order causes the audit log to record a "valid" gift that is actually blocked by trade restrictions.
+*   **Codebase pattern**: All external gift integrations follow the `validate -> enrich -> persist` pipeline using the `GiftProcessor` service; direct repository calls bypass the mandatory `audit_trail` middleware.
+*   **Correction**: Initially attempted to handle currency conversion in the controller layer; refactored to the `GiftProcessor` to ensure consistency with the existing `ExchangeRateService` singleton used across the module.

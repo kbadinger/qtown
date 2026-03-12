@@ -2531,3 +2531,19 @@ Uploading..
 Diplomatic gift
 [2026-03-12 09:45:30 UTC] WARN story_fail: Story 408 struggling — attempt 5/12
 Diplomatic gift
+[2026-03-12 09:46:53 UTC] WARN deploy_fail: Story 408 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   ded06f5..43a3f14  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 09:46:53 UTC] story_done: Story 408 complete: Diplomatic gift
+[2026-03-12 09:46:54 UTC] story_start: Story 407: Town budget allocation
+[2026-03-12 09:46:55 UTC] WARN deploy_fail: Story 408 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   43a3f14..c2bf328  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 09:46:56 UTC] story_done: Story 408 complete: Diplomatic gift
+[2026-03-12 09:46:56 UTC] story_start: Story 407: Town budget allocation
