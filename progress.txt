@@ -1886,3 +1886,8 @@
 
 --- Story 400: Drought relief (attempts: 3, 2026-03-11 21:37) ---
 
+
+--- Story 400: Drought relief (attempts: 4, 2026-03-11 21:42) ---
+*   **Non-obvious State Propagation**: The drought relief logic required manually triggering a cascading update across three disconnected microservices; relying on the standard event bus failed because the "low-water" threshold check was synchronous and blocked the async listener.
+*   **Codebase Convention**: This project enforces a strict "fail-fast" pattern in the `utils/validation` layer; any missing environmental variable immediately throws a custom `ConfigError` rather than falling back to defaults, which forced a refactor of the test setup.
+*   **Correction**: Initially attempted to patch the water-level calculation directly in the controller, but realized the business logic belongs in the `DomainService` to maintain consistency with other relief stories; moved the calculation there and updated the unit tests to mock the external weather API.

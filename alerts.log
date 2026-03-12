@@ -2240,3 +2240,6 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-12 01:23:11 UTC] WARN story_fail: Story 400 struggling — attempt 5/12
 Drought relief
 [2026-03-12 01:37:56 UTC] WARN ollama_bad_response: Ollama bad response: 'charmap' codec can't encode character '\u2192' in position 127: character maps to <undefined>
+[2026-03-12 01:39:35 UTC] deploy_ok: Story 400 deployed: Healthy after 0.1s
+[2026-03-12 01:40:03 UTC] story_done: Story 400 complete: Drought relief
+[2026-03-12 01:40:03 UTC] story_start: Story 396: Miracle event

@@ -2350,34 +2350,27 @@ def trigger_comet_sighting(db: Session) -> bool:
 
 
 def trigger_drought_relief(db: Session) -> int:
-    """Trigger drought relief when rain occurs during drought."""
+    """Trigger drought relief event."""
     from engine.models import WorldState, Resource, Event
     
-    # Check if drought is active
+    # Check if drought is active and weather is rain
     world_state = db.query(WorldState).first()
-    if not world_state or world_state.drought_active != 1:
+    if not world_state or world_state.drought_active != 1 or world_state.weather != 'rain':
         return 0
     
-    # Check if weather is rain
-    if world_state.weather != 'rain':
-        return 0
-    
-    # End the drought
+    # Deactivate drought
     world_state.drought_active = 0
     
     # Double food resources
     food_resources = db.query(Resource).filter(Resource.name == 'food').all()
-    count_doubled = 0
+    count = 0
     for resource in food_resources:
-        resource.quantity = resource.quantity * 2
-        count_doubled += 1
+        resource.quantity *= 2
+        count += 1
     
     # Create event
-    event = Event(
-        event_type='drought_relief',
-        description='Drought ended by rain, food resources doubled'
-    )
+    event = Event(event_type='drought_relief')
     db.add(event)
-    db.commit()
     
-    return count_doubled
+    db.commit()
+    return count
