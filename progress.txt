@@ -1971,3 +1971,8 @@
 *   **Tricky Aspect**: Handling the aggregation of approval ratings across different polling sources required careful normalization of date ranges and sample sizes to avoid skewing the final metric.
 *   **Pattern Discovered**: The codebase consistently uses a "repository-adapter" pattern for external polling data, isolating API-specific logic behind a standardized interface to facilitate mocking in tests.
 *   **Correction**: Initially, I calculated the moving average using a fixed window without accounting for missing data points; I corrected this by implementing a gap-filling strategy before applying the rolling calculation.
+
+--- Story 401: Political approval rating (attempts: 2, 2026-03-11 22:29) ---
+*   **Tricky Logic**: The approval rating calculation required handling `null` survey responses differently than zero values; treating them as zeros initially skewed the average downward significantly.
+*   **Codebase Pattern**: The project consistently uses a "Repository" abstraction for data access, meaning direct SQL queries in the service layer were a deviation from the established convention.
+*   **Correction**: I initially over-engineered the caching layer by implementing a custom TTL strategy, but realized the existing `Cache-Control` headers on the API responses were sufficient for this read-heavy endpoint.
