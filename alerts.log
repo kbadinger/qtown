@@ -2243,3 +2243,11 @@ Drought relief
 [2026-03-12 01:39:35 UTC] deploy_ok: Story 400 deployed: Healthy after 0.1s
 [2026-03-12 01:40:03 UTC] story_done: Story 400 complete: Drought relief
 [2026-03-12 01:40:03 UTC] story_start: Story 396: Miracle event
+[2026-03-12 01:42:31 UTC] WARN deploy_fail: Story 400 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   74fdd05..299e759  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 01:42:32 UTC] story_done: Story 400 complete: Drought relief
+[2026-03-12 01:42:32 UTC] story_start: Story 396: Miracle event

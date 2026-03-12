@@ -1891,3 +1891,8 @@
 *   **Non-obvious State Propagation**: The drought relief logic required manually triggering a cascading update across three disconnected microservices; relying on the standard event bus failed because the "low-water" threshold check was synchronous and blocked the async listener.
 *   **Codebase Convention**: This project enforces a strict "fail-fast" pattern in the `utils/validation` layer; any missing environmental variable immediately throws a custom `ConfigError` rather than falling back to defaults, which forced a refactor of the test setup.
 *   **Correction**: Initially attempted to patch the water-level calculation directly in the controller, but realized the business logic belongs in the `DomainService` to maintain consistency with other relief stories; moved the calculation there and updated the unit tests to mock the external weather API.
+
+--- Story 400: Drought relief (attempts: 5, 2026-03-11 21:43) ---
+- **Non-obvious state synchronization**: The drought relief logic failed initially because the `WaterLevel` sensor updates were decoupled from the `ReliefTrigger` event loop; I had to introduce a shared event bus to ensure real-time state consistency.
+- **Codebase convention for resource limits**: Discovered a strict pattern where all resource-consumption functions must explicitly check `GlobalConfig.max_daily_allocation` before execution, rather than relying on database constraints.
+- **Correction of edge-case handling**: Initially missed the scenario where a drought alert persists across midnight; corrected this by resetting the `daily_usage_counter` only after the alert status is explicitly cleared, not just on time rollover.

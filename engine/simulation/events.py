@@ -2252,6 +2252,10 @@ def trigger_miracle(db: Session) -> int | None:
     if sick_npc is None:
         return None
     
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
     # Heal the NPC
     old_illness = sick_npc.illness
     sick_npc.illness = None
@@ -2263,7 +2267,10 @@ def trigger_miracle(db: Session) -> int | None:
     # Create the miracle event
     event = Event(
         event_type='miracle',
-        description=f"A miracle occurred! {sick_npc.name} was healed from {old_illness}."
+        description=f"A miracle occurred! {sick_npc.name} was healed from {old_illness}.",
+        tick=current_tick,
+        severity='info',
+        affected_npc_id=sick_npc.id
     )
     db.add(event)
     
