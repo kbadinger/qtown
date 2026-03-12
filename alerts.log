@@ -2807,3 +2807,7 @@ Building repair system
 [2026-03-12 16:17:22 UTC] deploy_ok: Story 416 deployed: Healthy after 0.1s
 [2026-03-12 16:17:33 UTC] story_done: Story 416 complete: Building repair system
 [2026-03-12 16:17:34 UTC] story_start: Story 417: Building upgrade cost
+[2026-03-12 16:19:07 UTC] deploy_ok: Story 416 deployed: Healthy after 0.1s
+[2026-03-12 16:19:16 UTC] story_done: Story 416 complete: Building repair system
+[2026-03-12 16:19:17 UTC] story_start: Story 417: Building upgrade cost
+[2026-03-12 16:19:19 UTC] deploy_ok: Story 417 deployed: Healthy after 0.1s

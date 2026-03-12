@@ -2401,3 +2401,8 @@
 - **Non-obvious cost scaling**: The upgrade cost formula isn't linear; it uses a compounding multiplier based on the *current* level, meaning a simple `base_cost * level` calculation will significantly undercharge for higher tiers.
 - **Validation pattern**: The codebase consistently separates "eligibility checks" (e.g., prerequisites, max level) from "transaction execution" in the service layer, preventing state changes if validation fails mid-calculation.
 - **Correction**: Initially attempted to recalculate the total cost inside the UI component, which caused race conditions during rapid clicks; moved the calculation logic to a dedicated service method to ensure atomicity and consistency.
+
+--- Story 417: Building upgrade cost (attempts: 3, 2026-03-12 12:19) ---
+- **Non-obvious Cost Scaling**: The upgrade cost calculation isn't a simple linear multiplier; it uses an exponential curve based on the current level, meaning a naive `base_cost * level` approach fails to match the game design intent.
+- **Currency Validation Pattern**: The codebase consistently enforces a "check-then-act" pattern for currency, requiring a dedicated `canAfford` guard clause before any state mutation to prevent negative balances.
+- **Correction on State Mutation**: Initially attempted to modify the building's cost directly in the view layer; corrected by moving the calculation logic into the domain model to ensure the UI always reflects the single source of truth.
