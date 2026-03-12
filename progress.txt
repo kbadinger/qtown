@@ -2096,3 +2096,8 @@
 - **Tricky/Non-obvious**: The opposition leader's state machine requires explicit handling of "pending" vs. "active" status transitions; assuming a simple boolean flag led to race conditions during concurrent updates.
 - **Patterns/Conventions**: The codebase strictly separates domain logic (services) from persistence (repositories) and uses a custom `Result` type for error handling instead of throwing exceptions in the business layer.
 - **Mistakes/Corrections**: Initially duplicated validation logic in the controller; corrected by moving all rule enforcement into the dedicated `OppositionService` to maintain a single source of truth.
+
+--- Story 406: Policy effectiveness review (attempts: 1, 2026-03-12 00:47) ---
+*   **Tricky**: The `PolicyEngine` relies on implicit context propagation for audit logging; forgetting to initialize the `AuditContext` in the new `EffectivenessReview` flow caused silent failures in the metrics aggregation step.
+*   **Patterns**: All policy evaluation logic must be wrapped in the `@PolicyVersioned` annotation to ensure backward compatibility with legacy rule sets; direct calls to `PolicyRepository` without this wrapper bypass versioning checks.
+*   **Correction**: Initially attempted to calculate effectiveness scores synchronously, causing timeouts on large datasets; corrected by offloading the aggregation to the existing `AsyncMetricsProcessor` queue.

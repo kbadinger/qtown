@@ -2426,3 +2426,10 @@ Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and
 Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
 [2026-03-12 03:51:33 UTC] story_done: Story 405 complete: Opposition leader
 [2026-03-12 03:51:33 UTC] story_start: Story 406: Policy effectiveness review
+[2026-03-12 04:13:30 UTC] deploy_ok: Story 405 deployed: Healthy after 0.1s
+[2026-03-12 04:13:47 UTC] story_done: Story 405 complete: Opposition leader
+[2026-03-12 04:13:47 UTC] story_start: Story 406: Policy effectiveness review
+[2026-03-12 04:42:58 UTC] WARN story_fail: Story 406 struggling — attempt 5/12
+Policy effectiveness review
+[2026-03-12 04:47:05 UTC] WARN story_fail: Story 406 struggling — attempt 5/12
+Policy effectiveness review
