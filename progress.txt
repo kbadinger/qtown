@@ -2406,3 +2406,8 @@
 - **Non-obvious Cost Scaling**: The upgrade cost calculation isn't a simple linear multiplier; it uses an exponential curve based on the current level, meaning a naive `base_cost * level` approach fails to match the game design intent.
 - **Currency Validation Pattern**: The codebase consistently enforces a "check-then-act" pattern for currency, requiring a dedicated `canAfford` guard clause before any state mutation to prevent negative balances.
 - **Correction on State Mutation**: Initially attempted to modify the building's cost directly in the view layer; corrected by moving the calculation logic into the domain model to ensure the UI always reflects the single source of truth.
+
+--- Story 418: Building efficiency rating (attempts: 3, 2026-03-12 12:25) ---
+*   **Tricky Aspect**: The efficiency rating logic required handling non-linear thresholds where small input changes caused disproportionate output jumps, necessitating careful boundary testing for edge cases like zero or negative values.
+*   **Codebase Pattern**: The project consistently separates calculation logic from data access using a repository pattern, ensuring that rating algorithms remain pure functions testable without mocking external services.
+*   **Correction**: Initially, I hardcoded the rating scale constants in the service layer; I corrected this by moving them to a centralized configuration file to allow dynamic updates without code changes.

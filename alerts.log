@@ -2811,3 +2811,28 @@ Building repair system
 [2026-03-12 16:19:16 UTC] story_done: Story 416 complete: Building repair system
 [2026-03-12 16:19:17 UTC] story_start: Story 417: Building upgrade cost
 [2026-03-12 16:19:19 UTC] deploy_ok: Story 417 deployed: Healthy after 0.1s
+[2026-03-12 16:19:28 UTC] story_done: Story 417 complete: Building upgrade cost
+[2026-03-12 16:19:29 UTC] story_start: Story 418: Building efficiency rating
+[2026-03-12 16:19:32 UTC] WARN deploy_fail: Story 417 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   aa59e89..45801de  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 16:19:33 UTC] story_done: Story 417 complete: Building upgrade cost
+[2026-03-12 16:19:33 UTC] story_start: Story 418: Building efficiency rating
+[2026-03-12 16:22:38 UTC] WARN deploy_fail: Story 416 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build timed out after 300s
+
+Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
+[2026-03-12 16:22:38 UTC] story_done: Story 416 complete: Building repair system
+[2026-03-12 16:22:39 UTC] story_start: Story 418: Building efficiency rating
+[2026-03-12 16:22:47 UTC] WARN deploy_fail: Story 416 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build timed out after 300s
+
+Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
+[2026-03-12 16:22:48 UTC] story_done: Story 416 complete: Building repair system
+[2026-03-12 16:22:48 UTC] story_start: Story 418: Building efficiency rating
+[2026-03-12 16:23:06 UTC] WARN deploy_fail: Story 417 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build timed out after 300s
+
+Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
+[2026-03-12 16:23:06 UTC] story_done: Story 417 complete: Building upgrade cost
+[2026-03-12 16:23:06 UTC] story_start: Story 418: Building efficiency rating
