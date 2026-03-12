@@ -2221,3 +2221,8 @@
 *   **Non-obvious State Synchronization**: The war council's decision logic relies on a delayed `EventBus` trigger rather than direct function calls; failing to await the async propagation caused the "victory" state to overwrite the "negotiation" state prematurely.
 *   **Codebase Convention**: All strategic entities implement the `TacticalEntity` interface, which mandates a `calculateThreatLevel()` method; the existing tests assume this method returns a normalized float (0.0–1.0), not a raw integer score.
 *   **Correction**: Initially attempted to hardcode faction alliances in the `WarCouncil` class; corrected by refactoring to inject the `AllianceRegistry` dependency, ensuring the code adheres to the project's strict separation of strategy data and execution logic.
+
+--- Story 409: War council (attempts: 6, 2026-03-12 07:24) ---
+- **Non-obvious state synchronization**: The `WarCouncil` component relies on a global `battleState` reducer that isn't immediately obvious from the component's props; changes must be dispatched via the specific `updateCouncilDecision` action rather than local state.
+- **Codebase pattern for async resolutions**: All combat simulations follow a strict `calculate -> validate -> dispatch` sequence, where validation checks (like resource caps) happen *before* the state update to prevent invalid game states.
+- **Correction on edge-case handling**: Initially missed the scenario where a council member is `null` (dead/removed), causing a crash during iteration; fixed by adding a guard clause and filtering out inactive members before processing decisions.
