@@ -237,3 +237,45 @@ def calculate_approval_rating(db: Session) -> dict | None:
         "approval": approval,
         "population": population
     }
+
+
+def detect_corruption(db: Session) -> bool | None:
+    """Detect corruption by checking if mayor has excessive gold.
+    
+    Finds the latest Election winner (mayor). If mayor.gold > 2 * avg gold:
+    creates Event(event_type='corruption_detected'). Returns True/False.
+    Returns None if no mayor.
+    """
+    # Find latest election with a winner
+    latest_election = db.query(Election).filter(Election.winner_npc_id != None).order_by(Election.id.desc()).first()
+    
+    if not latest_election:
+        return None
+    
+    # Get the mayor NPC (must be alive)
+    mayor = db.query(NPC).filter(NPC.id == latest_election.winner_npc_id, NPC.is_dead == 0).first()
+    
+    if not mayor:
+        return None
+    
+    # Calculate average gold of all living NPCs
+    avg_gold = db.query(NPC).filter(NPC.is_dead == 0).with_entities(func.avg(NPC.gold)).scalar() or 0
+    
+    if avg_gold == 0:
+        return None
+    
+    # Check if mayor has excessive gold
+    if mayor.gold > 2 * avg_gold:
+        # Get current tick from world state
+        world_state = db.query(WorldState).first()
+        
+        # Create corruption event
+        event = Event(
+            event_type='corruption_detected',
+            description=f'Mayor {mayor.name} has excessive gold: {mayor.gold} vs avg {avg_gold}',
+            tick=world_state.tick if world_state else 0
+        )
+        db.add(event)
+        return True
+    
+    return False

@@ -1976,3 +1976,8 @@
 *   **Tricky Logic**: The approval rating calculation required handling `null` survey responses differently than zero values; treating them as zeros initially skewed the average downward significantly.
 *   **Codebase Pattern**: The project consistently uses a "Repository" abstraction for data access, meaning direct SQL queries in the service layer were a deviation from the established convention.
 *   **Correction**: I initially over-engineered the caching layer by implementing a custom TTL strategy, but realized the existing `Cache-Control` headers on the API responses were sufficient for this read-heavy endpoint.
+
+--- Story 401: Political approval rating (attempts: 5, 2026-03-11 22:30) ---
+*   **Non-obvious complexity**: The approval rating calculation required handling `NULL` values in the `poll_date` field to prevent skewing the rolling average, which wasn't immediately apparent from the schema alone.
+*   **Codebase pattern**: Discovered a consistent convention of wrapping all external API calls (like the polling service) in a `RetryableService` wrapper with exponential backoff, rather than handling retries inline.
+*   **Correction**: Initially filtered results by `status = 'active'` before joining the `polls` table, which excluded historical data needed for trend analysis; corrected by moving the status filter to the `WHERE` clause after the join.

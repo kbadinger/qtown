@@ -2314,3 +2314,9 @@ Uploading..
 [2026-03-12 02:28:02 UTC] deploy_ok: Story 399 deployed: Healthy after 0.1s
 [2026-03-12 02:28:11 UTC] story_done: Story 399 complete: Spring bloom
 [2026-03-12 02:28:11 UTC] story_start: Story 401: Political approval rating
+[2026-03-12 02:29:31 UTC] deploy_ok: Story 401 deployed: Healthy after 0.1s
+[2026-03-12 02:29:41 UTC] story_done: Story 401 complete: Political approval rating
+[2026-03-12 02:29:41 UTC] story_start: Story 402: Corruption detection
+[2026-03-12 02:30:11 UTC] deploy_ok: Story 401 deployed: Healthy after 0.1s
+[2026-03-12 02:30:20 UTC] story_done: Story 401 complete: Political approval rating
+[2026-03-12 02:30:20 UTC] story_start: Story 402: Corruption detection
