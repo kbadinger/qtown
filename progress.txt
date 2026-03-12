@@ -2086,3 +2086,8 @@
 - **Tricky/Non-obvious**: The `OppositionLeader` role required careful handling of state transitions when the incumbent party changes; the logic for calculating the "next in line" candidate was non-deterministic if multiple parties shared the same seat count, requiring a strict tie-breaking rule based on registration timestamp.
 - **Patterns/Conventions**: The codebase consistently uses the `Strategy` pattern for vote-counting algorithms, allowing the `ElectionManager` to remain agnostic of specific counting rules (e.g., plurality vs. ranked-choice) by injecting a `VotingStrategy` interface.
 - **Mistakes & Corrections**: Initially, I attempted to update the opposition leader directly within the `Vote` event handler, which caused race conditions during concurrent election simulations; I corrected this by deferring the leadership update to a dedicated `ElectionResult` domain event, ensuring atomicity.
+
+--- Story 405: Opposition leader (attempts: 6, 2026-03-11 23:47) ---
+*   **Non-obvious dependency**: The `OppositionLeader` role relies on a hidden `PartyContext` singleton for vote tallies; failing to inject this explicitly caused silent failures in the unit tests.
+*   **Codebase convention**: This module strictly separates "state mutation" (handled by `StateService`) from "view rendering" (handled by `LeaderView`), avoiding direct DOM manipulation in business logic.
+*   **Correction**: Initially attempted to derive the leader's status from the raw `MemberList` array; corrected to use the cached `ElectionResult` object to ensure consistency with the central election engine.
