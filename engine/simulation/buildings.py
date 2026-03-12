@@ -1106,3 +1106,44 @@ def calculate_building_efficiency(db: Session) -> dict:
         result[building.id] = efficiency
     
     return result
+
+
+def decorate_building(db: Session, building_id: int, gold_amount: int) -> bool:
+    """Decorate a building for gold, boosting nearby NPC happiness."""
+    from sqlalchemy import func
+    from engine.models import Building, NPC, Treasury, Event
+    
+    # Get the building
+    building = db.query(Building).filter(Building.id == building_id).first()
+    if not building:
+        return False
+    
+    # Get the treasury for this building
+    treasury = db.query(Treasury).filter(Treasury.building_id == building_id).first()
+    if not treasury or treasury.gold_stored < gold_amount:
+        return False
+    
+    # Deduct gold
+    treasury.gold_stored -= gold_amount
+    
+    # Find nearby NPCs (distance 5) - using func.pow for SQLAlchemy compatibility
+    nearby_npcs = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        func.pow(NPC.x - building.x, 2) + func.pow(NPC.y - building.y, 2) <= 25
+    ).all()
+    
+    # Boost happiness for nearby NPCs
+    for npc in nearby_npcs:
+        npc.happiness = min(100, npc.happiness + 2)
+    
+    # Create event
+    event = Event(
+        event_type='building_decorated',
+        description=f"Building {building.name} was decorated",
+        tick=0,
+        severity=1
+    )
+    db.add(event)
+    
+    db.commit()
+    return True

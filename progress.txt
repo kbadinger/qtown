@@ -2436,3 +2436,8 @@
 - **Tricky**: The efficiency rating logic required handling edge cases where `total_area` was zero or negative, which initially caused division-by-zero errors; I had to add explicit validation guards before the calculation.
 - **Patterns**: The codebase consistently uses a `Result<T, Error>` type for all external-facing calculations rather than throwing exceptions, ensuring error states are handled explicitly in the calling chain.
 - **Mistake**: I initially cached the rating result in a static variable, ignoring that the input data could change dynamically; I corrected this by moving the cache to an instance-level map keyed by the input hash.
+
+--- Story 419: Building decoration (attempts: 4, 2026-03-12 13:14) ---
+- **Tricky Aspect**: The interaction between the CSS `z-index` stacking context and the dynamic rendering of overlay components was non-obvious; elements were disappearing behind modals unless the container's `position` was explicitly set to `relative`.
+- **Pattern Discovered**: The codebase consistently uses a "decorator" pattern for UI enhancements, where base components are wrapped in higher-order components to inject styling or tracking logic, rather than modifying the core component directly.
+- **Correction Made**: Initially attempted to handle decoration state via global Redux, which caused unnecessary re-renders; corrected by moving state management to local component context to isolate the decoration lifecycle.
