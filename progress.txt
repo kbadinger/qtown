@@ -2391,3 +2391,8 @@
 *   **Tricky**: The repair logic required distinguishing between "scheduled maintenance" and "emergency patches" based on dynamic asset degradation rates, which wasn't explicitly defined in the initial requirements.
 *   **Pattern**: The codebase consistently uses a `RepairContext` aggregate to bundle asset state, labor availability, and material inventory, avoiding direct service-to-entity coupling.
 *   **Correction**: Initially attempted to calculate repair costs synchronously; corrected to use an asynchronous event-driven approach to prevent blocking the main workflow during external price lookups.
+
+--- Story 417: Building upgrade cost (attempts: 2, 2026-03-12 12:17) ---
+*   **Tricky Logic**: The cost calculation wasn't a simple multiplier; it required handling exponential scaling based on the current level, which initially caused overflow errors for high-level buildings.
+*   **Codebase Patterns**: The project strictly separates "cost logic" (pure functions) from "state mutation" (Redux actions), meaning I must never modify the building state directly inside the cost calculator.
+*   **Correction**: I initially attempted to cache the cost result in the component state, but realized the cost must be recalculated on every render to reflect dynamic global modifiers (like research bonuses).
