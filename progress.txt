@@ -1951,3 +1951,8 @@
 - **Tricky/Non-obvious**: The `bloom` animation state relies on a race condition between the CSS transition end event and the React render cycle; simply toggling a class isn't enough without a `useEffect` guard to prevent flicker on initial mount.
 - **Patterns/Conventions**: This codebase consistently uses a "data-attributes + CSS-only logic" pattern for UI states (like `data-bloomed`) to avoid unnecessary re-renders, reserving React state only for data-fetching or complex logic.
 - **Mistakes/Corrections**: Initially attempted to force a layout reflow using `window.getComputedStyle` to trigger the animation, which caused performance jank; corrected by switching to a `requestAnimationFrame` callback to ensure the DOM is painted before applying the transition class.
+
+--- Story 399: Spring bloom (attempts: 1, 2026-03-11 22:26) ---
+- **Tricky/Non-obvious**: The `SpringBloom` animation logic relies on a non-standard CSS `animation-delay` calculation based on element index; failing to normalize the `offset` variable caused flickering on the first render.
+- **Patterns/Conventions**: This codebase consistently uses `useMemo` for derived state in UI components to prevent unnecessary re-renders during rapid scroll events, even for simple string concatenations.
+- **Mistakes/Corrections**: Initially missed the edge case where the `bloom` array is empty, causing a crash in the `map` function; added a guard clause to return `null` early instead of rendering an empty container.

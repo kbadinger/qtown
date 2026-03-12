@@ -29,6 +29,7 @@ from engine.simulation.economy import (
 import json
 from sqlalchemy import func
 from engine.models import Event
+from engine.models import Election
 
 
 def process_tick(db: Session) -> None:
@@ -206,3 +207,33 @@ def generate_end_of_day_report(db: Session) -> dict | None:
     db.add(event)
     
     return stats
+
+
+def calculate_approval_rating(db: Session) -> dict | None:
+    """Calculate political approval rating for the current mayor.
+    
+    Finds the latest Election with a winner_npc_id.
+    Returns None if no election exists.
+    Returns dict with mayor_npc_id, approval (avg happiness of living NPCs), population.
+    """
+    # Find latest election (order by id descending since no tick column)
+    latest_election = db.query(Election).order_by(Election.id.desc()).first()
+    
+    if not latest_election or not latest_election.winner_npc_id:
+        return None
+    
+    # Calculate approval as average happiness of living NPCs
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    if not living_npcs:
+        return None
+    
+    total_happiness = sum(npc.happiness for npc in living_npcs)
+    population = len(living_npcs)
+    approval = total_happiness / population
+    
+    return {
+        "mayor_npc_id": latest_election.winner_npc_id,
+        "approval": approval,
+        "population": population
+    }
