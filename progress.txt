@@ -2381,3 +2381,8 @@
 - **Tricky Logic**: The interaction between `repair_queue` priority and `resource_allocation` was non-obvious; simply checking `is_broken` wasn't enough, as the system requires validating `available_budget` before dequeuing to prevent deadlocks.
 - **Codebase Patterns**: The project strictly follows the "Command-Query Separation" pattern where repair actions are state-mutating commands, while status checks are read-only queries, ensuring thread safety in concurrent builds.
 - **Correction**: Initially, I attempted to update the `repair_log` inside the main loop, which caused race conditions; I corrected this by offloading logging to a separate async worker thread.
+
+--- Story 416: Building repair system (attempts: 3, 2026-03-12 12:17) ---
+- **Tricky Logic**: The interaction between `repair_queue` state transitions and the `maintenance_window` flag was non-obvious; a repair request arriving exactly at the window boundary caused a race condition that required explicit locking on the queue state.
+- **Codebase Patterns**: Discovered a consistent "Repository-Service-Command" separation where all state mutations flow through command handlers, but direct repository access is permitted for read-only queries within the same transactional scope.
+- **Mistake & Correction**: Initially calculated repair costs using floating-point arithmetic, leading to rounding errors in the ledger; corrected by switching to integer-based cents and introducing a dedicated `Money` value object to enforce precision.

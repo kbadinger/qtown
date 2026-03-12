@@ -1009,8 +1009,6 @@ def get_population_cap(db: Session) -> tuple[bool, int]:
 
 def repair_damaged_buildings(db: Session) -> int:
     """Repair damaged buildings using treasury gold."""
-    from engine.models import Building, Treasury, Event, WorldState
-    
     count_repaired = 0
     
     # Get treasury gold
@@ -1021,6 +1019,7 @@ def repair_damaged_buildings(db: Session) -> int:
     treasury_gold = treasury.gold_stored
     
     # Get current tick from WorldState
+    from engine.models import WorldState
     world_state = db.query(WorldState).first()
     current_tick = world_state.tick if world_state else 0
     
@@ -1039,11 +1038,12 @@ def repair_damaged_buildings(db: Session) -> int:
             # Increase building level
             building.level += 1
             
-            # Create repair event with tick and affected_building_id
+            # Create repair event
             event = Event(
                 event_type='building_repair',
                 description=f"Building {building.name} repaired",
                 tick=current_tick,
+                severity='info',
                 affected_building_id=building.id
             )
             db.add(event)
@@ -1052,3 +1052,32 @@ def repair_damaged_buildings(db: Session) -> int:
     
     db.commit()
     return count_repaired
+
+
+def calculate_upgrade_cost(db: Session, building_id: int) -> dict | None:
+    """Calculate the cost to upgrade a building.
+    
+    Cost = level * 50
+    Returns dict with building_id, current_level, cost, can_afford
+    Returns None if building not found
+    """
+    from engine.models import Building, Treasury
+    
+    building = db.query(Building).filter(Building.id == building_id).first()
+    if not building:
+        return None
+    
+    cost = building.level * 50
+    
+    # Check Treasury for this building
+    treasury = db.query(Treasury).filter(Treasury.building_id == building_id).first()
+    can_afford = False
+    if treasury:
+        can_afford = treasury.gold_stored >= cost
+    
+    return {
+        "building_id": building_id,
+        "current_level": building.level,
+        "cost": cost,
+        "can_afford": can_afford
+    }
