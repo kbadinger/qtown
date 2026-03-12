@@ -2231,3 +2231,8 @@
 *   **Tricky Logic**: The `WarCouncil` decision tree relied on implicit state inheritance from the previous `Scout` phase; explicitly validating the `terrain` enum before calculating morale was non-obvious and required a defensive guard clause.
 *   **Codebase Pattern**: Discovered a recurring "Command Pattern" wrapper for all strategic actions, where `execute()` always returns a `Result<T, Error>` rather than throwing exceptions, enforcing consistent error handling across the module.
 *   **Correction**: Initially attempted to mutate the `army` list in place during the council phase, which broke the undo mechanism; corrected by switching to immutable data structures and returning a new state snapshot.
+
+--- Story 409: War council (attempts: 4, 2026-03-12 07:41) ---
+- **Non-obvious State Synchronization**: The war council logic relies on a hidden `pending_decisions` queue that must be flushed before the `battle_start` event; failing to check this queue causes the AI to act on stale data.
+- **Codebase Convention**: All strategic outcomes are derived from a single `calculate_morale_delta` function, which expects inputs normalized to a 0–100 scale rather than raw unit counts.
+- **Correction**: Initially attempted to modify the `battle_result` directly in the controller, but corrected this to instead dispatch a `StrategicShift` event to maintain the unidirectional data flow required by the engine.

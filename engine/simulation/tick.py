@@ -31,6 +31,7 @@ from sqlalchemy import func
 from engine.models import Event
 from engine.models import Election
 from engine.models import Policy, NPC
+import random
 
 
 def process_tick(db: Session) -> None:
@@ -536,4 +537,30 @@ def hold_war_council(db: Session) -> dict | None:
         "action": "war_council_held",
         "guard_count": guard_count,
         "crime_count": crime_count
+    }
+
+
+def hold_expansion_vote(db: Session) -> dict:
+    """Hold a town expansion vote."""
+    from engine.models import Building, NPC, Event, WorldState
+    
+    building_count = db.query(Building).count()
+    living_npc_count = db.query(NPC).filter(NPC.is_dead == 0).count()
+    
+    vote_passed = False
+    if building_count < living_npc_count:
+        vote_passed = random.random() < 0.6
+    
+    if vote_passed:
+        current_tick = db.query(WorldState).first().tick if db.query(WorldState).first() else 0
+        event = Event(
+            event_type="expansion_vote",
+            description="Town expansion vote passed! The town will grow.",
+            tick=current_tick
+        )
+        db.add(event)
+        db.commit()
+    
+    return {
+        "vote": "passed" if vote_passed else "failed"
     }

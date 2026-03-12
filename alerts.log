@@ -2617,3 +2617,11 @@ Uploading..
 [2026-03-12 11:27:00 UTC] deploy_ok: Story 409 deployed: Healthy after 0.1s
 [2026-03-12 11:27:16 UTC] story_done: Story 409 complete: War council
 [2026-03-12 11:27:16 UTC] story_start: Story 410: Town expansion vote
+[2026-03-12 11:28:23 UTC] WARN deploy_fail: Story 409 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   2f3a469..8d87ae0  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 11:28:23 UTC] story_done: Story 409 complete: War council
+[2026-03-12 11:28:23 UTC] story_start: Story 410: Town expansion vote
