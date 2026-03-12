@@ -2216,3 +2216,8 @@
 - **Non-obvious state coupling**: The war council logic implicitly relies on `BattleState` being initialized before `TacticalMap` renders; failing to enforce this order causes silent null-pointer crashes in the unit positioning algorithm.
 - **Convention for event propagation**: This codebase uses a "fire-and-forget" pattern for high-level events (like `CouncilDecision`), requiring listeners to handle their own concurrency locks rather than relying on the event bus to serialize actions.
 - **Correction on scope**: Initially attempted to refactor the decision tree into a shared utility, but realized the context-specific `FactionBias` modifier must remain tightly coupled to the council instance to preserve historical simulation accuracy.
+
+--- Story 409: War council (attempts: 1, 2026-03-12 07:24) ---
+*   **Non-obvious State Synchronization**: The war council's decision logic relies on a delayed `EventBus` trigger rather than direct function calls; failing to await the async propagation caused the "victory" state to overwrite the "negotiation" state prematurely.
+*   **Codebase Convention**: All strategic entities implement the `TacticalEntity` interface, which mandates a `calculateThreatLevel()` method; the existing tests assume this method returns a normalized float (0.0–1.0), not a raw integer score.
+*   **Correction**: Initially attempted to hardcode faction alliances in the `WarCouncil` class; corrected by refactoring to inject the `AllianceRegistry` dependency, ensuring the code adheres to the project's strict separation of strategy data and execution logic.
