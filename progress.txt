@@ -1961,3 +1961,8 @@
 - **Non-obvious data aggregation**: The approval rating calculation required a weighted average based on survey recency, not a simple mean; the initial implementation missed the decay factor for older polls.
 - **Codebase convention**: This project strictly separates raw data ingestion (in `loaders/`) from business logic (in `services/`); moving the weighting logic into the loader initially violated this boundary and caused test failures.
 - **Correction on edge cases**: Initially failed to handle datasets with zero valid responses, causing a division-by-zero error; fixed by adding an explicit `None` return and a fallback default value in the service layer.
+
+--- Story 401: Political approval rating (attempts: 3, 2026-03-11 22:28) ---
+- **Tricky/Non-obvious**: The approval rating calculation required handling `NULL` values in the `polling_data` table differently than expected; a simple `AVG()` would silently ignore them, but the business logic required treating missing data as a specific "no opinion" flag before aggregation.
+- **Patterns/Conventions**: This codebase consistently uses repository wrappers for all database queries, even for simple aggregations, to ensure consistent error handling and logging; direct raw SQL queries are avoided in favor of the ORM's fluent interface.
+- **Mistakes/Corrections**: Initially, I cached the approval rating at the user level, which caused stale data when polls were updated; I corrected this by moving the cache key to include the `poll_date` range, ensuring the rating refreshes when new data enters the window.
