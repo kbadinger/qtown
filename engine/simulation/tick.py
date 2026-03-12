@@ -463,19 +463,25 @@ def allocate_town_budget(db: Session) -> dict:
 
 def review_policy_effectiveness(db: Session) -> list[dict]:
     """Review effectiveness of all enacted policies based on NPC happiness."""
-    # Query all policies - check for 'active' or 'enacted' column
-    # Since we can't modify models.py, we need to handle both cases
+    from engine.models import Policy, NPC
+    from sqlalchemy import func
+    
+    # Query all enacted policies - try common column names
     policies = []
     try:
-        # Try 'enacted' first (common naming)
+        # Try 'enacted' column first (most likely for Policy)
         policies = db.query(Policy).filter(Policy.enacted == 1).all()
     except AttributeError:
-        # Fall back to 'active' if 'enacted' doesn't exist
         try:
-            policies = db.query(Policy).filter(Policy.active == 1).all()
+            # Fall back to 'is_enacted'
+            policies = db.query(Policy).filter(Policy.is_enacted == 1).all()
         except AttributeError:
-            # If neither exists, return empty list
-            policies = []
+            try:
+                # Fall back to 'active'
+                policies = db.query(Policy).filter(Policy.active == 1).all()
+            except AttributeError:
+                # If no enactment column exists, return empty list
+                policies = []
     
     # Calculate average NPC happiness
     avg_happiness = 0.0

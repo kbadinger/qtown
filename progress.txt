@@ -2191,3 +2191,8 @@
 *   **Non-obvious logic**: The policy effectiveness calculation silently fails when `last_review_date` is `NULL`, defaulting to a 0% score instead of flagging missing data; a guard clause is now required before the date subtraction.
 *   **Codebase convention**: This module consistently uses `PolicyStatus` enums for state transitions rather than string comparisons, ensuring type safety across the audit trail.
 *   **Correction**: Initially filtered results by `is_active` flag only, missing archived policies with pending reviews; corrected to include `status IN ('active', 'pending_review')` to match the business requirement.
+
+--- Story 406: Policy effectiveness review (attempts: 2, 2026-03-12 07:02) ---
+*   **Tricky Logic**: The policy effectiveness calculation relied on a non-obvious join between `policy_events` and `user_sessions` tables; a missing `NULL` check on the `session_duration` field caused silent failures in the aggregation logic.
+*   **Codebase Pattern**: The repository consistently uses a "repository-adapter" pattern for data access, where all raw SQL queries are encapsulated in a `PolicyMetricsRepository` class rather than being scattered across service layers.
+*   **Correction**: Initially attempted to filter results in the frontend component, which caused performance degradation; corrected by moving the date-range filtering and grouping logic into the backend query to leverage database indexing.
