@@ -2337,3 +2337,24 @@ Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and
 [2026-03-12 02:35:46 UTC] deploy_ok: Story 402 deployed: Healthy after 0.1s
 [2026-03-12 02:36:05 UTC] story_done: Story 402 complete: Corruption detection
 [2026-03-12 02:36:16 UTC] story_start: Story 403: Town curfew
+[2026-03-12 02:38:12 UTC] deploy_ok: Story 401 deployed: Healthy after 0.1s
+[2026-03-12 02:38:18 UTC] WARN deploy_fail: Story 402 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build timed out after 300s
+
+Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
+[2026-03-12 02:38:18 UTC] story_done: Story 402 complete: Corruption detection
+[2026-03-12 02:38:19 UTC] story_start: Story 403: Town curfew
+[2026-03-12 02:38:20 UTC] WARN deploy_fail: Story 402 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build timed out after 300s
+
+Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
+[2026-03-12 02:38:20 UTC] story_done: Story 402 complete: Corruption detection
+[2026-03-12 02:38:21 UTC] story_done: Story 401 complete: Political approval rating
+[2026-03-12 02:38:21 UTC] story_start: Story 403: Town curfew
+[2026-03-12 02:38:21 UTC] story_start: Story 403: Town curfew
+[2026-03-12 02:38:54 UTC] deploy_ok: Story 403 deployed: Healthy after 0.1s
+[2026-03-12 02:39:03 UTC] story_done: Story 403 complete: Town curfew
+[2026-03-12 02:39:03 UTC] story_start: Story 404: Public speech
+[2026-03-12 02:41:47 UTC] WARN deploy_fail: Story 403 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build timed out after 300s
+
+Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
+[2026-03-12 02:41:47 UTC] story_done: Story 403 complete: Town curfew
+[2026-03-12 02:41:48 UTC] story_start: Story 404: Public speech

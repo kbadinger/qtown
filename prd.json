@@ -6603,7 +6603,7 @@
       ],
       "priority": 401,
       "status": "done",
-      "attempts": 3
+      "attempts": 4
     },
     {
       "id": "402",
@@ -6619,7 +6619,7 @@
       ],
       "priority": 402,
       "status": "done",
-      "attempts": 5
+      "attempts": 1
     },
     {
       "id": "403",
@@ -6634,7 +6634,7 @@
         "simulation"
       ],
       "priority": 403,
-      "status": "in_progress",
+      "status": "done",
       "attempts": 2
     },
     {
@@ -6650,8 +6650,8 @@
         "simulation"
       ],
       "priority": 404,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 2
     },
     {
       "id": "405",

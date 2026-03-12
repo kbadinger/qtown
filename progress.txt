@@ -2016,3 +2016,8 @@
 - **Non-obvious Timezone Handling**: The curfew logic relies on `LocalDate` for date comparisons but `LocalTime` for time checks; mixing these without explicit `ZonedDateTime` conversion caused false positives during DST transitions.
 - **Codebase Convention**: All time-based rules are defined in a centralized `CurfewConfig` service rather than hardcoded in controllers, ensuring consistent behavior across API endpoints and batch jobs.
 - **Correction Made**: Initially attempted to use `System.currentTimeMillis()` for comparisons, which failed in unit tests due to clock drift; switched to `Clock.fixed()` for deterministic testing and `Clock.systemUTC()` for production consistency.
+
+--- Story 403: Town curfew (attempts: 4, 2026-03-11 22:48) ---
+- **Timezone Handling**: The curfew logic initially failed because `DateTime` objects were treated as naive; explicitly converting to UTC before comparison was required to handle daylight saving transitions correctly.
+- **State Persistence Pattern**: Discovered that the codebase relies on a global `CurfewManager` singleton rather than passing state through controllers, requiring direct injection of the manager into test fixtures.
+- **Correction on Edge Cases**: Initially assumed curfews reset at midnight local time, but the requirement specified a 24-hour rolling window from the *start* of the event; fixed the duration calculation to use `event.start_time + 24h` instead of `event.start_time.date() + 1 day`.
