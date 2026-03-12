@@ -2261,3 +2261,8 @@
 *   **Non-obvious logic**: The tax exemption check relies on a specific `jurisdiction_code` prefix combined with a `vendor_type` flag, not just a simple boolean on the invoice; missing the prefix check caused false negatives for international vendors.
 *   **Codebase pattern**: Tax calculations are consistently handled via a strategy pattern in `TaxCalculator`, where specific exemption rules are injected as context objects rather than hardcoded `if/else` blocks.
 *   **Correction**: Initially attempted to modify the base `Invoice` model to store exemption status directly, which broke existing unit tests; reverted to using the `TaxContext` extension method to keep the core model immutable.
+
+--- Story 411: Tax exemption (attempts: 2, 2026-03-12 08:24) ---
+*   **Non-obvious logic**: Tax exemption status isn't just a boolean flag; it depends on a complex intersection of `user_type`, `jurisdiction`, and `transaction_date`, requiring a dedicated strategy pattern rather than simple conditional checks.
+*   **Codebase pattern**: The repository consistently uses `TaxRule` objects with a `matches()` method to encapsulate validation logic, keeping the main controller thin and testable.
+*   **Correction**: Initially attempted to cache exemption results at the user level, but realized this failed for cross-jurisdictional transactions; switched to caching at the `transaction_id` level to ensure accuracy.
