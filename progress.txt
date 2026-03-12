@@ -2151,3 +2151,8 @@
 - **Tricky Aspect**: The `GiftRegistry` validation logic required handling nested JSON structures where the `recipient` field could be either a direct ID or a complex object; failing to normalize this before storage caused silent data corruption in the audit trail.
 - **Pattern Discovered**: The codebase consistently uses a "Command-Query Separation" pattern where write operations (like `createGift`) return only the entity ID, while read operations require a separate repository call to fetch full details, preventing N+1 query issues in the controller layer.
 - **Mistake & Correction**: Initially attempted to use a generic `Object.assign()` for deep cloning the gift metadata, which inadvertently mutated the original request object; switched to `structuredClone()` (or a custom deep copy utility) to ensure immutability during transaction processing.
+
+--- Story 407: Town budget allocation (attempts: 2, 2026-03-12 06:27) ---
+- **Tricky Logic**: The budget cap enforcement was non-obvious because it required recalculating remaining funds dynamically after each allocation, rather than validating the total upfront; a simple `if` check failed to catch edge cases where partial allocations exceeded the limit.
+- **Codebase Patterns**: Discovered a consistent convention of using a centralized `BudgetContext` object to manage state across services, avoiding direct database calls within the allocation logic to ensure transactional consistency.
+- **Mistake & Correction**: Initially attempted to mutate the input budget object directly, which caused side effects in parallel tests; corrected this by creating a deep copy of the budget state before performing any calculations.
