@@ -2441,3 +2441,8 @@
 - **Tricky Aspect**: The interaction between the CSS `z-index` stacking context and the dynamic rendering of overlay components was non-obvious; elements were disappearing behind modals unless the container's `position` was explicitly set to `relative`.
 - **Pattern Discovered**: The codebase consistently uses a "decorator" pattern for UI enhancements, where base components are wrapped in higher-order components to inject styling or tracking logic, rather than modifying the core component directly.
 - **Correction Made**: Initially attempted to handle decoration state via global Redux, which caused unnecessary re-renders; corrected by moving state management to local component context to isolate the decoration lifecycle.
+
+--- Story 419: Building decoration (attempts: 3, 2026-03-12 13:14) ---
+- **Non-obvious state synchronization**: The decoration rendering logic relies on a delayed re-render triggered by the `isDecorated` flag; updating the flag alone isn't enough without explicitly forcing a layout pass to apply the new visual assets.
+- **Codebase pattern**: Asset loading follows a strict "pre-load then apply" convention where decoration objects are instantiated in a separate initialization phase before being attached to the scene graph, preventing frame drops during runtime.
+- **Correction made**: Initially attempted to bind decoration events directly to the user input handler, causing race conditions; corrected by moving event handling to the dedicated `DecorationManager` singleton to ensure centralized state management.
