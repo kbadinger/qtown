@@ -2206,3 +2206,8 @@
 - **Tricky Aspect**: The `PolicyEvaluator` relies on a non-deterministic mock for time-based expiration checks, requiring explicit `Clock` injection to ensure consistent test results.
 - **Codebase Pattern**: Policy rules are strictly defined as immutable data classes, while enforcement logic is separated into distinct service layers to allow for hot-swappable strategies without touching the core domain model.
 - **Correction**: Initially attempted to modify policy state directly within the audit logger; corrected by injecting a read-only snapshot of the policy to prevent race conditions during concurrent reviews.
+
+--- Story 409: War council (attempts: 2, 2026-03-12 07:14) ---
+- **Tricky/Non-obvious**: The `WarCouncil` state machine relies on implicit event propagation; manually triggering a sub-unit's `retreat` event without first validating the `morale_threshold` causes the entire council to enter a deadlock state.
+- **Patterns/Conventions**: The codebase strictly separates "command intent" (immutable `Order` objects) from "execution logic" (mutable `Unit` state), meaning all state changes must flow through the `CommandBus` rather than direct method calls.
+- **Mistakes/Corrections**: Initially attempted to override `calculate_strategy()` directly in the controller, which broke the dependency injection chain; corrected by injecting a `StrategyProvider` interface to allow dynamic strategy swapping without recompiling the core logic.
