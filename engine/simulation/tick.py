@@ -590,3 +590,31 @@ def apply_tax_exemption(db: Session) -> int:
             exempted_count += 1
     
     return exempted_count
+
+
+def declare_public_holiday(db: Session) -> int:
+    """Declare a public holiday.
+    
+    - Creates an Event with event_type='public_holiday'
+    - All living NPCs: energy = min(100, energy+20), happiness += 5
+    - target_x=None, target_y=None
+    - Returns count of rested NPCs
+    """
+    from engine.models import NPC, Event
+    
+    # Create the event
+    event = Event(event_type="public_holiday", description="Public Holiday Declared")
+    db.add(event)
+    
+    # Update all living NPCs
+    # Using == 0 for is_dead per Postgres compatibility rules
+    rested_count = 0
+    for npc in db.query(NPC).filter(NPC.is_dead == 0).all():
+        npc.energy = min(100, npc.energy + 20)
+        npc.happiness = min(100, npc.happiness + 5)
+        npc.target_x = None
+        npc.target_y = None
+        rested_count += 1
+    
+    db.commit()
+    return rested_count

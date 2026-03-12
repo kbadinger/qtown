@@ -2281,3 +2281,8 @@
 - **Non-obvious state coupling**: The expansion vote logic relies on a hidden `pending_proposals` cache that isn't invalidated by standard town updates; manual cache clearing is required after a vote resolves.
 - **Convention discovery**: All town-level events must trigger the `TownEventBus` before updating the database to ensure the UI reactivity layer captures the state change correctly.
 - **Correction made**: Initially failed to handle the edge case where a vote ends in a tie; added a fallback rule to default to "no expansion" and log the tie explicitly to prevent silent failures.
+
+--- Story 412: Public holiday declaration (attempts: 1, 2026-03-12 09:27) ---
+*   **Non-obvious Date Handling**: The holiday logic relies on a specific `Calendar` instance rather than `Date` objects, requiring explicit timezone conversion before checking against the static holiday list to avoid off-by-one errors.
+*   **Codebase Convention**: Public holiday declarations follow a "repository pattern" where the `HolidayService` aggregates rules from both a static JSON config and a dynamic database lookup, always prioritizing the database for overrides.
+*   **Correction Made**: Initially attempted to memoize the holiday list at startup, which failed for dynamic admin updates; corrected by implementing a cache-invalidation hook triggered on configuration changes.

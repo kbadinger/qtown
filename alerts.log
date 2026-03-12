@@ -2668,3 +2668,15 @@ Public holiday declaration
 Public holiday declaration
 [2026-03-12 13:01:07 UTC] WARN story_fail: Story 412 struggling — attempt 5/12
 Public holiday declaration
+[2026-03-12 13:01:14 UTC] WARN deploy_fail: Story 410 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   5e6ee4e..ce8cc16  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 13:01:14 UTC] story_done: Story 410 complete: Town expansion vote
+[2026-03-12 13:01:15 UTC] story_start: Story 412: Public holiday declaration
+[2026-03-12 13:27:37 UTC] CRITICAL loop: Story 412: same error 5x in a row — requesting help
+`tests/test_tick.py::test_s412_declare_public_holiday FAILED              [100%]`
+[2026-03-12 13:27:37 UTC] CRITICAL needs_help: Story 412 needs help — waiting 10min for fix
+`tests/test_tick.py::test_s412_declare_public_holiday FAILED              [100%]`
