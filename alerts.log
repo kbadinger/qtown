@@ -2387,3 +2387,4 @@ Uploading..
 [2026-03-12 03:19:36 UTC] story_start: Story 404: Public speech
 [2026-03-12 03:25:20 UTC] WARN story_fail: Story 404 struggling — attempt 5/12
 Public speech
+[2026-03-12 03:26:32 UTC] deploy_ok: Story 404 deployed: Healthy after 0.1s

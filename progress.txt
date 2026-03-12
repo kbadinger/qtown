@@ -2051,3 +2051,8 @@
 - **Non-obvious State Synchronization**: The speech transcript updates were tricky because the `useEffect` dependency array needed to include the `isSpeaking` flag to prevent stale closures, which initially caused the UI to lag behind the audio playback.
 - **Codebase Convention**: Discovered that this project strictly separates audio logic into custom hooks (e.g., `useSpeechSynthesis`) rather than embedding it in components, ensuring all speech-related state is centralized and testable.
 - **Correction on Event Cleanup**: Initially forgot to cancel the speech utterance on component unmount, leading to audio continuing to play after navigation; fixed by adding a `cancel()` call in the `useEffect` cleanup function.
+
+--- Story 404: Public speech (attempts: 1, 2026-03-11 23:26) ---
+*   **Non-obvious dependency**: The `SpeechSynthesis` API requires explicit `cancel()` calls before re-initializing; failing to do so causes silent failures or overlapping audio in rapid-fire scenarios.
+*   **Codebase pattern**: Event handlers in this module consistently use `useCallback` with `React.useRef` to capture the latest state without triggering unnecessary re-renders during speech lifecycle events.
+*   **Correction**: Initially assumed `onend` fires immediately upon completion, but it requires a small debounce to ensure the UI state (e.g., "Stop" button) updates before the next speech queue item triggers.
