@@ -2426,3 +2426,8 @@
 - **Tricky/Non-Obvious**: The `RepairJob` state machine required explicit handling of the "pending approval" edge case where a job could be re-queued if the initial parts estimate exceeded the budget threshold, which wasn't immediately clear from the domain requirements.
 - **Patterns/Conventions**: The codebase consistently uses the `DomainEvent` pattern for audit logging; every state transition in the repair system must publish an event before updating the database, ensuring the audit trail is never out of sync.
 - **Mistakes & Corrections**: Initially, I attempted to validate part availability synchronously within the controller, causing race conditions during high concurrency; I corrected this by moving the check to a background worker that retries on transient failures.
+
+--- Story 418: Building efficiency rating (attempts: 4, 2026-03-12 12:28) ---
+*   **Tricky Aspect**: The efficiency rating calculation required handling edge cases where `total_area` was zero or negative, which caused division errors; adding a guard clause before the calculation was non-obvious from the initial requirements.
+*   **Pattern Discovered**: The codebase consistently uses a `Result<T, E>` return type for all domain calculations, forcing explicit error handling rather than using `Option` or panicking, which enforces stricter type safety in the service layer.
+*   **Correction**: Initially, I rounded the final rating to an integer too early in the pipeline, causing precision loss in downstream aggregations; I moved the rounding step to the final presentation layer to preserve accuracy.
