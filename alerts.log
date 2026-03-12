@@ -2472,3 +2472,25 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 Town budget allocation
 [2026-03-12 06:54:23 UTC] WARN story_fail: Story 407 struggling — attempt 5/12
 Town budget allocation
+[2026-03-12 07:02:29 UTC] WARN deploy_fail: Story 407 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   782b73b..ab74037  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 07:02:29 UTC] story_done: Story 407 complete: Town budget allocation
+[2026-03-12 07:02:29 UTC] story_start: Story 406: Policy effectiveness review
+[2026-03-12 07:03:16 UTC] WARN story_fail: Story 407 failed after 12 attempts: Town budget allocation
+[2026-03-12 07:03:16 UTC] CRITICAL critical: Story 407 failed: Town budget allocation
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-12 07:03:47 UTC] story_start: Story 406: Policy effectiveness review
+[2026-03-12 07:05:20 UTC] CRITICAL loop: Story 407: same error 5x in a row — requesting help
+`tests/test_tick.py::test_s407_allocate_town_budget FAILED                [100%]`
+[2026-03-12 07:05:20 UTC] CRITICAL needs_help: Story 407 needs help — waiting 10min for fix
+`tests/test_tick.py::test_s407_allocate_town_budget FAILED                [100%]`
+[2026-03-12 07:12:49 UTC] WARN story_fail: Story 406 struggling — attempt 5/12
+Policy effectiveness review
+[2026-03-12 07:14:31 UTC] WARN story_fail: Story 407 failed after 12 attempts: Town budget allocation
+[2026-03-12 07:14:32 UTC] CRITICAL critical: Story 407 failed: Town budget allocation
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-12 07:15:02 UTC] story_start: Story 406: Policy effectiveness review

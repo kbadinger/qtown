@@ -2116,3 +2116,8 @@
 - **Tricky Logic**: The budget validation required handling floating-point precision errors when summing department allocations; using a tolerance threshold (`Math.abs(sum - total) < 0.01`) was necessary instead of strict equality checks.
 - **Codebase Pattern**: The project consistently separates domain logic (allocation rules) from UI rendering, utilizing a dedicated `BudgetService` class that is injected into components rather than embedding logic directly in views.
 - **Correction**: Initially, I attempted to update the budget state directly within the event handler, which caused race conditions with the async API call; I corrected this by dispatching a standardized action that triggers the state update only after the server confirms the transaction.
+
+--- Story 407: Town budget allocation (attempts: 1, 2026-03-12 03:30) ---
+- **Non-obvious constraint**: The budget validation logic requires a strict "zero-sum" check across all departments; simply ensuring individual allocations don't exceed the total is insufficient if the sum of parts doesn't exactly match the approved cap.
+- **Codebase pattern**: Financial calculations consistently use `Decimal` types with explicit `quantize()` calls at the end of every transaction block to prevent floating-point drift, a pattern not always obvious in helper functions.
+- **Correction**: Initially missed the edge case where a department's allocation was set to `null` (interpreted as 0), causing the total sum check to pass incorrectly; fixed by adding explicit null-coalescing to default to zero before summation.
