@@ -2451,3 +2451,8 @@
 *   **Non-obvious CSS specificity**: The `.decoration-wrapper` class had unexpectedly high specificity due to nested pseudo-elements, requiring `!important` overrides or restructuring the selector chain to apply dynamic theme colors correctly.
 *   **Codebase pattern**: Decoration logic is consistently separated from core layout components using a dedicated `useDecoration` hook that handles asset loading and animation states, ensuring the main view remains lightweight.
 *   **Correction**: Initially attempted to inject decoration styles directly into the root container, causing render-blocking layout shifts; corrected by moving the logic to a fixed-position overlay with `pointer-events: none` to isolate visual effects.
+
+--- Story 419: Building decoration (attempts: 2, 2026-03-12 13:15) ---
+- **Non-obvious DOM mutation timing**: The decoration logic failed when applied immediately after mounting; discovered that `requestAnimationFrame` is required to ensure the browser has finished layout calculations before injecting styles.
+- **Convention for dynamic classes**: The codebase strictly separates static structural classes from dynamic state classes (e.g., `theme-dark` vs. `is-active`), requiring the use of the `clsx` utility for all conditional class merging.
+- **Correction on event delegation**: Initially attached individual listeners to each decoration element, causing performance lag; corrected by moving the listener to the container and using `event.target.closest()` to identify the specific element.

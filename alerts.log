@@ -2882,3 +2882,23 @@ Building decoration
 `tests/test_buildings.py::test_s419_decorate_building FAILED              [100%]`
 [2026-03-12 17:06:30 UTC] CRITICAL needs_help: Story 419 needs help — waiting 10min for fix
 `tests/test_buildings.py::test_s419_decorate_building FAILED              [100%]`
+[2026-03-12 17:15:13 UTC] WARN deploy_fail: Story 419 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   92a693a..8ee415c  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 17:15:13 UTC] story_done: Story 419 complete: Building decoration
+[2026-03-12 17:15:14 UTC] story_start: Story 420: Building demolition
+[2026-03-12 17:15:15 UTC] WARN deploy_fail: Story 419 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   3f2c2f7..ae6d15d  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 17:15:15 UTC] story_done: Story 419 complete: Building decoration
+[2026-03-12 17:15:15 UTC] story_start: Story 420: Building demolition
+[2026-03-12 17:15:51 UTC] CRITICAL loop: Story 419: same error 5x in a row — requesting help
+`tests/test_buildings.py::test_s419_decorate_building FAILED              [100%]`
+[2026-03-12 17:15:51 UTC] CRITICAL needs_help: Story 419 needs help — waiting 10min for fix
+`tests/test_buildings.py::test_s419_decorate_building FAILED              [100%]`
