@@ -2386,3 +2386,8 @@
 - **Tricky Logic**: The interaction between `repair_queue` state transitions and the `maintenance_window` flag was non-obvious; a repair request arriving exactly at the window boundary caused a race condition that required explicit locking on the queue state.
 - **Codebase Patterns**: Discovered a consistent "Repository-Service-Command" separation where all state mutations flow through command handlers, but direct repository access is permitted for read-only queries within the same transactional scope.
 - **Mistake & Correction**: Initially calculated repair costs using floating-point arithmetic, leading to rounding errors in the ledger; corrected by switching to integer-based cents and introducing a dedicated `Money` value object to enforce precision.
+
+--- Story 416: Building repair system (attempts: 5, 2026-03-12 12:17) ---
+*   **Tricky**: The repair logic required distinguishing between "scheduled maintenance" and "emergency patches" based on dynamic asset degradation rates, which wasn't explicitly defined in the initial requirements.
+*   **Pattern**: The codebase consistently uses a `RepairContext` aggregate to bundle asset state, labor availability, and material inventory, avoiding direct service-to-entity coupling.
+*   **Correction**: Initially attempted to calculate repair costs synchronously; corrected to use an asynchronous event-driven approach to prevent blocking the main workflow during external price lookups.
