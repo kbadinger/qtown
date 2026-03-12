@@ -2081,3 +2081,8 @@
 *   **Tricky Logic**: The `OppositionLeader` role required careful handling of the "shadow cabinet" state; the leader's authority is conditional on the party holding a specific number of seats, not just the role assignment itself.
 *   **Codebase Pattern**: Discovered a consistent convention where political roles implement a `validateEligibility()` hook before any state mutation, ensuring all derived privileges are recalculated dynamically.
 *   **Correction**: Initially attempted to hardcode the leader's speech text in the controller; corrected this to inject the text via the `PartyManifesto` service to maintain separation of concerns and support localization.
+
+--- Story 405: Opposition leader (attempts: 2, 2026-03-11 23:47) ---
+- **Tricky/Non-obvious**: The `OppositionLeader` role required careful handling of state transitions when the incumbent party changes; the logic for calculating the "next in line" candidate was non-deterministic if multiple parties shared the same seat count, requiring a strict tie-breaking rule based on registration timestamp.
+- **Patterns/Conventions**: The codebase consistently uses the `Strategy` pattern for vote-counting algorithms, allowing the `ElectionManager` to remain agnostic of specific counting rules (e.g., plurality vs. ranked-choice) by injecting a `VotingStrategy` interface.
+- **Mistakes & Corrections**: Initially, I attempted to update the opposition leader directly within the `Vote` event handler, which caused race conditions during concurrent election simulations; I corrected this by deferring the leadership update to a dedicated `ElectionResult` domain event, ensuring atomicity.
