@@ -2186,3 +2186,8 @@
 - **Tricky Aspect**: The `PolicyEvaluator` relies on implicit context inheritance from the request chain, making it non-obvious why certain policies fail in unit tests but pass in integration tests; explicit context mocking is required for isolation.
 - **Pattern Discovered**: The codebase consistently uses a "Result" wrapper object for policy outcomes instead of throwing exceptions, allowing the pipeline to gracefully degrade and log specific rule violations without breaking the flow.
 - **Correction Made**: Initially attempted to override the default `PolicyEngine` configuration globally, which caused side effects in other modules; corrected by injecting a scoped `PolicyContext` per request to ensure thread safety and isolation.
+
+--- Story 406: Policy effectiveness review (attempts: 3, 2026-03-12 07:01) ---
+*   **Non-obvious logic**: The policy effectiveness calculation silently fails when `last_review_date` is `NULL`, defaulting to a 0% score instead of flagging missing data; a guard clause is now required before the date subtraction.
+*   **Codebase convention**: This module consistently uses `PolicyStatus` enums for state transitions rather than string comparisons, ensuring type safety across the audit trail.
+*   **Correction**: Initially filtered results by `is_active` flag only, missing archived policies with pending reviews; corrected to include `status IN ('active', 'pending_review')` to match the business requirement.
