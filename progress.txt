@@ -2321,3 +2321,8 @@
 - **Tricky Logic**: The interaction between `recall_trigger` and `voter_eligibility` was non-obvious; the system requires a separate `recall_window` state check before validating signatures, not just a simple threshold comparison.
 - **Codebase Patterns**: Found a recurring convention of using `EventSource` traits for all election state changes, ensuring that audit logs are generated automatically via the `emit_event` macro rather than manual logging.
 - **Correction**: Initially missed the edge case where a recall election is cancelled mid-process; added a `cleanup_temporal_state` step to revert voter status flags before the final tally is committed.
+
+--- Story 413: Recall election (attempts: 5, 2026-03-12 09:46) ---
+*   **Non-obvious constraint**: The recall election logic requires a strict temporal check where the `petition_deadline` must be validated against the `current_block_timestamp` *before* checking the signature count, preventing race conditions where signatures are added after the deadline passes.
+*   **Codebase pattern**: This module strictly follows the "state machine" convention where transitions (e.g., `Active` → `Passed`/`Failed`) are guarded by a single `check_conditions()` function, ensuring no other function can alter the election status directly.
+*   **Correction made**: Initially, I attempted to return the election result directly in the `submit_signature` function; I corrected this to only update the internal state and emit an event, forcing the caller to explicitly query the status to prevent inconsistent reads during re-entrancy.

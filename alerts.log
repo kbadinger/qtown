@@ -2703,3 +2703,14 @@ Public holiday declaration
 [2026-03-12 13:44:33 UTC] story_done: Story 412 complete: Public holiday declaration
 [2026-03-12 13:44:34 UTC] story_start: Story 413: Recall election
 [2026-03-12 13:46:28 UTC] deploy_ok: Story 412 deployed: Healthy after 0.1s
+[2026-03-12 13:46:37 UTC] WARN deploy_fail: Story 413 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   781fe6f..6801c42  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 13:46:37 UTC] story_done: Story 412 complete: Public holiday declaration
+[2026-03-12 13:46:38 UTC] story_done: Story 413 complete: Recall election
+[2026-03-12 13:46:38 UTC] story_start: Story 413: Recall election
+[2026-03-12 13:46:38 UTC] story_start: Story 414: Policy sunset
+[2026-03-12 13:46:42 UTC] deploy_ok: Story 413 deployed: Healthy after 0.1s
