@@ -606,7 +606,7 @@ def declare_public_holiday(db: Session) -> int:
     world_state = db.query(WorldState).first()
     current_tick = world_state.tick if world_state else 0
     
-    # Create the event
+    # Create the event with the current tick
     event = Event(
         event_type="public_holiday", 
         description="Public Holiday Declared",

@@ -2291,3 +2291,8 @@
 *   **Voting Logic Edge Cases**: The calculation for "majority" was non-obvious when handling abstentions; the codebase requires explicitly checking `total_votes > 0` before dividing to avoid skewing results, rather than relying on simple `votes > threshold` logic.
 *   **Event-Driven Expansion**: The codebase consistently uses a `TownExpansionEvent` dispatcher rather than direct method calls; new expansion features must subscribe to this event to ensure they trigger alongside legacy systems like `RoadPaving` and `WaterSupply`.
 *   **State Persistence Correction**: Initially, I updated the `Town` entity in memory without persisting the `expansion_level` to the database, causing the UI to revert on refresh; I corrected this by wrapping the update logic in the `TownRepository.save()` transaction block.
+
+--- Story 412: Public holiday declaration (attempts: 3, 2026-03-12 09:42) ---
+- **Non-obvious edge case**: The holiday logic fails silently if the `date` parameter is a `LocalDate` without an explicit time zone; the system defaults to UTC, causing off-by-one errors for dates near midnight in non-UTC regions.
+- **Codebase pattern**: All domain events in this module extend `BaseDomainEvent` and must be published via the `EventBus` interface; direct repository calls inside event handlers are strictly forbidden to maintain transactional boundaries.
+- **Correction made**: Initially attempted to validate the holiday against a hardcoded list in the controller; refactored to use the `HolidayRepository` to ensure the UI always reflects the latest database state, including dynamic admin overrides.
