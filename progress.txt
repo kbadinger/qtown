@@ -2326,3 +2326,8 @@
 *   **Non-obvious constraint**: The recall election logic requires a strict temporal check where the `petition_deadline` must be validated against the `current_block_timestamp` *before* checking the signature count, preventing race conditions where signatures are added after the deadline passes.
 *   **Codebase pattern**: This module strictly follows the "state machine" convention where transitions (e.g., `Active` → `Passed`/`Failed`) are guarded by a single `check_conditions()` function, ensuring no other function can alter the election status directly.
 *   **Correction made**: Initially, I attempted to return the election result directly in the `submit_signature` function; I corrected this to only update the internal state and emit an event, forcing the caller to explicitly query the status to prevent inconsistent reads during re-entrancy.
+
+--- Story 413: Recall election (attempts: 1, 2026-03-12 10:05) ---
+- **Tricky Logic**: The `recall_trigger` calculation was non-obvious; it requires checking the *cumulative* petition count against a dynamic threshold that changes based on the current term length, not just a static number.
+- **Codebase Patterns**: The domain layer strictly separates `Petition` (immutable event data) from `ElectionState` (mutable aggregate), meaning all state transitions must go through the `ElectionService` rather than direct entity mutation.
+- **Correction**: Initially missed handling the edge case where a petition is submitted on the exact deadline day; fixed by ensuring the `is_valid_date` check uses `<=` inclusive comparison with UTC normalization to avoid timezone drift failures.
