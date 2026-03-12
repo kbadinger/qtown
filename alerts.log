@@ -2294,3 +2294,7 @@ Uploading..
 [2026-03-12 02:06:09 UTC] story_start: Story 401: Political approval rating
 [2026-03-12 02:06:37 UTC] WARN story_fail: Story 399 struggling — attempt 5/12
 Spring bloom
+[2026-03-12 02:06:41 UTC] deploy_ok: Story 399 deployed: Healthy after 0.1s
+[2026-03-12 02:06:50 UTC] story_done: Story 399 complete: Spring bloom
+[2026-03-12 02:06:50 UTC] story_start: Story 401: Political approval rating
+[2026-03-12 02:07:53 UTC] deploy_ok: Story 399 deployed: Healthy after 0.1s

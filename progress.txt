@@ -1941,3 +1941,8 @@
 - **Non-obvious dependency**: The `bloom_cycle` logic relies on a hidden global `season_state` singleton; direct instantiation of the `Flower` class without injecting this context causes silent failures in the rendering loop.
 - **Convention**: All visual state transitions in this module must use the `animate_with_easing()` helper rather than raw CSS transitions to ensure consistency with the global animation queue.
 - **Correction**: Initially missed the `z-index` stacking context reset in the `SpringBloom` component, causing new flowers to render behind the static background; fixed by enforcing `position: relative` on the container wrapper.
+
+--- Story 399: Spring bloom (attempts: 3, 2026-03-11 22:07) ---
+- **Tricky Aspect**: The `SpringBloom` component's dependency on the `SeasonContext` required a specific re-render trigger; simply updating the state wasn't enough without forcing a context consumer refresh, which was non-obvious in the initial implementation.
+- **Pattern Discovered**: This codebase consistently uses the "factory function" pattern for creating event handlers (e.g., `makeBloomHandler()`) to avoid closure staleness, rather than relying on `useCallback` for every single listener.
+- **Correction Made**: Initially, I passed the raw animation frame ID directly to the cleanup function, causing memory leaks; I corrected this by wrapping the ID in a `useRef` to ensure the cleanup logic always accessed the latest frame reference.
