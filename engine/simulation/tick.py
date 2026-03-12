@@ -626,3 +626,35 @@ def declare_public_holiday(db: Session) -> int:
     
     db.commit()
     return rested_count
+
+
+def check_recall_election(db: Session) -> bool:
+    """Check if a recall election should be held based on average happiness."""
+    from engine.models import NPC, Election, Event
+    
+    # Calculate average happiness of living NPCs
+    avg_happiness = db.query(func.avg(NPC.happiness)).filter(NPC.is_dead == 0).scalar()
+    
+    if avg_happiness is None or avg_happiness >= 30:
+        return False
+    
+    # Get top 3 NPCs by skill (living NPCs only)
+    top_candidates = db.query(NPC).filter(NPC.is_dead == 0).order_by(NPC.skill.desc()).limit(3).all()
+    
+    if len(top_candidates) < 3:
+        return False
+    
+    # Create Election with top 3 candidates
+    election = Election(
+        candidates=[c.id for c in top_candidates]
+    )
+    db.add(election)
+    
+    # Create Event for recall election
+    event = Event(
+        event_type='recall_election'
+    )
+    db.add(event)
+    
+    db.commit()
+    return True

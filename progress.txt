@@ -2301,3 +2301,8 @@
 *   **Non-obvious date handling**: The holiday logic relies on `DateUtil` for timezone-aware comparisons, not standard `java.time` methods, to correctly handle edge cases like DST transitions during holiday declarations.
 *   **Codebase pattern**: New holidays must be registered in the `HolidayRegistry` singleton *and* annotated with `@HolidayConfig` to ensure they are picked up by the automated calendar generation pipeline.
 *   **Correction**: Initially attempted to store holiday dates as `LocalDate` in the DB, which caused failures for recurring holidays; switched to storing the recurrence rule string and calculating the actual date at runtime.
+
+--- Story 412: Public holiday declaration (attempts: 5, 2026-03-12 09:43) ---
+- **Non-obvious dependency**: The holiday declaration logic relies on a cached `DateService` singleton that must be manually reset in tests; failing to do so causes flaky assertions due to stale timezone data.
+- **Codebase pattern**: All domain events in this module follow the `EventName` + `Handler` naming convention and are dispatched via the `EventBus` interface rather than direct method calls.
+- **Correction**: Initially attempted to validate holiday dates using string comparison, which failed on edge cases; switched to normalizing inputs via `ZonedDateTime` before validation to ensure timezone consistency.
