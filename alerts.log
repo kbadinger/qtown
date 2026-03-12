@@ -2494,3 +2494,6 @@ Policy effectiveness review
 [2026-03-12 07:14:32 UTC] CRITICAL critical: Story 407 failed: Town budget allocation
 Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-12 07:15:02 UTC] story_start: Story 406: Policy effectiveness review
+[2026-03-12 07:31:48 UTC] deploy_ok: Story 407 deployed: Healthy after 0.1s
+[2026-03-12 07:32:14 UTC] story_done: Story 407 complete: Town budget allocation
+[2026-03-12 07:32:14 UTC] story_start: Story 406: Policy effectiveness review

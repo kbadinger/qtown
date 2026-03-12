@@ -2121,3 +2121,8 @@
 - **Non-obvious constraint**: The budget validation logic requires a strict "zero-sum" check across all departments; simply ensuring individual allocations don't exceed the total is insufficient if the sum of parts doesn't exactly match the approved cap.
 - **Codebase pattern**: Financial calculations consistently use `Decimal` types with explicit `quantize()` calls at the end of every transaction block to prevent floating-point drift, a pattern not always obvious in helper functions.
 - **Correction**: Initially missed the edge case where a department's allocation was set to `null` (interpreted as 0), causing the total sum check to pass incorrectly; fixed by adding explicit null-coalescing to default to zero before summation.
+
+--- Story 406: Policy effectiveness review (attempts: 2, 2026-03-12 03:36) ---
+- **Tricky/Non-obvious**: The policy evaluation logic relies on a cascading override mechanism where `effective_policy` is not a direct copy but a merged result of base rules and context-specific exceptions; missing the `merge_strategy` parameter caused silent failures in edge cases.
+- **Patterns/Conventions**: The codebase consistently separates policy *definition* (static YAML/JSON) from *execution* (dynamic resolver classes), and all audit logs are generated via a centralized `PolicyAuditMiddleware` rather than inline logging.
+- **Mistakes & Corrections**: Initially treated `policy_version` as a simple string identifier, leading to comparison errors; corrected by implementing semantic version parsing to ensure proper precedence handling during the review cycle.
