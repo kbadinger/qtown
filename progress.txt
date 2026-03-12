@@ -2446,3 +2446,8 @@
 - **Non-obvious state synchronization**: The decoration rendering logic relies on a delayed re-render triggered by the `isDecorated` flag; updating the flag alone isn't enough without explicitly forcing a layout pass to apply the new visual assets.
 - **Codebase pattern**: Asset loading follows a strict "pre-load then apply" convention where decoration objects are instantiated in a separate initialization phase before being attached to the scene graph, preventing frame drops during runtime.
 - **Correction made**: Initially attempted to bind decoration events directly to the user input handler, causing race conditions; corrected by moving event handling to the dedicated `DecorationManager` singleton to ensure centralized state management.
+
+--- Story 419: Building decoration (attempts: 5, 2026-03-12 13:15) ---
+*   **Non-obvious CSS specificity**: The `.decoration-wrapper` class had unexpectedly high specificity due to nested pseudo-elements, requiring `!important` overrides or restructuring the selector chain to apply dynamic theme colors correctly.
+*   **Codebase pattern**: Decoration logic is consistently separated from core layout components using a dedicated `useDecoration` hook that handles asset loading and animation states, ensuring the main view remains lightweight.
+*   **Correction**: Initially attempted to inject decoration styles directly into the root container, causing render-blocking layout shifts; corrected by moving the logic to a fixed-position overlay with `pointer-events: none` to isolate visual effects.
