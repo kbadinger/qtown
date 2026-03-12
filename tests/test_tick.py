@@ -538,7 +538,7 @@ def test_s409_hold_war_council(db):
 def test_s410_hold_expansion_vote(db):
     """Town expansion vote."""
     _setup_world(db)
-    from engine.simulation import hold_expansion_vote
+    from engine.simulation.tick import hold_expansion_vote
 
     result = hold_expansion_vote(db)
     assert isinstance(result, dict), "Should return vote result dict"

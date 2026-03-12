@@ -2655,3 +2655,16 @@ Town expansion vote
 [2026-03-12 12:26:05 UTC] deploy_ok: Story 411 deployed: Healthy after 0.1s
 [2026-03-12 12:26:14 UTC] story_done: Story 411 complete: Tax exemption
 [2026-03-12 12:26:14 UTC] story_start: Story 412: Public holiday declaration
+[2026-03-12 12:38:34 UTC] deploy_ok: Story 411 deployed: Healthy after 0.1s
+[2026-03-12 12:38:50 UTC] story_done: Story 411 complete: Tax exemption
+[2026-03-12 12:38:51 UTC] story_start: Story 412: Public holiday declaration
+[2026-03-12 12:39:12 UTC] deploy_ok: Story 411 deployed: Healthy after 0.0s
+[2026-03-12 12:39:21 UTC] story_done: Story 411 complete: Tax exemption
+[2026-03-12 12:39:21 UTC] story_start: Story 412: Public holiday declaration
+[2026-03-12 12:54:42 UTC] WARN story_fail: Story 412 struggling — attempt 5/12
+Public holiday declaration
+[2026-03-12 12:56:22 UTC] conflict_resolved: Story 410: Auto-resolved test conflict with Story 365
+[2026-03-12 12:57:11 UTC] WARN story_fail: Story 412 struggling — attempt 5/12
+Public holiday declaration
+[2026-03-12 13:01:07 UTC] WARN story_fail: Story 412 struggling — attempt 5/12
+Public holiday declaration
