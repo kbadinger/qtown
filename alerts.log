@@ -2722,3 +2722,14 @@ Uploading..
 [2026-03-12 13:48:49 UTC] deploy_ok: Story 413 deployed: Healthy after 0.0s
 [2026-03-12 13:48:59 UTC] story_done: Story 413 complete: Recall election
 [2026-03-12 13:48:59 UTC] story_start: Story 414: Policy sunset
+[2026-03-12 14:06:37 UTC] deploy_ok: Story 413 deployed: Healthy after 0.1s
+[2026-03-12 14:06:54 UTC] story_done: Story 413 complete: Recall election
+[2026-03-12 14:06:55 UTC] story_start: Story 414: Policy sunset
+[2026-03-12 14:12:36 UTC] WARN story_fail: Story 414 struggling — attempt 5/12
+Policy sunset
+[2026-03-12 14:14:26 UTC] WARN story_fail: Story 414 struggling — attempt 5/12
+Policy sunset
+[2026-03-12 14:15:43 UTC] WARN story_fail: Story 414 struggling — attempt 5/12
+Policy sunset
+[2026-03-12 14:16:42 UTC] WARN story_fail: Story 414 struggling — attempt 5/12
+Policy sunset
