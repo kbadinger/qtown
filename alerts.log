@@ -2326,3 +2326,9 @@ Uploading..
 [2026-03-12 02:31:49 UTC] deploy_ok: Story 401 deployed: Healthy after 0.1s
 [2026-03-12 02:32:07 UTC] story_done: Story 401 complete: Political approval rating
 [2026-03-12 02:32:17 UTC] story_start: Story 402: Corruption detection
+[2026-03-12 02:33:37 UTC] WARN deploy_fail: Story 401 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build timed out after 300s
+
+Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
+[2026-03-12 02:33:48 UTC] story_done: Story 401 complete: Political approval rating
+[2026-03-12 02:33:58 UTC] story_start: Story 402: Corruption detection
+[2026-03-12 02:34:23 UTC] deploy_ok: Story 402 deployed: Healthy after 0.1s

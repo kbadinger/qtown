@@ -35,18 +35,21 @@ def init_world_state(db: Session) -> WorldState:
 
 
 def init_grid(db: Session) -> None:
-    """Initialize the 50x50 tile grid."""
+    """Initialize the 50x50 tile grid.
+    
+    Creates tiles with terrain='grass' for all x,y coordinates 0-49.
+    Idempotent: does nothing if any tiles already exist.
+    """
     from engine.models import Tile
     
-    # Check if grid already exists (idempotent seeding)
+    # Check if grid already initialized
     existing_count = db.query(Tile).count()
     if existing_count > 0:
-        return  # Already initialized
+        return
     
     for x in range(50):
         for y in range(50):
-            db.add(Tile(x=x, y=y, terrain="grass"))
-    
+            db.add(Tile(x=x, y=y, terrain='grass'))
     db.commit()
 
 

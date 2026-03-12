@@ -1996,3 +1996,8 @@
 - **Tricky Logic**: The correlation between "sudden volume spikes" and "account age" was non-obvious; the initial heuristic missed cases where old accounts were compromised and used for burst transactions, requiring a time-windowed anomaly check instead of a static threshold.
 - **Codebase Pattern**: The existing `AuditService` relies heavily on immutable event logs for state reconstruction; I learned that all detection rules must be stateless and derive context solely from the event stream to maintain consistency with the existing architecture.
 - **Correction**: Initially, I filtered out "low-value" transactions to optimize performance, which caused false negatives in a "salami slicing" attack pattern; I corrected this by removing the value filter and instead optimizing the query indexing on `transaction_type`.
+
+--- Story 402: Corruption detection (attempts: 5, 2026-03-11 22:34) ---
+*   **Tricky Logic**: Distinguishing between "high risk" and "confirmed corruption" required handling probabilistic thresholds carefully; the initial implementation treated any anomaly as a hard failure, necessitating a refactor to a confidence-score-based alert system.
+*   **Codebase Pattern**: The existing data pipeline relies heavily on immutable event streams; introducing stateful aggregation for corruption detection required wrapping logic in a `StreamProcessor` interface to maintain compatibility with the rest of the architecture.
+*   **Correction**: Initially, I attempted to re-process historical data in-memory, causing OOM errors on large datasets; I corrected this by switching to a chunked, disk-backed iterator pattern that aligns with the system's existing batch processing conventions.
