@@ -1911,3 +1911,8 @@
 *   **Non-obvious hydration logic**: The drought relief calculation requires checking `soilMoisture` against a dynamic threshold derived from `cropType`, not a static constant; failing to account for the `cropType` multiplier caused initial under-allocation.
 *   **Codebase convention**: All resource adjustments in this module must be wrapped in the `ResourceTransaction` service to ensure audit logs are generated; direct state mutation bypasses the compliance checks.
 *   **Correction made**: Initially applied relief to the entire `region` object, but realized the codebase expects granular updates to specific `farm` entities within the region to maintain data consistency for individual reporting.
+
+--- Story 396: Miracle event (attempts: 3, 2026-03-11 21:44) ---
+- **Non-obvious state synchronization**: The "miracle" event relied on a race condition between the `EventBus` and the `GameState` reducer; the fix required enforcing a strict ordering of async dispatches rather than relying on implicit timing.
+- **Codebase convention**: Complex event handlers are consistently wrapped in a `try/catch` block that logs to `Analytics` before re-throwing, ensuring no silent failures occur during critical story beats.
+- **Correction**: Initially attempted to mutate the `EventPayload` directly to optimize performance, which broke immutability checks in the test suite; switched to using the spread operator (`{...payload}`) to maintain the expected data flow.
