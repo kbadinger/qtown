@@ -2006,3 +2006,8 @@
 - **Non-obvious SQL aggregation**: The initial query failed to handle `NULL` approval ratings correctly; realized `AVG()` ignores nulls by default, but the requirement to treat missing data as "0" required an explicit `COALESCE()` wrapper before aggregation.
 - **Convention for time-bounded queries**: Discovered the codebase consistently uses `EXTRACT(EPOCH FROM ...)` for timestamp comparisons rather than direct date literals, ensuring timezone-aware filtering across the `polls` table.
 - **Correction on join logic**: Initially joined `polls` to `candidates` using an inner join, which silently dropped polls with unlinked candidates; corrected to a `LEFT JOIN` to preserve all historical data points as per the spec.
+
+--- Story 403: Town curfew (attempts: 2, 2026-03-11 22:36) ---
+- **Non-obvious State Dependencies**: The curfew logic relied on a global `TownStatus` flag that wasn't explicitly passed to the `NightCycle` component, requiring a deep dive into the context provider to trace why the enforcement timer wasn't resetting.
+- **Time-Abstraction Pattern**: The codebase consistently uses a `TimeProvider` abstraction for all temporal logic rather than `Date.now()`, ensuring tests remain deterministic; I initially tried to inject real time directly, which broke the snapshot tests.
+- **Correction on Event Bubbling**: I mistakenly attached the curfew violation handler to the `TownMap` root, causing it to trigger for every child interaction; moving the listener to the specific `NPC` nodes fixed the false-positive alerts.
