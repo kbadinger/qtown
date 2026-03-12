@@ -2196,3 +2196,8 @@
 *   **Tricky Logic**: The policy effectiveness calculation relied on a non-obvious join between `policy_events` and `user_sessions` tables; a missing `NULL` check on the `session_duration` field caused silent failures in the aggregation logic.
 *   **Codebase Pattern**: The repository consistently uses a "repository-adapter" pattern for data access, where all raw SQL queries are encapsulated in a `PolicyMetricsRepository` class rather than being scattered across service layers.
 *   **Correction**: Initially attempted to filter results in the frontend component, which caused performance degradation; corrected by moving the date-range filtering and grouping logic into the backend query to leverage database indexing.
+
+--- Story 406: Policy effectiveness review (attempts: 4, 2026-03-12 07:07) ---
+- **Tricky/Non-obvious**: The policy effectiveness calculation relies on a non-deterministic `mock_date` injection in the test suite, which caused flaky results when I assumed the current system time was used for the "30-day window" logic.
+- **Patterns/Conventions**: The codebase strictly separates policy definition (static YAML) from evaluation logic (dynamic Python), using a shared `PolicyContext` dataclass to pass state between layers without global variables.
+- **Mistakes/Corrections**: Initially, I treated the `policy_id` as a unique string across all tenants, but discovered it's only unique within a `tenant_id` scope; I corrected the query to include a composite index check to prevent data leakage.
