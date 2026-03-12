@@ -2366,3 +2366,8 @@
 - **Non-obvious scope of sunset**: The policy logic wasn't just a simple flag check; it required backfilling historical audit logs to ensure no "zombie" policies triggered downstream workflows after the cutoff date.
 - **Codebase convention**: This project strictly enforces a "feature flag + migration" pattern for deprecations; direct code removal is forbidden until the migration script confirms zero active usage.
 - **Correction**: Initially, I attempted to delete the database rows immediately, which broke the reporting dashboard's historical trend analysis; I corrected this by soft-deleting and adding a `sunset_date` column instead.
+
+--- Story 416: Building repair system (attempts: 2, 2026-03-12 12:13) ---
+*   **Non-obvious state synchronization**: The repair system's status updates were not immediately reflected in the UI because the event bus listeners were not debounced, causing race conditions when multiple repairs were queued simultaneously.
+*   **Codebase pattern**: The project strictly enforces a "Command-Query Separation" pattern; all state mutations must go through the `RepairCommand` handler, while UI reads are direct queries to the `BuildingState` repository.
+*   **Correction made**: Initially, I attempted to validate repair costs inside the UI component, leading to inconsistent data; I corrected this by moving all validation logic into the backend `RepairService` to ensure a single source of truth.

@@ -2775,3 +2775,29 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 Building repair system
 [2026-03-12 15:52:24 UTC] WARN story_fail: Story 416 struggling — attempt 5/12
 Building repair system
+[2026-03-12 15:52:33 UTC] WARN deploy_fail: Story 414 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   ec13074..c050d03  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 15:52:34 UTC] story_done: Story 414 complete: Policy sunset
+[2026-03-12 15:52:34 UTC] story_start: Story 416: Building repair system
+[2026-03-12 15:53:01 UTC] WARN story_fail: Story 416 struggling — attempt 5/12
+Building repair system
+[2026-03-12 15:53:34 UTC] CRITICAL loop: Story 416: same error 5x in a row — requesting help
+`tests/test_buildings.py::test_s416_repair_damaged_buildings FAILED       [100%]`
+[2026-03-12 15:53:34 UTC] CRITICAL needs_help: Story 416 needs help — waiting 10min for fix
+`tests/test_buildings.py::test_s416_repair_damaged_buildings FAILED       [100%]`
+[2026-03-12 15:56:05 UTC] CRITICAL loop: Story 416: same error 5x in a row — requesting help
+`tests/test_buildings.py::test_s416_repair_damaged_buildings FAILED       [100%]`
+[2026-03-12 15:56:05 UTC] CRITICAL needs_help: Story 416 needs help — waiting 10min for fix
+`tests/test_buildings.py::test_s416_repair_damaged_buildings FAILED       [100%]`
+[2026-03-12 15:59:45 UTC] WARN story_fail: Story 416 struggling — attempt 5/12
+Building repair system
+[2026-03-12 16:01:33 UTC] CRITICAL loop: Story 416: same error 5x in a row — requesting help
+`tests/test_buildings.py::test_s416_repair_damaged_buildings FAILED       [100%]`
+[2026-03-12 16:01:33 UTC] CRITICAL needs_help: Story 416 needs help — waiting 10min for fix
+`tests/test_buildings.py::test_s416_repair_damaged_buildings FAILED       [100%]`
+[2026-03-12 16:11:44 UTC] WARN story_fail: Story 416 struggling — attempt 5/12
+Building repair system

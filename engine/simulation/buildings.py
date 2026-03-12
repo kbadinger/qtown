@@ -1004,3 +1004,42 @@ def get_population_cap(db: Session) -> tuple[bool, int]:
     can_spawn = living_npcs < total_capacity
     
     return (can_spawn, total_capacity)
+
+
+def repair_damaged_buildings(db: Session) -> int:
+    """Repair damaged buildings using treasury gold."""
+    count_repaired = 0
+    
+    # Get treasury gold
+    treasury = db.query(Treasury).first()
+    if not treasury:
+        return 0
+    
+    treasury_gold = treasury.gold_stored
+    
+    # Find buildings that need repair (level < 3 and capacity > 0)
+    buildings_to_repair = db.query(Building).filter(
+        Building.level < 3,
+        Building.capacity > 0
+    ).all()
+    
+    for building in buildings_to_repair:
+        if treasury_gold >= 30:
+            # Spend 30 gold
+            treasury.gold_stored -= 30
+            treasury_gold -= 30
+            
+            # Increase building level
+            building.level += 1
+            
+            # Create repair event
+            event = Event(
+                event_type='building_repair',
+                description=f"Building {building.name} repaired"
+            )
+            db.add(event)
+            
+            count_repaired += 1
+    
+    db.commit()
+    return count_repaired
