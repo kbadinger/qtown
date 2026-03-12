@@ -2091,3 +2091,8 @@
 *   **Non-obvious dependency**: The `OppositionLeader` role relies on a hidden `PartyContext` singleton for vote tallies; failing to inject this explicitly caused silent failures in the unit tests.
 *   **Codebase convention**: This module strictly separates "state mutation" (handled by `StateService`) from "view rendering" (handled by `LeaderView`), avoiding direct DOM manipulation in business logic.
 *   **Correction**: Initially attempted to derive the leader's status from the raw `MemberList` array; corrected to use the cached `ElectionResult` object to ensure consistency with the central election engine.
+
+--- Story 405: Opposition leader (attempts: 3, 2026-03-12 00:12) ---
+- **Tricky/Non-obvious**: The opposition leader's state machine requires explicit handling of "pending" vs. "active" status transitions; assuming a simple boolean flag led to race conditions during concurrent updates.
+- **Patterns/Conventions**: The codebase strictly separates domain logic (services) from persistence (repositories) and uses a custom `Result` type for error handling instead of throwing exceptions in the business layer.
+- **Mistakes/Corrections**: Initially duplicated validation logic in the controller; corrected by moving all rule enforcement into the dedicated `OppositionService` to maintain a single source of truth.
