@@ -2519,3 +2519,15 @@ Policy effectiveness review
 `tests/test_tick.py::test_s406_review_policy_effectiveness FAILED         [100%]`
 [2026-03-12 09:20:45 UTC] WARN story_fail: Story 408 struggling — attempt 5/12
 Diplomatic gift
+[2026-03-12 09:44:37 UTC] WARN deploy_fail: Story 406 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   dbd94bd..ded06f5  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 09:44:38 UTC] story_done: Story 406 complete: Policy effectiveness review
+[2026-03-12 09:44:38 UTC] story_start: Story 408: Diplomatic gift
+[2026-03-12 09:44:39 UTC] WARN story_fail: Story 408 struggling — attempt 5/12
+Diplomatic gift
+[2026-03-12 09:45:30 UTC] WARN story_fail: Story 408 struggling — attempt 5/12
+Diplomatic gift

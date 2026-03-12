@@ -2131,3 +2131,8 @@
 - **Non-obvious dependency**: The `PolicyEngine` relies on a hidden `ContextProvider` singleton for feature flags; direct instantiation without mocking this provider caused silent failures in unit tests.
 - **Codebase pattern**: All policy rules are defined as immutable data structures processed by a generic `RuleEvaluator`, meaning new logic should always be added as new rule classes rather than modifying the evaluator core.
 - **Correction**: Initially attempted to mutate policy state during the review loop, which violated the immutability contract; refactored to use a `PolicySnapshot` pattern to ensure thread safety and deterministic results.
+
+--- Story 408: Diplomatic gift (attempts: 4, 2026-03-12 05:46) ---
+- **Non-obvious state coupling**: The `GiftRegistry` relies on a hidden global `diplomatic_relations` map that isn't passed via constructor, causing race conditions if gift processing happens before the map is fully initialized.
+- **Codebase convention**: All external-facing data transformations use the `sanitize_diplomatic_string()` utility before storage; skipping this step silently corrupts the audit log in the `GiftEvent` stream.
+- **Correction**: Initially attempted to validate gift value against a static threshold, but realized the limit is dynamic based on the recipient's current `alliance_tier`; switched to fetching the tier from the `StateService` at runtime.
