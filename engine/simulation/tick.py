@@ -279,3 +279,36 @@ def detect_corruption(db: Session) -> bool | None:
         return True
     
     return False
+
+
+def enforce_curfew(db: Session) -> int:
+    """Enforce town curfew - send NPCs home at night.
+    
+    If WorldState.tick % 24 >= 20 (nighttime), for each living NPC with home_building_id,
+    set their target to home coords.
+    
+    Returns count of NPCs sent home.
+    """
+    from engine.models import Building
+    
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return 0
+    
+    # Check if it's curfew time (tick % 24 >= 20 means evening/night)
+    if world_state.tick % 24 < 20:
+        return 0
+    
+    # Find all living NPCs with a home building
+    npcs = db.query(NPC).filter(NPC.is_dead == 0, NPC.home_building_id != None).all()
+    
+    count = 0
+    for npc in npcs:
+        # Get the home building coordinates
+        home_building = db.query(Building).filter(Building.id == npc.home_building_id).first()
+        if home_building:
+            npc.target_x = home_building.x
+            npc.target_y = home_building.y
+            count += 1
+    
+    return count

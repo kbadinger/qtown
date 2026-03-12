@@ -2332,3 +2332,7 @@ Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and
 [2026-03-12 02:33:48 UTC] story_done: Story 401 complete: Political approval rating
 [2026-03-12 02:33:58 UTC] story_start: Story 402: Corruption detection
 [2026-03-12 02:34:23 UTC] deploy_ok: Story 402 deployed: Healthy after 0.1s
+[2026-03-12 02:34:43 UTC] story_done: Story 402 complete: Corruption detection
+[2026-03-12 02:34:53 UTC] story_start: Story 403: Town curfew
+[2026-03-12 02:35:46 UTC] deploy_ok: Story 402 deployed: Healthy after 0.1s
+[2026-03-12 02:36:05 UTC] story_done: Story 402 complete: Corruption detection

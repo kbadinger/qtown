@@ -2001,3 +2001,8 @@
 *   **Tricky Logic**: Distinguishing between "high risk" and "confirmed corruption" required handling probabilistic thresholds carefully; the initial implementation treated any anomaly as a hard failure, necessitating a refactor to a confidence-score-based alert system.
 *   **Codebase Pattern**: The existing data pipeline relies heavily on immutable event streams; introducing stateful aggregation for corruption detection required wrapping logic in a `StreamProcessor` interface to maintain compatibility with the rest of the architecture.
 *   **Correction**: Initially, I attempted to re-process historical data in-memory, causing OOM errors on large datasets; I corrected this by switching to a chunked, disk-backed iterator pattern that aligns with the system's existing batch processing conventions.
+
+--- Story 401: Political approval rating (attempts: 4, 2026-03-11 22:36) ---
+- **Non-obvious SQL aggregation**: The initial query failed to handle `NULL` approval ratings correctly; realized `AVG()` ignores nulls by default, but the requirement to treat missing data as "0" required an explicit `COALESCE()` wrapper before aggregation.
+- **Convention for time-bounded queries**: Discovered the codebase consistently uses `EXTRACT(EPOCH FROM ...)` for timestamp comparisons rather than direct date literals, ensuring timezone-aware filtering across the `polls` table.
+- **Correction on join logic**: Initially joined `polls` to `candidates` using an inner join, which silently dropped polls with unlinked candidates; corrected to a `LEFT JOIN` to preserve all historical data points as per the spec.
