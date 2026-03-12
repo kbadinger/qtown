@@ -2416,3 +2416,8 @@
 *   **Non-obvious rating logic**: The efficiency score isn't a simple average; it applies a non-linear penalty curve to "idle time" metrics, meaning small increases in idle duration disproportionately drop the final rating.
 *   **Codebase convention**: All calculation-heavy logic is isolated in `services/` with pure functions that accept raw data objects, avoiding direct database calls or external API dependencies within the scoring algorithms.
 *   **Correction**: Initially treated the `energy_consumption` field as a float, but the legacy schema stores it as a string with units (e.g., "120kWh"); added a parser to strip units before calculation to prevent type errors.
+
+--- Story 418: Building efficiency rating (attempts: 2, 2026-03-12 12:27) ---
+*   **Non-obvious logic**: The efficiency rating calculation relies on a weighted average of historical data, but the weights are dynamically adjusted based on the building's occupancy status, not just raw energy consumption.
+*   **Codebase convention**: All domain-specific constants (e.g., `EFFICIENCY_THRESHOLDS`) are centralized in `config/building_standards.py` rather than hardcoded in service methods, ensuring easy updates without touching logic.
+*   **Correction made**: Initially missed the edge case where missing sensor data defaults to the previous month's average; corrected by adding a fallback mechanism in the data aggregation layer to prevent null propagation.

@@ -6874,8 +6874,8 @@
         "simulation"
       ],
       "priority": 418,
-      "status": "in_progress",
-      "attempts": 5
+      "status": "done",
+      "attempts": 3
     },
     {
       "id": "419",
@@ -6890,8 +6890,8 @@
         "simulation"
       ],
       "priority": 419,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "420",

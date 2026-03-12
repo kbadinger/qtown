@@ -2836,3 +2836,8 @@ Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and
 Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
 [2026-03-12 16:23:06 UTC] story_done: Story 417 complete: Building upgrade cost
 [2026-03-12 16:23:06 UTC] story_start: Story 418: Building efficiency rating
+[2026-03-12 16:26:57 UTC] deploy_ok: Story 418 deployed: Healthy after 0.1s
+[2026-03-12 16:27:03 UTC] WARN story_fail: Story 418 struggling — attempt 5/12
+Building efficiency rating
+[2026-03-12 16:27:14 UTC] story_done: Story 418 complete: Building efficiency rating
+[2026-03-12 16:27:15 UTC] story_start: Story 419: Building decoration
