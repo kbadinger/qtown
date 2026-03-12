@@ -2563,3 +2563,8 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-12 10:30:10 UTC] deploy_ok: Story 407 deployed: Healthy after 0.1s
 [2026-03-12 10:30:20 UTC] story_done: Story 407 complete: Town budget allocation
 [2026-03-12 10:30:20 UTC] story_start: Story 406: Policy effectiveness review
+[2026-03-12 10:31:22 UTC] WARN story_fail: Story 407 struggling — attempt 5/12
+Town budget allocation
+[2026-03-12 10:32:11 UTC] deploy_ok: Story 407 deployed: Healthy after 0.1s
+[2026-03-12 10:32:20 UTC] story_done: Story 407 complete: Town budget allocation
+[2026-03-12 10:32:20 UTC] story_start: Story 406: Policy effectiveness review
