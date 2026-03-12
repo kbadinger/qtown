@@ -8,6 +8,7 @@ from typing import Optional
 import json
 from engine.models import Tile, Building, NPC
 from typing import List, Dict
+from engine.models import Treasury, Event, WorldState
 
 
 def seed_all_buildings(db: Session) -> None:
@@ -1008,6 +1009,8 @@ def get_population_cap(db: Session) -> tuple[bool, int]:
 
 def repair_damaged_buildings(db: Session) -> int:
     """Repair damaged buildings using treasury gold."""
+    from engine.models import Building, Treasury, Event, WorldState
+    
     count_repaired = 0
     
     # Get treasury gold
@@ -1016,6 +1019,10 @@ def repair_damaged_buildings(db: Session) -> int:
         return 0
     
     treasury_gold = treasury.gold_stored
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
     
     # Find buildings that need repair (level < 3 and capacity > 0)
     buildings_to_repair = db.query(Building).filter(
@@ -1032,10 +1039,12 @@ def repair_damaged_buildings(db: Session) -> int:
             # Increase building level
             building.level += 1
             
-            # Create repair event
+            # Create repair event with tick and affected_building_id
             event = Event(
                 event_type='building_repair',
-                description=f"Building {building.name} repaired"
+                description=f"Building {building.name} repaired",
+                tick=current_tick,
+                affected_building_id=building.id
             )
             db.add(event)
             

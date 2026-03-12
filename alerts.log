@@ -2801,3 +2801,6 @@ Building repair system
 `tests/test_buildings.py::test_s416_repair_damaged_buildings FAILED       [100%]`
 [2026-03-12 16:11:44 UTC] WARN story_fail: Story 416 struggling — attempt 5/12
 Building repair system
+[2026-03-12 16:15:15 UTC] deploy_ok: Story 416 deployed: Healthy after 0.1s
+[2026-03-12 16:15:42 UTC] story_done: Story 416 complete: Building repair system
+[2026-03-12 16:15:43 UTC] story_start: Story 417: Building upgrade cost

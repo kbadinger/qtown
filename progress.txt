@@ -2371,3 +2371,8 @@
 *   **Non-obvious state synchronization**: The repair system's status updates were not immediately reflected in the UI because the event bus listeners were not debounced, causing race conditions when multiple repairs were queued simultaneously.
 *   **Codebase pattern**: The project strictly enforces a "Command-Query Separation" pattern; all state mutations must go through the `RepairCommand` handler, while UI reads are direct queries to the `BuildingState` repository.
 *   **Correction made**: Initially, I attempted to validate repair costs inside the UI component, leading to inconsistent data; I corrected this by moving all validation logic into the backend `RepairService` to ensure a single source of truth.
+
+--- Story 416: Building repair system (attempts: 1, 2026-03-12 12:16) ---
+*   **Non-obvious state synchronization**: The repair system's UI lagged because the `RepairStatus` enum wasn't being re-evaluated after background asset downloads completed; adding a `refreshOnCompletion` hook was necessary to trigger the UI update.
+*   **Codebase convention**: This module strictly separates "validation logic" (in `RepairValidator`) from "execution logic" (in `RepairExecutor`), meaning all new repair types must implement the `IRepairable` interface before being registered in the factory.
+*   **Corrected mistake**: Initially, I attempted to block the main thread to ensure sequential repair steps, which caused the game to freeze; I refactored this to use an async/await pipeline with a progress emitter to maintain responsiveness.
