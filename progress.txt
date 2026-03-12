@@ -1926,3 +1926,8 @@
 - **Non-obvious edge case**: The drought relief calculation failed silently when `rainfall_data` was null for a region, requiring an explicit default fallback rather than relying on the aggregation function to handle missing arrays.
 - **Codebase convention**: Financial adjustments in this module always use `Decimal` types for intermediate calculations to prevent floating-point drift, even though the database schema stores them as integers (scaled by 100).
 - **Correction made**: Initially applied the relief multiplier to the *total* population before checking individual eligibility thresholds; corrected to filter eligible households first, then apply the multiplier to the aggregate sum to avoid over-allocating funds.
+
+--- Story 399: Spring bloom (attempts: 6, 2026-03-11 22:04) ---
+*   **Non-obvious state synchronization**: The bloom animation relies on a race condition between the `season` enum update and the `render` loop; explicitly locking the `isBloomActive` flag before triggering the particle system was necessary to prevent visual tearing.
+*   **Codebase convention**: Asset loading for seasonal sprites follows a strict `SeasonalAssetLoader` singleton pattern with a fallback to grayscale if the high-res texture fails, rather than throwing exceptions.
+*   **Correction**: Initially, I calculated bloom intensity based on absolute time, causing drift on slower devices; switched to using `deltaTime` accumulation to ensure frame-rate independence.

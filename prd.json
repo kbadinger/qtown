@@ -6571,7 +6571,7 @@
       ],
       "priority": 399,
       "status": "in_progress",
-      "attempts": 5
+      "attempts": 6
     },
     {
       "id": "400",
@@ -6587,7 +6587,7 @@
       ],
       "priority": 400,
       "status": "done",
-      "attempts": 1
+      "attempts": 2
     },
     {
       "id": "401",
