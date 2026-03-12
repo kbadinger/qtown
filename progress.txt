@@ -2181,3 +2181,8 @@
 - **Non-obvious scope of "effectiveness"**: The review logic wasn't just about checking pass/fail status; it required correlating policy metadata with downstream audit logs to determine *actual* enforcement rates, which was hidden behind a complex aggregation service.
 - **Codebase convention**: This module heavily relies on the `PolicyContext` wrapper object for all stateful operations; direct access to raw policy fields is discouraged and often leads to missing inheritance rules defined in the parent policy.
 - **Correction**: Initially, I attempted to filter policies by a simple date range, missing the requirement to account for policy "grace periods" (where a policy is active but not yet enforced); I corrected this by utilizing the existing `effective_date` helper which handles the grace period logic.
+
+--- Story 406: Policy effectiveness review (attempts: 5, 2026-03-12 06:45) ---
+- **Tricky Aspect**: The `PolicyEvaluator` relies on implicit context inheritance from the request chain, making it non-obvious why certain policies fail in unit tests but pass in integration tests; explicit context mocking is required for isolation.
+- **Pattern Discovered**: The codebase consistently uses a "Result" wrapper object for policy outcomes instead of throwing exceptions, allowing the pipeline to gracefully degrade and log specific rule violations without breaking the flow.
+- **Correction Made**: Initially attempted to override the default `PolicyEngine` configuration globally, which caused side effects in other modules; corrected by injecting a scoped `PolicyContext` per request to ensure thread safety and isolation.
