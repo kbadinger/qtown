@@ -2146,3 +2146,8 @@
 *   **Non-obvious constraint**: The `DiplomaticGift` schema requires a `sanctioned_origin` check *before* the `gift_type` validation; skipping this order causes the audit log to record a "valid" gift that is actually blocked by trade restrictions.
 *   **Codebase pattern**: All external gift integrations follow the `validate -> enrich -> persist` pipeline using the `GiftProcessor` service; direct repository calls bypass the mandatory `audit_trail` middleware.
 *   **Correction**: Initially attempted to handle currency conversion in the controller layer; refactored to the `GiftProcessor` to ensure consistency with the existing `ExchangeRateService` singleton used across the module.
+
+--- Story 408: Diplomatic gift (attempts: 1, 2026-03-12 06:18) ---
+- **Tricky Aspect**: The `GiftRegistry` validation logic required handling nested JSON structures where the `recipient` field could be either a direct ID or a complex object; failing to normalize this before storage caused silent data corruption in the audit trail.
+- **Pattern Discovered**: The codebase consistently uses a "Command-Query Separation" pattern where write operations (like `createGift`) return only the entity ID, while read operations require a separate repository call to fetch full details, preventing N+1 query issues in the controller layer.
+- **Mistake & Correction**: Initially attempted to use a generic `Object.assign()` for deep cloning the gift metadata, which inadvertently mutated the original request object; switched to `structuredClone()` (or a custom deep copy utility) to ensure immutability during transaction processing.

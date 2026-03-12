@@ -421,3 +421,40 @@ def send_diplomatic_gift(db: Session) -> int:
         
     db.commit()
     return count
+
+
+def allocate_town_budget(db: Session) -> dict:
+    """Allocate town budget from Treasury."""
+    from engine.models import Treasury, Event, WorldState
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Get treasury gold
+    treasury = db.query(Treasury).first()
+    total_gold = treasury.gold_stored if treasury else 0
+    
+    # Calculate allocations (40% infrastructure, 30% defense, 20% welfare, 10% events)
+    infrastructure = int(total_gold * 0.40)
+    defense = int(total_gold * 0.30)
+    welfare = int(total_gold * 0.20)
+    events_allocation = int(total_gold * 0.10)
+    
+    # Create event
+    event = Event(
+        event_type='budget_allocation',
+        description=f'Allocated {total_gold} gold: infrastructure={infrastructure}, defense={defense}, welfare={welfare}, events={events_allocation}',
+        tick=current_tick,
+        severity='info'
+    )
+    db.add(event)
+    db.commit()
+    
+    return {
+        'total': total_gold,
+        'infrastructure': infrastructure,
+        'defense': defense,
+        'welfare': welfare,
+        'events': events_allocation
+    }
