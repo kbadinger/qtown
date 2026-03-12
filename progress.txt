@@ -2306,3 +2306,8 @@
 - **Non-obvious dependency**: The holiday declaration logic relies on a cached `DateService` singleton that must be manually reset in tests; failing to do so causes flaky assertions due to stale timezone data.
 - **Codebase pattern**: All domain events in this module follow the `EventName` + `Handler` naming convention and are dispatched via the `EventBus` interface rather than direct method calls.
 - **Correction**: Initially attempted to validate holiday dates using string comparison, which failed on edge cases; switched to normalizing inputs via `ZonedDateTime` before validation to ensure timezone consistency.
+
+--- Story 413: Recall election (attempts: 3, 2026-03-12 09:45) ---
+*   **Tricky Logic**: The "recall" mechanism requires checking the *original* appointment date against the current date, not just the status flag; failing to distinguish between a pending recall and an active one caused false positives in the eligibility check.
+*   **Codebase Pattern**: This project strictly enforces the "Single Source of Truth" for election states via the `ElectionRegistry` singleton; direct database updates on the `candidates` table are bypassed in favor of the registry's `triggerRecall()` method to ensure audit logs are captured.
+*   **Correction**: Initially, I attempted to handle the recall window expiration in the UI layer, which led to race conditions; I corrected this by moving the time-bound validation entirely into the backend service, ensuring the UI only reflects the computed state.
