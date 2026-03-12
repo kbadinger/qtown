@@ -2026,3 +2026,8 @@
 - **Timezone Handling**: The curfew logic was non-obvious because the `curfew_start` and `curfew_end` fields are stored in UTC, requiring explicit conversion to the town's local timezone before comparing against the current time to avoid off-by-one-hour errors during DST transitions.
 - **State Machine Convention**: The codebase enforces a strict `CurfewStatus` enum (`ACTIVE`, `PENDING`, `INACTIVE`) rather than boolean flags; all status checks must use the `is_curfew_active(town_id)` helper to ensure consistency with the background job scheduler.
 - **Correction**: Initially, I attempted to cache the curfew status in Redis for 1 hour, which caused stale data during rapid time changes; I corrected this by removing the cache layer for this specific check and relying on the database's indexed timestamp query instead.
+
+--- Story 402: Corruption detection (attempts: 2, 2026-03-11 23:13) ---
+- **Tricky Aspect**: Distinguishing between benign "noise" in transaction logs and actual corruption required implementing a multi-stage heuristic filter rather than a simple threshold check; false positives were high until I added context-aware validation.
+- **Codebase Pattern**: The existing audit modules consistently use a `try-catch` wrapper around all I/O operations with a centralized `LogError` utility that automatically tags entries with `corruption_suspected` if the error code falls within a specific range.
+- **Correction**: Initially, I attempted to patch the data in-place to fix corruption, which risked data loss if the patch failed; I corrected this by implementing a "shadow copy" strategy where fixes are applied to a temporary buffer and only committed upon full validation.

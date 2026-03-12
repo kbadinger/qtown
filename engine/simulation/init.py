@@ -5,6 +5,7 @@ import random
 from sqlalchemy.orm import Session
 
 from engine.models import NPC, Building, WorldState, Tile
+from engine.db import Base
 
 
 def _generate_personality() -> str:
@@ -35,21 +36,16 @@ def init_world_state(db: Session) -> WorldState:
 
 
 def init_grid(db: Session) -> None:
-    """Initialize the 50x50 tile grid.
+    """Initialize the 50x50 tile grid."""
+    # Ensure tables exist before inserting (fixes test environment issues)
+    Base.metadata.create_all(bind=db.bind)
     
-    Creates tiles with terrain='grass' for all x,y coordinates 0-49.
-    Idempotent: does nothing if any tiles already exist.
-    """
-    from engine.models import Tile
-    
-    # Check if grid already initialized
-    existing_count = db.query(Tile).count()
-    if existing_count > 0:
-        return
-    
+    existing = db.query(Tile).count()
+    if existing > 0:
+        return  # Already initialized
     for x in range(50):
         for y in range(50):
-            db.add(Tile(x=x, y=y, terrain='grass'))
+            db.add(Tile(x=x, y=y, terrain="grass"))
     db.commit()
 
 
