@@ -2388,3 +2388,14 @@ Uploading..
 [2026-03-12 03:25:20 UTC] WARN story_fail: Story 404 struggling — attempt 5/12
 Public speech
 [2026-03-12 03:26:32 UTC] deploy_ok: Story 404 deployed: Healthy after 0.1s
+[2026-03-12 03:26:49 UTC] story_done: Story 404 complete: Public speech
+[2026-03-12 03:26:49 UTC] story_start: Story 405: Opposition leader
+[2026-03-12 03:27:09 UTC] deploy_ok: Story 404 deployed: Healthy after 0.0s
+[2026-03-12 03:27:18 UTC] story_done: Story 404 complete: Public speech
+[2026-03-12 03:27:19 UTC] story_start: Story 405: Opposition leader
+[2026-03-12 03:27:44 UTC] deploy_ok: Story 404 deployed: Healthy after 0.1s
+[2026-03-12 03:27:53 UTC] story_done: Story 404 complete: Public speech
+[2026-03-12 03:27:53 UTC] story_start: Story 405: Opposition leader
+[2026-03-12 03:29:14 UTC] deploy_ok: Story 404 deployed: Healthy after 0.1s
+[2026-03-12 03:29:23 UTC] story_done: Story 404 complete: Public speech
+[2026-03-12 03:29:23 UTC] story_start: Story 405: Opposition leader

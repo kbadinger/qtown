@@ -356,3 +356,37 @@ def give_public_speech(db: Session) -> int | None:
     
     db.commit()
     return mayor_id
+
+
+def identify_opposition_leader(db: Session) -> dict | None:
+    """Find the opposition leader (second-place candidate in latest election)."""
+    from engine.models import Election, Vote
+    
+    # Find latest election
+    latest_election = db.query(Election).order_by(Election.id.desc()).first()
+    if not latest_election:
+        return None
+    
+    # Count votes per candidate for this election
+    vote_counts = db.query(
+        Vote.candidate_npc_id,
+        func.count(Vote.id).label('vote_count')
+    ).filter(
+        Vote.election_id == latest_election.id
+    ).group_by(
+        Vote.candidate_npc_id
+    ).all()
+    
+    # Need at least 2 candidates
+    if len(vote_counts) < 2:
+        return None
+    
+    # Sort by vote count descending
+    sorted_votes = sorted(vote_counts, key=lambda x: x.vote_count, reverse=True)
+    
+    # Second place is opposition leader
+    opposition = sorted_votes[1]
+    return {
+        "opposition_npc_id": opposition.candidate_npc_id,
+        "votes": opposition.vote_count
+    }
