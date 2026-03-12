@@ -2154,3 +2154,53 @@ Uploading..
 [2026-03-11 22:32:24 UTC] deploy_ok: Story 397 deployed: Healthy after 0.1s
 [2026-03-11 22:32:40 UTC] story_done: Story 397 complete: Comet sighting
 [2026-03-11 22:32:41 UTC] story_start: Story 398: Building collapse
+[2026-03-11 22:38:06 UTC] deploy_ok: Story 398 deployed: Healthy after 0.1s
+[2026-03-11 22:38:10 UTC] deploy_ok: Story 398 deployed: Healthy after 0.1s
+[2026-03-11 22:38:16 UTC] story_done: Story 398 complete: Building collapse
+[2026-03-11 22:38:17 UTC] story_start: Story 399: Spring bloom
+[2026-03-11 22:38:20 UTC] story_done: Story 398 complete: Building collapse
+[2026-03-11 22:38:20 UTC] story_start: Story 399: Spring bloom
+[2026-03-11 22:39:30 UTC] deploy_ok: Story 397 deployed: Healthy after 0.1s
+[2026-03-11 22:39:39 UTC] story_done: Story 397 complete: Comet sighting
+[2026-03-11 22:39:39 UTC] story_start: Story 399: Spring bloom
+[2026-03-11 22:42:01 UTC] WARN deploy_fail: Story 398 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build timed out after 300s
+
+Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
+[2026-03-11 22:42:02 UTC] story_done: Story 398 complete: Building collapse
+[2026-03-11 22:42:02 UTC] story_start: Story 399: Spring bloom
+[2026-03-11 22:42:11 UTC] WARN deploy_fail: Story 398 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build timed out after 300s
+
+Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
+[2026-03-11 22:42:12 UTC] story_done: Story 398 complete: Building collapse
+[2026-03-11 22:42:12 UTC] story_start: Story 399: Spring bloom
+[2026-03-11 22:52:17 UTC] WARN story_fail: Story 399 struggling — attempt 5/12
+Spring bloom
+[2026-03-11 22:53:02 UTC] WARN story_fail: Story 399 struggling — attempt 5/12
+Spring bloom
+[2026-03-11 23:04:53 UTC] WARN story_fail: Story 399 struggling — attempt 5/12
+Spring bloom
+[2026-03-11 23:10:00 UTC] WARN story_fail: Story 399 struggling — attempt 5/12
+Spring bloom
+[2026-03-11 23:11:22 UTC] WARN story_fail: Story 399 struggling — attempt 5/12
+Spring bloom
+[2026-03-11 23:30:36 UTC] CRITICAL loop: Story 399: same error 5x in a row — requesting help
+`tests/test_events.py::test_s399_trigger_spring_bloom FAILED              [100%]`
+[2026-03-11 23:30:37 UTC] CRITICAL needs_help: Story 399 needs help — waiting 10min for fix
+`tests/test_events.py::test_s399_trigger_spring_bloom FAILED              [100%]`
+[2026-03-11 23:51:07 UTC] WARN story_fail: Story 399 failed after 12 attempts: Spring bloom
+[2026-03-11 23:51:07 UTC] CRITICAL critical: Story 399 failed: Spring bloom
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 23:51:38 UTC] story_start: Story 399: Spring bloom
+[2026-03-11 23:52:11 UTC] WARN story_fail: Story 399 failed after 12 attempts: Spring bloom
+[2026-03-11 23:52:11 UTC] CRITICAL critical: Story 399 failed: Spring bloom
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 23:52:42 UTC] story_start: Story 399: Spring bloom
+[2026-03-11 23:54:49 UTC] CRITICAL critical: Story 399: still failing after help + 3 retries — stopping
+`tests/test_events.py::test_s399_trigger_spring_bloom FAILED              [100%]`
+[2026-03-11 23:54:50 UTC] CRITICAL critical: Story 399 failed: Spring bloom
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-11 23:55:20 UTC] story_start: Story 399: Spring bloom
+[2026-03-12 00:09:10 UTC] WARN story_fail: Story 399 failed after 12 attempts: Spring bloom
+[2026-03-12 00:09:10 UTC] CRITICAL critical: Story 399 failed: Spring bloom
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-12 00:09:41 UTC] story_start: Story 399: Spring bloom

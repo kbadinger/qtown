@@ -1878,3 +1878,8 @@
 *   **Non-obvious state handling**: The comet visibility logic required checking both the `ephemeris` timestamp and the user's local timezone offset simultaneously; relying solely on UTC caused false negatives for edge-case sightings.
 *   **Codebase convention**: All astronomical calculations are isolated in the `utils/astro` module and return immutable data structures, preventing accidental mutation of the global simulation state.
 *   **Correction made**: Initially, I cached the comet's position in the component state, leading to stale data during rapid zoom events; switched to computing position on-demand from the `simulationEngine` to ensure real-time accuracy.
+
+--- Story 399: Spring bloom (attempts: 1, 2026-03-11 20:12) ---
+- **Tricky Aspect**: Handling the asynchronous timing of the bloom animation required careful synchronization with the `useEffect` cleanup to prevent memory leaks when the component unmounts before the animation completes.
+- **Pattern Discovered**: The codebase consistently uses a centralized `themeConfig` object for all seasonal color palettes, rather than hardcoding values in individual components, ensuring global consistency.
+- **Mistake & Correction**: Initially applied CSS transitions directly to the `opacity` property on the container, causing layout shifts; corrected by isolating the transition to the child elements and using `will-change` for better performance.
