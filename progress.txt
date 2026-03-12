@@ -2376,3 +2376,8 @@
 *   **Non-obvious state synchronization**: The repair system's UI lagged because the `RepairStatus` enum wasn't being re-evaluated after background asset downloads completed; adding a `refreshOnCompletion` hook was necessary to trigger the UI update.
 *   **Codebase convention**: This module strictly separates "validation logic" (in `RepairValidator`) from "execution logic" (in `RepairExecutor`), meaning all new repair types must implement the `IRepairable` interface before being registered in the factory.
 *   **Corrected mistake**: Initially, I attempted to block the main thread to ensure sequential repair steps, which caused the game to freeze; I refactored this to use an async/await pipeline with a progress emitter to maintain responsiveness.
+
+--- Story 416: Building repair system (attempts: 4, 2026-03-12 12:16) ---
+- **Tricky Logic**: The interaction between `repair_queue` priority and `resource_allocation` was non-obvious; simply checking `is_broken` wasn't enough, as the system requires validating `available_budget` before dequeuing to prevent deadlocks.
+- **Codebase Patterns**: The project strictly follows the "Command-Query Separation" pattern where repair actions are state-mutating commands, while status checks are read-only queries, ensuring thread safety in concurrent builds.
+- **Correction**: Initially, I attempted to update the `repair_log` inside the main loop, which caused race conditions; I corrected this by offloading logging to a separate async worker thread.
