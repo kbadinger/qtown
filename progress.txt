@@ -2411,3 +2411,8 @@
 *   **Tricky Aspect**: The efficiency rating logic required handling non-linear thresholds where small input changes caused disproportionate output jumps, necessitating careful boundary testing for edge cases like zero or negative values.
 *   **Codebase Pattern**: The project consistently separates calculation logic from data access using a repository pattern, ensuring that rating algorithms remain pure functions testable without mocking external services.
 *   **Correction**: Initially, I hardcoded the rating scale constants in the service layer; I corrected this by moving them to a centralized configuration file to allow dynamic updates without code changes.
+
+--- Story 418: Building efficiency rating (attempts: 5, 2026-03-12 12:26) ---
+*   **Non-obvious rating logic**: The efficiency score isn't a simple average; it applies a non-linear penalty curve to "idle time" metrics, meaning small increases in idle duration disproportionately drop the final rating.
+*   **Codebase convention**: All calculation-heavy logic is isolated in `services/` with pure functions that accept raw data objects, avoiding direct database calls or external API dependencies within the scoring algorithms.
+*   **Correction**: Initially treated the `energy_consumption` field as a float, but the legacy schema stores it as a string with units (e.g., "120kWh"); added a parser to strip units before calculation to prevent type errors.

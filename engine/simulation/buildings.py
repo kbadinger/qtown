@@ -1084,25 +1084,20 @@ def calculate_upgrade_cost(db: Session, building_id: int) -> dict | None:
 
 
 def calculate_building_efficiency(db: Session) -> dict:
-    """Calculate efficiency rating for all buildings with capacity > 0.
+    """Calculate efficiency for each building with capacity > 0.
     
-    Efficiency = workers / capacity (capped at 1.0)
+    Efficiency = workers / capacity (max 1.0)
     Returns dict of {building_id: efficiency}
     """
     from engine.models import Building, NPC
     
     result = {}
-    
-    # Get all buildings with capacity > 0
     buildings = db.query(Building).filter(Building.capacity > 0).all()
     
     for building in buildings:
-        # Count NPCs working at this building
+        # Count workers assigned to this building
         workers = db.query(NPC).filter(NPC.work_building_id == building.id).count()
-        
-        # Calculate efficiency (capped at 1.0)
         efficiency = min(workers / building.capacity, 1.0)
-        
         result[building.id] = efficiency
     
     return result
