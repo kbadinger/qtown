@@ -564,3 +564,33 @@ def hold_expansion_vote(db: Session) -> dict:
     return {
         "vote": "passed" if vote_passed else "failed"
     }
+
+
+def apply_tax_exemption(db: Session) -> int:
+    """Apply tax exemption to NPCs aged 5 or younger."""
+    from engine.models import NPC
+    import json
+    
+    exempted_count = 0
+    living_children = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.age <= 5
+    ).all()
+    
+    for npc in living_children:
+        # Parse memory_events (JSON string)
+        try:
+            memory_events = json.loads(npc.memory_events) if npc.memory_events else []
+        except (json.JSONDecodeError, TypeError):
+            memory_events = []
+        
+        # Add tax_exempt if not present
+        if 'tax_exempt' not in memory_events:
+            memory_events.append('tax_exempt')
+            npc.memory_events = json.dumps(memory_events)
+            exempted_count += 1
+    
+    if exempted_count > 0:
+        db.commit()
+    
+    return exempted_count
