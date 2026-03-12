@@ -1901,3 +1901,8 @@
 - **Non-obvious hydration logic**: The drought relief calculation required a conditional override for "critical" zones that bypassed the standard `water_reserve` threshold, which was buried deep in the `ZoneConfig` enum rather than the main controller.
 - **Convention for state mutation**: The codebase strictly separates read-only `get_status()` methods from `apply_relief()` actions; mixing these caused a race condition in the initial draft that was fixed by enforcing atomic state updates.
 - **Correction on unit handling**: Initially treated `precipitation_mm` as a float, but discovered the legacy schema stores it as an integer (centimeters); failing to cast this early caused a 10x over-allocation error in the test suite.
+
+--- Story 396: Miracle event (attempts: 1, 2026-03-11 21:44) ---
+- **Non-obvious timing**: The "miracle" trigger relies on a race condition between the event bus and the state reducer; using `await` on the async event handler was necessary to prevent the UI from rendering stale data before the mutation completed.
+- **Codebase convention**: Complex state transitions in this module always wrap logic in a `try/catch` block that explicitly dispatches an `ERROR` action type, rather than relying on global error boundaries.
+- **Correction**: Initially, I re-rendered the component on every event tick, causing performance jitter; I corrected this by memoizing the event listener and only triggering a re-render when the `isMiracleActive` flag actually flipped.
