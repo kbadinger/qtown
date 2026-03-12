@@ -2497,3 +2497,25 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-12 07:31:48 UTC] deploy_ok: Story 407 deployed: Healthy after 0.1s
 [2026-03-12 07:32:14 UTC] story_done: Story 407 complete: Town budget allocation
 [2026-03-12 07:32:14 UTC] story_start: Story 406: Policy effectiveness review
+[2026-03-12 07:37:17 UTC] deploy_ok: Story 406 deployed: Healthy after 0.1s
+[2026-03-12 07:37:26 UTC] story_done: Story 406 complete: Policy effectiveness review
+[2026-03-12 07:37:27 UTC] story_start: Story 408: Diplomatic gift
+[2026-03-12 07:49:14 UTC] WARN story_fail: Story 407 failed after 12 attempts: Town budget allocation
+[2026-03-12 07:49:14 UTC] CRITICAL critical: Story 407 failed: Town budget allocation
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-12 07:49:45 UTC] story_start: Story 408: Diplomatic gift
+[2026-03-12 08:06:57 UTC] CRITICAL critical: Story 407: still failing after help + 3 retries — stopping
+`tests/test_tick.py::test_s407_allocate_town_budget FAILED                [100%]`
+[2026-03-12 08:06:57 UTC] CRITICAL critical: Story 407 failed: Town budget allocation
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-12 08:07:28 UTC] story_start: Story 408: Diplomatic gift
+[2026-03-12 08:10:12 UTC] WARN story_fail: Story 406 struggling — attempt 5/12
+Policy effectiveness review
+[2026-03-12 09:11:10 UTC] WARN story_fail: Story 406 struggling — attempt 5/12
+Policy effectiveness review
+[2026-03-12 09:15:54 UTC] CRITICAL loop: Story 406: same error 5x in a row — requesting help
+`tests/test_tick.py::test_s406_review_policy_effectiveness FAILED         [100%]`
+[2026-03-12 09:15:54 UTC] CRITICAL needs_help: Story 406 needs help — waiting 10min for fix
+`tests/test_tick.py::test_s406_review_policy_effectiveness FAILED         [100%]`
+[2026-03-12 09:20:45 UTC] WARN story_fail: Story 408 struggling — attempt 5/12
+Diplomatic gift

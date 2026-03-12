@@ -390,3 +390,34 @@ def identify_opposition_leader(db: Session) -> dict | None:
         "opposition_npc_id": opposition.candidate_npc_id,
         "votes": opposition.vote_count
     }
+
+
+def send_diplomatic_gift(db: Session) -> int:
+    """Send diplomatic gifts to visitors."""
+    from engine.models import NPC, Treasury, Transaction, WorldState
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Get Treasury
+    treasury = db.query(Treasury).first()
+    if not treasury:
+        return 0
+    
+    # Find visitors
+    visitors = db.query(NPC).filter(NPC.role == 'visitor').all()
+    
+    count = 0
+    for visitor in visitors:
+        # Give 20 gold
+        visitor.gold += 20
+        treasury.gold -= 20
+        
+        # Create transaction
+        tx = Transaction(reason='diplomatic_gift', amount=20, tick=current_tick)
+        db.add(tx)
+        count += 1
+        
+    db.commit()
+    return count

@@ -2126,3 +2126,8 @@
 - **Tricky/Non-obvious**: The policy evaluation logic relies on a cascading override mechanism where `effective_policy` is not a direct copy but a merged result of base rules and context-specific exceptions; missing the `merge_strategy` parameter caused silent failures in edge cases.
 - **Patterns/Conventions**: The codebase consistently separates policy *definition* (static YAML/JSON) from *execution* (dynamic resolver classes), and all audit logs are generated via a centralized `PolicyAuditMiddleware` rather than inline logging.
 - **Mistakes & Corrections**: Initially treated `policy_version` as a simple string identifier, leading to comparison errors; corrected by implementing semantic version parsing to ensure proper precedence handling during the review cycle.
+
+--- Story 406: Policy effectiveness review (attempts: 1, 2026-03-12 05:44) ---
+- **Non-obvious dependency**: The `PolicyEngine` relies on a hidden `ContextProvider` singleton for feature flags; direct instantiation without mocking this provider caused silent failures in unit tests.
+- **Codebase pattern**: All policy rules are defined as immutable data structures processed by a generic `RuleEvaluator`, meaning new logic should always be added as new rule classes rather than modifying the evaluator core.
+- **Correction**: Initially attempted to mutate policy state during the review loop, which violated the immutability contract; refactored to use a `PolicySnapshot` pattern to ensure thread safety and deterministic results.
