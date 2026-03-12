@@ -2351,3 +2351,8 @@
 - **Tricky**: The interaction between the `Policy` model's `is_active` flag and the global `PolicyManager` cache was non-obvious; simply updating the database didn't immediately reflect in the runtime without a manual cache invalidation trigger.
 - **Patterns**: The codebase consistently uses a "Soft Delete + Archival" pattern for policy lifecycles rather than hard deletes, requiring all downstream consumers to explicitly filter by `status != 'archived'`.
 - **Correction**: Initially, I attempted to run the sunset logic as a synchronous background job, which caused timeouts during high-volume periods; I corrected this by refactoring it to use the existing `Celery` task queue with chunked processing.
+
+--- Story 415: Emergency tax (attempts: 2, 2026-03-12 11:27) ---
+- **Non-obvious Tax Logic**: The "emergency" tax calculation wasn't a simple percentage; it required a cascading lookup against a dynamic `tax_bracket` table that changes based on the fiscal year, making unit tests brittle if the year context wasn't explicitly mocked.
+- **Codebase Convention**: The project strictly enforces the "Repository Pattern" for all data access, even for simple lookups; attempting to query the database directly in the service layer caused immediate linting failures and broke the existing dependency injection graph.
+- **Correction Made**: Initially, I applied the tax rate before validating the `income_source` type, leading to incorrect calculations for exempt entities; I corrected this by moving the validation step to the top of the pipeline to short-circuit invalid inputs early.
