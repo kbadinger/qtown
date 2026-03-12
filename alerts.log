@@ -2606,3 +2606,14 @@ Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and
 [2026-03-12 11:17:15 UTC] deploy_ok: Story 409 deployed: Healthy after 0.1s
 [2026-03-12 11:17:24 UTC] story_done: Story 409 complete: War council
 [2026-03-12 11:17:25 UTC] story_start: Story 410: Town expansion vote
+[2026-03-12 11:24:42 UTC] WARN deploy_fail: Story 409 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   63d911d..4c7091f  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 11:24:42 UTC] story_done: Story 409 complete: War council
+[2026-03-12 11:24:43 UTC] story_start: Story 410: Town expansion vote
+[2026-03-12 11:27:00 UTC] deploy_ok: Story 409 deployed: Healthy after 0.1s
+[2026-03-12 11:27:16 UTC] story_done: Story 409 complete: War council
+[2026-03-12 11:27:16 UTC] story_start: Story 410: Town expansion vote
