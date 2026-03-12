@@ -2444,3 +2444,6 @@ Policy effectiveness review
 Policy effectiveness review
 [2026-03-12 05:10:00 UTC] WARN story_fail: Story 406 struggling — attempt 5/12
 Policy effectiveness review
+[2026-03-12 05:11:16 UTC] deploy_ok: Story 406 deployed: Healthy after 0.1s
+[2026-03-12 05:11:33 UTC] story_done: Story 406 complete: Policy effectiveness review
+[2026-03-12 05:11:33 UTC] story_start: Story 407: Town budget allocation

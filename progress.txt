@@ -2106,3 +2106,8 @@
 - **Non-obvious state coupling**: The policy effectiveness calculation relied on a hidden dependency between the `audit_log` table and the `policy_status` cache; changes to one required manual cache invalidation, which wasn't documented in the service layer.
 - **Codebase convention**: This module consistently uses a "command-query separation" pattern where read-heavy reporting queries are routed through a separate read-replica connection pool, distinct from the write-heavy policy update endpoints.
 - **Correction made**: Initially attempted to filter results in-memory after fetching all policies, causing OOM errors on large datasets; corrected by pushing the `effective_date` and `status` filters down to the SQL query level using parameterized CTEs.
+
+--- Story 406: Policy effectiveness review (attempts: 5, 2026-03-12 01:28) ---
+- **Non-obvious dependency**: The policy effectiveness calculation silently fails if the `audit_log` table lacks a `reviewed_at` index, causing timeouts that look like logic errors rather than performance issues.
+- **Codebase convention**: All policy rules must inherit from `BasePolicyRule` and override `evaluate()`; direct instantiation of rule classes bypasses the global caching layer and leads to stale data.
+- **Correction made**: Initially assumed `policy_id` was unique across all tenants; corrected the query to include `tenant_id` in the join condition after discovering cross-tenant data leakage in the test suite.
