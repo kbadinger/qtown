@@ -2271,3 +2271,8 @@
 - **Tricky Logic**: The tax exemption rule depends on a composite check of both `product.category` and `customer.tier`, not just one field; missing the `AND` condition caused false positives for premium customers buying non-exempt items.
 - **Codebase Pattern**: Domain logic for tax calculations is strictly isolated in `TaxCalculator` service classes, while the repository layer only handles raw data retrieval; never embed calculation rules directly in controllers or models.
 - **Correction**: Initially hardcoded the exemption list in the controller; refactored to use the `ExemptionRule` enum to ensure the list is centralized and easily testable.
+
+--- Story 411: Tax exemption (attempts: 3, 2026-03-12 08:36) ---
+- **Non-obvious logic**: The exemption calculation depends on a cascading `status` check where `pending` overrides `active` if the `effective_date` is in the future, a nuance not immediately clear from the function signature.
+- **Codebase pattern**: All tax-related rules are isolated in a dedicated `TaxRules` module using a strategy pattern; direct database calls for tax logic are strictly forbidden in favor of this centralized service.
+- **Correction**: Initially missed the edge case where a negative `tax_amount` should trigger a refund flag rather than just zeroing out the total; added a specific guard clause to handle negative inputs before the exemption logic runs.
