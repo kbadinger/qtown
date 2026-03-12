@@ -2136,3 +2136,8 @@
 - **Non-obvious state coupling**: The `GiftRegistry` relies on a hidden global `diplomatic_relations` map that isn't passed via constructor, causing race conditions if gift processing happens before the map is fully initialized.
 - **Codebase convention**: All external-facing data transformations use the `sanitize_diplomatic_string()` utility before storage; skipping this step silently corrupts the audit log in the `GiftEvent` stream.
 - **Correction**: Initially attempted to validate gift value against a static threshold, but realized the limit is dynamic based on the recipient's current `alliance_tier`; switched to fetching the tier from the `StateService` at runtime.
+
+--- Story 408: Diplomatic gift (attempts: 2, 2026-03-12 05:46) ---
+*   **Non-obvious state coupling**: The "gift" status wasn't isolated; it relied on a hidden dependency in the `DiplomacyEngine` that only updated when the `Ambassador` object was explicitly serialized, causing race conditions during rapid succession events.
+*   **Codebase convention**: The project enforces a strict "Event-First" pattern where all state changes must emit a domain event before updating the database, even for simple flag toggles, to ensure audit trail consistency.
+*   **Correction**: Initially attempted to bypass the event bus for performance, which broke the notification chain for allied factions; reverted to the standard `emit-and-persist` flow and added a background job for bulk processing instead.
