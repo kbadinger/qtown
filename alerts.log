@@ -2738,3 +2738,6 @@ Policy sunset
 [2026-03-12 14:38:14 UTC] story_start: Story 414: Policy sunset
 [2026-03-12 14:56:50 UTC] WARN story_fail: Story 414 struggling — attempt 5/12
 Policy sunset
+[2026-03-12 15:04:59 UTC] deploy_ok: Story 414 deployed: Healthy after 0.1s
+[2026-03-12 15:05:16 UTC] story_done: Story 414 complete: Policy sunset
+[2026-03-12 15:05:16 UTC] story_start: Story 415: Emergency tax

@@ -658,3 +658,55 @@ def check_recall_election(db: Session) -> bool:
     
     db.commit()
     return True
+
+
+def apply_emergency_tax(db: Session) -> int:
+    """Apply emergency tax if disasters occurred in last 10 ticks."""
+    from engine.models import Event, NPC, Treasury, WorldState
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return 0
+    
+    current_tick = world_state.tick
+    
+    # Check for disaster events in last 10 ticks
+    # Using like to catch variations of disaster event types
+    disaster_events = db.query(Event).filter(
+        Event.tick >= current_tick - 10,
+        Event.event_type.like('%disaster%')
+    ).all()
+    
+    if not disaster_events:
+        return 0
+    
+    total_collected = 0
+    treasury = db.query(Treasury).first()
+    if not treasury:
+        return 0
+    
+    # Get living NPCs (is_dead == 0 for Postgres compatibility)
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    for npc in living_npcs:
+        tax_amount = 5
+        if npc.gold >= tax_amount:
+            npc.gold -= tax_amount
+            total_collected += tax_amount
+        else:
+            total_collected += npc.gold
+            npc.gold = 0
+    
+    treasury.gold += total_collected
+    
+    # Log the tax event
+    tax_event = Event(
+        event_type='emergency_tax',
+        tick=current_tick,
+        description='Emergency tax collected due to recent disaster'
+    )
+    db.add(tax_event)
+    
+    db.commit()
+    return total_collected

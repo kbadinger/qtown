@@ -2341,3 +2341,8 @@
 - **Non-obvious dependency**: The sunset logic relied on a hidden `feature_flag` service that wasn't initialized in the standard test harness, causing intermittent failures until I manually mocked the context.
 - **Codebase pattern**: The project enforces a strict "read-only" approach for deprecated entities; all sunset operations must create a tombstone record rather than performing hard deletes to preserve audit trails.
 - **Correction**: Initially attempted to batch-process sunsets in a single transaction, which caused database lock contention; switched to an async background job with chunked processing to avoid blocking user traffic.
+
+--- Story 414: Policy sunset (attempts: 2, 2026-03-12 11:12) ---
+- **Non-obvious edge case**: The sunset logic failed for policies with `null` end dates; the code assumed a date was always present, requiring a fallback to "never expires" instead of throwing a null pointer.
+- **Codebase pattern**: Found a recurring `PolicyLifecycle` service that centralizes all date-comparison logic; future stories should reuse this instead of writing inline date checks to ensure consistency.
+- **Correction**: Initially wrote a synchronous batch job to delete expired records, but realized it would lock the database during peak hours; switched to an asynchronous background worker with a configurable retry strategy.
