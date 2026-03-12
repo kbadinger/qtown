@@ -312,3 +312,47 @@ def enforce_curfew(db: Session) -> int:
             count += 1
     
     return count
+
+
+def give_public_speech(db: Session) -> int | None:
+    """Mayor gives a public speech, boosting happiness for all living NPCs."""
+    from engine.models import Election, NPC, Dialogue, Event, WorldState
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Find latest election winner
+    latest_election = db.query(Election).order_by(Election.id.desc()).first()
+    if not latest_election or not latest_election.winner_npc_id:
+        return None
+    
+    mayor_id = latest_election.winner_npc_id
+    
+    # Check if mayor is alive
+    mayor = db.query(NPC).filter(NPC.id == mayor_id, NPC.is_dead == 0).first()
+    if not mayor:
+        return None
+    
+    # Boost happiness for all living NPCs
+    db.query(NPC).filter(NPC.is_dead == 0).update({NPC.happiness: NPC.happiness + 2})
+    
+    # Create dialogue record
+    dialogue = Dialogue(
+        speaker_npc_id=mayor_id,
+        listener_npc_id=None,
+        message="A public speech was given!",
+        tick=current_tick
+    )
+    db.add(dialogue)
+    
+    # Create event record
+    event = Event(
+        event_type='public_speech',
+        description=f"Mayor {mayor.name} gave a public speech",
+        tick=current_tick
+    )
+    db.add(event)
+    
+    db.commit()
+    return mayor_id

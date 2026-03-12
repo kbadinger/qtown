@@ -2031,3 +2031,8 @@
 - **Tricky Aspect**: Distinguishing between benign "noise" in transaction logs and actual corruption required implementing a multi-stage heuristic filter rather than a simple threshold check; false positives were high until I added context-aware validation.
 - **Codebase Pattern**: The existing audit modules consistently use a `try-catch` wrapper around all I/O operations with a centralized `LogError` utility that automatically tags entries with `corruption_suspected` if the error code falls within a specific range.
 - **Correction**: Initially, I attempted to patch the data in-place to fix corruption, which risked data loss if the patch failed; I corrected this by implementing a "shadow copy" strategy where fixes are applied to a temporary buffer and only committed upon full validation.
+
+--- Story 403: Town curfew (attempts: 3, 2026-03-11 23:18) ---
+*   **Non-obvious state synchronization**: The curfew enforcement logic relies on a hidden global flag updated by the `TownClock` service, not direct time checks in individual NPC scripts, making debugging require tracing the service's tick cycle.
+*   **Convention for "soft" constraints**: This codebase uses `isSoftRestricted()` return values to trigger warnings before hard locks; always check the warning state before enforcing the actual curfew to maintain the "grace period" pattern.
+*   **Correction on edge cases**: Initially missed the scenario where a player enters a restricted zone exactly at the transition minute; fixed by adding a 1-second buffer check in the `ZoneEntryValidator` to prevent flickering between allowed/blocked states.
