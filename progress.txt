@@ -2211,3 +2211,8 @@
 - **Tricky/Non-obvious**: The `WarCouncil` state machine relies on implicit event propagation; manually triggering a sub-unit's `retreat` event without first validating the `morale_threshold` causes the entire council to enter a deadlock state.
 - **Patterns/Conventions**: The codebase strictly separates "command intent" (immutable `Order` objects) from "execution logic" (mutable `Unit` state), meaning all state changes must flow through the `CommandBus` rather than direct method calls.
 - **Mistakes/Corrections**: Initially attempted to override `calculate_strategy()` directly in the controller, which broke the dependency injection chain; corrected by injecting a `StrategyProvider` interface to allow dynamic strategy swapping without recompiling the core logic.
+
+--- Story 409: War council (attempts: 5, 2026-03-12 07:14) ---
+- **Non-obvious state coupling**: The war council logic implicitly relies on `BattleState` being initialized before `TacticalMap` renders; failing to enforce this order causes silent null-pointer crashes in the unit positioning algorithm.
+- **Convention for event propagation**: This codebase uses a "fire-and-forget" pattern for high-level events (like `CouncilDecision`), requiring listeners to handle their own concurrency locks rather than relying on the event bus to serialize actions.
+- **Correction on scope**: Initially attempted to refactor the decision tree into a shared utility, but realized the context-specific `FactionBias` modifier must remain tightly coupled to the council instance to preserve historical simulation accuracy.
