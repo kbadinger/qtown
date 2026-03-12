@@ -2744,3 +2744,34 @@ Policy sunset
 [2026-03-12 15:13:17 UTC] deploy_ok: Story 414 deployed: Healthy after 0.1s
 [2026-03-12 15:13:27 UTC] story_done: Story 414 complete: Policy sunset
 [2026-03-12 15:13:27 UTC] story_start: Story 415: Emergency tax
+[2026-03-12 15:27:21 UTC] WARN deploy_fail: Story 415 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   5521a34..3af5f21  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 15:27:21 UTC] WARN deploy_fail: Story 414 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   b458f25..5521a34  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 15:27:21 UTC] story_done: Story 415 complete: Emergency tax
+[2026-03-12 15:27:22 UTC] story_done: Story 414 complete: Policy sunset
+[2026-03-12 15:27:22 UTC] story_start: Story 416: Building repair system
+[2026-03-12 15:27:22 UTC] story_start: Story 416: Building repair system
+[2026-03-12 15:27:51 UTC] WARN story_fail: Story 414 failed after 12 attempts: Policy sunset
+[2026-03-12 15:27:52 UTC] CRITICAL critical: Story 414 failed: Policy sunset
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-12 15:28:22 UTC] story_start: Story 416: Building repair system
+[2026-03-12 15:28:30 UTC] deploy_ok: Story 415 deployed: Healthy after 0.1s
+[2026-03-12 15:28:47 UTC] story_done: Story 415 complete: Emergency tax
+[2026-03-12 15:28:47 UTC] story_start: Story 416: Building repair system
+[2026-03-12 15:36:32 UTC] WARN story_fail: Story 414 failed after 12 attempts: Policy sunset
+[2026-03-12 15:36:32 UTC] CRITICAL critical: Story 414 failed: Policy sunset
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-12 15:37:03 UTC] story_start: Story 416: Building repair system
+[2026-03-12 15:50:57 UTC] WARN story_fail: Story 416 struggling — attempt 5/12
+Building repair system
+[2026-03-12 15:52:24 UTC] WARN story_fail: Story 416 struggling — attempt 5/12
+Building repair system

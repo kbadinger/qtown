@@ -2361,3 +2361,8 @@
 *   **Tricky Logic**: The edge case where a tax calculation triggers a negative balance due to rounding differences was non-obvious; the fix required applying the rounding step *before* the deduction check, not after.
 *   **Codebase Pattern**: This project consistently uses a "Command Pattern" for all financial mutations (e.g., `ApplyTaxCommand`), ensuring that validation and side-effects are decoupled from the core calculation logic.
 *   **Correction**: Initially, I attempted to modify the `TaxRate` entity directly during the transaction, which broke the audit trail; I corrected this by creating a new immutable `TaxAdjustment` record instead.
+
+--- Story 414: Policy sunset (attempts: 5, 2026-03-12 11:52) ---
+- **Non-obvious scope of sunset**: The policy logic wasn't just a simple flag check; it required backfilling historical audit logs to ensure no "zombie" policies triggered downstream workflows after the cutoff date.
+- **Codebase convention**: This project strictly enforces a "feature flag + migration" pattern for deprecations; direct code removal is forbidden until the migration script confirms zero active usage.
+- **Correction**: Initially, I attempted to delete the database rows immediately, which broke the reporting dashboard's historical trend analysis; I corrected this by soft-deleting and adding a `sunset_date` column instead.
