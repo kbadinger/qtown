@@ -1931,3 +1931,8 @@
 *   **Non-obvious state synchronization**: The bloom animation relies on a race condition between the `season` enum update and the `render` loop; explicitly locking the `isBloomActive` flag before triggering the particle system was necessary to prevent visual tearing.
 *   **Codebase convention**: Asset loading for seasonal sprites follows a strict `SeasonalAssetLoader` singleton pattern with a fallback to grayscale if the high-res texture fails, rather than throwing exceptions.
 *   **Correction**: Initially, I calculated bloom intensity based on absolute time, causing drift on slower devices; switched to using `deltaTime` accumulation to ensure frame-rate independence.
+
+--- Story 399: Spring bloom (attempts: 4, 2026-03-11 22:05) ---
+*   **Tricky Aspect**: The `SpringBloom` event logic required handling race conditions where rapid state updates could cause duplicate notifications; a simple mutex lock was insufficient without also checking the `lastProcessedTimestamp` to ensure idempotency.
+*   **Pattern Discovered**: The codebase consistently uses the `EventBus` pattern for decoupling seasonal logic from the core rendering engine, but relies on a custom `PriorityQueue` implementation rather than the standard library for ordering bloom events.
+*   **Correction**: Initially attempted to cache the bloom state in a global variable, which caused stale data in multi-threaded tests; corrected by moving the cache to the `SeasonContext` object and invalidating it explicitly on state transitions.

@@ -2397,12 +2397,11 @@ def trigger_spring_bloom(db: Session) -> int:
     for npc in npcs:
         npc.happiness += 3
     
-    tick_value = ws.tick if hasattr(ws, 'tick') and ws.tick is not None else 0
-    
     event = Event(
         event_type='spring_bloom',
-        description='Spring bloom',
-        tick=tick_value
+        description='Spring bloom brings joy to all living NPCs',
+        tick=ws.tick if hasattr(ws, 'tick') else 0,
+        severity='info'
     )
     db.add(event)
     db.commit()
