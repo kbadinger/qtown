@@ -2076,3 +2076,8 @@
 - **Non-obvious state coupling**: The opposition leader's visibility logic was tightly coupled to the `activeDebate` flag in a way that wasn't immediately apparent from the function signature, requiring a trace through the event emitter to resolve.
 - **Convention for role-based rendering**: This codebase consistently uses a `roleGuard` utility pattern to inject conditional rendering logic, rather than scattering `if` checks directly inside the component's return statement.
 - **Correction on event propagation**: Initially, I attempted to stop propagation on the leader's interaction handler, which inadvertently broke the global "close debate" listener; the fix was to rely on the existing event bubbling architecture instead of intercepting it.
+
+--- Story 405: Opposition leader (attempts: 1, 2026-03-11 23:46) ---
+*   **Tricky Logic**: The `OppositionLeader` role required careful handling of the "shadow cabinet" state; the leader's authority is conditional on the party holding a specific number of seats, not just the role assignment itself.
+*   **Codebase Pattern**: Discovered a consistent convention where political roles implement a `validateEligibility()` hook before any state mutation, ensuring all derived privileges are recalculated dynamically.
+*   **Correction**: Initially attempted to hardcode the leader's speech text in the controller; corrected this to inject the text via the `PartyManifesto` service to maintain separation of concerns and support localization.
