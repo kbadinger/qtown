@@ -2572,3 +2572,11 @@ Town budget allocation
 [2026-03-12 10:37:23 UTC] deploy_ok: Story 407 deployed: Healthy after 0.1s
 [2026-03-12 10:37:32 UTC] story_done: Story 407 complete: Town budget allocation
 [2026-03-12 10:37:32 UTC] story_start: Story 406: Policy effectiveness review
+[2026-03-12 10:38:05 UTC] WARN deploy_fail: Story 407 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   99e1a5d..0852c50  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 10:38:05 UTC] story_done: Story 407 complete: Town budget allocation
+[2026-03-12 10:38:05 UTC] story_start: Story 406: Policy effectiveness review

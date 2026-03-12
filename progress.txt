@@ -2176,3 +2176,8 @@
 *   **Tricky Logic**: The budget validation logic was non-obvious because it required checking cumulative totals against dynamic department caps, not just individual line items, which initially caused false positives in the unit tests.
 *   **Codebase Patterns**: Discovered a strict convention of separating "calculation" (pure functions) from "persistence" (repository calls) in the `BudgetService`, ensuring all financial math is testable in isolation.
 *   **Correction**: Initially attempted to handle rounding errors by rounding at the transaction level; corrected this to round only at the final aggregation step to prevent floating-point drift in the total budget report.
+
+--- Story 406: Policy effectiveness review (attempts: 1, 2026-03-12 06:45) ---
+- **Non-obvious scope of "effectiveness"**: The review logic wasn't just about checking pass/fail status; it required correlating policy metadata with downstream audit logs to determine *actual* enforcement rates, which was hidden behind a complex aggregation service.
+- **Codebase convention**: This module heavily relies on the `PolicyContext` wrapper object for all stateful operations; direct access to raw policy fields is discouraged and often leads to missing inheritance rules defined in the parent policy.
+- **Correction**: Initially, I attempted to filter policies by a simple date range, missing the requirement to account for policy "grace periods" (where a policy is active but not yet enforced); I corrected this by utilizing the existing `effective_date` helper which handles the grace period logic.
