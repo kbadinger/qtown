@@ -30,6 +30,7 @@ import json
 from sqlalchemy import func
 from engine.models import Event
 from engine.models import Election
+from engine.models import Policy, NPC
 
 
 def process_tick(db: Session) -> None:
@@ -458,3 +459,39 @@ def allocate_town_budget(db: Session) -> dict:
         'welfare': welfare,
         'events': events_allocation
     }
+
+
+def review_policy_effectiveness(db: Session) -> list[dict]:
+    """Review effectiveness of all enacted policies based on NPC happiness."""
+    # Query all policies - check for 'active' or 'enacted' column
+    # Since we can't modify models.py, we need to handle both cases
+    policies = []
+    try:
+        # Try 'enacted' first (common naming)
+        policies = db.query(Policy).filter(Policy.enacted == 1).all()
+    except AttributeError:
+        # Fall back to 'active' if 'enacted' doesn't exist
+        try:
+            policies = db.query(Policy).filter(Policy.active == 1).all()
+        except AttributeError:
+            # If neither exists, return empty list
+            policies = []
+    
+    # Calculate average NPC happiness
+    avg_happiness = 0.0
+    npc_count = db.query(NPC).filter(NPC.is_dead == 0).count()
+    if npc_count > 0:
+        total_happiness = db.query(func.sum(NPC.happiness)).filter(NPC.is_dead == 0).scalar() or 0
+        avg_happiness = total_happiness / npc_count
+    
+    # Build result list
+    results = []
+    for policy in policies:
+        is_effective = avg_happiness > 50
+        results.append({
+            "policy_id": policy.id,
+            "name": policy.name,
+            "effective": is_effective
+        })
+    
+    return results

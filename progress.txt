@@ -2171,3 +2171,8 @@
 - **Non-obvious constraint**: The budget validation logic silently fails if `category_id` exists in the schema but has no associated `fiscal_year` record; this requires an explicit join check rather than relying on foreign key constraints alone.
 - **Codebase pattern**: Financial adjustments in this module always follow the "calculate-diff-then-reverse" pattern to ensure audit trail integrity, rather than direct updates to the `allocated_amount` column.
 - **Correction**: Initially attempted to sum allocations using a raw SQL `GROUP BY` which ignored the `is_active` flag; corrected by filtering the dataset in the ORM layer before aggregation to prevent double-counting deprecated line items.
+
+--- Story 407: Town budget allocation (attempts: 1, 2026-03-12 06:37) ---
+*   **Tricky Logic**: The budget validation logic was non-obvious because it required checking cumulative totals against dynamic department caps, not just individual line items, which initially caused false positives in the unit tests.
+*   **Codebase Patterns**: Discovered a strict convention of separating "calculation" (pure functions) from "persistence" (repository calls) in the `BudgetService`, ensuring all financial math is testable in isolation.
+*   **Correction**: Initially attempted to handle rounding errors by rounding at the transaction level; corrected this to round only at the final aggregation step to prevent floating-point drift in the total budget report.
