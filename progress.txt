@@ -1991,3 +1991,8 @@
 - **Non-obvious state coupling**: The corruption flag wasn't just a boolean; it was deeply entangled with the `audit_log` lifecycle, meaning clearing the flag without flushing the log caused silent data inconsistencies.
 - **Codebase pattern**: This project relies heavily on "sentinel values" (e.g., `-1` or `null`) to denote invalid states rather than throwing exceptions early, requiring defensive checks at every boundary.
 - **Correction made**: Initially assumed the detector ran synchronously; realized it was an async callback, which caused race conditions in the test suite until I added explicit promise resolution guards.
+
+--- Story 402: Corruption detection (attempts: 4, 2026-03-11 22:33) ---
+- **Tricky Logic**: The correlation between "sudden volume spikes" and "account age" was non-obvious; the initial heuristic missed cases where old accounts were compromised and used for burst transactions, requiring a time-windowed anomaly check instead of a static threshold.
+- **Codebase Pattern**: The existing `AuditService` relies heavily on immutable event logs for state reconstruction; I learned that all detection rules must be stateless and derive context solely from the event stream to maintain consistency with the existing architecture.
+- **Correction**: Initially, I filtered out "low-value" transactions to optimize performance, which caused false negatives in a "salami slicing" attack pattern; I corrected this by removing the value filter and instead optimizing the query indexing on `transaction_type`.
