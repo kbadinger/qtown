@@ -2381,3 +2381,28 @@ def trigger_drought_relief(db: Session) -> int:
     
     db.commit()
     return count
+
+
+def trigger_spring_bloom(db: Session) -> int:
+    """Trigger spring bloom event."""
+    from engine.models import WorldState, NPC, Event
+    
+    ws = db.query(WorldState).first()
+    if not ws or ws.weather not in ('sunny', 'clear'):
+        return 0
+    
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    count = len(npcs)
+    
+    for npc in npcs:
+        npc.happiness += 3
+    
+    event = Event(
+        event_type='spring_bloom',
+        description='Spring bloom',
+        tick=ws.tick if hasattr(ws, 'tick') else 0
+    )
+    db.add(event)
+    db.commit()
+    
+    return count

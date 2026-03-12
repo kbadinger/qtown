@@ -1921,3 +1921,8 @@
 *   **Tricky Aspect**: The "miracle" logic relied on a race condition between the event dispatcher and the state validator; simply checking the final state was insufficient, requiring an audit of the transient event queue to ensure atomicity.
 *   **Pattern Discovered**: This codebase consistently uses a `Result<T, E>` wrapper for all external service calls, but internal domain events silently ignore errors unless explicitly handled by a global `ErrorHandler` middleware.
 *   **Correction Made**: Initially assumed the event timestamp was UTC, causing a 2-hour drift in the success window; corrected by enforcing `Instant` conversion at the boundary layer rather than relying on the database's default `TIMESTAMP` column.
+
+--- Story 400: Drought relief (attempts: 2, 2026-03-11 22:01) ---
+- **Non-obvious edge case**: The drought relief calculation failed silently when `rainfall_data` was null for a region, requiring an explicit default fallback rather than relying on the aggregation function to handle missing arrays.
+- **Codebase convention**: Financial adjustments in this module always use `Decimal` types for intermediate calculations to prevent floating-point drift, even though the database schema stores them as integers (scaled by 100).
+- **Correction made**: Initially applied the relief multiplier to the *total* population before checking individual eligibility thresholds; corrected to filter eligible households first, then apply the multiplier to the aggregate sum to avoid over-allocating funds.

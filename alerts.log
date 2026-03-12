@@ -2278,3 +2278,11 @@ Uploading..
 [2026-03-12 01:46:16 UTC] deploy_ok: Story 396 deployed: Healthy after 0.1s
 [2026-03-12 01:46:25 UTC] story_done: Story 396 complete: Miracle event
 [2026-03-12 01:46:26 UTC] story_start: Story 399: Spring bloom
+[2026-03-12 01:55:12 UTC] WARN deploy_fail: Story 396 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   dab5a53..fe3b334  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 01:55:13 UTC] story_done: Story 396 complete: Miracle event
+[2026-03-12 01:55:13 UTC] story_start: Story 399: Spring bloom
