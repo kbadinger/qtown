@@ -2061,3 +2061,8 @@
 - **Tricky Aspect**: The dynamic dependency injection for the speech synthesizer was non-obvious; the `SpeechContext` required manual lifecycle management to prevent audio glitches during rapid topic switching.
 - **Patterns Discovered**: The codebase consistently uses the `Observer` pattern for UI updates, separating the `SpeechEngine` logic from the `PresentationView` to ensure thread-safe rendering.
 - **Mistake & Correction**: Initially, I attempted to block the main thread for audio buffer generation, causing UI freezes; I corrected this by offloading the synthesis task to a dedicated background worker queue.
+
+--- Story 404: Public speech (attempts: 5, 2026-03-11 23:46) ---
+- **Tricky/Non-obvious**: The `SpeechService` requires the `AudioContext` to be resumed explicitly after a user interaction; initializing it on page load often results in silent playback due to browser autoplay policies.
+- **Patterns/Conventions**: This codebase strictly separates speech synthesis logic (Web Speech API) from audio playback (Web Audio API), routing all text-to-speech requests through a centralized `VoiceManager` singleton to handle queueing and cancellation.
+- **Mistakes/Corrections**: Initially, I passed raw HTML strings directly to the `speak()` method, causing syntax errors in the TTS engine; I corrected this by implementing a `sanitizeText()` utility that strips tags and normalizes whitespace before processing.
