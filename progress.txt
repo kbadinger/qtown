@@ -1906,3 +1906,8 @@
 - **Non-obvious timing**: The "miracle" trigger relies on a race condition between the event bus and the state reducer; using `await` on the async event handler was necessary to prevent the UI from rendering stale data before the mutation completed.
 - **Codebase convention**: Complex state transitions in this module always wrap logic in a `try/catch` block that explicitly dispatches an `ERROR` action type, rather than relying on global error boundaries.
 - **Correction**: Initially, I re-rendered the component on every event tick, causing performance jitter; I corrected this by memoizing the event listener and only triggering a re-render when the `isMiracleActive` flag actually flipped.
+
+--- Story 400: Drought relief (attempts: 6, 2026-03-11 21:44) ---
+*   **Non-obvious hydration logic**: The drought relief calculation requires checking `soilMoisture` against a dynamic threshold derived from `cropType`, not a static constant; failing to account for the `cropType` multiplier caused initial under-allocation.
+*   **Codebase convention**: All resource adjustments in this module must be wrapped in the `ResourceTransaction` service to ensure audit logs are generated; direct state mutation bypasses the compliance checks.
+*   **Correction made**: Initially applied relief to the entire `region` object, but realized the codebase expects granular updates to specific `farm` entities within the region to maintain data consistency for individual reporting.
