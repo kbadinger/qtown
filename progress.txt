@@ -2036,3 +2036,8 @@
 *   **Non-obvious state synchronization**: The curfew enforcement logic relies on a hidden global flag updated by the `TownClock` service, not direct time checks in individual NPC scripts, making debugging require tracing the service's tick cycle.
 *   **Convention for "soft" constraints**: This codebase uses `isSoftRestricted()` return values to trigger warnings before hard locks; always check the warning state before enforcing the actual curfew to maintain the "grace period" pattern.
 *   **Correction on edge cases**: Initially missed the scenario where a player enters a restricted zone exactly at the transition minute; fixed by adding a 1-second buffer check in the `ZoneEntryValidator` to prevent flickering between allowed/blocked states.
+
+--- Story 404: Public speech (attempts: 2, 2026-03-11 23:25) ---
+- **Tricky**: The `Speech` domain logic required strict separation between validation (parsing) and rendering; initially conflating them caused race conditions when updating the speech text while the UI was still calculating character counts.
+- **Patterns**: The codebase consistently uses the `Presenter` pattern for view updates, where the ViewModel never holds direct references to UI components, only data states that the View observes.
+- **Mistakes**: I initially implemented the "auto-save" feature as a synchronous block, freezing the main thread; corrected by switching to an async worker queue with debouncing to handle rapid text input.

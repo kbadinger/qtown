@@ -2382,3 +2382,8 @@ Indexing...
 Uploading..
 [2026-03-12 03:13:45 UTC] story_done: Story 402 complete: Corruption detection
 [2026-03-12 03:13:46 UTC] story_start: Story 404: Public speech
+[2026-03-12 03:19:19 UTC] deploy_ok: Story 403 deployed: Healthy after 0.1s
+[2026-03-12 03:19:36 UTC] story_done: Story 403 complete: Town curfew
+[2026-03-12 03:19:36 UTC] story_start: Story 404: Public speech
+[2026-03-12 03:25:20 UTC] WARN story_fail: Story 404 struggling — attempt 5/12
+Public speech
