@@ -2156,3 +2156,8 @@
 - **Tricky Logic**: The budget cap enforcement was non-obvious because it required recalculating remaining funds dynamically after each allocation, rather than validating the total upfront; a simple `if` check failed to catch edge cases where partial allocations exceeded the limit.
 - **Codebase Patterns**: Discovered a consistent convention of using a centralized `BudgetContext` object to manage state across services, avoiding direct database calls within the allocation logic to ensure transactional consistency.
 - **Mistake & Correction**: Initially attempted to mutate the input budget object directly, which caused side effects in parallel tests; corrected this by creating a deep copy of the budget state before performing any calculations.
+
+--- Story 407: Town budget allocation (attempts: 4, 2026-03-12 06:27) ---
+- **Non-obvious constraint**: The budget validation logic requires checking cumulative allocations against a *dynamic* cap that adjusts based on the current fiscal quarter, not just the static annual limit.
+- **Codebase pattern**: Financial calculations consistently use `Money` objects with explicit currency context to avoid floating-point errors, rather than raw integers or floats.
+- **Correction**: Initially overlooked the `pending_approval` state filter in the aggregation query, which caused double-counting of draft allocations; fixed by adding a strict status check before summing.

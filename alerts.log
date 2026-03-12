@@ -2553,3 +2553,6 @@ Uploading..
 [2026-03-12 10:19:36 UTC] deploy_ok: Story 408 deployed: Healthy after 0.1s
 [2026-03-12 10:19:54 UTC] story_done: Story 408 complete: Diplomatic gift
 [2026-03-12 10:19:54 UTC] story_start: Story 407: Town budget allocation
+[2026-03-12 10:27:51 UTC] WARN story_fail: Story 406 failed after 12 attempts: Policy effectiveness review
+[2026-03-12 10:27:51 UTC] CRITICAL critical: Story 406 failed: Policy effectiveness review
+Waiting for fix — reset story to 'pending' in prd.json when ready
