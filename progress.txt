@@ -2111,3 +2111,8 @@
 - **Non-obvious dependency**: The policy effectiveness calculation silently fails if the `audit_log` table lacks a `reviewed_at` index, causing timeouts that look like logic errors rather than performance issues.
 - **Codebase convention**: All policy rules must inherit from `BasePolicyRule` and override `evaluate()`; direct instantiation of rule classes bypasses the global caching layer and leads to stale data.
 - **Correction made**: Initially assumed `policy_id` was unique across all tenants; corrected the query to include `tenant_id` in the join condition after discovering cross-tenant data leakage in the test suite.
+
+--- Story 407: Town budget allocation (attempts: 6, 2026-03-12 03:02) ---
+- **Tricky Logic**: The budget validation required handling floating-point precision errors when summing department allocations; using a tolerance threshold (`Math.abs(sum - total) < 0.01`) was necessary instead of strict equality checks.
+- **Codebase Pattern**: The project consistently separates domain logic (allocation rules) from UI rendering, utilizing a dedicated `BudgetService` class that is injected into components rather than embedding logic directly in views.
+- **Correction**: Initially, I attempted to update the budget state directly within the event handler, which caused race conditions with the async API call; I corrected this by dispatching a standardized action that triggers the state update only after the server confirms the transaction.

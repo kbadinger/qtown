@@ -2447,3 +2447,28 @@ Policy effectiveness review
 [2026-03-12 05:11:16 UTC] deploy_ok: Story 406 deployed: Healthy after 0.1s
 [2026-03-12 05:11:33 UTC] story_done: Story 406 complete: Policy effectiveness review
 [2026-03-12 05:11:33 UTC] story_start: Story 407: Town budget allocation
+[2026-03-12 05:29:38 UTC] deploy_ok: Story 406 deployed: Healthy after 0.1s
+[2026-03-12 05:29:55 UTC] story_done: Story 406 complete: Policy effectiveness review
+[2026-03-12 05:29:56 UTC] story_start: Story 407: Town budget allocation
+[2026-03-12 05:31:46 UTC] WARN story_fail: Story 407 struggling — attempt 5/12
+Town budget allocation
+[2026-03-12 05:50:42 UTC] WARN story_fail: Story 407 struggling — attempt 5/12
+Town budget allocation
+[2026-03-12 06:07:15 UTC] WARN story_fail: Story 407 struggling — attempt 5/12
+Town budget allocation
+[2026-03-12 06:11:45 UTC] WARN story_fail: Story 406 failed after 12 attempts: Policy effectiveness review
+[2026-03-12 06:11:45 UTC] CRITICAL critical: Story 406 failed: Policy effectiveness review
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-12 06:12:16 UTC] story_start: Story 407: Town budget allocation
+[2026-03-12 06:13:33 UTC] WARN story_fail: Story 406 failed after 12 attempts: Policy effectiveness review
+[2026-03-12 06:13:33 UTC] CRITICAL critical: Story 406 failed: Policy effectiveness review
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-12 06:14:04 UTC] story_start: Story 407: Town budget allocation
+[2026-03-12 06:23:34 UTC] WARN story_fail: Story 406 failed after 12 attempts: Policy effectiveness review
+[2026-03-12 06:23:34 UTC] CRITICAL critical: Story 406 failed: Policy effectiveness review
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-12 06:24:05 UTC] story_start: Story 407: Town budget allocation
+[2026-03-12 06:43:26 UTC] WARN story_fail: Story 407 struggling — attempt 5/12
+Town budget allocation
+[2026-03-12 06:54:23 UTC] WARN story_fail: Story 407 struggling — attempt 5/12
+Town budget allocation
