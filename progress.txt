@@ -1986,3 +1986,8 @@
 - **Non-obvious state coupling**: The corruption flag was tightly coupled with the transaction ledger's internal validation logic, making it easy to miss that a failed checksum didn't automatically trigger the `Corrupted` status without an explicit state transition.
 - **Codebase convention**: Error handling in this module consistently uses a "fail-fast" pattern where validation functions throw custom exceptions rather than returning booleans, ensuring that partial state updates are impossible during corruption checks.
 - **Correction made**: Initially attempted to patch the detection logic by adding a flag check in the UI layer; corrected this by moving the validation into the core `LedgerService` to ensure the corruption state is authoritative before any data is rendered or persisted.
+
+--- Story 402: Corruption detection (attempts: 1, 2026-03-11 22:33) ---
+- **Non-obvious state coupling**: The corruption flag wasn't just a boolean; it was deeply entangled with the `audit_log` lifecycle, meaning clearing the flag without flushing the log caused silent data inconsistencies.
+- **Codebase pattern**: This project relies heavily on "sentinel values" (e.g., `-1` or `null`) to denote invalid states rather than throwing exceptions early, requiring defensive checks at every boundary.
+- **Correction made**: Initially assumed the detector ran synchronously; realized it was an async callback, which caused race conditions in the test suite until I added explicit promise resolution guards.
