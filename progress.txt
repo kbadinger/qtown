@@ -2241,3 +2241,8 @@
 - **Non-obvious vote state locking**: The vote tallying logic relies on a `voting_window` timestamp check that must be evaluated *before* the state machine transition; missing this check causes votes to persist incorrectly after the expansion period ends.
 - **Convention for town state mutations**: All town expansion changes follow a strict "calculate delta -> validate resources -> apply mutation -> emit event" pattern; bypassing the validation step directly in the controller leads to inconsistent resource states.
 - **Correction on edge-case handling**: Initially assumed the vote result was binary (pass/fail), but corrected the logic to handle a "tie" scenario which triggers a specific `extension_period` flag rather than an immediate failure.
+
+--- Story 410: Town expansion vote (attempts: 3, 2026-03-12 08:01) ---
+- **Tricky Logic**: The vote aggregation required handling a race condition where concurrent updates to the `town_population` counter could invalidate the threshold check; a database-level row lock was necessary to ensure atomicity.
+- **Codebase Pattern**: The project strictly separates domain logic (vote calculation) from UI rendering; all state changes must trigger a `TownState` event rather than directly mutating DOM elements.
+- **Correction**: Initially, I failed to account for the "pending" vote status, causing the UI to show stale results; I fixed this by adding a temporary optimistic update that reverts if the backend validation fails.
