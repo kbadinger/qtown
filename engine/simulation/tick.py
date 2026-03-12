@@ -429,7 +429,7 @@ def allocate_town_budget(db: Session) -> dict:
     
     # Get current tick from WorldState
     world_state = db.query(WorldState).first()
-    current_tick = world_state.tick if world_state else 0
+    current_tick = world_state.tick if world_state and world_state.tick is not None else 0
     
     # Get treasury gold
     treasury = db.query(Treasury).first()

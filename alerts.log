@@ -2556,3 +2556,10 @@ Uploading..
 [2026-03-12 10:27:51 UTC] WARN story_fail: Story 406 failed after 12 attempts: Policy effectiveness review
 [2026-03-12 10:27:51 UTC] CRITICAL critical: Story 406 failed: Policy effectiveness review
 Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-12 10:28:22 UTC] story_start: Story 407: Town budget allocation
+[2026-03-12 10:28:34 UTC] deploy_ok: Story 407 deployed: Healthy after 0.1s
+[2026-03-12 10:28:51 UTC] story_done: Story 407 complete: Town budget allocation
+[2026-03-12 10:28:52 UTC] story_start: Story 406: Policy effectiveness review
+[2026-03-12 10:30:10 UTC] deploy_ok: Story 407 deployed: Healthy after 0.1s
+[2026-03-12 10:30:20 UTC] story_done: Story 407 complete: Town budget allocation
+[2026-03-12 10:30:20 UTC] story_start: Story 406: Policy effectiveness review

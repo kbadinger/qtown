@@ -2161,3 +2161,8 @@
 - **Non-obvious constraint**: The budget validation logic requires checking cumulative allocations against a *dynamic* cap that adjusts based on the current fiscal quarter, not just the static annual limit.
 - **Codebase pattern**: Financial calculations consistently use `Money` objects with explicit currency context to avoid floating-point errors, rather than raw integers or floats.
 - **Correction**: Initially overlooked the `pending_approval` state filter in the aggregation query, which caused double-counting of draft allocations; fixed by adding a strict status check before summing.
+
+--- Story 407: Town budget allocation (attempts: 5, 2026-03-12 06:31) ---
+- **Non-obvious rounding logic**: The budget allocation requires rounding *before* distributing the remainder to avoid floating-point drift, a step not immediately obvious from the initial requirements.
+- **Convention for zero-sum validation**: The codebase consistently uses a `sum_check` helper immediately after any allocation loop to ensure the total matches the input budget exactly, failing fast if not.
+- **Correction on edge cases**: Initially handled empty town lists by returning `null`, but corrected to return an empty array `[]` to align with the rest of the API's consistent return types.
