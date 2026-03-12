@@ -2046,3 +2046,8 @@
 - **Non-obvious state management**: The speech transcript wasn't just a static string; it required syncing the `isSpeaking` flag with the `text-to-speech` engine's lifecycle to prevent race conditions when the user interrupted the playback.
 - **Codebase convention**: The project strictly separates "presentation logic" (React components) from "speech orchestration" (custom hooks in `hooks/speech`), meaning all TTS API calls must go through the `useSpeechEngine` hook, not directly in the view.
 - **Correction**: Initially, I rendered the full transcript in the DOM immediately, causing a layout shift; I corrected this by implementing a "lazy-load" strategy where the text only renders after the audio buffer is ready.
+
+--- Story 404: Public speech (attempts: 3, 2026-03-11 23:26) ---
+- **Non-obvious State Synchronization**: The speech transcript updates were tricky because the `useEffect` dependency array needed to include the `isSpeaking` flag to prevent stale closures, which initially caused the UI to lag behind the audio playback.
+- **Codebase Convention**: Discovered that this project strictly separates audio logic into custom hooks (e.g., `useSpeechSynthesis`) rather than embedding it in components, ensuring all speech-related state is centralized and testable.
+- **Correction on Event Cleanup**: Initially forgot to cancel the speech utterance on component unmount, leading to audio continuing to play after navigation; fixed by adding a `cancel()` call in the `useEffect` cleanup function.

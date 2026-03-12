@@ -322,7 +322,7 @@ def give_public_speech(db: Session) -> int | None:
     world_state = db.query(WorldState).first()
     current_tick = world_state.tick if world_state else 0
     
-    # Find latest election winner
+    # Find latest election winner (order by id since tick may not exist on Election)
     latest_election = db.query(Election).order_by(Election.id.desc()).first()
     if not latest_election or not latest_election.winner_npc_id:
         return None
