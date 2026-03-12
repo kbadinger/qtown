@@ -2456,3 +2456,8 @@
 - **Non-obvious DOM mutation timing**: The decoration logic failed when applied immediately after mounting; discovered that `requestAnimationFrame` is required to ensure the browser has finished layout calculations before injecting styles.
 - **Convention for dynamic classes**: The codebase strictly separates static structural classes from dynamic state classes (e.g., `theme-dark` vs. `is-active`), requiring the use of the `clsx` utility for all conditional class merging.
 - **Correction on event delegation**: Initially attached individual listeners to each decoration element, causing performance lag; corrected by moving the listener to the container and using `event.target.closest()` to identify the specific element.
+
+--- Story 419: Building decoration (attempts: 3, 2026-03-12 19:37) ---
+- **Tricky**: Handling the interaction between `z-index` stacking contexts and fixed-position overlays was non-obvious; a single `overflow: hidden` on a parent container unexpectedly clipped the decoration layer.
+- **Patterns**: The codebase consistently isolates decorative elements in a dedicated `assets/decorations` directory and uses CSS custom properties (`--theme-accent`) for color theming rather than hardcoding values.
+- **Correction**: Initially attempted to animate SVG paths via inline JS, which caused performance jank; corrected by switching to CSS `@keyframes` with `transform` properties to leverage GPU acceleration.

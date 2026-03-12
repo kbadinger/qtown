@@ -1210,30 +1210,38 @@ def test_s419_decorate_building(db):
 
 def test_s420_demolish_building(db):
     """Building demolition."""
-    _setup_world(db)
-    from engine.simulation import demolish_building
+    from engine.simulation.buildings import demolish_building
     from engine.models import Building
 
-    # Create a destroyed building (capacity 0)
-    b = Building(name="Ruins", building_type="ruins", x=45, y=45, capacity=0, level=0)
+    # Create a destroyed building (capacity 0) for testing
+    b = Building(name="Test Ruins", building_type="ruins", x=45, y=45, capacity=0, level=0)
     db.add(b)
     db.flush()
 
     result = demolish_building(db, b.id)
     assert result is True, "Should return True for demolished building"
     db.flush()
+    
+    # Verify building was deleted
+    assert db.query(Building).filter(Building.id == b.id).first() is None
 
 
 def test_s420_demolish_active_building(db):
     """Cannot demolish active building."""
-    _setup_world(db)
-    from engine.simulation import demolish_building
+    from engine.simulation.buildings import demolish_building
     from engine.models import Building
 
-    b = db.query(Building).filter(Building.capacity > 0).first()
+    # Create a new test building with capacity > 0 (isolated from world state)
+    b = Building(name="Test Hall", building_type="civic", x=46, y=46, capacity=10, level=1)
+    db.add(b)
+    db.flush()
+
     result = demolish_building(db, b.id)
     assert result is False, "Should return False for active building"
     db.flush()
+    
+    # Verify building still exists
+    assert db.query(Building).filter(Building.id == b.id).first() is not None
 
 
 def test_s421_apply_infrastructure_decay(db):
