@@ -2421,3 +2421,8 @@
 *   **Non-obvious logic**: The efficiency rating calculation relies on a weighted average of historical data, but the weights are dynamically adjusted based on the building's occupancy status, not just raw energy consumption.
 *   **Codebase convention**: All domain-specific constants (e.g., `EFFICIENCY_THRESHOLDS`) are centralized in `config/building_standards.py` rather than hardcoded in service methods, ensuring easy updates without touching logic.
 *   **Correction made**: Initially missed the edge case where missing sensor data defaults to the previous month's average; corrected by adding a fallback mechanism in the data aggregation layer to prevent null propagation.
+
+--- Story 416: Building repair system (attempts: 6, 2026-03-12 12:28) ---
+- **Tricky/Non-Obvious**: The `RepairJob` state machine required explicit handling of the "pending approval" edge case where a job could be re-queued if the initial parts estimate exceeded the budget threshold, which wasn't immediately clear from the domain requirements.
+- **Patterns/Conventions**: The codebase consistently uses the `DomainEvent` pattern for audit logging; every state transition in the repair system must publish an event before updating the database, ensuring the audit trail is never out of sync.
+- **Mistakes & Corrections**: Initially, I attempted to validate part availability synchronously within the controller, causing race conditions during high concurrency; I corrected this by moving the check to a background worker that retries on transient failures.
