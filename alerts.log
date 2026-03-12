@@ -2289,3 +2289,8 @@ Uploading..
 [2026-03-12 02:02:18 UTC] deploy_ok: Story 400 deployed: Healthy after 0.1s
 [2026-03-12 02:02:34 UTC] story_done: Story 400 complete: Drought relief
 [2026-03-12 02:02:35 UTC] story_start: Story 399: Spring bloom
+[2026-03-12 02:05:59 UTC] deploy_ok: Story 399 deployed: Healthy after 0.1s
+[2026-03-12 02:06:09 UTC] story_done: Story 399 complete: Spring bloom
+[2026-03-12 02:06:09 UTC] story_start: Story 401: Political approval rating
+[2026-03-12 02:06:37 UTC] WARN story_fail: Story 399 struggling — attempt 5/12
+Spring bloom

@@ -1936,3 +1936,8 @@
 *   **Tricky Aspect**: The `SpringBloom` event logic required handling race conditions where rapid state updates could cause duplicate notifications; a simple mutex lock was insufficient without also checking the `lastProcessedTimestamp` to ensure idempotency.
 *   **Pattern Discovered**: The codebase consistently uses the `EventBus` pattern for decoupling seasonal logic from the core rendering engine, but relies on a custom `PriorityQueue` implementation rather than the standard library for ordering bloom events.
 *   **Correction**: Initially attempted to cache the bloom state in a global variable, which caused stale data in multi-threaded tests; corrected by moving the cache to the `SeasonContext` object and invalidating it explicitly on state transitions.
+
+--- Story 399: Spring bloom (attempts: 5, 2026-03-11 22:06) ---
+- **Non-obvious dependency**: The `bloom_cycle` logic relies on a hidden global `season_state` singleton; direct instantiation of the `Flower` class without injecting this context causes silent failures in the rendering loop.
+- **Convention**: All visual state transitions in this module must use the `animate_with_easing()` helper rather than raw CSS transitions to ensure consistency with the global animation queue.
+- **Correction**: Initially missed the `z-index` stacking context reset in the `SpringBloom` component, causing new flowers to render behind the static background; fixed by enforcing `position: relative` on the container wrapper.
