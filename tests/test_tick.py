@@ -510,7 +510,9 @@ def test_s407_allocate_town_budget(db):
     result = allocate_town_budget(db)
     assert isinstance(result, dict), "Should return budget dict"
     assert "total" in result, "Should have total key"
-    db.flush()
+    
+    # Rollback to avoid affecting other tests (Story 006)
+    db.rollback()
 
 
 def test_s408_send_diplomatic_gift(db):
