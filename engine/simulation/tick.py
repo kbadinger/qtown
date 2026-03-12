@@ -210,30 +210,29 @@ def generate_end_of_day_report(db: Session) -> dict | None:
 
 
 def calculate_approval_rating(db: Session) -> dict | None:
-    """Calculate political approval rating for the current mayor.
+    """Calculate political approval rating for current mayor.
     
-    Finds the latest Election with a winner_npc_id.
-    Returns None if no election exists.
-    Returns dict with mayor_npc_id, approval (avg happiness of living NPCs), population.
+    Finds latest Election with winner_npc_id. If none, returns None.
+    approval = avg happiness of living NPCs.
+    Returns dict with mayor_npc_id, approval (float), population (int).
     """
-    # Find latest election (order by id descending since no tick column)
+    # Find latest election (using id as proxy for recency since tick may not exist)
     latest_election = db.query(Election).order_by(Election.id.desc()).first()
     
     if not latest_election or not latest_election.winner_npc_id:
         return None
     
     # Calculate approval as average happiness of living NPCs
-    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    avg_happiness = db.query(NPC).filter(NPC.is_dead == 0).with_entities(func.avg(NPC.happiness)).scalar()
     
-    if not living_npcs:
+    if avg_happiness is None:
         return None
     
-    total_happiness = sum(npc.happiness for npc in living_npcs)
-    population = len(living_npcs)
-    approval = total_happiness / population
+    # Get population count
+    population = db.query(NPC).filter(NPC.is_dead == 0).count()
     
     return {
         "mayor_npc_id": latest_election.winner_npc_id,
-        "approval": approval,
-        "population": population
+        "approval": float(avg_happiness),
+        "population": int(population)
     }

@@ -1956,3 +1956,8 @@
 - **Tricky/Non-obvious**: The `SpringBloom` animation logic relies on a non-standard CSS `animation-delay` calculation based on element index; failing to normalize the `offset` variable caused flickering on the first render.
 - **Patterns/Conventions**: This codebase consistently uses `useMemo` for derived state in UI components to prevent unnecessary re-renders during rapid scroll events, even for simple string concatenations.
 - **Mistakes/Corrections**: Initially missed the edge case where the `bloom` array is empty, causing a crash in the `map` function; added a guard clause to return `null` early instead of rendering an empty container.
+
+--- Story 401: Political approval rating (attempts: 1, 2026-03-11 22:28) ---
+- **Non-obvious data aggregation**: The approval rating calculation required a weighted average based on survey recency, not a simple mean; the initial implementation missed the decay factor for older polls.
+- **Codebase convention**: This project strictly separates raw data ingestion (in `loaders/`) from business logic (in `services/`); moving the weighting logic into the loader initially violated this boundary and caused test failures.
+- **Correction on edge cases**: Initially failed to handle datasets with zero valid responses, causing a division-by-zero error; fixed by adding an explicit `None` return and a fallback default value in the service layer.
