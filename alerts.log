@@ -2264,3 +2264,17 @@ Indexing...
 Uploading..
 [2026-03-12 01:44:45 UTC] story_done: Story 396 complete: Miracle event
 [2026-03-12 01:44:46 UTC] story_start: Story 399: Spring bloom
+[2026-03-12 01:44:47 UTC] WARN deploy_fail: Story 400 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   129d00e..3a4f0a9  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 01:44:48 UTC] story_done: Story 400 complete: Drought relief
+[2026-03-12 01:44:48 UTC] story_start: Story 399: Spring bloom
+[2026-03-12 01:45:47 UTC] deploy_ok: Story 400 deployed: Healthy after 0.1s
+[2026-03-12 01:45:56 UTC] story_done: Story 400 complete: Drought relief
+[2026-03-12 01:45:57 UTC] story_start: Story 399: Spring bloom
+[2026-03-12 01:46:16 UTC] deploy_ok: Story 396 deployed: Healthy after 0.1s
+[2026-03-12 01:46:25 UTC] story_done: Story 396 complete: Miracle event
+[2026-03-12 01:46:26 UTC] story_start: Story 399: Spring bloom

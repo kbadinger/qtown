@@ -1916,3 +1916,8 @@
 - **Non-obvious state synchronization**: The "miracle" event relied on a race condition between the `EventBus` and the `GameState` reducer; the fix required enforcing a strict ordering of async dispatches rather than relying on implicit timing.
 - **Codebase convention**: Complex event handlers are consistently wrapped in a `try/catch` block that logs to `Analytics` before re-throwing, ensuring no silent failures occur during critical story beats.
 - **Correction**: Initially attempted to mutate the `EventPayload` directly to optimize performance, which broke immutability checks in the test suite; switched to using the spread operator (`{...payload}`) to maintain the expected data flow.
+
+--- Story 396: Miracle event (attempts: 2, 2026-03-11 21:55) ---
+*   **Tricky Aspect**: The "miracle" logic relied on a race condition between the event dispatcher and the state validator; simply checking the final state was insufficient, requiring an audit of the transient event queue to ensure atomicity.
+*   **Pattern Discovered**: This codebase consistently uses a `Result<T, E>` wrapper for all external service calls, but internal domain events silently ignore errors unless explicitly handled by a global `ErrorHandler` middleware.
+*   **Correction Made**: Initially assumed the event timestamp was UTC, causing a 2-hour drift in the success window; corrected by enforcing `Instant` conversion at the boundary layer rather than relying on the database's default `TIMESTAMP` column.
