@@ -2266,3 +2266,8 @@
 *   **Non-obvious logic**: Tax exemption status isn't just a boolean flag; it depends on a complex intersection of `user_type`, `jurisdiction`, and `transaction_date`, requiring a dedicated strategy pattern rather than simple conditional checks.
 *   **Codebase pattern**: The repository consistently uses `TaxRule` objects with a `matches()` method to encapsulate validation logic, keeping the main controller thin and testable.
 *   **Correction**: Initially attempted to cache exemption results at the user level, but realized this failed for cross-jurisdictional transactions; switched to caching at the `transaction_id` level to ensure accuracy.
+
+--- Story 411: Tax exemption (attempts: 1, 2026-03-12 08:36) ---
+- **Tricky Logic**: The tax exemption rule depends on a composite check of both `product.category` and `customer.tier`, not just one field; missing the `AND` condition caused false positives for premium customers buying non-exempt items.
+- **Codebase Pattern**: Domain logic for tax calculations is strictly isolated in `TaxCalculator` service classes, while the repository layer only handles raw data retrieval; never embed calculation rules directly in controllers or models.
+- **Correction**: Initially hardcoded the exemption list in the controller; refactored to use the `ExemptionRule` enum to ensure the list is centralized and easily testable.
