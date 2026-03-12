@@ -590,7 +590,4 @@ def apply_tax_exemption(db: Session) -> int:
             npc.memory_events = json.dumps(memory_events)
             exempted_count += 1
     
-    if exempted_count > 0:
-        db.commit()
-    
     return exempted_count

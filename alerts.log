@@ -2642,3 +2642,8 @@ Uploading..
 [2026-03-12 12:08:08 UTC] deploy_ok: Story 410 deployed: Healthy after 0.1s
 [2026-03-12 12:08:25 UTC] story_done: Story 410 complete: Town expansion vote
 [2026-03-12 12:08:25 UTC] story_start: Story 411: Tax exemption
+[2026-03-12 12:09:39 UTC] WARN story_fail: Story 410 struggling — attempt 5/12
+Town expansion vote
+[2026-03-12 12:10:18 UTC] deploy_ok: Story 410 deployed: Healthy after 0.1s
+[2026-03-12 12:10:29 UTC] story_done: Story 410 complete: Town expansion vote
+[2026-03-12 12:10:29 UTC] story_start: Story 411: Tax exemption

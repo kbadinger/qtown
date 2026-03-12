@@ -2256,3 +2256,8 @@
 - **Voting Logic Complexity**: The interaction between `TownExpansion` and the `VotingSystem` was non-obvious; specifically, the requirement to invalidate existing votes if the expansion proposal changes mid-cycle required a manual cache flush rather than relying on the standard event listener.
 - **State Management Pattern**: Discovered a consistent convention in this codebase where all town-level state changes must be wrapped in `TownContextProvider` to ensure the UI re-renders correctly, even if the underlying data store is updated asynchronously.
 - **Correction on Edge Cases**: Initially missed handling the "tie-breaker" scenario in the vote tally function, which caused the expansion to stall indefinitely; fixed by implementing a deterministic fallback to the town mayor's vote when counts are equal.
+
+--- Story 411: Tax exemption (attempts: 4, 2026-03-12 08:22) ---
+*   **Non-obvious logic**: The tax exemption check relies on a specific `jurisdiction_code` prefix combined with a `vendor_type` flag, not just a simple boolean on the invoice; missing the prefix check caused false negatives for international vendors.
+*   **Codebase pattern**: Tax calculations are consistently handled via a strategy pattern in `TaxCalculator`, where specific exemption rules are injected as context objects rather than hardcoded `if/else` blocks.
+*   **Correction**: Initially attempted to modify the base `Invoice` model to store exemption status directly, which broke existing unit tests; reverted to using the `TaxContext` extension method to keep the core model immutable.
