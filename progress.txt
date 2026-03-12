@@ -1896,3 +1896,8 @@
 - **Non-obvious state synchronization**: The drought relief logic failed initially because the `WaterLevel` sensor updates were decoupled from the `ReliefTrigger` event loop; I had to introduce a shared event bus to ensure real-time state consistency.
 - **Codebase convention for resource limits**: Discovered a strict pattern where all resource-consumption functions must explicitly check `GlobalConfig.max_daily_allocation` before execution, rather than relying on database constraints.
 - **Correction of edge-case handling**: Initially missed the scenario where a drought alert persists across midnight; corrected this by resetting the `daily_usage_counter` only after the alert status is explicitly cleared, not just on time rollover.
+
+--- Story 400: Drought relief (attempts: 1, 2026-03-11 21:44) ---
+- **Non-obvious hydration logic**: The drought relief calculation required a conditional override for "critical" zones that bypassed the standard `water_reserve` threshold, which was buried deep in the `ZoneConfig` enum rather than the main controller.
+- **Convention for state mutation**: The codebase strictly separates read-only `get_status()` methods from `apply_relief()` actions; mixing these caused a race condition in the initial draft that was fixed by enforcing atomic state updates.
+- **Correction on unit handling**: Initially treated `precipitation_mm` as a float, but discovered the legacy schema stores it as an integer (centimeters); failing to cast this early caused a 10x over-allocation error in the test suite.

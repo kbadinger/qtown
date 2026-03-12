@@ -2251,3 +2251,8 @@ Indexing...
 Uploading..
 [2026-03-12 01:42:32 UTC] story_done: Story 400 complete: Drought relief
 [2026-03-12 01:42:32 UTC] story_start: Story 396: Miracle event
+[2026-03-12 01:44:08 UTC] WARN story_fail: Story 400 struggling — attempt 5/12
+Drought relief
+[2026-03-12 01:44:19 UTC] deploy_ok: Story 400 deployed: Healthy after 0.1s
+[2026-03-12 01:44:28 UTC] story_done: Story 400 complete: Drought relief
+[2026-03-12 01:44:29 UTC] story_start: Story 396: Miracle event
