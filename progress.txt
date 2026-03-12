@@ -2346,3 +2346,8 @@
 - **Non-obvious edge case**: The sunset logic failed for policies with `null` end dates; the code assumed a date was always present, requiring a fallback to "never expires" instead of throwing a null pointer.
 - **Codebase pattern**: Found a recurring `PolicyLifecycle` service that centralizes all date-comparison logic; future stories should reuse this instead of writing inline date checks to ensure consistency.
 - **Correction**: Initially wrote a synchronous batch job to delete expired records, but realized it would lock the database during peak hours; switched to an asynchronous background worker with a configurable retry strategy.
+
+--- Story 414: Policy sunset (attempts: 6, 2026-03-12 11:27) ---
+- **Tricky**: The interaction between the `Policy` model's `is_active` flag and the global `PolicyManager` cache was non-obvious; simply updating the database didn't immediately reflect in the runtime without a manual cache invalidation trigger.
+- **Patterns**: The codebase consistently uses a "Soft Delete + Archival" pattern for policy lifecycles rather than hard deletes, requiring all downstream consumers to explicitly filter by `status != 'archived'`.
+- **Correction**: Initially, I attempted to run the sunset logic as a synchronous background job, which caused timeouts during high-volume periods; I corrected this by refactoring it to use the existing `Celery` task queue with chunked processing.

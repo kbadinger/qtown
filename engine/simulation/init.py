@@ -37,9 +37,8 @@ def init_world_state(db: Session) -> WorldState:
 
 def init_grid(db: Session) -> None:
     """Initialize the 50x50 tile grid."""
-    # Ensure tables exist before inserting (fixes test environment issues)
-    Base.metadata.create_all(bind=db.bind)
-    
+    from engine.db import Base
+    Base.metadata.create_all(db.bind)
     existing = db.query(Tile).count()
     if existing > 0:
         return  # Already initialized
