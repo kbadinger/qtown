@@ -2021,3 +2021,8 @@
 - **Timezone Handling**: The curfew logic initially failed because `DateTime` objects were treated as naive; explicitly converting to UTC before comparison was required to handle daylight saving transitions correctly.
 - **State Persistence Pattern**: Discovered that the codebase relies on a global `CurfewManager` singleton rather than passing state through controllers, requiring direct injection of the manager into test fixtures.
 - **Correction on Edge Cases**: Initially assumed curfews reset at midnight local time, but the requirement specified a 24-hour rolling window from the *start* of the event; fixed the duration calculation to use `event.start_time + 24h` instead of `event.start_time.date() + 1 day`.
+
+--- Story 403: Town curfew (attempts: 5, 2026-03-11 22:48) ---
+- **Timezone Handling**: The curfew logic was non-obvious because the `curfew_start` and `curfew_end` fields are stored in UTC, requiring explicit conversion to the town's local timezone before comparing against the current time to avoid off-by-one-hour errors during DST transitions.
+- **State Machine Convention**: The codebase enforces a strict `CurfewStatus` enum (`ACTIVE`, `PENDING`, `INACTIVE`) rather than boolean flags; all status checks must use the `is_curfew_active(town_id)` helper to ensure consistency with the background job scheduler.
+- **Correction**: Initially, I attempted to cache the curfew status in Redis for 1 hour, which caused stale data during rapid time changes; I corrected this by removing the cache layer for this specific check and relying on the database's indexed timestamp query instead.
