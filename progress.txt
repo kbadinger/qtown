@@ -2311,3 +2311,8 @@
 *   **Tricky Logic**: The "recall" mechanism requires checking the *original* appointment date against the current date, not just the status flag; failing to distinguish between a pending recall and an active one caused false positives in the eligibility check.
 *   **Codebase Pattern**: This project strictly enforces the "Single Source of Truth" for election states via the `ElectionRegistry` singleton; direct database updates on the `candidates` table are bypassed in favor of the registry's `triggerRecall()` method to ensure audit logs are captured.
 *   **Correction**: Initially, I attempted to handle the recall window expiration in the UI layer, which led to race conditions; I corrected this by moving the time-bound validation entirely into the backend service, ensuring the UI only reflects the computed state.
+
+--- Story 413: Recall election (attempts: 4, 2026-03-12 09:45) ---
+*   **Tricky Logic**: The interaction between `is_active` flags and the `recall_threshold` calculation was non-obvious; simply checking the petition count wasn't enough without first validating the candidate's current tenure status.
+*   **Codebase Pattern**: The project consistently uses a `DomainEvent` pattern for state transitions (e.g., `PetitionSubmitted`, `ElectionTriggered`), meaning direct state mutations in controllers are an anti-pattern here.
+*   **Correction**: Initially attempted to bypass the event bus for performance in the recall trigger, but corrected this to ensure the `AuditLog` service remains consistent across all state changes.
