@@ -2101,3 +2101,8 @@
 *   **Tricky**: The `PolicyEngine` relies on implicit context propagation for audit logging; forgetting to initialize the `AuditContext` in the new `EffectivenessReview` flow caused silent failures in the metrics aggregation step.
 *   **Patterns**: All policy evaluation logic must be wrapped in the `@PolicyVersioned` annotation to ensure backward compatibility with legacy rule sets; direct calls to `PolicyRepository` without this wrapper bypass versioning checks.
 *   **Correction**: Initially attempted to calculate effectiveness scores synchronously, causing timeouts on large datasets; corrected by offloading the aggregation to the existing `AsyncMetricsProcessor` queue.
+
+--- Story 406: Policy effectiveness review (attempts: 3, 2026-03-12 01:10) ---
+- **Non-obvious state coupling**: The policy effectiveness calculation relied on a hidden dependency between the `audit_log` table and the `policy_status` cache; changes to one required manual cache invalidation, which wasn't documented in the service layer.
+- **Codebase convention**: This module consistently uses a "command-query separation" pattern where read-heavy reporting queries are routed through a separate read-replica connection pool, distinct from the write-heavy policy update endpoints.
+- **Correction made**: Initially attempted to filter results in-memory after fetching all policies, causing OOM errors on large datasets; corrected by pushing the `effective_date` and `status` filters down to the SQL query level using parameterized CTEs.

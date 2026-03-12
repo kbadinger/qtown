@@ -2433,3 +2433,14 @@ Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and
 Policy effectiveness review
 [2026-03-12 04:47:05 UTC] WARN story_fail: Story 406 struggling — attempt 5/12
 Policy effectiveness review
+[2026-03-12 04:48:19 UTC] deploy_ok: Story 406 deployed: Healthy after 0.1s
+[2026-03-12 04:48:36 UTC] story_done: Story 406 complete: Policy effectiveness review
+[2026-03-12 04:48:36 UTC] story_start: Story 407: Town budget allocation
+[2026-03-12 04:52:26 UTC] CRITICAL loop: Story 406: same error 5x in a row — requesting help
+`tests/test_tick.py::test_s406_review_policy_effectiveness FAILED         [100%]`
+[2026-03-12 04:52:27 UTC] CRITICAL needs_help: Story 406 needs help — waiting 10min for fix
+`tests/test_tick.py::test_s406_review_policy_effectiveness FAILED         [100%]`
+[2026-03-12 05:00:13 UTC] WARN story_fail: Story 406 struggling — attempt 5/12
+Policy effectiveness review
+[2026-03-12 05:10:00 UTC] WARN story_fail: Story 406 struggling — attempt 5/12
+Policy effectiveness review
