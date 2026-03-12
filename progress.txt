@@ -2246,3 +2246,8 @@
 - **Tricky Logic**: The vote aggregation required handling a race condition where concurrent updates to the `town_population` counter could invalidate the threshold check; a database-level row lock was necessary to ensure atomicity.
 - **Codebase Pattern**: The project strictly separates domain logic (vote calculation) from UI rendering; all state changes must trigger a `TownState` event rather than directly mutating DOM elements.
 - **Correction**: Initially, I failed to account for the "pending" vote status, causing the UI to show stale results; I fixed this by adding a temporary optimistic update that reverts if the backend validation fails.
+
+--- Story 410: Town expansion vote (attempts: 5, 2026-03-12 08:06) ---
+*   **Non-obvious State Coupling**: The expansion vote logic implicitly relies on the `Town` entity's `population` attribute being updated *before* the vote calculation runs; failing to enforce this order in the service layer caused silent failures where the vote passed despite insufficient resources.
+*   **Repository Pattern Consistency**: This codebase strictly separates read and write operations within repositories; discovered that `TownRepository` uses a dedicated `findWithRelations()` method for voting eligibility checks rather than eager loading in the controller, a pattern to replicate for future queries.
+*   **Correction on Transaction Scope**: Initially wrapped the entire vote process (including external API calls for notifications) in a single database transaction, causing timeouts; corrected by isolating the transaction to only the state-mutation steps (updating vote counts and town status) and handling side effects asynchronously.
