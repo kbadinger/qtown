@@ -1946,3 +1946,8 @@
 - **Tricky Aspect**: The `SpringBloom` component's dependency on the `SeasonContext` required a specific re-render trigger; simply updating the state wasn't enough without forcing a context consumer refresh, which was non-obvious in the initial implementation.
 - **Pattern Discovered**: This codebase consistently uses the "factory function" pattern for creating event handlers (e.g., `makeBloomHandler()`) to avoid closure staleness, rather than relying on `useCallback` for every single listener.
 - **Correction Made**: Initially, I passed the raw animation frame ID directly to the cleanup function, causing memory leaks; I corrected this by wrapping the ID in a `useRef` to ensure the cleanup logic always accessed the latest frame reference.
+
+--- Story 399: Spring bloom (attempts: 2, 2026-03-11 22:23) ---
+- **Tricky/Non-obvious**: The `bloom` animation state relies on a race condition between the CSS transition end event and the React render cycle; simply toggling a class isn't enough without a `useEffect` guard to prevent flicker on initial mount.
+- **Patterns/Conventions**: This codebase consistently uses a "data-attributes + CSS-only logic" pattern for UI states (like `data-bloomed`) to avoid unnecessary re-renders, reserving React state only for data-fetching or complex logic.
+- **Mistakes/Corrections**: Initially attempted to force a layout reflow using `window.getComputedStyle` to trigger the animation, which caused performance jank; corrected by switching to a `requestAnimationFrame` callback to ensure the DOM is painted before applying the transition class.

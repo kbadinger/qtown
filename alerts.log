@@ -2298,3 +2298,13 @@ Spring bloom
 [2026-03-12 02:06:50 UTC] story_done: Story 399 complete: Spring bloom
 [2026-03-12 02:06:50 UTC] story_start: Story 401: Political approval rating
 [2026-03-12 02:07:53 UTC] deploy_ok: Story 399 deployed: Healthy after 0.1s
+[2026-03-12 02:08:03 UTC] story_done: Story 399 complete: Spring bloom
+[2026-03-12 02:08:03 UTC] story_start: Story 401: Political approval rating
+[2026-03-12 02:08:06 UTC] WARN deploy_fail: Story 399 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   0af5980..09803aa  main -> main
+
+Indexing...
+Uploading..
+[2026-03-12 02:08:07 UTC] story_done: Story 399 complete: Spring bloom
+[2026-03-12 02:08:07 UTC] story_start: Story 401: Political approval rating
