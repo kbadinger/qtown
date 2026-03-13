@@ -2407,3 +2407,43 @@ def trigger_spring_bloom(db: Session) -> int:
     db.commit()
     
     return count
+
+
+def apply_seasonal_weather(db: Session) -> str:
+    """Apply seasonal weather cycle based on day."""
+    from engine.models import WorldState, Event
+    
+    # Get current world state
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return "spring"  # Default
+    
+    # Calculate season (96-day cycle, 24 days per season)
+    season_index = (world_state.day % 96) // 24
+    
+    # Map season index to name and weather
+    season_map = {
+        0: ("spring", "sunny"),
+        1: ("summer", "hot"),
+        2: ("autumn", "cloudy"),
+        3: ("winter", "snow")
+    }
+    
+    season_name, weather_type = season_map.get(season_index, ("spring", "sunny"))
+    
+    # Update weather if changed
+    if world_state.weather != weather_type:
+        world_state.weather = weather_type
+        db.commit()
+    
+    # Create Event on season change (every 24 days)
+    if world_state.day % 24 == 0:
+        event = Event(
+            name=f"Season Change: {season_name.capitalize()}",
+            description=f"The season has changed to {season_name}.",
+            tick=world_state.tick
+        )
+        db.add(event)
+        db.commit()
+    
+    return season_name

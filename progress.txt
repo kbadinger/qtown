@@ -2991,3 +2991,8 @@
 - **Non-obvious state synchronization**: The weather cycle logic relies on a hidden `seasonOffset` variable that must be manually aligned with the global clock; failing to reset this during the `Winter` to `Spring` transition causes the precipitation system to desynchronize.
 - **Codebase convention**: Weather effects are strictly separated into `Logic` (state updates) and `Render` (visuals) modules, with no direct access to the ECS world from the render layer—always use the `WeatherEventBus` to trigger visual changes.
 - **Correction made**: Initially implemented a `while` loop to force-catch up missed frames, which caused a "time warp" effect; switched to a delta-time accumulator to ensure smooth interpolation regardless of frame drops.
+
+--- Story 441: Seasonal weather cycle (attempts: 2, 2026-03-13 16:18) ---
+- **Non-obvious dependency**: The seasonal transition logic relies on a hidden `WeatherContext` singleton rather than direct service injection, making unit tests brittle without proper mocking setup.
+- **Codebase pattern**: All time-based calculations in this module use UTC offsets stored in a shared `Config` map, requiring strict adherence to the `TimeProvider` interface to avoid timezone drift.
+- **Correction made**: Initially hardcoded the winter threshold at 0°C, but corrected it to use the dynamic `seasonalThresholds` config to support regional variations.
