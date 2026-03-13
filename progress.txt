@@ -2986,3 +2986,8 @@
 - **Non-obvious aggregation logic**: The requirement to normalize disparate data schemas from multiple town sources before comparison was more complex than anticipated, requiring a robust intermediate mapping layer rather than direct field access.
 - **Codebase convention**: Discovered a consistent pattern of wrapping all external API calls in a `Service` class that handles retry logic and error standardization, which I applied to the new comparison endpoints.
 - **Correction**: Initially attempted to perform complex sorting in the controller layer; refactored this into the repository layer to leverage database indexing and keep the controller strictly for request/response handling.
+
+--- Story 441: Seasonal weather cycle (attempts: 1, 2026-03-13 11:18) ---
+- **Non-obvious state synchronization**: The weather cycle logic relies on a hidden `seasonOffset` variable that must be manually aligned with the global clock; failing to reset this during the `Winter` to `Spring` transition causes the precipitation system to desynchronize.
+- **Codebase convention**: Weather effects are strictly separated into `Logic` (state updates) and `Render` (visuals) modules, with no direct access to the ECS world from the render layer—always use the `WeatherEventBus` to trigger visual changes.
+- **Correction made**: Initially implemented a `while` loop to force-catch up missed frames, which caused a "time warp" effect; switched to a delta-time accumulator to ensure smooth interpolation regardless of frame drops.

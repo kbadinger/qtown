@@ -7172,7 +7172,7 @@
       ],
       "priority": 437,
       "status": "done",
-      "attempts": 5
+      "attempts": 6
     },
     {
       "id": "438",
@@ -7187,7 +7187,7 @@
       ],
       "priority": 438,
       "status": "done",
-      "attempts": 3
+      "attempts": 1
     },
     {
       "id": "439",
@@ -7202,7 +7202,7 @@
       ],
       "priority": 439,
       "status": "done",
-      "attempts": 3
+      "attempts": 2
     },
     {
       "id": "440",
@@ -7216,8 +7216,8 @@
         "api"
       ],
       "priority": 440,
-      "status": "in_progress",
-      "attempts": 2
+      "status": "done",
+      "attempts": 1
     },
     {
       "id": "441",
@@ -7232,8 +7232,8 @@
         "simulation"
       ],
       "priority": 441,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "442",
