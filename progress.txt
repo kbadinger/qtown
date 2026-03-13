@@ -2461,3 +2461,8 @@
 - **Tricky**: Handling the interaction between `z-index` stacking contexts and fixed-position overlays was non-obvious; a single `overflow: hidden` on a parent container unexpectedly clipped the decoration layer.
 - **Patterns**: The codebase consistently isolates decorative elements in a dedicated `assets/decorations` directory and uses CSS custom properties (`--theme-accent`) for color theming rather than hardcoding values.
 - **Correction**: Initially attempted to animate SVG paths via inline JS, which caused performance jank; corrected by switching to CSS `@keyframes` with `transform` properties to leverage GPU acceleration.
+
+--- Story 419: Building decoration (attempts: 1, 2026-03-12 21:34) ---
+- **Non-obvious state synchronization**: The `decoration` component relies on a derived state from the global `theme` store; directly mutating the local state without triggering a re-render caused the UI to lag behind the actual theme changes.
+- **Codebase convention**: This project strictly separates visual assets from logic; all decoration assets must be loaded via the `AssetManager` singleton rather than direct file paths to ensure lazy loading and caching work correctly.
+- **Correction**: Initially attempted to apply CSS filters directly in the template, which broke the SSR hydration; switched to using the `useEffect` hook to apply classes only on the client side after the initial mount.
