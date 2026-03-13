@@ -3016,3 +3016,8 @@
 - **Tricky**: The emigration logic required handling state synchronization between the user's current location and the destination queue; a race condition occurred if the user clicked "emigrate" before the destination validation fully resolved.
 - **Patterns**: The codebase consistently uses a "pre-flight check" service layer before any state mutation, ensuring all side effects (like quota checks) are validated in a single transaction before the UI updates.
 - **Correction**: Initially, I updated the user's status directly in the component state, causing a temporary UI flicker; I corrected this by deferring the state change until the backend confirmed the emigration record was persisted.
+
+--- Story 446: Historical archive (attempts: 1, 2026-03-13 17:59) ---
+- **Non-obvious concurrency**: The archive ingestion pipeline silently dropped records when the `FileLock` wasn't explicitly released in the `finally` block, causing subsequent threads to hang indefinitely on large datasets.
+- **Convention discovery**: All historical data accessors must inherit from `BaseArchiveReader` to automatically apply the legacy date-format normalization; direct SQL queries bypass this and return malformed timestamps.
+- **Correction**: Initially assumed the `ArchiveIndex` was read-only; corrected the implementation to include a `write-back` mechanism for updating metadata, which was required to track the new ingestion batch IDs.

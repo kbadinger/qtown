@@ -738,3 +738,55 @@ def expire_old_policies(db: Session) -> int:
     if count:
         db.commit()
     return count
+
+
+def save_town_snapshot(db: Session) -> dict | None:
+    """Save a town snapshot if tick % 100 == 0.
+    
+    Captures population, gold, happiness, buildings, weather.
+    Stores as Event(event_type='town_snapshot').
+    Returns snapshot dict or None.
+    """
+    from engine.models import WorldState, NPC, Building, Event
+    from sqlalchemy import func
+    
+    ws = db.query(WorldState).first()
+    if not ws or ws.tick % 100 != 0:
+        return None
+    
+    # Population
+    population = db.query(NPC).filter(NPC.is_dead == 0).count()
+    
+    # Gold (sum of all NPC gold)
+    total_gold = db.query(func.sum(NPC.gold)).filter(NPC.is_dead == 0).scalar() or 0
+    
+    # Happiness (average of all NPC happiness)
+    avg_happiness = db.query(func.avg(NPC.happiness)).filter(NPC.is_dead == 0).scalar() or 0
+    
+    # Buildings (count by type)
+    building_counts = {}
+    for b in db.query(Building).all():
+        building_counts[b.building_type] = building_counts.get(b.building_type, 0) + 1
+    
+    # Weather from WorldState
+    weather = ws.weather if hasattr(ws, 'weather') else 'unknown'
+    
+    snapshot = {
+        "tick": ws.tick,
+        "population": population,
+        "total_gold": total_gold,
+        "avg_happiness": round(avg_happiness, 2),
+        "buildings": building_counts,
+        "weather": weather
+    }
+    
+    # Store as Event
+    snapshot_event = Event(
+        event_type='town_snapshot',
+        description=str(snapshot),
+        tick=ws.tick
+    )
+    db.add(snapshot_event)
+    db.commit()
+    
+    return snapshot
