@@ -2846,3 +2846,8 @@
 - **Non-obvious edge case**: The API's "effective date" logic initially failed when policies had overlapping validity windows; required implementing a strict `max(start_date)` check before calculating the active set.
 - **Codebase pattern**: Discovered that all policy-related endpoints strictly follow the `PolicyContext` wrapper pattern for dependency injection, avoiding direct service calls in controllers.
 - **Correction**: Initially returned a 200 OK with an empty list for non-existent policy IDs; corrected to return 404 Not Found to align with the project's RESTful error handling convention.
+
+--- Story 435: Policy effectiveness API (attempts: 4, 2026-03-13 05:40) ---
+- **Non-obvious edge case**: The API's "effectiveness" calculation silently returns `null` when policy start dates are in the future; I had to add explicit validation to prevent downstream division-by-zero errors in the dashboard.
+- **Codebase pattern**: Discovered a consistent convention where all policy-related DTOs extend a `BasePolicyEntity` that injects the `AuditService` via constructor, simplifying traceability for future changes.
+- **Correction**: Initially missed the requirement to cache results for the same `policy_id` within a 5-minute window, leading to redundant DB hits; fixed by implementing a simple in-memory TTL cache keyed by ID.

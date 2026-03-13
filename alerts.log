@@ -3494,3 +3494,21 @@ Indexing...
 Uploading..
 [2026-03-13 09:30:43 UTC] story_done: Story 434 complete: Election history API
 [2026-03-13 09:30:44 UTC] story_start: Story 435: Policy effectiveness API
+[2026-03-13 09:30:52 UTC] WARN deploy_fail: Story 435 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   463adaf..62e4c58  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 09:30:52 UTC] story_done: Story 435 complete: Policy effectiveness API
+[2026-03-13 09:30:53 UTC] story_start: Story 436: Trade volume API
+[2026-03-13 09:31:24 UTC] WARN story_fail: Story 429 failed after 12 attempts: Building capacity upgrade
+[2026-03-13 09:31:25 UTC] CRITICAL critical: Story 429 failed: Building capacity upgrade
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-13 09:31:35 UTC] deploy_ok: Story 434 deployed: Healthy after 0.1s
+[2026-03-13 09:31:44 UTC] story_done: Story 434 complete: Election history API
+[2026-03-13 09:31:44 UTC] story_start: Story 436: Trade volume API
+[2026-03-13 09:31:55 UTC] story_start: Story 436: Trade volume API
+[2026-03-13 09:32:01 UTC] deploy_ok: Story 435 deployed: Healthy after 0.0s
+[2026-03-13 09:32:10 UTC] story_done: Story 435 complete: Policy effectiveness API
+[2026-03-13 09:32:10 UTC] story_start: Story 436: Trade volume API

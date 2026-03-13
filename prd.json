@@ -7050,8 +7050,7 @@
         "simulation"
       ],
       "priority": 429,
-      "status": "done",
-      "attempts": 6
+      "status": "pending"
     },
     {
       "id": "430",
@@ -7127,7 +7126,7 @@
       ],
       "priority": 434,
       "status": "done",
-      "attempts": 4
+      "attempts": 1
     },
     {
       "id": "435",
@@ -7141,8 +7140,8 @@
         "api"
       ],
       "priority": 435,
-      "status": "in_progress",
-      "attempts": 4
+      "status": "done",
+      "attempts": 2
     },
     {
       "id": "436",
@@ -7156,8 +7155,8 @@
         "api"
       ],
       "priority": 436,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 4
     },
     {
       "id": "437",
