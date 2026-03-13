@@ -2676,3 +2676,8 @@
 *   **Non-obvious complexity**: The "historical value" logic required handling time-zone-aware snapshots alongside immutable event sourcing; naively using `new Date()` for comparisons caused subtle drifts in audit trails that only appeared in edge-case time zones.
 *   **Codebase patterns**: The repository enforces a strict "Command-Query Separation" (CQS) where all state mutations flow through a dedicated `EventStore` interface, while read models are cached separately to avoid N+1 queries during history retrieval.
 *   **Correction**: Initially attempted to update the current state object directly before persisting the historical event; corrected to first materialize the new state from the event stream to ensure the audit log remains the single source of truth.
+
+--- Story 427: Building historical value (attempts: 5, 2026-03-13 03:28) ---
+- **Tricky**: Determining the correct "historical" state required careful handling of immutable data structures; simply cloning objects wasn't enough, as nested references still pointed to the latest state, necessitating deep cloning or structural sharing.
+- **Pattern**: The codebase consistently uses a `ValueObject` wrapper for historical records to enforce immutability and prevent accidental mutation of past events.
+- **Correction**: Initially attempted to update history by mutating the existing list in place; corrected by creating a new list with the appended event to maintain the integrity of the audit trail.
