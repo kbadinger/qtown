@@ -3543,3 +3543,11 @@ Indexing...
 Uploading..
 [2026-03-13 09:46:16 UTC] story_done: Story 435 complete: Policy effectiveness API
 [2026-03-13 09:46:17 UTC] story_start: Story 429: Building capacity upgrade
+[2026-03-13 09:46:24 UTC] WARN deploy_fail: Story 429 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   580a63f..5de1e47  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 09:46:24 UTC] story_done: Story 429 complete: Building capacity upgrade
+[2026-03-13 09:46:25 UTC] story_start: Story 437: Population demographics API
