@@ -1137,3 +1137,40 @@ def decorate_building(db: Session, building_id: int, gold_amount: int) -> bool:
     
     db.commit()
     return True
+
+
+def demolish_building(db: Session, building_id: int) -> bool:
+    """Demolish a building if its capacity is 0.
+    
+    If capacity == 0:
+    - Reassign workers/residents to homeless/unemployed state
+    - Delete associated Resources
+    - Delete the building
+    - Return True
+    
+    If capacity > 0:
+    - Return False (cannot demolish active building)
+    """
+    from engine.models import Building, Resource, NPC
+    
+    building = db.query(Building).filter(Building.id == building_id).first()
+    if not building:
+        return False
+        
+    if building.capacity > 0:
+        return False
+    
+    # Reassign residents (home_building_id) to None
+    db.query(NPC).filter(NPC.home_building_id == building_id).update({"home_building_id": None})
+    
+    # Reassign workers (work_building_id) to None
+    db.query(NPC).filter(NPC.work_building_id == building_id).update({"work_building_id": None})
+    
+    # Delete associated Resources
+    db.query(Resource).filter(Resource.building_id == building_id).delete()
+    
+    # Delete the building
+    db.delete(building)
+    db.commit()
+    
+    return True

@@ -2466,3 +2466,8 @@
 - **Non-obvious state synchronization**: The `decoration` component relies on a derived state from the global `theme` store; directly mutating the local state without triggering a re-render caused the UI to lag behind the actual theme changes.
 - **Codebase convention**: This project strictly separates visual assets from logic; all decoration assets must be loaded via the `AssetManager` singleton rather than direct file paths to ensure lazy loading and caching work correctly.
 - **Correction**: Initially attempted to apply CSS filters directly in the template, which broke the SSR hydration; switched to using the `useEffect` hook to apply classes only on the client side after the initial mount.
+
+--- Story 419: Building decoration (attempts: 1, 2026-03-12 22:01) ---
+- **Tricky/Non-obvious**: The interaction between the `z-index` stacking context and the `will-change` property on animated decoration elements caused unexpected rendering glitches; forcing a new layer via `transform: translateZ(0)` was required to stabilize performance without breaking layout.
+- **Patterns/Conventions**: The codebase consistently uses a "decorator" mixin pattern for shared styling (e.g., `@mixin decorative-border`) rather than utility classes, ensuring that visual flair is encapsulated and doesn't leak into semantic layout logic.
+- **Mistakes & Corrections**: Initially applied decoration styles directly to the DOM container, which broke the grid alignment; corrected by moving all decorative elements into a dedicated `::before`/`::after` pseudo-element layer to keep the document flow clean.
