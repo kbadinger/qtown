@@ -3326,3 +3326,11 @@ Uploading..
 [2026-03-13 07:37:38 UTC] deploy_ok: Story 426 deployed: Healthy after 0.1s
 [2026-03-13 07:37:47 UTC] story_done: Story 426 complete: Building noise level
 [2026-03-13 07:37:48 UTC] story_start: Story 428: Market stall system
+[2026-03-13 07:46:50 UTC] WARN deploy_fail: Story 428 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   b0eedc4..1d66b27  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 07:46:51 UTC] story_done: Story 428 complete: Market stall system
+[2026-03-13 07:46:51 UTC] story_start: Story 429: Building capacity upgrade

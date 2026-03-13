@@ -2716,3 +2716,8 @@
 - **Tricky/Non-obvious**: The `MarketStall` entity requires explicit lifecycle management for its inventory; simply adding items to the list doesn't trigger the `onStockChanged` event unless the `notifyObservers` method is called manually after the mutation.
 - **Patterns/Conventions**: The codebase strictly separates data access from business logic; all direct database writes for stall transactions must go through the `TransactionRepository` interface, never directly within the service layer.
 - **Mistakes corrected**: Initially implemented a synchronous loop to calculate stall revenue, which caused timeouts during high-volume market days; corrected by switching to an asynchronous aggregation job that runs on a separate thread pool.
+
+--- Story 428: Market stall system (attempts: 7, 2026-03-13 03:46) ---
+- **Tricky Logic**: Handling the "sell out" state required careful sequencing; inventory must be decremented *before* updating the UI to prevent race conditions where a user clicks a sold-out item during a rapid re-render.
+- **Codebase Pattern**: The project consistently uses a `useEffect` dependency on `cart.total` to trigger automatic tax recalculation, rather than calculating it inline during item addition.
+- **Correction**: Initially, I attempted to clear the entire cart state on reset, which broke the "keep favorites" feature; I corrected this by filtering the cart to only remove items matching the current stall's ID.
