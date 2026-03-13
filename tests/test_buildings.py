@@ -1289,12 +1289,31 @@ def test_s422_blueprint_occupied_tile(db):
 
 def test_s423_get_public_buildings(db):
     """Public building access."""
-    _setup_world(db)
+    from engine.simulation import init_grid
     from engine.simulation import get_public_buildings
+    from engine.models import Building
+
+    # Initialize grid first (consistent with Story 001)
+    init_grid(db)
+
+    # Create test public buildings
+    building_types = ['civic', 'market', 'church', 'tavern', 'hospital']
+    for i, btype in enumerate(building_types):
+        b = Building(name=f"Test {btype}", building_type=btype, x=i, y=i)
+        db.add(b)
+    db.commit()
 
     result = get_public_buildings(db)
     assert isinstance(result, list), "Should return list of public buildings"
-    db.flush()
+    assert len(result) == 5, f"Should return 5 public buildings, got {len(result)}"
+    
+    # Verify each building has required fields
+    for b in result:
+        assert 'id' in b, "Each building dict should have 'id'"
+        assert 'name' in b, "Each building dict should have 'name'"
+        assert 'type' in b, "Each building dict should have 'type'"
+        assert 'x' in b, "Each building dict should have 'x'"
+        assert 'y' in b, "Each building dict should have 'y'"
 
 
 def test_s424_get_production_multiplier(db):
