@@ -1364,3 +1364,31 @@ def calculate_noise_levels(db: Session) -> dict[int, int]:
     
     db.commit()
     return noise_levels
+
+
+def calculate_historical_value(db: Session) -> dict:
+    """Calculate historical value/prestige for all buildings.
+    
+    prestige = level * 10 + min(WorldState.tick // 100, 50) per building
+    Returns dict with town_prestige total and per-building prestige.
+    """
+    from engine.models import Building, WorldState
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Calculate prestige for each building
+    buildings = db.query(Building).all()
+    per_building = {}
+    total_prestige = 0
+    
+    for building in buildings:
+        prestige = building.level * 10 + min(current_tick // 100, 50)
+        per_building[building.id] = prestige
+        total_prestige += prestige
+    
+    return {
+        "town_prestige": total_prestige,
+        "per_building": per_building
+    }

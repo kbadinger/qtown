@@ -3260,3 +3260,17 @@ Indexing...
 Uploading..
 [2026-03-13 07:24:32 UTC] story_done: Story 425 complete: Building fire safety rating
 [2026-03-13 07:24:33 UTC] story_start: Story 426: Building noise level
+[2026-03-13 07:24:59 UTC] WARN deploy_fail: Story 426 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   ba96827..3d9da8f  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 07:25:00 UTC] story_done: Story 426 complete: Building noise level
+[2026-03-13 07:25:00 UTC] story_start: Story 427: Building historical value
+[2026-03-13 07:25:16 UTC] deploy_ok: Story 425 deployed: Healthy after 0.1s
+[2026-03-13 07:25:32 UTC] story_done: Story 425 complete: Building fire safety rating
+[2026-03-13 07:25:32 UTC] story_start: Story 427: Building historical value
+[2026-03-13 07:26:38 UTC] deploy_ok: Story 425 deployed: Healthy after 0.1s
+[2026-03-13 07:26:47 UTC] story_done: Story 425 complete: Building fire safety rating
+[2026-03-13 07:26:48 UTC] story_start: Story 427: Building historical value

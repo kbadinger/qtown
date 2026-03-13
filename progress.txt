@@ -2656,3 +2656,8 @@
 - **Tricky Logic**: The noise calculation required handling edge cases where `decibel` inputs were negative or null; the initial implementation crashed, but adding a `max(0, value)` guard and defaulting to 0 fixed the stability issues.
 - **Codebase Patterns**: This project strictly enforces the "Command-Query Separation" principle; noise level retrieval methods must not mutate state, and all side effects (like logging alerts) are isolated in separate service classes.
 - **Correction**: I initially placed the noise threshold configuration in the controller, violating the separation of concerns; I refactored it into a dedicated `NoiseConfig` entity to allow dynamic updates without redeploying the API.
+
+--- Story 426: Building noise level (attempts: 3, 2026-03-13 03:27) ---
+- **Tricky**: The noise level calculation required handling dynamic thresholds based on time-of-day; the initial logic failed to account for the "quiet hours" override, causing false positives during late-night construction.
+- **Patterns**: This codebase consistently uses a `Context` object to pass environmental variables (like `is_weekend` or `current_hour`) rather than global state, ensuring tests remain isolated and deterministic.
+- **Correction**: Initially, I attempted to hardcode the decibel limits in the view layer; I corrected this by moving the validation logic into a dedicated `NoisePolicy` service to align with the existing separation of concerns.
