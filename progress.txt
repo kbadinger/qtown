@@ -2956,3 +2956,8 @@
 - **Tricky Logic**: Handling the "active" vs. "scheduled" occupancy state was non-obvious; the API must return the *current* sensor reading only if a scheduled event hasn't overridden it, requiring a specific priority check before querying the database.
 - **Codebase Pattern**: This project consistently uses a "Repository + Service" separation where the Service layer handles all business logic (like the occupancy priority rules) and the Repository only deals with raw data access, keeping controllers thin.
 - **Correction**: Initially, I attempted to calculate occupancy duration in the SQL query, which caused performance issues on large datasets; I corrected this by moving the time-window calculation to the application layer and fetching only the necessary raw records.
+
+--- Story 438: Building occupancy API (attempts: 3, 2026-03-13 05:47) ---
+- **Non-obvious complexity**: Handling the "active" state of occupancy required careful handling of race conditions where a user might update status while the system is simultaneously processing a check-out event; a simple boolean flag wasn't sufficient without atomic updates.
+- **Codebase patterns**: Discovered a consistent use of the Repository pattern with explicit `UnitOfWork` interfaces for transactional boundaries, ensuring that occupancy changes and audit logs are always committed or rolled back together.
+- **Correction**: Initially implemented the occupancy limit check as a separate service call, which introduced latency and potential stale data; corrected this by moving the validation logic directly into the database transaction via a stored procedure.
