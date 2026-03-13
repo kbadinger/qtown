@@ -2686,3 +2686,8 @@
 - **Non-obvious state persistence**: Realized that "historical value" isn't just a snapshot; it requires a separate immutable ledger table rather than updating the main record, preventing race conditions during concurrent reads.
 - **Codebase pattern**: Discovered the convention of using `VersionedEntity` mixins for any data requiring audit trails, which automatically handles the `created_at` and `version` columns across the schema.
 - **Correction**: Initially attempted to use optimistic locking on the main table, which caused deadlocks under high load; corrected this by shifting the locking mechanism to the specific ledger append operation.
+
+--- Story 427: Building historical value (attempts: 2, 2026-03-13 03:28) ---
+*   **Non-obvious dependency on temporal context:** The "historical value" logic wasn't just about storing past data; it required explicitly passing the `as_of` timestamp through every layer of the service, as the default `now()` behavior silently broke historical reporting for pre-existing records.
+*   **Immutability convention for audit trails:** The codebase enforces a strict pattern where historical snapshots are created as immutable copies of the entity state rather than updating a `history` table with diffs, simplifying reconstruction but requiring careful memory management for large objects.
+*   **Corrected timezone handling:** Initially assumed the database stored UTC and the frontend handled conversion, but discovered the legacy schema stores local time; corrected this by enforcing UTC normalization at the repository boundary before any historical comparison logic runs.
