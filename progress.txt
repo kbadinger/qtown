@@ -2551,3 +2551,8 @@
 - **Non-obvious dependency coupling**: The decay logic relied on a hidden global state in `LegacyScheduler`, causing intermittent failures when tests ran in parallel; required explicit context passing to isolate execution.
 - **Codebase convention**: Infrastructure components consistently use the `HealthCheck` interface for status reporting, but older modules bypass this by returning raw HTTP codes, creating a fragile monitoring gap.
 - **Correction**: Initially refactored the decay calculation to run synchronously, which blocked the main thread; reverted to the existing async queue pattern to maintain system responsiveness under load.
+
+--- Story 421: Infrastructure decay (attempts: 5, 2026-03-13 01:44) ---
+- **Non-obvious dependency coupling**: The decay logic relied on a hidden global state in the `LegacyConfig` module, causing intermittent failures when tests ran in parallel; this required isolating the config injection to ensure deterministic behavior.
+- **Codebase pattern**: Discovered a recurring "adapter-then-validate" convention where all infrastructure checks wrap raw data in a `HealthCheckAdapter` before applying domain rules, a pattern I should reuse to maintain consistency in Story 422.
+- **Correction**: Initially attempted to fix the decay threshold by modifying the core calculation directly, which broke backward compatibility; corrected by introducing a configurable `DecayStrategy` interface to handle edge cases without altering the core engine.

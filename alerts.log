@@ -3143,3 +3143,21 @@ Indexing...
 Uploading..
 [2026-03-13 05:37:27 UTC] story_done: Story 422 complete: Building blueprint system
 [2026-03-13 05:37:27 UTC] story_start: Story 423: Public building access
+[2026-03-13 05:37:34 UTC] WARN deploy_fail: Story 421 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   c14d8a5..77262e6  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 05:37:34 UTC] story_done: Story 421 complete: Infrastructure decay
+[2026-03-13 05:37:35 UTC] story_start: Story 423: Public building access
+[2026-03-13 05:38:29 UTC] deploy_ok: Story 422 deployed: Healthy after 0.1s
+[2026-03-13 05:38:46 UTC] story_done: Story 422 complete: Building blueprint system
+[2026-03-13 05:38:46 UTC] story_start: Story 423: Public building access
+[2026-03-13 05:39:42 UTC] deploy_ok: Story 422 deployed: Healthy after 0.1s
+[2026-03-13 05:39:51 UTC] story_done: Story 422 complete: Building blueprint system
+[2026-03-13 05:39:52 UTC] story_start: Story 423: Public building access
+[2026-03-13 05:42:24 UTC] WARN story_fail: Story 421 failed after 12 attempts: Infrastructure decay
+[2026-03-13 05:42:24 UTC] CRITICAL critical: Story 421 failed: Infrastructure decay
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-13 05:42:55 UTC] story_start: Story 423: Public building access
