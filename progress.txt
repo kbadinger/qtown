@@ -2561,3 +2561,8 @@
 *   **Tricky Logic**: The interaction between `BuildingAccessPolicy` and `TimeBasedRestrictions` was non-obvious; the policy defaults to "deny" unless an explicit "allow" rule matches both the user role *and* the current time window, requiring careful handling of overlapping schedules.
 *   **Codebase Pattern**: This module strictly follows the "Policy-First" convention where all access decisions are centralized in `AccessEvaluator` services, avoiding direct database calls in controllers and ensuring audit logs are written before the response is returned.
 *   **Correction**: Initially, I attempted to cache the access result per user session, but realized this breaks when building hours change dynamically; corrected to cache only the static policy definitions while re-evaluating the time-based conditions on every request.
+
+--- Story 423: Public building access (attempts: 6, 2026-03-13 01:52) ---
+- **Tricky/Non-obvious**: The `AccessControlService` relies on a cached `RoleHierarchy` that is only invalidated on explicit admin actions, not on user profile updates; failing to trigger this cache refresh caused stale permissions during the test run.
+- **Patterns/Conventions**: This codebase strictly separates "authorization checks" (service layer) from "access enforcement" (middleware), and all public building endpoints must explicitly declare `@RequiresPermission(BUILDING_ACCESS)` rather than relying on role-based routing.
+- **Mistakes corrected**: Initially implemented a direct database lookup for building ownership, which bypassed the centralized `PermissionEvaluator`; corrected to use the evaluator to ensure audit logging and multi-tenant isolation rules were applied consistently.
