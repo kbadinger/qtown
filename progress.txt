@@ -2936,3 +2936,8 @@
 *   **Non-obvious API constraints**: The demographic endpoint requires explicit `accept: application/json` headers even when the `Content-Type` is set; omitting this triggers a fallback to XML, breaking downstream parsers.
 *   **Codebase pattern**: All data-fetching services in this module strictly follow the `fetch -> transform -> cache` pipeline, with caching logic centralized in `CacheService` rather than inline.
 *   **Correction**: Initially attempted to map raw API keys directly to the domain model, which failed due to nested null handling; corrected by introducing a dedicated `DemographicMapper` class to handle safe unwrapping of optional fields.
+
+--- Story 437: Population demographics API (attempts: 5, 2026-03-13 05:47) ---
+- **Non-obvious edge cases**: Handling sparse demographic data required explicit null-coalescing for age brackets, as the API returns `null` instead of `0` for missing segments, which initially broke downstream aggregation logic.
+- **Codebase pattern**: The project enforces a strict "DTO-first" approach where all external API responses are immediately mapped to internal interfaces before any business logic is applied, preventing direct dependency on external schema changes.
+- **Correction**: I initially attempted to cache raw JSON responses, but corrected this to cache only the transformed DTOs to ensure consistency with the application's type safety and to avoid serializing transient API-specific metadata.
