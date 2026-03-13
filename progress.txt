@@ -2531,3 +2531,8 @@
 *   **Non-obvious complexity**: The interaction between the blueprint's abstract definition and the concrete instantiation logic was trickier than expected; specifically, handling dynamic property overrides without mutating the base schema required careful separation of concerns.
 *   **Codebase patterns**: Discovered a consistent "Builder-Factory" convention where blueprints are immutable data structures, and all modifications flow through a dedicated `BlueprintRegistry` to ensure versioning and traceability.
 *   **Correction made**: Initially attempted to serialize the entire blueprint object directly, which caused circular reference errors; corrected this by implementing a shallow-copy strategy for the metadata layer while deep-cloning only the mutable configuration payload.
+
+--- Story 422: Building blueprint system (attempts: 3, 2026-03-13 01:37) ---
+- **Non-obvious complexity**: Handling the recursive dependency resolution for nested blueprint components was trickier than expected; a simple depth-first traversal failed to detect circular references, requiring an explicit "visited" set to prevent infinite loops.
+- **Codebase pattern**: The project consistently separates "definition" (schema/structure) from "instantiation" (runtime object creation) using a factory pattern, which I initially bypassed but later adopted to maintain consistency with existing serialization logic.
+- **Correction**: I initially stored blueprint metadata directly in the global state, causing race conditions during concurrent loads; I corrected this by scoping the metadata to a transient build context that is cleared after compilation.
