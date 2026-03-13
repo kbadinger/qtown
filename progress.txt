@@ -2541,3 +2541,8 @@
 - **Non-obvious state coupling**: The blueprint validation logic unexpectedly relied on the global `projectContext` rather than isolated props, requiring a refactor to inject context explicitly to prevent race conditions during async saves.
 - **Codebase convention**: Discovered a strict "Builder-Validator-Renderer" separation pattern; validation rules are defined as pure functions in `utils/rules.ts` and never mixed with React component logic.
 - **Correction**: Initially attempted to memoize the entire blueprint tree, causing stale data issues; switched to memoizing only leaf-node calculations to ensure reactivity when parent constraints changed.
+
+--- Story 422: Building blueprint system (attempts: 4, 2026-03-13 01:37) ---
+*   **Non-obvious state synchronization**: Realized that blueprint validation must happen *before* the database transaction begins, not as a post-save hook, to prevent orphaned data when complex dependency chains fail.
+*   **Codebase pattern**: Discovered a strict separation where `BlueprintSchema` defines the static structure while `BlueprintInstance` handles runtime state; mixing these two caused subtle serialization bugs.
+*   **Correction**: Initially attempted to mutate the input DTO directly for normalization; corrected this by creating an immutable copy to preserve the original request for audit logging.
