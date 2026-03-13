@@ -2661,3 +2661,8 @@
 - **Tricky**: The noise level calculation required handling dynamic thresholds based on time-of-day; the initial logic failed to account for the "quiet hours" override, causing false positives during late-night construction.
 - **Patterns**: This codebase consistently uses a `Context` object to pass environmental variables (like `is_weekend` or `current_hour`) rather than global state, ensuring tests remain isolated and deterministic.
 - **Correction**: Initially, I attempted to hardcode the decibel limits in the view layer; I corrected this by moving the validation logic into a dedicated `NoisePolicy` service to align with the existing separation of concerns.
+
+--- Story 426: Building noise level (attempts: 2, 2026-03-13 03:27) ---
+*   **Non-obvious Async Handling**: The noise calculation pipeline required manual `await` chaining on the `AudioContext` analyzer node; relying on implicit promise resolution caused race conditions where the level was read before the buffer was populated.
+*   **Codebase Convention**: This module strictly adheres to the "Factory Function" pattern for audio nodes (e.g., `createNoiseMeter()`), avoiding direct class instantiation to ensure dependency injection for testing is consistent across the audio suite.
+*   **Correction**: Initially applied the smoothing constant (`smoothingTimeConstant`) to the `AnalyserNode` constructor, which is invalid; corrected by setting it as a property on the instance *after* creation but *before* connecting the source.
