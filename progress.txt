@@ -2736,3 +2736,8 @@
 - **Non-obvious state synchronization**: The `StallInventory` needed to explicitly invalidate the `MarketUI` cache on every transaction; relying on the standard `onUpdate` hook caused a one-tick lag where prices displayed incorrectly after bulk purchases.
 - **Convention for modular pricing**: The codebase enforces a strict `PriceModifier` interface for all dynamic costs (taxes, discounts, scarcity), meaning direct float manipulation on base prices is forbidden and must be handled through the `PricingPipeline` service.
 - **Correction on concurrency**: Initially attempted to handle simultaneous buyer/seller actions with a simple mutex, which caused deadlocks during high-traffic events; switched to the existing `EventQueue` pattern to serialize transactions safely without blocking the main loop.
+
+--- Story 429: Building capacity upgrade (attempts: 4, 2026-03-13 04:22) ---
+- **Non-obvious dependency**: The capacity upgrade logic relies on a hidden `max_throughput` config flag that defaults to `false` in staging; missing this caused the upgrade to silently fail validation.
+- **Codebase pattern**: All state mutations in this module follow a strict "Read-Modify-Write" sequence using the `AtomicUpdater` utility; direct writes to the shared state object are blocked by the linter.
+- **Correction**: Initially attempted to bypass the locking mechanism for performance, which introduced a race condition during concurrent requests; reverted to the standard `withLock` pattern to ensure data consistency.

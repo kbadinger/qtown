@@ -3364,3 +3364,14 @@ Uploading..
 [2026-03-13 07:55:05 UTC] deploy_ok: Story 428 deployed: Healthy after 0.1s
 [2026-03-13 07:55:14 UTC] story_done: Story 428 complete: Market stall system
 [2026-03-13 07:55:14 UTC] story_start: Story 429: Building capacity upgrade
+[2026-03-13 08:16:04 UTC] WARN story_fail: Story 429 struggling — attempt 5/12
+Building capacity upgrade
+[2026-03-13 08:16:29 UTC] deploy_ok: Story 428 deployed: Healthy after 0.1s
+[2026-03-13 08:16:46 UTC] story_done: Story 428 complete: Market stall system
+[2026-03-13 08:16:47 UTC] story_start: Story 429: Building capacity upgrade
+[2026-03-13 08:17:18 UTC] WARN story_fail: Story 429 struggling — attempt 5/12
+Building capacity upgrade
+[2026-03-13 08:18:03 UTC] WARN story_fail: Story 429 struggling — attempt 5/12
+Building capacity upgrade
+[2026-03-13 08:21:25 UTC] WARN story_fail: Story 429 struggling — attempt 5/12
+Building capacity upgrade
