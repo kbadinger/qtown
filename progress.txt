@@ -2576,3 +2576,8 @@
 - **Tricky Aspect**: The `access_control` module relied on implicit context propagation for `user_role`, causing intermittent failures when the request context wasn't explicitly passed through the middleware chain.
 - **Pattern Discovered**: The codebase consistently uses a `Policy` class pattern for authorization logic, separating data retrieval from decision-making, which must be adhered to for maintainability.
 - **Mistake & Correction**: Initially attempted to cache access results in Redis without a TTL, leading to stale permissions for revoked users; corrected by implementing a short-lived cache with explicit invalidation hooks.
+
+--- Story 423: Public building access (attempts: 3, 2026-03-13 02:03) ---
+- **Tricky Logic**: The `AccessLevel` enum's interaction with `Role` inheritance was non-obvious; a `Guest` role with `Admin` permissions bypassed the standard `isAuthorized()` check unless explicitly validated against the building's `restrictedZones` list.
+- **Codebase Patterns**: This project heavily relies on the "Strategy Pattern" for access rules, where specific building types delegate authorization logic to separate `AccessPolicy` classes rather than using conditional branching in the controller.
+- **Correction**: Initially, I assumed `public_access` flags were boolean-only, but the schema supports a `time_range` object; I corrected the validation logic to parse and check time constraints before granting entry, preventing a regression in off-hours access.

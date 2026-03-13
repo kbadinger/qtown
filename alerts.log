@@ -3173,3 +3173,11 @@ Public building access
 [2026-03-13 05:53:32 UTC] deploy_ok: Story 423 deployed: Healthy after 0.1s
 [2026-03-13 05:53:42 UTC] story_done: Story 423 complete: Public building access
 [2026-03-13 05:53:42 UTC] story_start: Story 424: Building production scaling
+[2026-03-13 06:02:46 UTC] WARN deploy_fail: Story 423 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   689038c..699a22b  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 06:02:46 UTC] story_done: Story 423 complete: Public building access
+[2026-03-13 06:02:47 UTC] story_start: Story 424: Building production scaling
