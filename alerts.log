@@ -3391,3 +3391,9 @@ Building capacity upgrade
 [2026-03-13 08:50:03 UTC] CRITICAL critical: Story 429 failed: Building capacity upgrade
 Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-13 08:50:33 UTC] story_start: Story 430: Building network effects
+[2026-03-13 08:52:20 UTC] deploy_ok: Story 430 deployed: Healthy after 0.1s
+[2026-03-13 08:52:36 UTC] story_done: Story 430 complete: Building network effects
+[2026-03-13 08:52:36 UTC] story_start: Story 429: Building capacity upgrade
+[2026-03-13 08:52:42 UTC] deploy_ok: Story 429 deployed: Healthy after 0.0s
+[2026-03-13 08:52:50 UTC] story_done: Story 429 complete: Building capacity upgrade
+[2026-03-13 08:52:51 UTC] story_start: Story 431: NPC daily schedule API

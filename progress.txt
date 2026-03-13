@@ -2751,3 +2751,8 @@
 - **Tricky**: The capacity upgrade logic required handling race conditions during the transition from the old to the new scaling threshold; a simple atomic swap wasn't enough without a "drain" phase to prevent request loss.
 - **Patterns**: The codebase consistently uses a `FeatureFlag` wrapper for all scaling parameters, allowing runtime toggling without redeployment, and relies on a centralized `MetricsCollector` for all threshold checks.
 - **Mistakes**: Initially attempted to update the scaling config directly in the database, which bypassed the validation layer; corrected by routing the change through the existing `ConfigService` to ensure schema compliance and audit logging.
+
+--- Story 429: Building capacity upgrade (attempts: 7, 2026-03-13 05:02) ---
+- **Non-obvious state coupling**: The capacity upgrade logic relies on a hidden dependency between the `inventory_snapshot` and `active_leases` tables; failing to lock both during the transaction causes race conditions that only surface under high concurrency.
+- **Codebase convention**: All capacity mutations must be wrapped in the `CapacityAudit` middleware to automatically generate immutable history logs; skipping this step breaks the compliance reporting pipeline.
+- **Correction**: Initially attempted to recalculate total capacity by iterating through all nodes in the loop, which caused O(n²) performance degradation; corrected by using the pre-aggregated `capacity_index` view instead.
