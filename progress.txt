@@ -2861,3 +2861,8 @@
 *   **Tricky**: Handling time-series aggregation for trade volume required careful attention to timezone normalization; naive grouping by `created_at` led to gaps in daily totals when the API server timezone differed from the client's local time.
 *   **Patterns**: The codebase consistently uses the `Repository` pattern for data access but relies on raw SQL for complex aggregations rather than the ORM, likely to optimize performance on large historical datasets.
 *   **Correction**: Initially implemented pagination using `OFFSET`, which caused severe latency spikes on deep pages; corrected this by switching to a cursor-based approach using `trade_id` to ensure consistent query performance.
+
+--- Story 436: Trade volume API (attempts: 3, 2026-03-13 05:40) ---
+- **Non-obvious API constraints**: The trade volume endpoint requires strict pagination logic where `limit` and `offset` must be validated against the underlying database's row count to prevent returning partial batches; the API returns a 400 error if the requested range exceeds available data, which wasn't documented in the initial spec.
+- **Codebase patterns**: The project consistently uses the `Repository-Service-Controller` pattern with a custom `BaseResponse` wrapper that handles error formatting and status codes centrally, avoiding repetitive `try-catch` blocks in controllers.
+- **Correction on aggregation**: Initially implemented `SUM()` directly in the controller query, causing performance issues on large datasets; corrected by moving the aggregation logic into a dedicated stored procedure to leverage database indexing and caching.
