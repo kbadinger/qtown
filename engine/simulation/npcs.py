@@ -3168,3 +3168,44 @@ def process_npc_goals(db: Session) -> int:
             
     db.commit()
     return achieved_count
+
+
+def vary_npc_lifespan(db: Session) -> int:
+    """Assign max_age to NPCs based on role and personality."""
+    from engine.models import NPC
+    
+    # Mapping for base ages by role
+    role_ages = {
+        "farmer": 80,
+        "guard": 70,
+        "merchant": 85,
+        "priest": 90,
+        "baker": 75,
+        "default": 78
+    }
+    
+    # Query living NPCs with unset max_age (0 or None)
+    # is_dead is Integer column, compare with == 0
+    npcs_to_update = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        (NPC.max_age == 0) | (NPC.max_age.is_(None))
+    ).all()
+    
+    count = 0
+    for npc in npcs_to_update:
+        # Determine base age from role
+        base_age = role_ages.get(npc.role, role_ages["default"])
+        
+        # Adjust for personality
+        if npc.personality == 'healthy':
+            base_age += 5
+        elif npc.personality == 'reckless':
+            base_age -= 5
+            
+        npc.max_age = base_age
+        count += 1
+        
+    if count > 0:
+        db.commit()
+        
+    return count

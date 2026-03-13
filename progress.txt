@@ -2996,3 +2996,8 @@
 - **Non-obvious dependency**: The seasonal transition logic relies on a hidden `WeatherContext` singleton rather than direct service injection, making unit tests brittle without proper mocking setup.
 - **Codebase pattern**: All time-based calculations in this module use UTC offsets stored in a shared `Config` map, requiring strict adherence to the `TimeProvider` interface to avoid timezone drift.
 - **Correction made**: Initially hardcoded the winter threshold at 0°C, but corrected it to use the dynamic `seasonalThresholds` config to support regional variations.
+
+--- Story 442: NPC lifespan variation (attempts: 1, 2026-03-13 16:42) ---
+- **Non-obvious state coupling**: NPC lifespan wasn't a static config but dynamically derived from `role` and `difficulty` modifiers; changing one required recalculating the entire `lifespan` field in the `spawn` logic, not just the `death` event.
+- **Codebase convention**: The project strictly separates "lifecycle rules" (in `rules/lifespan.ts`) from "execution logic" (in `game/loop.ts`); direct manipulation of NPC properties in the loop is forbidden in favor of rule-based state transitions.
+- **Correction**: Initially attempted to patch the `death` timer directly in the event handler, causing race conditions where NPCs died instantly upon respawn; fixed by centralizing the calculation in the `spawn` phase and using the returned value as a read-only reference.
