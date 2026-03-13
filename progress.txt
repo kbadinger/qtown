@@ -2486,3 +2486,8 @@
 - **Non-obvious concurrency**: The demolition logic required explicit synchronization on the `Site` object; relying on implicit thread safety caused race conditions when multiple `DemolitionCrew` instances attempted to update the same `Building` status simultaneously.
 - **Codebase pattern**: The project enforces a strict "Command-Query Separation" where state mutations (demolition steps) are distinct from read operations (progress reporting), preventing accidental state changes during reporting phases.
 - **Correction**: Initially, I skipped the `cleanup()` step for failed demolition attempts, leaving orphaned resources in memory; I corrected this by wrapping all demolition actions in a `try-finally` block to ensure resource release regardless of outcome.
+
+--- Story 420: Building demolition (attempts: 2, 2026-03-12 22:13) ---
+*   **Non-obvious constraint**: The demolition sequence requires explicit validation of adjacent structural load-bearing status before removing any node; skipping this check causes silent failures in the dependency graph rather than immediate crashes.
+*   **Codebase pattern**: All resource cleanup in this module follows the "Reverse Dependency Order" convention, where child components must be fully deregistered before their parent container is touched.
+*   **Correction**: Initially attempted to parallelize the demolition steps for performance, but discovered race conditions in the state manager; reverted to a strict synchronous chain to ensure atomicity of the cleanup transaction.
