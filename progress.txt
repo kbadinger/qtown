@@ -2941,3 +2941,8 @@
 - **Non-obvious edge cases**: Handling sparse demographic data required explicit null-coalescing for age brackets, as the API returns `null` instead of `0` for missing segments, which initially broke downstream aggregation logic.
 - **Codebase pattern**: The project enforces a strict "DTO-first" approach where all external API responses are immediately mapped to internal interfaces before any business logic is applied, preventing direct dependency on external schema changes.
 - **Correction**: I initially attempted to cache raw JSON responses, but corrected this to cache only the transformed DTOs to ensure consistency with the application's type safety and to avoid serializing transient API-specific metadata.
+
+--- Story 437: Population demographics API (attempts: 6, 2026-03-13 05:47) ---
+- **Non-obvious API constraints**: The endpoint requires specific `Accept` headers for JSON; omitting them defaults to XML, causing silent parsing failures in the client layer.
+- **Codebase pattern**: Demographic data is always wrapped in a `Meta` object containing pagination and versioning, even for single-record queries, requiring consistent unwrapping logic.
+- **Correction**: Initially handled `null` population counts as zero, which skewed averages; corrected to explicitly filter out nulls before aggregation to preserve data integrity.

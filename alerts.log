@@ -3599,3 +3599,11 @@ Indexing...
 Uploading..
 [2026-03-13 09:46:53 UTC] story_done: Story 437 complete: Population demographics API
 [2026-03-13 09:46:53 UTC] story_start: Story 438: Building occupancy API
+[2026-03-13 09:47:05 UTC] WARN deploy_fail: Story 437 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   4dd561a..cfbaccc  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 09:47:05 UTC] story_done: Story 437 complete: Population demographics API
+[2026-03-13 09:47:06 UTC] story_start: Story 438: Building occupancy API
