@@ -3462,3 +3462,11 @@ Uploading..
 [2026-03-13 09:27:07 UTC] deploy_ok: Story 433 deployed: Healthy after 0.1s
 [2026-03-13 09:27:23 UTC] story_done: Story 433 complete: Weather forecast API
 [2026-03-13 09:27:24 UTC] story_start: Story 434: Election history API
+[2026-03-13 09:30:34 UTC] WARN deploy_fail: Story 434 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   5172844..1b359b3  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 09:30:34 UTC] story_done: Story 434 complete: Election history API
+[2026-03-13 09:30:35 UTC] story_start: Story 435: Policy effectiveness API

@@ -2831,3 +2831,8 @@
 - **Non-obvious**: The API's `date` parameter requires strict ISO 8601 formatting (`YYYY-MM-DD`) without timezone info; passing a full timestamp caused silent failures in the aggregation logic.
 - **Patterns**: The codebase consistently uses `Optional[Dict]` for response wrappers to handle missing data gracefully, avoiding `None` checks in downstream consumers.
 - **Correction**: Initially, I cached the entire dataset in memory for pagination; corrected this by implementing server-side cursor-based pagination to prevent OOM errors on large date ranges.
+
+--- Story 434: Election history API (attempts: 4, 2026-03-13 05:30) ---
+- **Non-obvious Date Handling**: The API's `since` and `until` parameters require strict ISO 8601 formatting; passing local date strings caused silent query failures until explicit validation was added to the schema.
+- **Pagination Convention**: The codebase enforces a cursor-based pagination pattern (`next_cursor`) rather than offset-based, which requires careful handling of empty result sets to avoid infinite loops in client-side consumption.
+- **Correction on Caching**: Initially cached raw API responses without versioning; corrected by including the `request_params` hash in the cache key to prevent serving stale data when election filters changed.
