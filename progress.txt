@@ -2921,3 +2921,8 @@
 - **Non-obvious API constraints**: The demographic endpoint enforces strict pagination limits based on the `region` parameter, requiring a fallback to a summary endpoint when specific granular data is unavailable to avoid 404s.
 - **Codebase pattern**: The project consistently uses a "repository-adapter" pattern where external API calls are wrapped in typed interfaces before reaching the service layer, isolating schema changes from business logic.
 - **Correction made**: Initially failed to handle timezone normalization for date-range filters, causing empty results for cross-day queries; fixed by standardizing all timestamps to UTC before passing them to the API.
+
+--- Story 437: Population demographics API (attempts: 2, 2026-03-13 05:46) ---
+*   **Non-obvious API constraints**: The endpoint requires strict pagination headers (`X-Page-Size` and `X-Page-Number`) rather than query parameters; omitting these returns a 400 error instead of defaulting to a standard page size.
+*   **Data normalization pattern**: The codebase consistently wraps raw demographic responses in a `DemographicResponse` DTO before passing to the service layer, ensuring all null-checks and type coercions happen in one centralized location.
+*   **Correction on caching logic**: Initially cached the full JSON response, but realized the API includes a dynamic `lastUpdated` timestamp; switched to caching only the data payload while validating the timestamp against a 1-hour TTL to prevent serving stale demographic shifts.
