@@ -2671,3 +2671,8 @@
 - **Tricky**: Determining the correct threshold for "excessive" noise required interpreting ambiguous requirements; the solution involved adding a configurable `noise_limit` parameter rather than hardcoding a decibel value.
 - **Patterns**: The codebase consistently uses the `SensorData` DTO pattern for all hardware inputs, wrapping raw values with a `timestamp` and `source_id` before passing them to processing logic.
 - **Mistakes**: Initially attempted to calculate the rolling average directly in the event handler, which caused performance lag; corrected by moving the calculation to a dedicated `NoiseAnalyzer` service to keep the handler lightweight.
+
+--- Story 427: Building historical value (attempts: 4, 2026-03-13 03:28) ---
+*   **Non-obvious complexity**: The "historical value" logic required handling time-zone-aware snapshots alongside immutable event sourcing; naively using `new Date()` for comparisons caused subtle drifts in audit trails that only appeared in edge-case time zones.
+*   **Codebase patterns**: The repository enforces a strict "Command-Query Separation" (CQS) where all state mutations flow through a dedicated `EventStore` interface, while read models are cached separately to avoid N+1 queries during history retrieval.
+*   **Correction**: Initially attempted to update the current state object directly before persisting the historical event; corrected to first materialize the new state from the event stream to ensure the audit log remains the single source of truth.
