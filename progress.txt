@@ -2801,3 +2801,8 @@
 - **Non-obvious API constraints**: The weather endpoint requires specific ISO 8601 formatting for date ranges; passing standard `YYYY-MM-DD` strings without the `T` separator caused silent 400 errors that took time to debug.
 - **Error handling pattern**: The codebase consistently wraps external API calls in a `try/catch` block that returns a standardized `ErrorEnvelope` object rather than throwing, ensuring the UI can gracefully degrade without crashing.
 - **Correction on caching**: Initially, I cached the entire response object, but realized the `expires_in` field was dynamic; I corrected this to only cache the core forecast data and re-fetch metadata on every request to avoid stale rate-limit warnings.
+
+--- Story 433: Weather forecast API (attempts: 3, 2026-03-13 05:24) ---
+- **Non-obvious complexity**: Handling timezone conversions for the `forecast` endpoint was trickier than expected; the API returns UTC timestamps, requiring explicit localization logic to match the user's requested time zone rather than relying on server defaults.
+- **Codebase pattern**: Discovered a consistent convention of wrapping all external HTTP calls in a dedicated `HttpClient` class that automatically handles retries and injects the `Authorization` header, preventing scattered error handling logic.
+- **Correction**: Initially cached the entire weather response object, which caused stale data for rapidly changing conditions; corrected this by implementing a granular cache strategy that only stores static metadata (like city coordinates) while always fetching fresh forecast data.
