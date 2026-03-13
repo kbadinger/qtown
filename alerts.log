@@ -3390,3 +3390,4 @@ Building capacity upgrade
 [2026-03-13 08:50:02 UTC] WARN story_fail: Story 429 failed after 12 attempts: Building capacity upgrade
 [2026-03-13 08:50:03 UTC] CRITICAL critical: Story 429 failed: Building capacity upgrade
 Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-13 08:50:33 UTC] story_start: Story 430: Building network effects

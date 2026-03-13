@@ -1429,25 +1429,40 @@ def setup_market_stalls(db: Session) -> int:
 
 def upgrade_building_capacity(db: Session, building_id: int) -> int | None:
     """Upgrade building capacity. Cost = capacity * 10 from Treasury. If affordable: capacity += 5. Create Event(event_type='capacity_upgrade'). Return new capacity or None."""
-    from sqlalchemy.orm import Session
-    from engine.models import Building, Treasury, Event
+    from engine.models import Building, Treasury, Event, WorldState
+    from datetime import datetime, timezone
     
     building = db.query(Building).filter(Building.id == building_id).first()
     if not building:
         return None
     
-    cost = building.capacity * 10
-    
     treasury = db.query(Treasury).filter(Treasury.building_id == building_id).first()
-    if not treasury or treasury.gold_stored < cost:
+    if not treasury:
+        return None
+    
+    cost = building.capacity * 10
+    if treasury.gold_stored < cost:
         return None
     
     treasury.gold_stored -= cost
     building.capacity += 5
     
-    event = Event(event_type='capacity_upgrade', building_id=building_id)
-    db.add(event)
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        world_state = WorldState(tick=0)
+        db.add(world_state)
+        db.flush()
     
+    event = Event(
+        event_type='capacity_upgrade',
+        description=f'Building {building.name} capacity upgraded to {building.capacity}',
+        tick=world_state.tick,
+        severity='info',
+        affected_building_id=building_id,
+        created_at=datetime.now(timezone.utc)
+    )
+    db.add(event)
     db.commit()
     
     return building.capacity
