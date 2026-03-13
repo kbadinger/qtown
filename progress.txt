@@ -2926,3 +2926,8 @@
 *   **Non-obvious API constraints**: The endpoint requires strict pagination headers (`X-Page-Size` and `X-Page-Number`) rather than query parameters; omitting these returns a 400 error instead of defaulting to a standard page size.
 *   **Data normalization pattern**: The codebase consistently wraps raw demographic responses in a `DemographicResponse` DTO before passing to the service layer, ensuring all null-checks and type coercions happen in one centralized location.
 *   **Correction on caching logic**: Initially cached the full JSON response, but realized the API includes a dynamic `lastUpdated` timestamp; switched to caching only the data payload while validating the timestamp against a 1-hour TTL to prevent serving stale demographic shifts.
+
+--- Story 437: Population demographics API (attempts: 3, 2026-03-13 05:46) ---
+- **Tricky/Non-obvious**: Handling timezone-aware datetime filtering in the API query builder required explicit normalization to UTC before database comparison to avoid silent data gaps across day boundaries.
+- **Patterns/Conventions**: The codebase consistently uses a "Query Object" pattern where complex filters are encapsulated in a dedicated DTO class before being mapped to SQLAlchemy expressions, keeping controller logic clean.
+- **Mistakes/Corrections**: Initially attempted to calculate demographic ratios directly in the view layer; corrected by moving these aggregations into the repository layer to ensure data consistency and reduce memory load on large datasets.
