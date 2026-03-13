@@ -2866,3 +2866,8 @@
 - **Non-obvious API constraints**: The trade volume endpoint requires strict pagination logic where `limit` and `offset` must be validated against the underlying database's row count to prevent returning partial batches; the API returns a 400 error if the requested range exceeds available data, which wasn't documented in the initial spec.
 - **Codebase patterns**: The project consistently uses the `Repository-Service-Controller` pattern with a custom `BaseResponse` wrapper that handles error formatting and status codes centrally, avoiding repetitive `try-catch` blocks in controllers.
 - **Correction on aggregation**: Initially implemented `SUM()` directly in the controller query, causing performance issues on large datasets; corrected by moving the aggregation logic into a dedicated stored procedure to leverage database indexing and caching.
+
+--- Story 436: Trade volume API (attempts: 4, 2026-03-13 05:41) ---
+- **Non-obvious edge case**: Handling time-series aggregation required explicit handling of timezone normalization before grouping; relying on the database's default `NOW()` caused misaligned buckets when the API was called across different regions.
+- **Codebase pattern**: The project consistently uses a "Repository-Service-Controller" separation where the Service layer is the sole owner of business logic, while Controllers strictly handle request parsing and response formatting.
+- **Correction**: Initially attempted to calculate trade volume directly in the SQL query for performance, but this bypassed the `TradeValidator` logic; refactored to fetch raw data and apply validation in the Service layer to ensure consistency with other endpoints.
