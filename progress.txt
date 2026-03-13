@@ -2946,3 +2946,8 @@
 - **Non-obvious API constraints**: The endpoint requires specific `Accept` headers for JSON; omitting them defaults to XML, causing silent parsing failures in the client layer.
 - **Codebase pattern**: Demographic data is always wrapped in a `Meta` object containing pagination and versioning, even for single-record queries, requiring consistent unwrapping logic.
 - **Correction**: Initially handled `null` population counts as zero, which skewed averages; corrected to explicitly filter out nulls before aggregation to preserve data integrity.
+
+--- Story 438: Building occupancy API (attempts: 1, 2026-03-13 05:47) ---
+*   **Non-obvious complexity**: Handling `null` vs. `empty` occupancy states required explicit schema validation to prevent downstream aggregation errors, which wasn't immediately clear from the initial requirements.
+*   **Codebase pattern**: The project consistently uses the `Repository` abstraction for all data access, even for simple lookups, enforcing a strict separation between domain logic and persistence details.
+*   **Correction**: Initially attempted to calculate occupancy percentages directly in the controller; refactored this into a dedicated service method to ensure consistent rounding logic and reuse across endpoints.
