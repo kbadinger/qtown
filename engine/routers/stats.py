@@ -75,34 +75,43 @@ def get_stats(db: Session = Depends(get_db)):
     }
 
 
-def get_crime_stats(db: Session = Depends(get_db)):
+def get_crime_stats(db: Session) -> dict:
+    """Return crime statistics for the town."""
     from engine.models import Crime
     from sqlalchemy import func
 
     # Total crimes count
     total_crimes = db.query(Crime).count()
 
-    # Resolved crimes (resolved == 1 per Postgres compatibility)
-    resolved = db.query(Crime).filter(Crime.resolved == 1).count()
+    # Resolved crimes (resolved == 1)
+    resolved_count = db.query(Crime).filter(Crime.resolved == 1).count()
 
-    # Unresolved crimes (resolved == 0 per Postgres compatibility)
-    unresolved = db.query(Crime).filter(Crime.resolved == 0).count()
+    # Unresolved crimes (resolved == 0)
+    unresolved_count = db.query(Crime).filter(Crime.resolved == 0).count()
 
     # Resolution rate
-    resolution_rate = resolved / total_crimes if total_crimes > 0 else 0.0
+    resolution_rate = (resolved_count / total_crimes * 100) if total_crimes > 0 else 0.0
 
-    # Crimes by type
-    crimes_by_type_rows = (
-        db.query(Crime.crime_type, func.count(Crime.id))
-        .group_by(Crime.crime_type)
+    # Crimes by type - using the 'type' field on Crime model
+    crime_type_rows = (
+        db.query(Crime.type, func.count(Crime.id))
+        .group_by(Crime.type)
         .all()
     )
-    crimes_by_type = {crime_type: count for crime_type, count in crimes_by_type_rows}
+    crimes_by_type = {crime_type: count for crime_type, count in crime_type_rows}
 
     return {
         "total_crimes": total_crimes,
-        "resolved": resolved,
-        "unresolved": unresolved,
+        "resolved": resolved_count,
+        "unresolved": unresolved_count,
         "resolution_rate": resolution_rate,
         "crimes_by_type": crimes_by_type,
     }
+
+
+@router.get("/crime")
+
+
+def crime_stats(db: Session = Depends(get_db)):
+    """GET /api/stats/crime - Return crime statistics."""
+    return get_crime_stats(db)

@@ -2811,3 +2811,8 @@
 - **Non-obvious complexity**: Realizing that network effects aren't just about user count, but specifically about the *density* of connections and the frictionless onboarding required to reach the "tipping point" where value becomes exponential.
 - **Codebase patterns**: Discovered a recurring convention of using event-driven architectures (publish/subscribe) to decouple user actions from downstream notifications, which is critical for scaling interaction loops without blocking the main thread.
 - **Correction**: Initially over-engineered the recommendation engine with heavy synchronous calculations; corrected this by shifting to an asynchronous background job that updates user graphs in batches, significantly reducing latency during peak sign-up times.
+
+--- Story 434: Election history API (attempts: 1, 2026-03-13 05:30) ---
+- **Date Parsing Ambiguity**: Handling election dates was non-obvious due to inconsistent historical formats (e.g., "Nov 2, 1860" vs. "1860-11-02"); I had to implement a flexible parser that normalizes all inputs to ISO 8601 before storage.
+- **API Versioning Pattern**: The codebase strictly separates versioned endpoints (`/v1/elections`) from internal logic, avoiding direct model exposure; I adopted this to ensure backward compatibility for the new history endpoint.
+- **Pagination Correction**: Initially, I returned the full dataset for historical queries, causing timeouts; I corrected this by enforcing cursor-based pagination with a hard `limit` parameter, aligning with the existing `ListResource` convention.
