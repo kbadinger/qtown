@@ -1202,3 +1202,39 @@ def apply_infrastructure_decay(db: Session) -> int:
     
     db.commit()
     return decayed_count
+
+
+def create_building_blueprint(db: Session, name: str, building_type: str, x: int, y: int) -> int | None:
+    """Create a building blueprint at the given coordinates.
+    
+    Args:
+        db: Database session
+        name: Name of the building
+        building_type: Type of building (civic, food, etc.)
+        x: X coordinate
+        y: Y coordinate
+    
+    Returns:
+        New building id if successful, None if tile is occupied
+    """
+    from engine.models import Building
+    
+    # Check if tile is already occupied
+    existing = db.query(Building).filter(Building.x == x, Building.y == y).first()
+    if existing:
+        return None
+    
+    # Create new building blueprint with capacity=0, level=0
+    new_building = Building(
+        name=name,
+        building_type=building_type,
+        x=x,
+        y=y,
+        capacity=0,
+        level=0
+    )
+    db.add(new_building)
+    db.commit()
+    db.refresh(new_building)
+    
+    return new_building.id
