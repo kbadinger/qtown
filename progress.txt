@@ -2806,3 +2806,8 @@
 - **Non-obvious complexity**: Handling timezone conversions for the `forecast` endpoint was trickier than expected; the API returns UTC timestamps, requiring explicit localization logic to match the user's requested time zone rather than relying on server defaults.
 - **Codebase pattern**: Discovered a consistent convention of wrapping all external HTTP calls in a dedicated `HttpClient` class that automatically handles retries and injects the `Authorization` header, preventing scattered error handling logic.
 - **Correction**: Initially cached the entire weather response object, which caused stale data for rapidly changing conditions; corrected this by implementing a granular cache strategy that only stores static metadata (like city coordinates) while always fetching fresh forecast data.
+
+--- Story 430: Building network effects (attempts: 2, 2026-03-13 05:24) ---
+- **Non-obvious complexity**: Realizing that network effects aren't just about user count, but specifically about the *density* of connections and the frictionless onboarding required to reach the "tipping point" where value becomes exponential.
+- **Codebase patterns**: Discovered a recurring convention of using event-driven architectures (publish/subscribe) to decouple user actions from downstream notifications, which is critical for scaling interaction loops without blocking the main thread.
+- **Correction**: Initially over-engineered the recommendation engine with heavy synchronous calculations; corrected this by shifting to an asynchronous background job that updates user graphs in batches, significantly reducing latency during peak sign-up times.
