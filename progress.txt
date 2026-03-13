@@ -2596,3 +2596,8 @@
 - **Non-obvious scaling bottlenecks**: The database connection pool exhaustion wasn't triggered by high traffic volume, but by long-running transactions holding locks during the batch processing step; adding `SET TRANSACTION ISOLATION LEVEL` and optimizing the batch size was the key fix.
 - **Codebase conventions**: This project strictly separates "infrastructure-as-code" (Terraform) from "deployment logic" (Ansible); all scaling triggers must be defined in the `scaling_policies` module rather than hard-coded in the application config.
 - **Correction on retry logic**: Initially implemented a simple linear backoff for external API failures, which caused thundering herd issues; corrected to use exponential backoff with jitter to align with the service's rate-limiting behavior.
+
+--- Story 424: Building production scaling (attempts: 4, 2026-03-13 02:08) ---
+*   **Non-obvious scaling bottleneck**: The database connection pool wasn't the limit; the real choke point was the synchronous external API calls in the worker queue, which required introducing async retry logic with exponential backoff rather than just adding more workers.
+*   **Codebase pattern**: The project enforces a strict "Repository-Service-Controller" separation where all production metrics must be emitted from the Service layer, not the Controller, to ensure consistent instrumentation across API and background jobs.
+*   **Correction**: Initially configured the load balancer health checks to verify only HTTP 200 status, which masked slow-start failures; corrected this by adding a specific latency threshold check to the health probe to catch degraded performance before it cascades.
