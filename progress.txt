@@ -2976,3 +2976,8 @@
 - **Tricky Aspect**: The `mood_history` endpoint required careful handling of pagination and filtering to avoid returning excessive data for long-lived NPCs, necessitating explicit `LIMIT` and `OFFSET` logic rather than relying on default ORM behavior.
 - **Codebase Pattern**: The project consistently separates data access logic into a dedicated `services/` layer before reaching the controller, ensuring that API endpoints remain thin and business rules (like mood decay calculations) are centralized.
 - **Correction**: Initially, I returned raw database timestamps without timezone normalization, causing inconsistencies in the frontend; I corrected this by enforcing UTC conversion at the service layer using the project's standard `to_utc()` utility.
+
+--- Story 440: Town comparison API (attempts: 1, 2026-03-13 05:47) ---
+- **Non-obvious aggregation logic**: The `GROUP BY` clause in the comparison query required explicit handling of `NULL` values in the `population_density` field; failing to use `COALESCE` caused the API to silently drop towns with missing data instead of returning them with a zero value.
+- **Consistent error handling pattern**: The codebase strictly enforces returning a `422 Unprocessable Entity` with a structured `validation_errors` array for any malformed comparison parameters, rather than generic 400 errors, which must be replicated in new endpoints.
+- **Correction on N+1 queries**: Initially, I fetched town details individually inside the loop to calculate the difference, causing performance degradation; I corrected this by joining the `towns` and `metrics` tables in a single query using `LEFT JOIN` to fetch all required data upfront.

@@ -3642,3 +3642,11 @@ Indexing...
 Uploading..
 [2026-03-13 09:47:43 UTC] story_done: Story 439 complete: NPC mood history API
 [2026-03-13 09:47:44 UTC] story_start: Story 440: Town comparison API
+[2026-03-13 09:47:52 UTC] WARN deploy_fail: Story 439 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   382cc74..165a2d6  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 09:47:53 UTC] story_done: Story 439 complete: NPC mood history API
+[2026-03-13 09:47:53 UTC] story_start: Story 440: Town comparison API
