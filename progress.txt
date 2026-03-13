@@ -2616,3 +2616,8 @@
 - **Tricky/Non-Obvious**: The auto-scaling group's `minSize` must be strictly greater than zero to prevent the load balancer from entering a "healthy but empty" state during initial deployment, which caused silent 503 errors in the staging environment.
 - **Patterns/Conventions**: The codebase consistently separates infrastructure-as-code (Terraform) from runtime configuration (Envoy filters); scaling logic relies on custom CloudWatch metrics rather than default CPU utilization to avoid "noisy neighbor" issues.
 - **Mistakes Corrected**: Initially deployed the new instance type without updating the security group egress rules, blocking outbound database connections; corrected by enforcing a "network-first" validation step in the CI pipeline before any compute changes.
+
+--- Story 425: Building fire safety rating (attempts: 5, 2026-03-13 02:38) ---
+- **Non-obvious dependency**: The fire safety rating logic unexpectedly relies on the `building_occupancy_type` enum rather than just square footage; missing this caused the rating to default to "Low" for mixed-use structures.
+- **Codebase convention**: This project strictly separates validation rules (in `validators/`) from calculation logic (in `services/`); initial attempts to mix them in a single controller method violated the existing architecture.
+- **Correction**: Initially hardcoded the `max_egress_distance` threshold, which failed for high-rise exceptions; corrected by extracting this into a configurable `FireSafetyConfig` service to handle dynamic regulatory overrides.
