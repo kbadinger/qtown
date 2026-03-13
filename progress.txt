@@ -2741,3 +2741,8 @@
 - **Non-obvious dependency**: The capacity upgrade logic relies on a hidden `max_throughput` config flag that defaults to `false` in staging; missing this caused the upgrade to silently fail validation.
 - **Codebase pattern**: All state mutations in this module follow a strict "Read-Modify-Write" sequence using the `AtomicUpdater` utility; direct writes to the shared state object are blocked by the linter.
 - **Correction**: Initially attempted to bypass the locking mechanism for performance, which introduced a race condition during concurrent requests; reverted to the standard `withLock` pattern to ensure data consistency.
+
+--- Story 430: Building network effects (attempts: 1, 2026-03-13 04:50) ---
+*   **Non-obvious complexity**: The hardest part was distinguishing between *direct* network effects (user-to-user value) and *indirect* ones (developer ecosystem value); the code required separate metrics aggregation pipelines for each, not just a single "connection count."
+*   **Codebase pattern**: Discovered a recurring `NetworkEffectStrategy` interface pattern where specific effect types (e.g., `DataNetworkEffect`, `PlatformNetworkEffect`) implement a shared `calculateValue()` method, allowing the core engine to remain agnostic of the specific effect logic.
+*   **Correction**: Initially attempted to calculate network value synchronously during user registration, causing latency spikes; corrected by offloading the calculation to an async event queue that updates the value score only after a batch of new connections is confirmed.
