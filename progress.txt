@@ -2891,3 +2891,8 @@
 - **Non-obvious concurrency**: The capacity upgrade logic required holding a distributed lock not just during the write, but also while validating the downstream queue depth, a race condition not immediately apparent from the API spec.
 - **Codebase pattern**: Discovered a strict convention where all capacity mutations must be wrapped in `CapacityTransaction` blocks to ensure audit logging and automatic rollback on timeout; direct DB calls are bypassed by the service layer.
 - **Correction**: Initially attempted to scale the worker pool dynamically based on CPU, but realized the bottleneck was I/O wait time; corrected by switching to a fixed pool size with backpressure handling instead.
+
+--- Story 429: Building capacity upgrade (attempts: 3, 2026-03-13 05:46) ---
+*   **Non-obvious dependency**: The capacity upgrade logic relies on a cached `ClusterState` object that is only refreshed on explicit events, not real-time; failing to trigger a refresh caused stale data to block the scaling operation.
+*   **Codebase convention**: Resource provisioning follows a strict "validate-then-reserve-then-apply" pattern using a shared `CapacityManager` singleton; direct calls to the underlying API bypass safety checks and should be avoided.
+*   **Correction**: Initially attempted to scale nodes individually, which violated the cluster's quorum requirements; corrected by wrapping the upgrade in a transactional batch that ensures all nodes reach the new state simultaneously or roll back entirely.
