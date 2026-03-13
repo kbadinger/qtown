@@ -2961,3 +2961,8 @@
 - **Non-obvious complexity**: Handling the "active" state of occupancy required careful handling of race conditions where a user might update status while the system is simultaneously processing a check-out event; a simple boolean flag wasn't sufficient without atomic updates.
 - **Codebase patterns**: Discovered a consistent use of the Repository pattern with explicit `UnitOfWork` interfaces for transactional boundaries, ensuring that occupancy changes and audit logs are always committed or rolled back together.
 - **Correction**: Initially implemented the occupancy limit check as a separate service call, which introduced latency and potential stale data; corrected this by moving the validation logic directly into the database transaction via a stored procedure.
+
+--- Story 439: NPC mood history API (attempts: 1, 2026-03-13 05:47) ---
+- **Non-obvious API contract**: The mood history endpoint required a specific `since` timestamp parameter to function correctly; omitting it defaulted to an empty response rather than returning the full history, which was counter-intuitive.
+- **Data normalization pattern**: The codebase consistently stores raw mood events in the database but transforms them into a normalized "trend" object at the service layer before exposing them via the API, ensuring the frontend never handles raw state logic.
+- **Correction on edge cases**: Initially, I failed to handle the scenario where a player has no mood history, causing a null pointer exception in the frontend; I corrected this by ensuring the API returns an empty array `[]` instead of `null` or a 404.

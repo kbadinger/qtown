@@ -3615,3 +3615,20 @@ Indexing...
 Uploading..
 [2026-03-13 09:47:11 UTC] story_done: Story 437 complete: Population demographics API
 [2026-03-13 09:47:11 UTC] story_start: Story 438: Building occupancy API
+[2026-03-13 09:47:25 UTC] WARN deploy_fail: Story 438 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   abe2462..0628447  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 09:47:26 UTC] story_done: Story 438 complete: Building occupancy API
+[2026-03-13 09:47:26 UTC] story_start: Story 439: NPC mood history API
+[2026-03-13 09:47:29 UTC] deploy_ok: Story 429 deployed: Healthy after 0.1s
+[2026-03-13 09:47:29 UTC] WARN deploy_fail: Story 438 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   0628447..ae18239  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 09:47:29 UTC] story_done: Story 438 complete: Building occupancy API
+[2026-03-13 09:47:30 UTC] story_start: Story 439: NPC mood history API
