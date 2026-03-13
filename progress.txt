@@ -2476,3 +2476,8 @@
 - **Tricky/Non-obvious**: The demolition logic required careful handling of circular dependencies between `Building` and `Site` objects; simply nullifying references wasn't enough, we had to explicitly trigger the `cleanup()` cascade to prevent orphaned memory leaks.
 - **Patterns/Conventions**: This codebase strictly enforces the "Command Pattern" for all state-altering operations, wrapping demolition steps in immutable `DemolitionCommand` objects rather than mutating state directly on the service layer.
 - **Mistakes/Corrections**: Initially attempted to bypass the permission check by passing `null` as the user context, which caused a silent failure in the audit logger; corrected by enforcing a non-null `Actor` object in the command constructor to ensure traceability.
+
+--- Story 420: Building demolition (attempts: 1, 2026-03-12 22:08) ---
+- **Non-obvious dependency**: The demolition sequence relies on a hidden `safety_interlock` flag that must be cleared *before* initiating the structural collapse, not after; missing this causes the simulation to hang indefinitely.
+- **Codebase convention**: All resource cleanup in this module follows a "reverse-order" teardown pattern (children before parents), which is strictly enforced by the `DemolitionContext` manager.
+- **Correction**: Initially attempted to parallelize the debris removal threads, which caused race conditions on the shared `site_map`; switched to a sequential, lock-based approach to ensure state consistency.

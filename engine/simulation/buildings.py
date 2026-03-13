@@ -9,6 +9,7 @@ import json
 from engine.models import Tile, Building, NPC
 from typing import List, Dict
 from engine.models import Treasury, Event, WorldState
+from engine.models import Resource
 
 
 def seed_all_buildings(db: Session) -> None:
@@ -1151,8 +1152,6 @@ def demolish_building(db: Session, building_id: int) -> bool:
     If capacity > 0:
     - Return False (cannot demolish active building)
     """
-    from engine.models import Building, Resource, NPC
-    
     building = db.query(Building).filter(Building.id == building_id).first()
     if not building:
         return False
