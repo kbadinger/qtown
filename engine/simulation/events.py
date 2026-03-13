@@ -2447,3 +2447,46 @@ def apply_seasonal_weather(db: Session) -> str:
         db.commit()
     
     return season_name
+
+
+def check_naming_ceremony(db: Session) -> str | None:
+    """Check if town has reached a building threshold for naming ceremony.
+    
+    At building thresholds (10, 20, 30, 40, 50): create Milestone if not exists.
+    Create Event(event_type='naming_ceremony'). Return milestone name or None.
+    """
+    from engine.models import Building, Milestone, Event
+    
+    thresholds = [10, 20, 30, 40, 50]
+    building_count = db.query(Building).count()
+    
+    for threshold in thresholds:
+        if building_count == threshold:
+            milestone_name = f"Town Milestone: {threshold} Buildings"
+            
+            # Check if milestone already exists
+            existing = db.query(Milestone).filter(
+                Milestone.name == milestone_name
+            ).first()
+            
+            if not existing:
+                # Create milestone
+                milestone = Milestone(
+                    name=milestone_name,
+                    description=f"The town has reached {threshold} buildings!",
+                    tick_achieved=0
+                )
+                db.add(milestone)
+                
+                # Create event
+                event = Event(
+                    event_type='naming_ceremony',
+                    description=milestone_name
+                )
+                db.add(event)
+                
+                db.commit()
+                
+                return milestone_name
+    
+    return None

@@ -3021,3 +3021,8 @@
 - **Non-obvious concurrency**: The archive ingestion pipeline silently dropped records when the `FileLock` wasn't explicitly released in the `finally` block, causing subsequent threads to hang indefinitely on large datasets.
 - **Convention discovery**: All historical data accessors must inherit from `BaseArchiveReader` to automatically apply the legacy date-format normalization; direct SQL queries bypass this and return malformed timestamps.
 - **Correction**: Initially assumed the `ArchiveIndex` was read-only; corrected the implementation to include a `write-back` mechanism for updating metadata, which was required to track the new ingestion batch IDs.
+
+--- Story 447: Town naming ceremony (attempts: 1, 2026-03-13 18:19) ---
+- **Tricky**: Handling the edge case where a town name exceeds the 32-byte limit required careful truncation logic to avoid buffer overflows while preserving the first valid characters.
+- **Pattern**: The codebase consistently uses `SafeString` wrappers for all user-input strings before database insertion, rather than raw pointers, to enforce length constraints at the type level.
+- **Correction**: Initially attempted to validate names against a global blacklist in the controller layer; moved this logic to the `TownRepository` to ensure all naming paths (API, CLI, batch scripts) enforce the same rules.
