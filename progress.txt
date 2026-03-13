@@ -2641,3 +2641,8 @@
 *   **Non-obvious Logic**: The fire safety rating calculation depends on a dynamic `risk_factor` derived from the intersection of `building_age` and `occupancy_type`, not just the sum of individual safety features.
 *   **Codebase Pattern**: All rating logic is encapsulated within the `SafetyCalculator` service class, which strictly returns an enum (`RatingLevel`) rather than raw integers, ensuring type safety across the UI and reporting modules.
 *   **Correction**: Initially attempted to hardcode threshold values in the controller; corrected by moving these constants to the `config/safety_thresholds.yaml` file to align with the project's separation of business rules from application logic.
+
+--- Story 425: Building fire safety rating (attempts: 3, 2026-03-13 03:24) ---
+- **Non-obvious logic**: The fire safety rating calculation relies on a weighted sum of component ratings, but the `fire_suppression` multiplier only applies if the `sprinkler_coverage` exceeds 90%, a condition easily missed without tracing the full dependency chain.
+- **Codebase pattern**: This module consistently uses a "builder" pattern for configuration objects, where optional safety features are initialized as `null` and defaulted to zero inside the `calculate()` method rather than at the constructor level.
+- **Correction made**: Initially treated the `evacuation_route` score as a linear addition, but corrected it to use a lookup table after realizing the rating caps at 100 regardless of individual component scores.
