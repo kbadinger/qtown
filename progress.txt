@@ -3011,3 +3011,8 @@
 *   **Tricky**: The `immigration_wave` logic required careful handling of concurrent state updates; race conditions occurred when multiple agents attempted to register in the same district simultaneously, necessitating atomic batch processing.
 *   **Patterns**: The codebase consistently uses a "command-first, validate-later" pattern for domain events, where validation rules are decoupled from the core action logic to allow for easier testing of edge cases.
 *   **Correction**: Initially, I calculated the new population density before persisting the migration event, leading to inconsistent snapshots; I corrected this by ensuring all state mutations happen within a single transactional block.
+
+--- Story 445: Emigration wave (attempts: 1, 2026-03-13 17:36) ---
+- **Tricky**: The emigration logic required handling state synchronization between the user's current location and the destination queue; a race condition occurred if the user clicked "emigrate" before the destination validation fully resolved.
+- **Patterns**: The codebase consistently uses a "pre-flight check" service layer before any state mutation, ensuring all side effects (like quota checks) are validated in a single transaction before the UI updates.
+- **Correction**: Initially, I updated the user's status directly in the component state, causing a temporary UI flicker; I corrected this by deferring the state change until the backend confirmed the emigration record was persisted.

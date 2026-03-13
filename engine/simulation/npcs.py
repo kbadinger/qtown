@@ -3284,3 +3284,46 @@ def check_immigration_wave(db: Session) -> int:
         return immigrants_created
     
     return 0
+
+
+def check_emigration_wave(db: Session) -> int:
+    """Check if emigration wave should occur based on happiness levels."""
+    from engine.models import NPC, Event, WorldState
+    
+    # Get living NPCs
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    # Need more than 3 living NPCs for emigration
+    if len(living_npcs) <= 3:
+        return 0
+    
+    # Calculate average happiness
+    avg_happiness = sum(npc.happiness for npc in living_npcs) / len(living_npcs)
+    
+    # Emigration only if avg happiness < 30
+    if avg_happiness >= 30:
+        return 0
+    
+    # Find lowest happiness NPC to emigrate
+    lowest_happiness_npc = min(living_npcs, key=lambda npc: npc.happiness)
+    
+    # Mark NPC as dead (emigrated)
+    lowest_happiness_npc.is_dead = 1
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Create emigration event
+    event = Event(
+        event_type='emigration',
+        description=f"{lowest_happiness_npc.name} left town due to low happiness",
+        tick=current_tick,
+        severity='info',
+        affected_npc_id=lowest_happiness_npc.id,
+        affected_building_id=None
+    )
+    db.add(event)
+    db.commit()
+    
+    return 1

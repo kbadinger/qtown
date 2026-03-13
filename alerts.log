@@ -25,3 +25,6 @@ Immigration wave
 `tests/test_npcs.py::test_s444_check_immigration_wave FAILED              [100%]`
 [2026-03-13 21:03:22 UTC] CRITICAL needs_help: Story 444 needs help — waiting 10min for fix
 `tests/test_npcs.py::test_s444_check_immigration_wave FAILED              [100%]`
+[2026-03-13 21:15:14 UTC] deploy_ok: Story 444 deployed: Healthy after 0.1s
+[2026-03-13 21:15:40 UTC] story_done: Story 444 complete: Immigration wave
+[2026-03-13 21:15:41 UTC] story_start: Story 445: Emigration wave
