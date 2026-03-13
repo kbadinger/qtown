@@ -2931,3 +2931,8 @@
 - **Tricky/Non-obvious**: Handling timezone-aware datetime filtering in the API query builder required explicit normalization to UTC before database comparison to avoid silent data gaps across day boundaries.
 - **Patterns/Conventions**: The codebase consistently uses a "Query Object" pattern where complex filters are encapsulated in a dedicated DTO class before being mapped to SQLAlchemy expressions, keeping controller logic clean.
 - **Mistakes/Corrections**: Initially attempted to calculate demographic ratios directly in the view layer; corrected by moving these aggregations into the repository layer to ensure data consistency and reduce memory load on large datasets.
+
+--- Story 437: Population demographics API (attempts: 4, 2026-03-13 05:46) ---
+*   **Non-obvious API constraints**: The demographic endpoint requires explicit `accept: application/json` headers even when the `Content-Type` is set; omitting this triggers a fallback to XML, breaking downstream parsers.
+*   **Codebase pattern**: All data-fetching services in this module strictly follow the `fetch -> transform -> cache` pipeline, with caching logic centralized in `CacheService` rather than inline.
+*   **Correction**: Initially attempted to map raw API keys directly to the domain model, which failed due to nested null handling; corrected by introducing a dedicated `DemographicMapper` class to handle safe unwrapping of optional fields.
