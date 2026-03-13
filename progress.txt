@@ -2606,3 +2606,8 @@
 *   **Non-obvious scaling bottleneck**: The database connection pool wasn't the primary limiter; it was the synchronous serialization of large payloads in the worker queue, which required switching to async streaming to prevent memory spikes under load.
 *   **Codebase convention**: This project enforces a strict "fail-fast" pattern in the `ScalingService` layer, where any non-200 response from the load balancer immediately triggers a circuit breaker rather than retrying, preventing cascade failures.
 *   **Correction**: Initially deployed the auto-scaling rules based on CPU usage alone, causing thrashing during I/O-heavy operations; corrected by adding a composite metric (CPU + Queue Depth) to the scaling policy.
+
+--- Story 423: Public building access (attempts: 1, 2026-03-13 02:08) ---
+- **Tricky/Non-obvious**: The `access_level` enum mapping to database permissions was inconsistent; the code relied on implicit casting for legacy roles, requiring explicit validation in the new `PublicBuilding` controller to prevent unauthorized elevation.
+- **Patterns/Conventions**: The codebase strictly separates authorization logic into `Policy` classes, while the `Repository` layer handles data fetching but never business rules; always check for `Policy` existence before adding new access checks.
+- **Mistakes/Corrections**: Initially attempted to bypass the `Gatekeeper` service for performance, which broke audit logging; corrected by ensuring all access checks flow through the centralized service to maintain compliance trails.
