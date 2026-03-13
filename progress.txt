@@ -2916,3 +2916,8 @@
 - **Tricky**: The capacity upgrade logic required careful handling of race conditions between the `CapacityService` and the `OrderProcessor`; a simple `SELECT FOR UPDATE` wasn't enough, necessitating a distributed lock via Redis to prevent overselling during high-concurrency spikes.
 - **Patterns**: The codebase consistently uses the **Repository Pattern** with explicit `UnitOfWork` boundaries for transactional integrity, and all external service calls are wrapped in the custom `ResilientClient` for automatic retry and circuit-breaking.
 - **Mistakes**: Initially, I attempted to scale the database vertically before optimizing the query; I corrected this by adding a composite index on `(region_id, capacity_type)` which resolved the latency bottleneck without infrastructure changes.
+
+--- Story 437: Population demographics API (attempts: 1, 2026-03-13 05:46) ---
+- **Non-obvious API constraints**: The demographic endpoint enforces strict pagination limits based on the `region` parameter, requiring a fallback to a summary endpoint when specific granular data is unavailable to avoid 404s.
+- **Codebase pattern**: The project consistently uses a "repository-adapter" pattern where external API calls are wrapped in typed interfaces before reaching the service layer, isolating schema changes from business logic.
+- **Correction made**: Initially failed to handle timezone normalization for date-range filters, causing empty results for cross-day queries; fixed by standardizing all timestamps to UTC before passing them to the API.
