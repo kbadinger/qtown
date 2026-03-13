@@ -2841,3 +2841,8 @@
 - **Tricky**: The API's validation logic for "effective date" ranges was non-obvious; it required checking against the policy's *current* status, not just the static schema, to prevent future-dated policies from appearing active prematurely.
 - **Patterns**: The codebase consistently uses a "Result" wrapper type for all external-facing API methods to handle validation errors separately from runtime exceptions, avoiding try/catch blocks in controller logic.
 - **Mistake**: Initially ignored the `tenant_id` context in the repository query, causing a potential data leak across tenants; corrected by enforcing the `TenantContext` middleware check before any database access.
+
+--- Story 435: Policy effectiveness API (attempts: 2, 2026-03-13 05:30) ---
+- **Non-obvious edge case**: The API's "effective date" logic initially failed when policies had overlapping validity windows; required implementing a strict `max(start_date)` check before calculating the active set.
+- **Codebase pattern**: Discovered that all policy-related endpoints strictly follow the `PolicyContext` wrapper pattern for dependency injection, avoiding direct service calls in controllers.
+- **Correction**: Initially returned a 200 OK with an empty list for non-existent policy IDs; corrected to return 404 Not Found to align with the project's RESTful error handling convention.
