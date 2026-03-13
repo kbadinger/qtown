@@ -2851,3 +2851,8 @@
 - **Non-obvious edge case**: The API's "effectiveness" calculation silently returns `null` when policy start dates are in the future; I had to add explicit validation to prevent downstream division-by-zero errors in the dashboard.
 - **Codebase pattern**: Discovered a consistent convention where all policy-related DTOs extend a `BasePolicyEntity` that injects the `AuditService` via constructor, simplifying traceability for future changes.
 - **Correction**: Initially missed the requirement to cache results for the same `policy_id` within a 5-minute window, leading to redundant DB hits; fixed by implementing a simple in-memory TTL cache keyed by ID.
+
+--- Story 436: Trade volume API (attempts: 1, 2026-03-13 05:40) ---
+- **Tricky**: The `volume` field is a string representing a fixed-point decimal (e.g., "12345.6700"), not a float; direct arithmetic without parsing caused precision errors in aggregation logic.
+- **Pattern**: The codebase strictly separates data fetching (`fetchVolume`) from transformation (`normalizeVolume`), always returning immutable data structures to avoid side effects in the pipeline.
+- **Correction**: Initially missed the `currency` parameter in the API request, which defaulted to USD and skewed multi-currency trade data; fixed by enforcing explicit currency mapping in the request builder.
