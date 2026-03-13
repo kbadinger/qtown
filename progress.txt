@@ -2791,3 +2791,8 @@
 *   **Non-obvious pagination**: The API uses cursor-based pagination with opaque tokens rather than standard offset/limit parameters, requiring careful handling of the `next_cursor` field to avoid infinite loops or data gaps.
 *   **Schema evolution pattern**: The codebase relies heavily on a "versioned response wrapper" pattern where the outer structure remains static while inner data fields change per version, necessitating a strict factory method for parsing to prevent runtime errors.
 *   **Correction on null handling**: Initially assumed missing crime categories were `0`, but corrected the logic to treat them as `null` (absent) to accurately reflect "no data reported" versus "zero incidents," which impacts downstream aggregation logic.
+
+--- Story 433: Weather forecast API (attempts: 1, 2026-03-13 05:23) ---
+- **Async Error Handling**: Initially forgot to handle the `fetch` rejection globally, causing silent failures; learned to wrap API calls in `try/catch` blocks and return a standardized error shape to the UI.
+- **Date Formatting Convention**: Discovered the codebase relies on `Intl.DateTimeFormat` for locale-aware date strings rather than manual string manipulation, ensuring consistency across different user regions.
+- **Mocking Strategy**: Made the mistake of hardcoding mock data in the component tests; corrected this by injecting the API client as a dependency, allowing for easier mocking of network latency and failure states.
