@@ -3034,3 +3034,31 @@ Building decoration
 [2026-03-13 02:09:13 UTC] deploy_ok: Story 420 deployed: Healthy after 0.1s
 [2026-03-13 02:09:23 UTC] story_done: Story 420 complete: Building demolition
 [2026-03-13 02:09:23 UTC] story_start: Story 421: Infrastructure decay
+[2026-03-13 02:14:03 UTC] WARN deploy_fail: Story 420 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   80ec45c..5e77bf8  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 02:14:03 UTC] story_done: Story 420 complete: Building demolition
+[2026-03-13 02:14:04 UTC] story_start: Story 421: Infrastructure decay
+[2026-03-13 02:14:09 UTC] WARN deploy_fail: Story 420 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   5e77bf8..08ee256  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 02:14:09 UTC] story_done: Story 420 complete: Building demolition
+[2026-03-13 02:14:10 UTC] story_start: Story 421: Infrastructure decay
+[2026-03-13 02:36:12 UTC] CRITICAL loop: Story 419: same error 5x in a row — requesting help
+`tests/test_buildings.py::test_s419_decorate_building FAILED              [100%]`
+[2026-03-13 02:36:13 UTC] CRITICAL needs_help: Story 419 needs help — waiting 10min for fix
+`tests/test_buildings.py::test_s419_decorate_building FAILED              [100%]`
+[2026-03-13 02:41:35 UTC] WARN story_fail: Story 419 failed after 12 attempts: Building decoration
+[2026-03-13 02:41:35 UTC] CRITICAL critical: Story 419 failed: Building decoration
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-13 02:42:06 UTC] story_start: Story 421: Infrastructure decay
+[2026-03-13 02:45:39 UTC] WARN story_fail: Story 421 struggling — attempt 5/12
+Infrastructure decay
+[2026-03-13 02:46:45 UTC] WARN story_fail: Story 421 struggling — attempt 5/12
+Infrastructure decay
