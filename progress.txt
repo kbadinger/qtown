@@ -2881,3 +2881,8 @@
 *   **Non-obvious concurrency**: The `PolicyEvaluator` relies on a shared, mutable cache that must be locked during read-modify-write cycles; failing to acquire the lock before checking cache validity caused race conditions under high load.
 *   **Codebase pattern**: This project strictly separates "policy definition" (immutable DTOs) from "policy execution" (stateful services), requiring all side effects to be handled via event listeners rather than direct method returns.
 *   **Correction**: Initially attempted to validate policy rules synchronously within the API controller, which blocked the thread pool; refactored to use an async message queue for heavy validation tasks to maintain API responsiveness.
+
+--- Story 429: Building capacity upgrade (attempts: 1, 2026-03-13 05:46) ---
+*   **Non-obvious dependency**: The capacity upgrade logic relies on a hidden `max_concurrent` flag in the shared config map, not the database schema; missing this caused silent throttling failures during load testing.
+*   **Codebase pattern**: All resource scaling operations follow the `check -> reserve -> execute -> release` transactional wrapper pattern; bypassing the `reserve` step directly caused race conditions in the connection pool.
+*   **Correction**: Initially attempted to update the `capacity` column directly via raw SQL, which bypassed the audit trail; switched to the `CapacityService.upgrade()` method to ensure proper logging and event emission.

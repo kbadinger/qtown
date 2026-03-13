@@ -3527,3 +3527,11 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-13 09:43:46 UTC] deploy_ok: Story 436 deployed: Healthy after 0.0s
 [2026-03-13 09:43:55 UTC] story_done: Story 436 complete: Trade volume API
 [2026-03-13 09:43:56 UTC] story_start: Story 429: Building capacity upgrade
+[2026-03-13 09:46:12 UTC] WARN deploy_fail: Story 436 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   4c73f7f..6fe815d  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 09:46:12 UTC] story_done: Story 436 complete: Trade volume API
+[2026-03-13 09:46:13 UTC] story_start: Story 429: Building capacity upgrade
