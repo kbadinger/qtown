@@ -2951,3 +2951,8 @@
 *   **Non-obvious complexity**: Handling `null` vs. `empty` occupancy states required explicit schema validation to prevent downstream aggregation errors, which wasn't immediately clear from the initial requirements.
 *   **Codebase pattern**: The project consistently uses the `Repository` abstraction for all data access, even for simple lookups, enforcing a strict separation between domain logic and persistence details.
 *   **Correction**: Initially attempted to calculate occupancy percentages directly in the controller; refactored this into a dedicated service method to ensure consistent rounding logic and reuse across endpoints.
+
+--- Story 438: Building occupancy API (attempts: 2, 2026-03-13 05:47) ---
+- **Tricky Logic**: Handling the "active" vs. "scheduled" occupancy state was non-obvious; the API must return the *current* sensor reading only if a scheduled event hasn't overridden it, requiring a specific priority check before querying the database.
+- **Codebase Pattern**: This project consistently uses a "Repository + Service" separation where the Service layer handles all business logic (like the occupancy priority rules) and the Repository only deals with raw data access, keeping controllers thin.
+- **Correction**: Initially, I attempted to calculate occupancy duration in the SQL query, which caused performance issues on large datasets; I corrected this by moving the time-window calculation to the application layer and fetching only the necessary raw records.
