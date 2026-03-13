@@ -1466,3 +1466,27 @@ def upgrade_building_capacity(db: Session, building_id: int) -> int | None:
     db.commit()
     
     return building.capacity
+
+
+def calculate_network_effects(db: Session) -> dict:
+    """Calculate network effects for all buildings based on proximity."""
+    from engine.models import Building
+    
+    buildings = db.query(Building).all()
+    result: dict = {}
+    
+    for building in buildings:
+        adjacent_count = 0
+        for other in buildings:
+            if building.id == other.id:
+                continue
+            distance = abs(building.x - other.x) + abs(building.y - other.y)
+            if distance <= 5:
+                adjacent_count += 1
+        
+        result[building.id] = {
+            "adjacent": adjacent_count,
+            "has_bonus": adjacent_count >= 3
+        }
+    
+    return result

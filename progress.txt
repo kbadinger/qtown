@@ -2766,3 +2766,8 @@
 - **Non-obvious constraint**: The `schedule` endpoint required strict validation of time-slot overlaps; the initial implementation failed to handle edge cases where shifts touched exactly at boundaries, requiring a switch to half-open interval logic (`start <= time < end`).
 - **Codebase pattern**: Discovered a consistent convention of wrapping all external API responses in a `Result<T, AppError>` wrapper with a standardized `trace_id` injection, which must be preserved even for internal service calls to maintain observability.
 - **Correction**: Initially cached the daily schedule at the service level, causing stale data for dynamic updates; corrected by moving the cache invalidation trigger to the `update_schedule` mutation and switching to a short-lived, per-request cache for the read path.
+
+--- Story 429: Building capacity upgrade (attempts: 3, 2026-03-13 05:05) ---
+*   **Non-obvious state synchronization**: The capacity upgrade logic required explicit cache invalidation on the metadata layer; relying on the database transaction alone caused race conditions where the UI displayed stale limits during high-concurrency scaling events.
+*   **Codebase pattern**: All capacity-related operations in this module strictly follow the `validate -> lock -> mutate -> notify` sequence, using the `CapacityManager` facade rather than direct repository calls to ensure audit logging is never bypassed.
+*   **Correction**: Initially attempted to use a simple integer comparison for threshold checks, which failed due to floating-point precision issues in the legacy pricing engine; corrected by switching to the `BigDecimal` utility wrapper used throughout the billing service.
