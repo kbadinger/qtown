@@ -3135,3 +3135,11 @@ Indexing...
 Uploading..
 [2026-03-13 05:37:20 UTC] story_done: Story 422 complete: Building blueprint system
 [2026-03-13 05:37:20 UTC] story_start: Story 423: Public building access
+[2026-03-13 05:37:27 UTC] WARN deploy_fail: Story 422 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   6da2ed3..67b47ee  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 05:37:27 UTC] story_done: Story 422 complete: Building blueprint system
+[2026-03-13 05:37:27 UTC] story_start: Story 423: Public building access

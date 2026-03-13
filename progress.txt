@@ -2546,3 +2546,8 @@
 *   **Non-obvious state synchronization**: Realized that blueprint validation must happen *before* the database transaction begins, not as a post-save hook, to prevent orphaned data when complex dependency chains fail.
 *   **Codebase pattern**: Discovered a strict separation where `BlueprintSchema` defines the static structure while `BlueprintInstance` handles runtime state; mixing these two caused subtle serialization bugs.
 *   **Correction**: Initially attempted to mutate the input DTO directly for normalization; corrected this by creating an immutable copy to preserve the original request for audit logging.
+
+--- Story 421: Infrastructure decay (attempts: 7, 2026-03-13 01:37) ---
+- **Non-obvious dependency coupling**: The decay logic relied on a hidden global state in `LegacyScheduler`, causing intermittent failures when tests ran in parallel; required explicit context passing to isolate execution.
+- **Codebase convention**: Infrastructure components consistently use the `HealthCheck` interface for status reporting, but older modules bypass this by returning raw HTTP codes, creating a fragile monitoring gap.
+- **Correction**: Initially refactored the decay calculation to run synchronously, which blocked the main thread; reverted to the existing async queue pattern to maintain system responsiveness under load.
