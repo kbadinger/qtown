@@ -2876,3 +2876,8 @@
 - **Non-obvious pagination logic**: The API enforces a strict `limit` cap of 100 that silently overrides client requests; failing to handle this in the frontend caused infinite loops when total records exceeded the limit.
 - **Codebase convention**: Aggregation queries consistently use the `calculate` helper in `services/analytics` rather than raw SQL, ensuring all metrics are normalized before exposure to the API layer.
 - **Correction made**: Initially assumed `trade_volume` was a simple sum, but discovered it requires filtering out `status: 'CANCELLED'` records at the database level to match the legacy reporting dashboard's definition.
+
+--- Story 435: Policy effectiveness API (attempts: 3, 2026-03-13 05:46) ---
+*   **Non-obvious concurrency**: The `PolicyEvaluator` relies on a shared, mutable cache that must be locked during read-modify-write cycles; failing to acquire the lock before checking cache validity caused race conditions under high load.
+*   **Codebase pattern**: This project strictly separates "policy definition" (immutable DTOs) from "policy execution" (stateful services), requiring all side effects to be handled via event listeners rather than direct method returns.
+*   **Correction**: Initially attempted to validate policy rules synchronously within the API controller, which blocked the thread pool; refactored to use an async message queue for heavy validation tasks to maintain API responsiveness.
