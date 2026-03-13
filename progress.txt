@@ -2631,3 +2631,8 @@
 - **Tricky Logic**: The calculation for "effective" fire rating was non-obvious; it requires recursively checking adjacent rooms for suppression systems, not just summing individual room ratings.
 - **Codebase Pattern**: This module strictly separates data access (DTOs) from business logic (Services), avoiding direct entity manipulation in the controller layer.
 - **Correction**: Initially missed the edge case where a room has no assigned rating; corrected by defaulting to the building's minimum standard rather than returning null.
+
+--- Story 425: Building fire safety rating (attempts: 4, 2026-03-13 02:49) ---
+*   **Non-obvious logic**: The fire safety rating calculation relies on a cascading priority system where the *lowest* sub-component rating dictates the final score, overriding any higher ratings in other categories.
+*   **Codebase pattern**: All rating logic is centralized in `RatingEngine` using a strategy pattern; direct database queries for rating thresholds are forbidden in favor of the `ThresholdConfig` service to ensure consistency across modules.
+*   **Correction**: Initially hardcoded the "high-rise" multiplier, which failed for mixed-use buildings; fixed by extracting the multiplier logic into a dynamic `BuildingTypeResolver` that checks the zoning attribute first.
