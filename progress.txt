@@ -2591,3 +2591,8 @@
 *   **Tricky Aspect**: The distinction between `public_access` (boolean) and `access_level` (enum) was non-obvious; the UI logic incorrectly assumed `true` implied full access, ignoring the `restricted_hours` constraint that requires a separate time-window check.
 *   **Pattern Discovered**: The codebase consistently uses a "Gatekeeper" service pattern where all permission checks are centralized in `AccessControlService`, rather than being scattered across individual controller actions or view templates.
 *   **Mistake Corrected**: Initially attempted to validate building entry directly in the frontend form submission, which bypassed the server-side audit logging; corrected by moving all validation and logging to the backend API endpoint to ensure compliance.
+
+--- Story 424: Building production scaling (attempts: 2, 2026-03-13 02:08) ---
+- **Non-obvious scaling bottlenecks**: The database connection pool exhaustion wasn't triggered by high traffic volume, but by long-running transactions holding locks during the batch processing step; adding `SET TRANSACTION ISOLATION LEVEL` and optimizing the batch size was the key fix.
+- **Codebase conventions**: This project strictly separates "infrastructure-as-code" (Terraform) from "deployment logic" (Ansible); all scaling triggers must be defined in the `scaling_policies` module rather than hard-coded in the application config.
+- **Correction on retry logic**: Initially implemented a simple linear backoff for external API failures, which caused thundering herd issues; corrected to use exponential backoff with jitter to align with the service's rate-limiting behavior.

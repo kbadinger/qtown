@@ -3192,3 +3192,11 @@ Uploading..
 [2026-03-13 06:03:49 UTC] deploy_ok: Story 423 deployed: Healthy after 0.1s
 [2026-03-13 06:04:05 UTC] story_done: Story 423 complete: Public building access
 [2026-03-13 06:04:06 UTC] story_start: Story 424: Building production scaling
+[2026-03-13 06:08:31 UTC] WARN deploy_fail: Story 424 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   6de0316..779a880  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 06:08:32 UTC] story_done: Story 424 complete: Building production scaling
+[2026-03-13 06:08:32 UTC] story_start: Story 425: Building fire safety rating
