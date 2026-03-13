@@ -2696,3 +2696,8 @@
 *   **Tricky Aspect**: Determining the precise boundary between "archival" data and "active" data was non-obvious; the initial assumption that `created_at` alone defined historical value failed to account for soft-deleted records that still required audit trails.
 *   **Pattern Discovered**: The codebase consistently uses a `HistoricalValue` aggregate root that encapsulates the calculation logic, avoiding direct database queries in the service layer to ensure deterministic results across different environments.
 *   **Correction Made**: Initially attempted to backfill historical values via a simple script, which caused race conditions with concurrent writes; corrected by implementing an idempotent migration that leverages the existing aggregate root logic to safely reconstruct state.
+
+--- Story 426: Building noise level (attempts: 4, 2026-03-13 03:36) ---
+*   **Non-obvious dependency**: The noise level calculation relies on a hidden `environment_factor` multiplier in the global config; omitting this caused test failures that looked like logic errors in the decibel conversion.
+*   **Codebase convention**: All sensor data ingestion in this module uses the `AsyncSensorReader` wrapper with a mandatory `try/except` block to handle transient connection drops before processing.
+*   **Correction**: Initially treated noise thresholds as static constants, but the codebase expects them to be dynamically fetched from the `ThresholdService` to account for time-of-day variations.

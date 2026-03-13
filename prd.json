@@ -7019,7 +7019,7 @@
       ],
       "priority": 427,
       "status": "done",
-      "attempts": 1
+      "attempts": 3
     },
     {
       "id": "428",
@@ -7035,7 +7035,7 @@
       ],
       "priority": 428,
       "status": "in_progress",
-      "attempts": 5
+      "attempts": 6
     },
     {
       "id": "429",
