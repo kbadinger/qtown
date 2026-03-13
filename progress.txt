@@ -2666,3 +2666,8 @@
 *   **Non-obvious Async Handling**: The noise calculation pipeline required manual `await` chaining on the `AudioContext` analyzer node; relying on implicit promise resolution caused race conditions where the level was read before the buffer was populated.
 *   **Codebase Convention**: This module strictly adheres to the "Factory Function" pattern for audio nodes (e.g., `createNoiseMeter()`), avoiding direct class instantiation to ensure dependency injection for testing is consistent across the audio suite.
 *   **Correction**: Initially applied the smoothing constant (`smoothingTimeConstant`) to the `AnalyserNode` constructor, which is invalid; corrected by setting it as a property on the instance *after* creation but *before* connecting the source.
+
+--- Story 426: Building noise level (attempts: 5, 2026-03-13 03:28) ---
+- **Tricky**: Determining the correct threshold for "excessive" noise required interpreting ambiguous requirements; the solution involved adding a configurable `noise_limit` parameter rather than hardcoding a decibel value.
+- **Patterns**: The codebase consistently uses the `SensorData` DTO pattern for all hardware inputs, wrapping raw values with a `timestamp` and `source_id` before passing them to processing logic.
+- **Mistakes**: Initially attempted to calculate the rolling average directly in the event handler, which caused performance lag; corrected by moving the calculation to a dedicated `NoiseAnalyzer` service to keep the handler lightweight.
