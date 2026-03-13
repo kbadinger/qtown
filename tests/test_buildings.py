@@ -1247,7 +1247,7 @@ def test_s420_demolish_active_building(db):
 def test_s421_apply_infrastructure_decay(db):
     """Infrastructure decay."""
     _setup_world(db)
-    from engine.simulation import apply_infrastructure_decay
+    from engine.simulation.buildings import apply_infrastructure_decay
 
     result = apply_infrastructure_decay(db)
     assert isinstance(result, int), "Should return count of decayed buildings"

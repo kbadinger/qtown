@@ -2496,3 +2496,8 @@
 - **Tricky Aspect**: The interaction between CSS custom properties and dynamic theme switching was non-obvious; updating the root `--primary-color` didn't immediately propagate to nested components without explicitly forcing a re-render or using a specific hydration hook.
 - **Patterns Discovered**: The codebase consistently uses a "composition over inheritance" pattern for decoration modules, where base styles are defined in a `styles.ts` file and applied via a `useTheme` hook rather than inline styles or class names.
 - **Mistake Corrected**: Initially, I attempted to modify the DOM directly for decorative animations, which caused hydration mismatches in SSR; I corrected this by moving all animation logic into a `useEffect` hook that only runs on the client side.
+
+--- Story 421: Infrastructure decay (attempts: 3, 2026-03-13 00:06) ---
+*   **Non-obvious dependency coupling**: The decay logic was tightly coupled to a specific `LegacyScheduler` interface, making it difficult to inject mock time for testing without refactoring the entire dependency injection graph.
+*   **Codebase convention**: Infrastructure components consistently use a "Builder" pattern for configuration, but validation rules are scattered across the builder methods rather than centralized in a dedicated validator class.
+*   **Correction**: Initially attempted to patch the decay calculation directly in the controller; corrected by moving the logic into a dedicated `DecayCalculator` service to ensure testability and separation of concerns.
