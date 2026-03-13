@@ -2971,3 +2971,8 @@
 - **Non-obvious API constraints**: The mood history endpoint required strict pagination logic that wasn't documented in the initial schema; the `limit` parameter silently capped at 50 regardless of the request, forcing a client-side loop for larger datasets.
 - **Codebase convention**: The project consistently uses a "Repository-Service-Controller" separation where all data transformations (like flattening nested NPC state objects) happen in the Service layer, never the Controller.
 - **Correction made**: Initially attempted to query the `mood_logs` table directly in the controller for performance, but this bypassed the `AuditLog` middleware; corrected by routing all read operations through the existing `MoodRepository` to ensure consistency with write-side auditing.
+
+--- Story 439: NPC mood history API (attempts: 3, 2026-03-13 05:47) ---
+- **Tricky Aspect**: The `mood_history` endpoint required careful handling of pagination and filtering to avoid returning excessive data for long-lived NPCs, necessitating explicit `LIMIT` and `OFFSET` logic rather than relying on default ORM behavior.
+- **Codebase Pattern**: The project consistently separates data access logic into a dedicated `services/` layer before reaching the controller, ensuring that API endpoints remain thin and business rules (like mood decay calculations) are centralized.
+- **Correction**: Initially, I returned raw database timestamps without timezone normalization, causing inconsistencies in the frontend; I corrected this by enforcing UTC conversion at the service layer using the project's standard `to_utc()` utility.
