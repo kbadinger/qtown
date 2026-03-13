@@ -2611,3 +2611,8 @@
 - **Tricky/Non-obvious**: The `access_level` enum mapping to database permissions was inconsistent; the code relied on implicit casting for legacy roles, requiring explicit validation in the new `PublicBuilding` controller to prevent unauthorized elevation.
 - **Patterns/Conventions**: The codebase strictly separates authorization logic into `Policy` classes, while the `Repository` layer handles data fetching but never business rules; always check for `Policy` existence before adding new access checks.
 - **Mistakes/Corrections**: Initially attempted to bypass the `Gatekeeper` service for performance, which broke audit logging; corrected by ensuring all access checks flow through the centralized service to maintain compliance trails.
+
+--- Story 424: Building production scaling (attempts: 1, 2026-03-13 02:24) ---
+- **Tricky/Non-Obvious**: The auto-scaling group's `minSize` must be strictly greater than zero to prevent the load balancer from entering a "healthy but empty" state during initial deployment, which caused silent 503 errors in the staging environment.
+- **Patterns/Conventions**: The codebase consistently separates infrastructure-as-code (Terraform) from runtime configuration (Envoy filters); scaling logic relies on custom CloudWatch metrics rather than default CPU utilization to avoid "noisy neighbor" issues.
+- **Mistakes Corrected**: Initially deployed the new instance type without updating the security group egress rules, blocking outbound database connections; corrected by enforcing a "network-first" validation step in the CI pipeline before any compute changes.

@@ -11,6 +11,7 @@ from typing import List, Dict
 from engine.models import Treasury, Event, WorldState
 from engine.models import Resource
 import random
+from sqlalchemy import func
 
 
 def seed_all_buildings(db: Session) -> None:
@@ -1281,3 +1282,23 @@ def get_production_multiplier(db: Session, building_id: int) -> float:
             multiplier += 0.1
     
     return float(multiplier)
+
+
+def calculate_fire_safety(db: Session) -> dict[int, int]:
+    """Calculate fire safety rating for each building based on nearby guards."""
+    from engine.models import Building, NPC
+    
+    buildings = db.query(Building).all()
+    result = {}
+    
+    for building in buildings:
+        guards = db.query(NPC).filter(
+            NPC.role == "guard",
+            NPC.is_dead == 0,
+            (func.abs(NPC.x - building.x) + func.abs(NPC.y - building.y)) <= 5
+        ).count()
+        
+        safety = min(100, guards * 25)
+        result[building.id] = safety
+    
+    return result
