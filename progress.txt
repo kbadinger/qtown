@@ -2981,3 +2981,8 @@
 - **Non-obvious aggregation logic**: The `GROUP BY` clause in the comparison query required explicit handling of `NULL` values in the `population_density` field; failing to use `COALESCE` caused the API to silently drop towns with missing data instead of returning them with a zero value.
 - **Consistent error handling pattern**: The codebase strictly enforces returning a `422 Unprocessable Entity` with a structured `validation_errors` array for any malformed comparison parameters, rather than generic 400 errors, which must be replicated in new endpoints.
 - **Correction on N+1 queries**: Initially, I fetched town details individually inside the loop to calculate the difference, causing performance degradation; I corrected this by joining the `towns` and `metrics` tables in a single query using `LEFT JOIN` to fetch all required data upfront.
+
+--- Story 440: Town comparison API (attempts: 2, 2026-03-13 05:48) ---
+- **Non-obvious aggregation logic**: The requirement to normalize disparate data schemas from multiple town sources before comparison was more complex than anticipated, requiring a robust intermediate mapping layer rather than direct field access.
+- **Codebase convention**: Discovered a consistent pattern of wrapping all external API calls in a `Service` class that handles retry logic and error standardization, which I applied to the new comparison endpoints.
+- **Correction**: Initially attempted to perform complex sorting in the controller layer; refactored this into the repository layer to leverage database indexing and keep the controller strictly for request/response handling.
