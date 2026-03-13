@@ -2706,3 +2706,8 @@
 - **Tricky**: The inventory synchronization logic was non-obvious; updating the `stall` state required a two-phase commit (reserve then confirm) to prevent race conditions when multiple buyers interacted simultaneously.
 - **Patterns**: The codebase strictly enforces the "Command-Query Separation" pattern, where all state mutations flow through dedicated `MarketCommand` handlers rather than direct model access.
 - **Correction**: Initially attempted to validate stock levels inside the UI component, which caused stale data bugs; corrected by moving all validation logic into the backend `MarketService` to ensure a single source of truth.
+
+--- Story 428: Market stall system (attempts: 6, 2026-03-13 03:46) ---
+*   **Non-obvious state coupling**: The stall's inventory capacity is dynamically tied to the merchant's `reputation_level` rather than being a static config, requiring careful recalculation whenever reputation changes to prevent overflow errors.
+*   **Codebase convention**: This system strictly separates "display logic" (what the player sees) from "transaction logic" (price calculation and stock deduction), with all state mutations routed through the `MarketService` singleton to ensure auditability.
+*   **Correction**: Initially attempted to handle currency exchange directly in the UI component; refactored to a dedicated `TransactionValidator` to prevent race conditions when multiple players interact with the same stall simultaneously.
