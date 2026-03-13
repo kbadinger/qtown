@@ -2731,3 +2731,8 @@
 - **Tricky/Non-obvious**: Handling the `stall_capacity` constraint required careful ordering of operations; attempting to sell before validating available stock caused race conditions in the test suite, necessitating a pre-check guard clause.
 - **Patterns/Conventions**: The codebase consistently uses a "Command-Query Separation" pattern where state mutations (e.g., `sell_item`) are strictly separated from data retrieval (e.g., `get_inventory`), and all domain entities are immutable by default.
 - **Mistakes/Corrections**: Initially attempted to modify the `MarketStall` object directly within the transaction loop, which broke isolation; corrected by introducing a `StallTransaction` aggregate that validates the entire batch before committing changes.
+
+--- Story 428: Market stall system (attempts: 1, 2026-03-13 04:14) ---
+- **Non-obvious state synchronization**: The `StallInventory` needed to explicitly invalidate the `MarketUI` cache on every transaction; relying on the standard `onUpdate` hook caused a one-tick lag where prices displayed incorrectly after bulk purchases.
+- **Convention for modular pricing**: The codebase enforces a strict `PriceModifier` interface for all dynamic costs (taxes, discounts, scarcity), meaning direct float manipulation on base prices is forbidden and must be handled through the `PricingPipeline` service.
+- **Correction on concurrency**: Initially attempted to handle simultaneous buyer/seller actions with a simple mutex, which caused deadlocks during high-traffic events; switched to the existing `EventQueue` pattern to serialize transactions safely without blocking the main loop.
