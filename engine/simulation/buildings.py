@@ -10,6 +10,7 @@ from engine.models import Tile, Building, NPC
 from typing import List, Dict
 from engine.models import Treasury, Event, WorldState
 from engine.models import Resource
+import random
 
 
 def seed_all_buildings(db: Session) -> None:
@@ -1183,3 +1184,30 @@ def demolish_building(db: Session, building_id: int) -> bool:
     db.commit()
     
     return True
+
+
+def apply_infrastructure_decay(db: Session) -> int:
+    """Apply infrastructure decay to buildings with level > 1.
+    
+    Buildings with level > 1 have a 3% chance to lose 1 level.
+    Creates Event(event_type='infrastructure_decay') for each decayed building.
+    Returns count of decayed buildings.
+    """
+    from engine.models import Building, Event
+    
+    decayed_count = 0
+    buildings = db.query(Building).filter(Building.level > 1).all()
+    
+    for building in buildings:
+        if random.random() < 0.03:  # 3% chance
+            old_level = building.level
+            building.level = max(1, building.level - 1)
+            db.add(Event(
+                event_type='infrastructure_decay',
+                building_id=building.id,
+                description=f"{building.name} degraded from level {old_level} to {building.level}"
+            ))
+            decayed_count += 1
+    
+    db.commit()
+    return decayed_count

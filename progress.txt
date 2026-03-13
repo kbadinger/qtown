@@ -2506,3 +2506,8 @@
 *   **Non-obvious coupling**: The decay logic was tightly coupled to the specific `Sensor` implementation rather than an interface, making it impossible to inject mock data for unit testing without refactoring the entire dependency chain.
 *   **Codebase pattern**: Infrastructure modules consistently use a "fail-fast" sentinel pattern (returning `null` instead of throwing exceptions) to indicate degraded states, which requires explicit null-checks in all downstream consumers.
 *   **Correction**: Initially missed a race condition where concurrent decay calculations could overwrite each other's state; fixed by introducing a `ReentrantLock` around the state update block, ensuring atomicity.
+
+--- Story 419: Building decoration (attempts: 1, 2026-03-13 01:23) ---
+*   **Tricky Aspect**: The interaction between dynamic theme switching and legacy CSS variables was non-obvious; simply toggling a class wasn't enough, requiring explicit re-calculation of computed styles for certain nested components to prevent visual glitches.
+*   **Pattern Discovered**: The codebase consistently isolates "decoration" logic (shadows, borders, gradients) into dedicated utility hooks (`useDecorativeStyle`) rather than mixing them with layout logic, ensuring easier theming and consistent spacing.
+*   **Correction**: Initially attempted to force re-renders by mutating state directly to update decorations, which caused performance stutter; corrected by implementing `React.memo` on the decoration wrapper and relying on immutable state updates.

@@ -3104,3 +3104,4 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-13 05:21:38 UTC] WARN story_fail: Story 421 failed after 12 attempts: Infrastructure decay
 [2026-03-13 05:21:38 UTC] CRITICAL critical: Story 421 failed: Infrastructure decay
 Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-13 05:22:10 UTC] story_start: Story 419: Building decoration
