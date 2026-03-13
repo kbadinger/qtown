@@ -2816,3 +2816,8 @@
 - **Date Parsing Ambiguity**: Handling election dates was non-obvious due to inconsistent historical formats (e.g., "Nov 2, 1860" vs. "1860-11-02"); I had to implement a flexible parser that normalizes all inputs to ISO 8601 before storage.
 - **API Versioning Pattern**: The codebase strictly separates versioned endpoints (`/v1/elections`) from internal logic, avoiding direct model exposure; I adopted this to ensure backward compatibility for the new history endpoint.
 - **Pagination Correction**: Initially, I returned the full dataset for historical queries, causing timeouts; I corrected this by enforcing cursor-based pagination with a hard `limit` parameter, aligning with the existing `ListResource` convention.
+
+--- Story 434: Election history API (attempts: 2, 2026-03-13 05:30) ---
+- **Non-obvious pagination**: The API uses offset-based pagination but requires explicit handling of the `total` count field to calculate the correct `next_cursor`, which wasn't immediately clear from the initial schema.
+- **Date filtering convention**: Historical election data relies on `YYYY-MM-DD` strings for range queries; passing ISO 8601 timestamps with time components causes silent failures, so strict date-only formatting is required.
+- **Correction on null handling**: Initially returned `null` for missing candidate names, but the frontend expects an empty string `""` to avoid rendering `null` in the UI; updated the serialization layer to normalize these fields.
