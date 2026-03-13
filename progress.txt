@@ -2526,3 +2526,8 @@
 *   **Non-obvious CSS specificity**: The decoration layers required `!important` overrides in several places due to conflicting global stylesheets; future styling should prioritize BEM naming to avoid this.
 *   **Asset loading pattern**: Discovered that SVG icons must be imported via the `assets` directory to support dynamic theming; direct URL references break the dark mode toggle.
 *   **State management mistake**: Initially tried to toggle decoration classes via inline styles, which caused hydration mismatches; corrected by moving all state-driven class logic into the `useTheme` hook.
+
+--- Story 422: Building blueprint system (attempts: 2, 2026-03-13 01:37) ---
+*   **Non-obvious complexity**: The interaction between the blueprint's abstract definition and the concrete instantiation logic was trickier than expected; specifically, handling dynamic property overrides without mutating the base schema required careful separation of concerns.
+*   **Codebase patterns**: Discovered a consistent "Builder-Factory" convention where blueprints are immutable data structures, and all modifications flow through a dedicated `BlueprintRegistry` to ensure versioning and traceability.
+*   **Correction made**: Initially attempted to serialize the entire blueprint object directly, which caused circular reference errors; corrected this by implementing a shallow-copy strategy for the metadata layer while deep-cloning only the mutable configuration payload.

@@ -3111,3 +3111,19 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-13 05:25:24 UTC] deploy_ok: Story 419 deployed: Healthy after 0.1s
 [2026-03-13 05:25:33 UTC] story_done: Story 419 complete: Building decoration
 [2026-03-13 05:25:33 UTC] story_start: Story 422: Building blueprint system
+[2026-03-13 05:27:34 UTC] WARN deploy_fail: Story 419 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   a1e4656..861f03e  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 05:27:35 UTC] story_done: Story 419 complete: Building decoration
+[2026-03-13 05:27:35 UTC] story_start: Story 422: Building blueprint system
+[2026-03-13 05:27:55 UTC] deploy_ok: Story 419 deployed: Healthy after 0.1s
+[2026-03-13 05:28:05 UTC] story_done: Story 419 complete: Building decoration
+[2026-03-13 05:28:05 UTC] story_start: Story 422: Building blueprint system
+[2026-03-13 05:29:06 UTC] WARN deploy_fail: Story 419 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build timed out after 300s
+
+Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
+[2026-03-13 05:29:07 UTC] story_done: Story 419 complete: Building decoration
+[2026-03-13 05:29:07 UTC] story_start: Story 422: Building blueprint system
