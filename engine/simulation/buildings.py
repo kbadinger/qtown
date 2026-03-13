@@ -12,6 +12,7 @@ from engine.models import Treasury, Event, WorldState
 from engine.models import Resource
 import random
 from sqlalchemy import func
+from math import sqrt
 
 
 def seed_all_buildings(db: Session) -> None:
@@ -1301,4 +1302,57 @@ def calculate_fire_safety(db: Session) -> dict[int, int]:
         safety = min(100, guards * 25)
         result[building.id] = safety
     
+    return result
+
+
+def calculate_noise_levels(db: Session) -> dict:
+    """Calculate noise levels for all buildings.
+    
+    Tavern noise=3, market=2, others=0.
+    For residential buildings: sum noise from buildings within distance 3.
+    If > 3, residents happiness -= 2.
+    Returns dict {building_id: noise}.
+    """
+    from engine.models import Building, NPC
+    
+    # Define noise levels by building type
+    noise_map = {
+        "tavern": 3,
+        "market": 2,
+    }
+    
+    # Get all buildings
+    buildings = db.query(Building).all()
+    
+    result = {}
+    
+    for building in buildings:
+        # Base noise level for this building
+        base_noise = noise_map.get(building.building_type, 0)
+        
+        # For residential buildings, calculate nearby noise
+        if building.building_type == "residential":
+            nearby_noise = 0
+            for other in buildings:
+                if other.id == building.id:
+                    continue
+                # Manhattan distance
+                distance = abs(other.x - building.x) + abs(other.y - building.y)
+                if distance <= 3:
+                    nearby_noise += noise_map.get(other.building_type, 0)
+            
+            result[building.id] = nearby_noise
+            
+            # Reduce happiness if noise is too high
+            if nearby_noise > 3:
+                residents = db.query(NPC).filter(
+                    NPC.home_building_id == building.id,
+                    NPC.is_dead == 0
+                ).all()
+                for npc in residents:
+                    npc.happiness = max(0, npc.happiness - 2)
+        else:
+            result[building.id] = base_noise
+    
+    db.commit()
     return result
