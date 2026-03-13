@@ -2786,3 +2786,8 @@
 - **Non-obvious API pagination**: The crime statistics endpoint requires explicit `page` and `per_page` parameters for large datasets; relying on default limits caused silent data truncation during initial aggregation.
 - **Date parsing convention**: The codebase consistently uses ISO 8601 strings for date filtering, but the internal parser fails silently on non-UTC timestamps, requiring explicit `.utc()` conversion before query construction.
 - **Correction on null handling**: Initially assumed missing crime categories would return `null` in the JSON response, but the API returns `undefined` for missing keys, necessitating optional chaining (`?.`) to prevent runtime crashes during mapping.
+
+--- Story 432: Crime statistics API (attempts: 3, 2026-03-13 05:13) ---
+*   **Non-obvious pagination**: The API uses cursor-based pagination with opaque tokens rather than standard offset/limit parameters, requiring careful handling of the `next_cursor` field to avoid infinite loops or data gaps.
+*   **Schema evolution pattern**: The codebase relies heavily on a "versioned response wrapper" pattern where the outer structure remains static while inner data fields change per version, necessitating a strict factory method for parsing to prevent runtime errors.
+*   **Correction on null handling**: Initially assumed missing crime categories were `0`, but corrected the logic to treat them as `null` (absent) to accurately reflect "no data reported" versus "zero incidents," which impacts downstream aggregation logic.
