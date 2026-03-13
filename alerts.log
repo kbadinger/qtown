@@ -3403,3 +3403,11 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-13 09:05:16 UTC] deploy_ok: Story 431 deployed: Healthy after 0.0s
 [2026-03-13 09:05:25 UTC] story_done: Story 431 complete: NPC daily schedule API
 [2026-03-13 09:05:25 UTC] story_start: Story 432: Crime statistics API
+[2026-03-13 09:06:43 UTC] deploy_ok: Story 429 deployed: Healthy after 0.1s
+[2026-03-13 09:06:52 UTC] story_done: Story 429 complete: Building capacity upgrade
+[2026-03-13 09:06:52 UTC] story_start: Story 432: Crime statistics API
+[2026-03-13 09:08:21 UTC] WARN deploy_fail: Story 429 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build timed out after 300s
+
+Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
+[2026-03-13 09:08:21 UTC] story_done: Story 429 complete: Building capacity upgrade
+[2026-03-13 09:08:22 UTC] story_start: Story 432: Crime statistics API

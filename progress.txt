@@ -2771,3 +2771,8 @@
 *   **Non-obvious state synchronization**: The capacity upgrade logic required explicit cache invalidation on the metadata layer; relying on the database transaction alone caused race conditions where the UI displayed stale limits during high-concurrency scaling events.
 *   **Codebase pattern**: All capacity-related operations in this module strictly follow the `validate -> lock -> mutate -> notify` sequence, using the `CapacityManager` facade rather than direct repository calls to ensure audit logging is never bypassed.
 *   **Correction**: Initially attempted to use a simple integer comparison for threshold checks, which failed due to floating-point precision issues in the legacy pricing engine; corrected by switching to the `BigDecimal` utility wrapper used throughout the billing service.
+
+--- Story 429: Building capacity upgrade (attempts: 6, 2026-03-13 05:10) ---
+- **Tricky**: The `CapacityManager` relies on a hidden dependency on the global `SystemClock` for rate-limiting windows, making unit tests flaky unless the clock is explicitly mocked via the `TimeProvider` interface.
+- **Pattern**: The codebase consistently uses the `Result<T, E>` pattern for fallible operations instead of throwing exceptions, requiring explicit `unwrap_or_else` handling in all upgrade logic paths.
+- **Correction**: Initially attempted to scale the `max_connections` field directly; corrected to use the `calculate_target_capacity()` helper which accounts for the `safety_margin` constant defined in `config.yaml`.
