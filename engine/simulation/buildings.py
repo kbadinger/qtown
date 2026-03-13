@@ -1305,17 +1305,16 @@ def calculate_fire_safety(db: Session) -> dict[int, int]:
     return result
 
 
-def calculate_noise_levels(db: Session) -> dict:
+def calculate_noise_levels(db: Session) -> dict[int, int]:
     """Calculate noise levels for all buildings.
     
     Tavern noise=3, market=2, others=0.
     For residential buildings: sum noise from buildings within distance 3.
-    If total noise > 3, residents happiness -= 2.
-    
-    Returns:
-        dict: {building_id: noise_level}
+    If > 3, residents happiness -= 2.
+    Returns dict {building_id: noise}.
     """
     from engine.models import Building, NPC
+    from math import sqrt
     
     # Define noise sources
     NOISE_SOURCES = {
@@ -1324,48 +1323,44 @@ def calculate_noise_levels(db: Session) -> dict:
     }
     
     # Get all buildings
-    all_buildings = db.query(Building).all()
-    building_map = {b.id: b for b in all_buildings}
+    buildings = db.query(Building).all()
+    building_map = {b.id: b for b in buildings}
     
-    # Calculate base noise for each building
+    # Calculate noise for each building
     noise_levels = {}
-    for building in all_buildings:
-        noise = NOISE_SOURCES.get(building.building_type, 0)
-        noise_levels[building.id] = noise
     
-    # Identify residential buildings (homes)
-    residential_buildings = [b for b in all_buildings if b.building_type == "residential"]
-    
-    # Calculate cumulative noise for residential buildings
-    affected_npcs = []
-    for residential in residential_buildings:
+    for building in buildings:
         total_noise = 0
-        for other_building in all_buildings:
-            if other_building.id == residential.id:
-                continue
-            
-            # Calculate distance (Manhattan distance)
-            distance = abs(residential.x - other_building.x) + abs(residential.y - other_building.y)
-            
-            if distance <= 3:
-                noise = NOISE_SOURCES.get(other_building.building_type, 0)
-                total_noise += noise
         
-        noise_levels[residential.id] = total_noise
+        # Check if this building is a noise source itself
+        if building.building_type in NOISE_SOURCES:
+            total_noise += NOISE_SOURCES[building.building_type]
+        
+        # If residential, check nearby noise sources
+        if building.building_type == "residential":
+            for other_building in buildings:
+                if other_building.id == building.id:
+                    continue
+                
+                # Calculate distance
+                dx = other_building.x - building.x
+                dy = other_building.y - building.y
+                distance = sqrt(dx * dx + dy * dy)
+                
+                if distance <= 3 and other_building.building_type in NOISE_SOURCES:
+                    total_noise += NOISE_SOURCES[other_building.building_type]
+        
+        noise_levels[building.id] = total_noise
         
         # Apply happiness penalty if noise > 3
-        if total_noise > 3:
-            # Find NPCs living in this building
+        if building.building_type == "residential" and total_noise > 3:
             residents = db.query(NPC).filter(
-                NPC.home_building_id == residential.id,
+                NPC.home_building_id == building.id,
                 NPC.is_dead == 0
             ).all()
-            affected_npcs.extend(residents)
+            
+            for npc in residents:
+                npc.happiness = max(0, npc.happiness - 2)
     
-    # Apply happiness penalty
-    if affected_npcs:
-        for npc in affected_npcs:
-            npc.happiness = max(0, npc.happiness - 2)
-        db.commit()
-    
+    db.commit()
     return noise_levels

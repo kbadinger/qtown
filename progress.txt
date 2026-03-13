@@ -2651,3 +2651,8 @@
 - **Tricky Logic**: The rating calculation required handling a "weakest link" scenario where a single missing component (e.g., smoke detectors) invalidates the entire system score, rather than just reducing it proportionally.
 - **Codebase Pattern**: The project consistently uses a `RatingCalculator` service object with a chain of responsibility pattern for validation rules, keeping the controller logic thin.
 - **Correction**: Initially, I returned the raw integer score from the API; I corrected this to return a standardized enum string (e.g., "A", "B", "Fail") to align with the frontend's display requirements and avoid magic numbers.
+
+--- Story 426: Building noise level (attempts: 1, 2026-03-13 03:24) ---
+- **Tricky Logic**: The noise calculation required handling edge cases where `decibel` inputs were negative or null; the initial implementation crashed, but adding a `max(0, value)` guard and defaulting to 0 fixed the stability issues.
+- **Codebase Patterns**: This project strictly enforces the "Command-Query Separation" principle; noise level retrieval methods must not mutate state, and all side effects (like logging alerts) are isolated in separate service classes.
+- **Correction**: I initially placed the noise threshold configuration in the controller, violating the separation of concerns; I refactored it into a dedicated `NoiseConfig` entity to allow dynamic updates without redeploying the API.
