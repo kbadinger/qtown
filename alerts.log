@@ -3470,3 +3470,27 @@ Indexing...
 Uploading..
 [2026-03-13 09:30:34 UTC] story_done: Story 434 complete: Election history API
 [2026-03-13 09:30:35 UTC] story_start: Story 435: Policy effectiveness API
+[2026-03-13 09:30:38 UTC] WARN deploy_fail: Story 432 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   96c329c..b222971  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 09:30:39 UTC] story_done: Story 432 complete: Crime statistics API
+[2026-03-13 09:30:39 UTC] story_start: Story 435: Policy effectiveness API
+[2026-03-13 09:30:39 UTC] WARN deploy_fail: Story 434 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   1b359b3..96c329c  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 09:30:40 UTC] story_done: Story 434 complete: Election history API
+[2026-03-13 09:30:40 UTC] story_start: Story 435: Policy effectiveness API
+[2026-03-13 09:30:43 UTC] WARN deploy_fail: Story 434 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   b222971..463adaf  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 09:30:43 UTC] story_done: Story 434 complete: Election history API
+[2026-03-13 09:30:44 UTC] story_start: Story 435: Policy effectiveness API

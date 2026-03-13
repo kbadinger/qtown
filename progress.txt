@@ -2836,3 +2836,8 @@
 - **Non-obvious Date Handling**: The API's `since` and `until` parameters require strict ISO 8601 formatting; passing local date strings caused silent query failures until explicit validation was added to the schema.
 - **Pagination Convention**: The codebase enforces a cursor-based pagination pattern (`next_cursor`) rather than offset-based, which requires careful handling of empty result sets to avoid infinite loops in client-side consumption.
 - **Correction on Caching**: Initially cached raw API responses without versioning; corrected by including the `request_params` hash in the cache key to prevent serving stale data when election filters changed.
+
+--- Story 435: Policy effectiveness API (attempts: 1, 2026-03-13 05:30) ---
+- **Tricky**: The API's validation logic for "effective date" ranges was non-obvious; it required checking against the policy's *current* status, not just the static schema, to prevent future-dated policies from appearing active prematurely.
+- **Patterns**: The codebase consistently uses a "Result" wrapper type for all external-facing API methods to handle validation errors separately from runtime exceptions, avoiding try/catch blocks in controller logic.
+- **Mistake**: Initially ignored the `tenant_id` context in the repository query, causing a potential data leak across tenants; corrected by enforcing the `TenantContext` middleware check before any database access.
