@@ -1396,3 +1396,33 @@ def calculate_historical_value(db: Session) -> dict:
         "town_prestige": town_prestige,
         "per_building": per_building
     }
+
+
+def setup_market_stalls(db: Session) -> int:
+    """Set up market stalls for all living merchants."""
+    from engine.models import Building, NPC
+    
+    # Find market building
+    market = db.query(Building).filter(Building.building_type == "market").first()
+    if not market:
+        return 0
+    
+    # Find all living merchants
+    merchants = db.query(NPC).filter(
+        NPC.role == "merchant",
+        NPC.is_dead == 0
+    ).all()
+    
+    # Create stalls for each merchant
+    stall_count = 0
+    for merchant in merchants:
+        stall = Resource(
+            name=f"stall_{merchant.name}",
+            quantity=1,
+            building_id=market.id
+        )
+        db.add(stall)
+        stall_count += 1
+    
+    db.commit()
+    return stall_count

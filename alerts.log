@@ -3306,3 +3306,17 @@ Uploading..
 [2026-03-13 07:28:37 UTC] story_done: Story 427 complete: Building historical value
 [2026-03-13 07:28:37 UTC] story_start: Story 428: Market stall system
 [2026-03-13 07:28:38 UTC] story_start: Story 428: Market stall system
+[2026-03-13 07:28:47 UTC] WARN deploy_fail: Story 427 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   1dd8e78..0c7bb54  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 07:28:47 UTC] story_done: Story 427 complete: Building historical value
+[2026-03-13 07:28:48 UTC] story_start: Story 428: Market stall system
+[2026-03-13 07:29:33 UTC] deploy_ok: Story 426 deployed: Healthy after 0.1s
+[2026-03-13 07:29:42 UTC] story_done: Story 426 complete: Building noise level
+[2026-03-13 07:29:42 UTC] story_start: Story 428: Market stall system
+[2026-03-13 07:29:46 UTC] deploy_ok: Story 427 deployed: Healthy after 0.0s
+[2026-03-13 07:29:55 UTC] story_done: Story 427 complete: Building historical value
+[2026-03-13 07:29:56 UTC] story_start: Story 428: Market stall system
