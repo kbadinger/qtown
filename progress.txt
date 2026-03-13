@@ -2776,3 +2776,8 @@
 - **Tricky**: The `CapacityManager` relies on a hidden dependency on the global `SystemClock` for rate-limiting windows, making unit tests flaky unless the clock is explicitly mocked via the `TimeProvider` interface.
 - **Pattern**: The codebase consistently uses the `Result<T, E>` pattern for fallible operations instead of throwing exceptions, requiring explicit `unwrap_or_else` handling in all upgrade logic paths.
 - **Correction**: Initially attempted to scale the `max_connections` field directly; corrected to use the `calculate_target_capacity()` helper which accounts for the `safety_margin` constant defined in `config.yaml`.
+
+--- Story 431: NPC daily schedule API (attempts: 2, 2026-03-13 05:10) ---
+*   **Non-obvious Time Handling**: The API required strict normalization of local time strings to UTC before database insertion to prevent schedule drift across different user timezones; failing to do so caused duplicate or missing events.
+*   **Codebase Pattern**: The project enforces a "Service-First" architecture where all external I/O (database, cache) is isolated in service classes, leaving controllers strictly for request/response mapping.
+*   **Correction**: Initially attempted to return the full schedule object directly, which exposed internal IDs and draft states; corrected by implementing a dedicated DTO mapper to sanitize the response payload.
