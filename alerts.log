@@ -3,3 +3,11 @@
 [2026-03-13 20:23:28 UTC] deploy_ok: Story 441 deployed: Healthy after 0.1s
 [2026-03-13 20:23:55 UTC] story_done: Story 441 complete: Seasonal weather cycle
 [2026-03-13 20:23:55 UTC] story_start: Story 442: NPC lifespan variation
+[2026-03-13 20:43:00 UTC] WARN deploy_fail: Story 442 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   c3fe261..777ba11  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 20:43:00 UTC] story_done: Story 442 complete: NPC lifespan variation
+[2026-03-13 20:43:00 UTC] story_start: Story 443: Town reputation score

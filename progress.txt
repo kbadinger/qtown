@@ -3001,3 +3001,8 @@
 - **Non-obvious state coupling**: NPC lifespan wasn't a static config but dynamically derived from `role` and `difficulty` modifiers; changing one required recalculating the entire `lifespan` field in the `spawn` logic, not just the `death` event.
 - **Codebase convention**: The project strictly separates "lifecycle rules" (in `rules/lifespan.ts`) from "execution logic" (in `game/loop.ts`); direct manipulation of NPC properties in the loop is forbidden in favor of rule-based state transitions.
 - **Correction**: Initially attempted to patch the `death` timer directly in the event handler, causing race conditions where NPCs died instantly upon respawn; fixed by centralizing the calculation in the `spawn` phase and using the returned value as a read-only reference.
+
+--- Story 443: Town reputation score (attempts: 1, 2026-03-13 16:58) ---
+- **Tricky Logic**: The reputation calculation required handling non-linear decay rates based on town size, which wasn't immediately obvious from the initial requirements and required careful boundary testing.
+- **Codebase Pattern**: The project consistently uses a `ScoreContext` object to pass mutable state through pure calculation functions, avoiding global variables and simplifying unit testing.
+- **Correction**: Initially, I applied the "heroic deed" bonus before the "crime" penalty, causing temporary score inflation; I corrected this by enforcing a strict order of operations (penalties first, then bonuses) to match the spec.

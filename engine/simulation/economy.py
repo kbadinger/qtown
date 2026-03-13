@@ -2137,3 +2137,35 @@ def apply_economic_stimulus(db: Session) -> int:
     db.commit()
     
     return total_distributed
+
+
+def calculate_town_reputation(db: Session) -> dict:
+    """Calculate town reputation score based on economy, safety, and happiness."""
+    from engine.models import NPC, Crime
+    from sqlalchemy import func
+    
+    # Calculate average gold from living NPCs
+    avg_gold_result = db.query(func.avg(NPC.gold)).filter(NPC.is_dead == 0).first()
+    avg_gold = avg_gold_result[0] if avg_gold_result and avg_gold_result[0] is not None else 0
+    
+    # Calculate average happiness from living NPCs
+    avg_happiness_result = db.query(func.avg(NPC.happiness)).filter(NPC.is_dead == 0).first()
+    avg_happiness = avg_happiness_result[0] if avg_happiness_result and avg_happiness_result[0] is not None else 0
+    
+    # Count crimes
+    crime_count = db.query(Crime).count()
+    
+    # Calculate component scores
+    economy = min(100, avg_gold)
+    safety = max(0, 100 - crime_count * 10)
+    happiness = avg_happiness
+    
+    # Calculate overall reputation
+    reputation = (economy + safety + happiness) / 3
+    
+    return {
+        "economy": economy,
+        "safety": safety,
+        "happiness": happiness,
+        "reputation": reputation
+    }
