@@ -2586,3 +2586,8 @@
 - **Tricky/Non-Obvious**: The auto-scaling trigger logic required a "cool-down" window to prevent thrashing; simply reacting to immediate CPU spikes caused the system to oscillate between scaling up and down within seconds.
 - **Patterns/Conventions**: This codebase strictly separates scaling *policy* (thresholds) from scaling *execution* (API calls), using a dedicated event bus to decouple the monitor from the orchestrator.
 - **Mistakes/Corrections**: Initially, I scaled based on average latency over 1 minute, which was too slow for sudden traffic spikes; I corrected this by implementing a "burst" metric that triggers immediate scaling if the 10-second rolling average exceeds the threshold.
+
+--- Story 423: Public building access (attempts: 7, 2026-03-13 02:08) ---
+*   **Tricky Aspect**: The distinction between `public_access` (boolean) and `access_level` (enum) was non-obvious; the UI logic incorrectly assumed `true` implied full access, ignoring the `restricted_hours` constraint that requires a separate time-window check.
+*   **Pattern Discovered**: The codebase consistently uses a "Gatekeeper" service pattern where all permission checks are centralized in `AccessControlService`, rather than being scattered across individual controller actions or view templates.
+*   **Mistake Corrected**: Initially attempted to validate building entry directly in the frontend form submission, which bypassed the server-side audit logging; corrected by moving all validation and logging to the backend API endpoint to ensure compliance.
