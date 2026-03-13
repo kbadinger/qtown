@@ -1244,14 +1244,25 @@ def test_s420_demolish_active_building(db):
     assert db.query(Building).filter(Building.id == b.id).first() is not None
 
 
-def test_s421_apply_infrastructure_decay(db):
+def test_s421_apply_infrastructure_decay(client, admin_headers, db):
     """Infrastructure decay."""
-    _setup_world(db)
+    # Setup world with buildings at level > 1
+    client.post(
+        "/api/buildings",
+        json={"name": "Hall", "building_type": "civic", "x": 25, "y": 25, "level": 2},
+        headers=admin_headers,
+    )
+    
     from engine.simulation.buildings import apply_infrastructure_decay
-
+    
     result = apply_infrastructure_decay(db)
     assert isinstance(result, int), "Should return count of decayed buildings"
-    db.flush()
+    
+    # Verify world state remains valid after decay
+    resp = client.get("/api/world")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "buildings" in data
 
 
 def test_s422_create_building_blueprint(db):

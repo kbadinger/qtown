@@ -3076,3 +3076,31 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-13 03:21:18 UTC] story_start: Story 421: Infrastructure decay
 [2026-03-13 03:22:13 UTC] WARN story_fail: Story 421 struggling — attempt 5/12
 Infrastructure decay
+[2026-03-13 04:06:17 UTC] WARN deploy_fail: Story 421 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   102c962..89df563  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 04:06:18 UTC] story_done: Story 421 complete: Infrastructure decay
+[2026-03-13 04:06:18 UTC] story_start: Story 419: Building decoration
+[2026-03-13 04:15:20 UTC] WARN story_fail: Story 421 struggling — attempt 5/12
+Infrastructure decay
+[2026-03-13 04:41:24 UTC] WARN story_fail: Story 421 struggling — attempt 5/12
+Infrastructure decay
+[2026-03-13 04:49:19 UTC] WARN story_fail: Story 419 struggling — attempt 5/12
+Building decoration
+[2026-03-13 04:59:57 UTC] CRITICAL loop: Story 419: same error 5x in a row — requesting help
+`tests/test_buildings.py::test_s419_decorate_building FAILED              [100%]`
+[2026-03-13 04:59:57 UTC] CRITICAL needs_help: Story 419 needs help — waiting 10min for fix
+`tests/test_buildings.py::test_s419_decorate_building FAILED              [100%]`
+[2026-03-13 05:04:43 UTC] WARN story_fail: Story 421 struggling — attempt 5/12
+Infrastructure decay
+[2026-03-13 05:15:22 UTC] WARN story_fail: Story 421 failed after 12 attempts: Infrastructure decay
+[2026-03-13 05:15:23 UTC] CRITICAL critical: Story 421 failed: Infrastructure decay
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-13 05:15:53 UTC] story_start: Story 419: Building decoration
+[2026-03-13 05:17:06 UTC] conflict_resolved: Story 421: Auto-resolved test conflict with Story 006
+[2026-03-13 05:21:38 UTC] WARN story_fail: Story 421 failed after 12 attempts: Infrastructure decay
+[2026-03-13 05:21:38 UTC] CRITICAL critical: Story 421 failed: Infrastructure decay
+Waiting for fix — reset story to 'pending' in prd.json when ready

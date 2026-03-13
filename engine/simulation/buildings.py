@@ -1111,7 +1111,7 @@ def calculate_building_efficiency(db: Session) -> dict:
 
 def decorate_building(db: Session, building_id: int, gold_amount: int) -> bool:
     """Decorate a building with gold."""
-    from engine.models import Building, Treasury, Event, NPC
+    from engine.models import Building, Treasury, Event, NPC, WorldState
     
     # Get the building
     building = db.query(Building).filter(Building.id == building_id).first()
@@ -1132,8 +1132,18 @@ def decorate_building(db: Session, building_id: int, gold_amount: int) -> bool:
         if distance_sq <= 25:  # 5^2 = 25
             npc.happiness += 2
     
-    # Create event
-    event = Event(event_type='building_decorated', building_id=building_id)
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Create event with required fields
+    event = Event(
+        event_type='building_decorated',
+        description=f'Building {building.name} was decorated with {gold_amount} gold',
+        tick=current_tick,
+        severity='info',
+        affected_building_id=building_id
+    )
     db.add(event)
     
     db.commit()
