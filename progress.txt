@@ -2571,3 +2571,8 @@
 *   **Tricky**: The access control logic relies on a complex intersection of `role`, `department`, and `building_zone` attributes; a simple `if` check fails when a user has multiple overlapping roles, requiring a set-based intersection approach.
 *   **Pattern**: The codebase consistently uses a `PolicyEvaluator` service that returns a `Result<AccessGranted, AccessDenied>` enum rather than throwing exceptions, ensuring all access decisions are traceable in the audit log.
 *   **Correction**: Initially attempted to cache the `building_zone` lookup in the controller, which caused stale data issues during dynamic zone updates; corrected by moving the cache invalidation logic to the `ZoneManager` event listener.
+
+--- Story 423: Public building access (attempts: 4, 2026-03-13 02:02) ---
+- **Tricky Aspect**: The `access_control` module relied on implicit context propagation for `user_role`, causing intermittent failures when the request context wasn't explicitly passed through the middleware chain.
+- **Pattern Discovered**: The codebase consistently uses a `Policy` class pattern for authorization logic, separating data retrieval from decision-making, which must be adhered to for maintainability.
+- **Mistake & Correction**: Initially attempted to cache access results in Redis without a TTL, leading to stale permissions for revoked users; corrected by implementing a short-lived cache with explicit invalidation hooks.
