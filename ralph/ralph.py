@@ -734,6 +734,9 @@ def run_story(story: dict) -> bool:
                 recent_errors.clear()  # Reset loop detection — regression is a different problem
                 continue  # Retry — Qwen will get the regression error in next prompt
             print(f"  PASSED on attempt {attempt} (no regressions)")
+            # Immediately stage written files so they survive any later checkout
+            for fpath in last_written:
+                subprocess.run(["git", "add", fpath], capture_output=True)
             passed = True
             break
         else:

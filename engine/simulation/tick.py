@@ -710,3 +710,30 @@ def apply_emergency_tax(db: Session) -> int:
     
     db.commit()
     return total_collected
+
+
+def expire_old_policies(db: Session) -> int:
+    """Expire enacted policies older than 240 ticks."""
+    from engine.models import Policy, Event, WorldState
+
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return 0
+
+    current_tick = world_state.tick
+    count = 0
+
+    enacted = db.query(Policy).filter(Policy.status == "enacted").all()
+    for policy in enacted:
+        if policy.enacted_tick is not None and current_tick - policy.enacted_tick > 240:
+            policy.status = "expired"
+            db.add(Event(
+                event_type="policy_expired",
+                tick=current_tick,
+                description=f"Policy '{policy.name}' has expired after 240 ticks",
+            ))
+            count += 1
+
+    if count:
+        db.commit()
+    return count
