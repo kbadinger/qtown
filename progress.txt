@@ -2906,3 +2906,8 @@
 - **Non-obvious pagination logic**: The API requires explicit `limit` and `offset` parameters for every request; relying on default values caused silent data truncation in large datasets.
 - **Date filtering convention**: Query parameters must use ISO 8601 format (`YYYY-MM-DD`) without time components; including timestamps caused the backend to return empty results due to strict equality checks.
 - **Error handling correction**: Initially assumed a 404 meant "no data found," but the API returns 404 for invalid endpoints and 200 with an empty array for no matching records; updated the client to distinguish these cases.
+
+--- Story 429: Building capacity upgrade (attempts: 5, 2026-03-13 05:46) ---
+- **Tricky**: The capacity upgrade logic required careful handling of race conditions between the read-heavy reporting layer and the write-heavy ingestion pipeline; a simple atomic counter wasn't sufficient without explicit locking on the shard metadata.
+- **Pattern**: The codebase consistently uses a "Builder" pattern for complex configuration objects before passing them to the `CapacityManager`, ensuring immutability and preventing partial state updates during scaling events.
+- **Correction**: Initially, I attempted to scale the database connection pool linearly with CPU cores, which caused memory pressure; I corrected this by implementing a capped, dynamic pool size based on active request latency instead of a fixed ratio.
