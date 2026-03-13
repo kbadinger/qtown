@@ -3025,3 +3025,6 @@ Building decoration
 `tests/test_buildings.py::test_s419_decorate_building FAILED              [100%]`
 [2026-03-13 01:43:03 UTC] CRITICAL needs_help: Story 419 needs help — waiting 10min for fix
 `tests/test_buildings.py::test_s419_decorate_building FAILED              [100%]`
+[2026-03-13 02:02:55 UTC] deploy_ok: Story 419 deployed: Healthy after 0.1s
+[2026-03-13 02:03:12 UTC] story_done: Story 419 complete: Building decoration
+[2026-03-13 02:03:12 UTC] story_start: Story 420: Building demolition
