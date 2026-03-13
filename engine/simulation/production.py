@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from engine.models import Building, Resource, PriceHistory, WorldState
 from engine.simulation.constants import DEFAULT_BASE_PRICE, DEFAULT_DEMAND
 from engine.simulation.economy import calculate_price
+import random
 
 
 def produce_resources(db: Session, weather: str = None) -> None:
@@ -691,3 +692,45 @@ def produce_medicine(db: Session) -> None:
                 db.add(new_medicine)
             
             herbs.quantity -= (batches * 3)
+
+
+def discover_new_resource(db: Session) -> str | None:
+    """3% chance to discover a new resource at a random building."""
+    from engine.models import Building, Resource, Event, WorldState
+    
+    # 3% chance to trigger discovery
+    if random.random() >= 0.03:
+        return None
+    
+    # Pick a random building
+    buildings = db.query(Building).all()
+    if not buildings:
+        return None
+    
+    building = random.choice(buildings)
+    
+    # Pick resource details
+    resource_types = ['gems', 'clay', 'herbs', 'iron_ore', 'marble']
+    name = random.choice(resource_types)
+    quantity = random.randint(5, 20)
+    
+    # Create Resource
+    resource = Resource(
+        name=name,
+        quantity=quantity,
+        building_id=building.id
+    )
+    db.add(resource)
+    
+    # Create Event with current tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    event = Event(
+        event_type='resource_discovery',
+        tick=current_tick
+    )
+    db.add(event)
+    
+    db.commit()
+    return name

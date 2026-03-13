@@ -3026,3 +3026,8 @@
 - **Tricky**: Handling the edge case where a town name exceeds the 32-byte limit required careful truncation logic to avoid buffer overflows while preserving the first valid characters.
 - **Pattern**: The codebase consistently uses `SafeString` wrappers for all user-input strings before database insertion, rather than raw pointers, to enforce length constraints at the type level.
 - **Correction**: Initially attempted to validate names against a global blacklist in the controller layer; moved this logic to the `TownRepository` to ensure all naming paths (API, CLI, batch scripts) enforce the same rules.
+
+--- Story 448: Resource discovery (attempts: 1, 2026-03-13 18:39) ---
+- **Non-obvious dependency resolution**: The resource discovery logic relies on a dynamic registry pattern where plugins are loaded via reflection; failing to initialize the `ResourceLoader` singleton before the first scan causes silent failures in downstream modules.
+- **Codebase convention**: All resource paths are normalized using the `PathUtils.sanitize()` helper before being stored in the cache, ensuring cross-platform consistency and preventing directory traversal vulnerabilities.
+- **Correction**: Initially attempted to cache raw file handles, which caused memory leaks on long-running processes; switched to caching only metadata (size, hash, last-modified) and lazily opening streams on demand.

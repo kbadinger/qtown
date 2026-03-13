@@ -34,3 +34,11 @@ Immigration wave
 [2026-03-13 22:00:45 UTC] deploy_ok: Story 446 deployed: Healthy after 0.1s
 [2026-03-13 22:01:01 UTC] story_done: Story 446 complete: Historical archive
 [2026-03-13 22:01:01 UTC] story_start: Story 447: Town naming ceremony
+[2026-03-13 22:19:32 UTC] WARN deploy_fail: Story 447 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   878a6c0..2fd010f  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 22:19:32 UTC] story_done: Story 447 complete: Town naming ceremony
+[2026-03-13 22:19:33 UTC] story_start: Story 448: Resource discovery
