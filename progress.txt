@@ -2856,3 +2856,8 @@
 - **Tricky**: The `volume` field is a string representing a fixed-point decimal (e.g., "12345.6700"), not a float; direct arithmetic without parsing caused precision errors in aggregation logic.
 - **Pattern**: The codebase strictly separates data fetching (`fetchVolume`) from transformation (`normalizeVolume`), always returning immutable data structures to avoid side effects in the pipeline.
 - **Correction**: Initially missed the `currency` parameter in the API request, which defaulted to USD and skewed multi-currency trade data; fixed by enforcing explicit currency mapping in the request builder.
+
+--- Story 436: Trade volume API (attempts: 2, 2026-03-13 05:40) ---
+*   **Tricky**: Handling time-series aggregation for trade volume required careful attention to timezone normalization; naive grouping by `created_at` led to gaps in daily totals when the API server timezone differed from the client's local time.
+*   **Patterns**: The codebase consistently uses the `Repository` pattern for data access but relies on raw SQL for complex aggregations rather than the ORM, likely to optimize performance on large historical datasets.
+*   **Correction**: Initially implemented pagination using `OFFSET`, which caused severe latency spikes on deep pages; corrected this by switching to a cursor-based approach using `trade_id` to ensure consistent query performance.
