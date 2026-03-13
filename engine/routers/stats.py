@@ -7,7 +7,6 @@ from engine.db import get_db
 router = APIRouter(prefix="/api/stats", tags=["stats"])
 
 
-@router.get("/")
 def get_stats(db: Session = Depends(get_db)):
     from engine.models import NPC, Building, WorldState
 
@@ -73,4 +72,37 @@ def get_stats(db: Session = Depends(get_db)):
         "treasury_gold": treasury_gold,
         "resources": resources,
         "avg_age": avg_age,
+    }
+
+
+def get_crime_stats(db: Session = Depends(get_db)):
+    from engine.models import Crime
+    from sqlalchemy import func
+
+    # Total crimes count
+    total_crimes = db.query(Crime).count()
+
+    # Resolved crimes (resolved == 1 per Postgres compatibility)
+    resolved = db.query(Crime).filter(Crime.resolved == 1).count()
+
+    # Unresolved crimes (resolved == 0 per Postgres compatibility)
+    unresolved = db.query(Crime).filter(Crime.resolved == 0).count()
+
+    # Resolution rate
+    resolution_rate = resolved / total_crimes if total_crimes > 0 else 0.0
+
+    # Crimes by type
+    crimes_by_type_rows = (
+        db.query(Crime.crime_type, func.count(Crime.id))
+        .group_by(Crime.crime_type)
+        .all()
+    )
+    crimes_by_type = {crime_type: count for crime_type, count in crimes_by_type_rows}
+
+    return {
+        "total_crimes": total_crimes,
+        "resolved": resolved,
+        "unresolved": unresolved,
+        "resolution_rate": resolution_rate,
+        "crimes_by_type": crimes_by_type,
     }

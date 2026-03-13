@@ -7111,8 +7111,8 @@
         "api"
       ],
       "priority": 433,
-      "status": "in_progress",
-      "attempts": 3
+      "status": "done",
+      "attempts": 1
     },
     {
       "id": "434",
@@ -7126,8 +7126,8 @@
         "api"
       ],
       "priority": 434,
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     {
       "id": "435",

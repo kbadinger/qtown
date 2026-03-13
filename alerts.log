@@ -3435,3 +3435,11 @@ Uploading..
 Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
 [2026-03-13 09:18:33 UTC] story_done: Story 432 complete: Crime statistics API
 [2026-03-13 09:18:33 UTC] story_start: Story 433: Weather forecast API
+[2026-03-13 09:23:39 UTC] WARN deploy_fail: Story 433 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   ba64a09..aa62740  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 09:23:39 UTC] story_done: Story 433 complete: Weather forecast API
+[2026-03-13 09:23:40 UTC] story_start: Story 434: Election history API

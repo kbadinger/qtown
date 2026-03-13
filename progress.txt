@@ -2796,3 +2796,8 @@
 - **Async Error Handling**: Initially forgot to handle the `fetch` rejection globally, causing silent failures; learned to wrap API calls in `try/catch` blocks and return a standardized error shape to the UI.
 - **Date Formatting Convention**: Discovered the codebase relies on `Intl.DateTimeFormat` for locale-aware date strings rather than manual string manipulation, ensuring consistency across different user regions.
 - **Mocking Strategy**: Made the mistake of hardcoding mock data in the component tests; corrected this by injecting the API client as a dependency, allowing for easier mocking of network latency and failure states.
+
+--- Story 433: Weather forecast API (attempts: 2, 2026-03-13 05:24) ---
+- **Non-obvious API constraints**: The weather endpoint requires specific ISO 8601 formatting for date ranges; passing standard `YYYY-MM-DD` strings without the `T` separator caused silent 400 errors that took time to debug.
+- **Error handling pattern**: The codebase consistently wraps external API calls in a `try/catch` block that returns a standardized `ErrorEnvelope` object rather than throwing, ensuring the UI can gracefully degrade without crashing.
+- **Correction on caching**: Initially, I cached the entire response object, but realized the `expires_in` field was dynamic; I corrected this to only cache the core forecast data and re-fetch metadata on every request to avoid stale rate-limit warnings.
