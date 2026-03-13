@@ -1238,3 +1238,22 @@ def create_building_blueprint(db: Session, name: str, building_type: str, x: int
     db.refresh(new_building)
     
     return new_building.id
+
+
+def get_public_buildings(db: Session) -> list[dict]:
+    """Get all public buildings (civic, market, church, tavern, hospital)."""
+    from engine.models import Building
+    
+    public_types = ('civic', 'market', 'church', 'tavern', 'hospital')
+    buildings = db.query(Building).filter(Building.building_type.in_(public_types)).all()
+    
+    return [
+        {
+            "id": b.id,
+            "name": b.name,
+            "type": b.building_type,
+            "x": b.x,
+            "y": b.y
+        }
+        for b in buildings
+    ]

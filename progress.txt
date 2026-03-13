@@ -2556,3 +2556,8 @@
 - **Non-obvious dependency coupling**: The decay logic relied on a hidden global state in the `LegacyConfig` module, causing intermittent failures when tests ran in parallel; this required isolating the config injection to ensure deterministic behavior.
 - **Codebase pattern**: Discovered a recurring "adapter-then-validate" convention where all infrastructure checks wrap raw data in a `HealthCheckAdapter` before applying domain rules, a pattern I should reuse to maintain consistency in Story 422.
 - **Correction**: Initially attempted to fix the decay threshold by modifying the core calculation directly, which broke backward compatibility; corrected by introducing a configurable `DecayStrategy` interface to handle edge cases without altering the core engine.
+
+--- Story 423: Public building access (attempts: 2, 2026-03-13 01:49) ---
+*   **Tricky Logic**: The interaction between `BuildingAccessPolicy` and `TimeBasedRestrictions` was non-obvious; the policy defaults to "deny" unless an explicit "allow" rule matches both the user role *and* the current time window, requiring careful handling of overlapping schedules.
+*   **Codebase Pattern**: This module strictly follows the "Policy-First" convention where all access decisions are centralized in `AccessEvaluator` services, avoiding direct database calls in controllers and ensuring audit logs are written before the response is returned.
+*   **Correction**: Initially, I attempted to cache the access result per user session, but realized this breaks when building hours change dynamically; corrected to cache only the static policy definitions while re-evaluating the time-based conditions on every request.
