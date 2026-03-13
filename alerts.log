@@ -3105,3 +3105,9 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-13 05:21:38 UTC] CRITICAL critical: Story 421 failed: Infrastructure decay
 Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-13 05:22:10 UTC] story_start: Story 419: Building decoration
+[2026-03-13 05:24:24 UTC] deploy_ok: Story 421 deployed: Healthy after 0.1s
+[2026-03-13 05:24:53 UTC] story_done: Story 421 complete: Infrastructure decay
+[2026-03-13 05:24:54 UTC] story_start: Story 419: Building decoration
+[2026-03-13 05:25:24 UTC] deploy_ok: Story 419 deployed: Healthy after 0.1s
+[2026-03-13 05:25:33 UTC] story_done: Story 419 complete: Building decoration
+[2026-03-13 05:25:33 UTC] story_start: Story 422: Building blueprint system

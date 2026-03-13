@@ -2516,3 +2516,8 @@
 *   **Tricky Aspect**: Handling dynamic DOM updates for decoration layers required careful state synchronization to prevent race conditions when multiple assets loaded asynchronously.
 *   **Patterns Discovered**: The codebase strictly separates visual configuration (JSON manifests) from rendering logic, using a centralized `DecorationManager` to enforce a single source of truth for asset paths.
 *   **Mistakes Corrected**: Initially applied CSS transforms directly to DOM elements, causing layout thrashing; corrected by batching updates and using `requestAnimationFrame` for smooth rendering.
+
+--- Story 419: Building decoration (attempts: 4, 2026-03-13 01:26) ---
+- **Tricky Aspect**: Handling dynamic z-index layering for floating decorations was non-obvious; simple CSS stacking contexts failed when nested modals were present, requiring a global state tracker for layer depth.
+- **Pattern Discovered**: The codebase consistently uses a `useDecorations` hook that injects styles via a shadow DOM wrapper to prevent style leakage into the main application theme.
+- **Correction**: Initially applied animations directly to DOM nodes, causing layout thrashing; switched to CSS transforms and `requestAnimationFrame` batching to maintain 60fps performance.
