@@ -2481,3 +2481,8 @@
 - **Non-obvious dependency**: The demolition sequence relies on a hidden `safety_interlock` flag that must be cleared *before* initiating the structural collapse, not after; missing this causes the simulation to hang indefinitely.
 - **Codebase convention**: All resource cleanup in this module follows a "reverse-order" teardown pattern (children before parents), which is strictly enforced by the `DemolitionContext` manager.
 - **Correction**: Initially attempted to parallelize the debris removal threads, which caused race conditions on the shared `site_map`; switched to a sequential, lock-based approach to ensure state consistency.
+
+--- Story 420: Building demolition (attempts: 1, 2026-03-12 22:13) ---
+- **Non-obvious concurrency**: The demolition logic required explicit synchronization on the `Site` object; relying on implicit thread safety caused race conditions when multiple `DemolitionCrew` instances attempted to update the same `Building` status simultaneously.
+- **Codebase pattern**: The project enforces a strict "Command-Query Separation" where state mutations (demolition steps) are distinct from read operations (progress reporting), preventing accidental state changes during reporting phases.
+- **Correction**: Initially, I skipped the `cleanup()` step for failed demolition attempts, leaving orphaned resources in memory; I corrected this by wrapping all demolition actions in a `try-finally` block to ensure resource release regardless of outcome.
