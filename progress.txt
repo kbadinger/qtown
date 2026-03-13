@@ -2621,3 +2621,8 @@
 - **Non-obvious dependency**: The fire safety rating logic unexpectedly relies on the `building_occupancy_type` enum rather than just square footage; missing this caused the rating to default to "Low" for mixed-use structures.
 - **Codebase convention**: This project strictly separates validation rules (in `validators/`) from calculation logic (in `services/`); initial attempts to mix them in a single controller method violated the existing architecture.
 - **Correction**: Initially hardcoded the `max_egress_distance` threshold, which failed for high-rise exceptions; corrected by extracting this into a configurable `FireSafetyConfig` service to handle dynamic regulatory overrides.
+
+--- Story 425: Building fire safety rating (attempts: 7, 2026-03-13 02:39) ---
+- **Non-obvious state coupling**: The fire safety rating logic unexpectedly depends on the `last_inspection_date` being nullified before a new rating can be applied; failing to reset this flag causes the system to skip validation entirely.
+- **Convention for immutable ratings**: The codebase treats `SafetyRating` as an immutable value object; updates are handled by creating a new entity instance rather than mutating the existing one, which is critical for audit trail consistency.
+- **Correction on edge cases**: Initially overlooked that a `null` inspection date should default to the "Pending" state, not "Unknown"; added a specific guard clause to handle uninitialized records correctly.
