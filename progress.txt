@@ -2581,3 +2581,8 @@
 - **Tricky Logic**: The `AccessLevel` enum's interaction with `Role` inheritance was non-obvious; a `Guest` role with `Admin` permissions bypassed the standard `isAuthorized()` check unless explicitly validated against the building's `restrictedZones` list.
 - **Codebase Patterns**: This project heavily relies on the "Strategy Pattern" for access rules, where specific building types delegate authorization logic to separate `AccessPolicy` classes rather than using conditional branching in the controller.
 - **Correction**: Initially, I assumed `public_access` flags were boolean-only, but the schema supports a `time_range` object; I corrected the validation logic to parse and check time constraints before granting entry, preventing a regression in off-hours access.
+
+--- Story 424: Building production scaling (attempts: 3, 2026-03-13 02:08) ---
+- **Tricky/Non-Obvious**: The auto-scaling trigger logic required a "cool-down" window to prevent thrashing; simply reacting to immediate CPU spikes caused the system to oscillate between scaling up and down within seconds.
+- **Patterns/Conventions**: This codebase strictly separates scaling *policy* (thresholds) from scaling *execution* (API calls), using a dedicated event bus to decouple the monitor from the orchestrator.
+- **Mistakes/Corrections**: Initially, I scaled based on average latency over 1 minute, which was too slow for sudden traffic spikes; I corrected this by implementing a "burst" metric that triggers immediate scaling if the 10-second rolling average exceeds the threshold.
