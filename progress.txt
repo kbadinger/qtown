@@ -2781,3 +2781,8 @@
 *   **Non-obvious Time Handling**: The API required strict normalization of local time strings to UTC before database insertion to prevent schedule drift across different user timezones; failing to do so caused duplicate or missing events.
 *   **Codebase Pattern**: The project enforces a "Service-First" architecture where all external I/O (database, cache) is isolated in service classes, leaving controllers strictly for request/response mapping.
 *   **Correction**: Initially attempted to return the full schedule object directly, which exposed internal IDs and draft states; corrected by implementing a dedicated DTO mapper to sanitize the response payload.
+
+--- Story 432: Crime statistics API (attempts: 1, 2026-03-13 05:10) ---
+- **Non-obvious API pagination**: The crime statistics endpoint requires explicit `page` and `per_page` parameters for large datasets; relying on default limits caused silent data truncation during initial aggregation.
+- **Date parsing convention**: The codebase consistently uses ISO 8601 strings for date filtering, but the internal parser fails silently on non-UTC timestamps, requiring explicit `.utc()` conversion before query construction.
+- **Correction on null handling**: Initially assumed missing crime categories would return `null` in the JSON response, but the API returns `undefined` for missing keys, necessitating optional chaining (`?.`) to prevent runtime crashes during mapping.

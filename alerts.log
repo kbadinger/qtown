@@ -3411,3 +3411,11 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
 [2026-03-13 09:08:21 UTC] story_done: Story 429 complete: Building capacity upgrade
 [2026-03-13 09:08:22 UTC] story_start: Story 432: Crime statistics API
+[2026-03-13 09:10:56 UTC] WARN deploy_fail: Story 429 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   1829a75..35a474a  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 09:10:56 UTC] story_done: Story 429 complete: Building capacity upgrade
+[2026-03-13 09:10:57 UTC] story_start: Story 432: Crime statistics API
