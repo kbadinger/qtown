@@ -554,6 +554,7 @@ def hold_expansion_vote(db: Session) -> dict:
     if vote_passed:
         current_tick = db.query(WorldState).first().tick if db.query(WorldState).first() else 0
         event = Event(
+            event_type="expansion_vote",
             description="Town expansion vote passed! The town will grow.",
             tick=current_tick
         )

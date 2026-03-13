@@ -7,6 +7,7 @@ from engine.db import get_db
 router = APIRouter(prefix="/api/stats", tags=["stats"])
 
 
+@router.get("/")
 def get_stats(db: Session = Depends(get_db)):
     from engine.models import NPC, Building, WorldState
 
