@@ -2601,3 +2601,8 @@
 *   **Non-obvious scaling bottleneck**: The database connection pool wasn't the limit; the real choke point was the synchronous external API calls in the worker queue, which required introducing async retry logic with exponential backoff rather than just adding more workers.
 *   **Codebase pattern**: The project enforces a strict "Repository-Service-Controller" separation where all production metrics must be emitted from the Service layer, not the Controller, to ensure consistent instrumentation across API and background jobs.
 *   **Correction**: Initially configured the load balancer health checks to verify only HTTP 200 status, which masked slow-start failures; corrected this by adding a specific latency threshold check to the health probe to catch degraded performance before it cascades.
+
+--- Story 424: Building production scaling (attempts: 5, 2026-03-13 02:08) ---
+*   **Non-obvious scaling bottleneck**: The database connection pool wasn't the primary limiter; it was the synchronous serialization of large payloads in the worker queue, which required switching to async streaming to prevent memory spikes under load.
+*   **Codebase convention**: This project enforces a strict "fail-fast" pattern in the `ScalingService` layer, where any non-200 response from the load balancer immediately triggers a circuit breaker rather than retrying, preventing cascade failures.
+*   **Correction**: Initially deployed the auto-scaling rules based on CPU usage alone, causing thrashing during I/O-heavy operations; corrected by adding a composite metric (CPU + Queue Depth) to the scaling policy.
