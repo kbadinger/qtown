@@ -2761,3 +2761,8 @@
 - **Tricky**: The capacity upgrade logic required handling race conditions between the `scale_request` and `current_usage` snapshots; a simple atomic increment wasn't enough without a retry loop on the `update_capacity` transaction.
 - **Patterns**: The codebase consistently uses the `Result<T, E>` pattern for all I/O operations, wrapping external service calls in a `ServiceClient` trait to enforce dependency injection and simplify mocking in tests.
 - **Mistakes**: Initially attempted to validate the new capacity limit against the database schema constraints inside the controller, but realized validation belongs in the `CapacityValidator` service layer to keep the controller thin and reusable.
+
+--- Story 431: NPC daily schedule API (attempts: 1, 2026-03-13 05:03) ---
+- **Non-obvious constraint**: The `schedule` endpoint required strict validation of time-slot overlaps; the initial implementation failed to handle edge cases where shifts touched exactly at boundaries, requiring a switch to half-open interval logic (`start <= time < end`).
+- **Codebase pattern**: Discovered a consistent convention of wrapping all external API responses in a `Result<T, AppError>` wrapper with a standardized `trace_id` injection, which must be preserved even for internal service calls to maintain observability.
+- **Correction**: Initially cached the daily schedule at the service level, causing stale data for dynamic updates; corrected by moving the cache invalidation trigger to the `update_schedule` mutation and switching to a short-lived, per-request cache for the read path.
