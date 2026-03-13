@@ -2871,3 +2871,8 @@
 - **Non-obvious edge case**: Handling time-series aggregation required explicit handling of timezone normalization before grouping; relying on the database's default `NOW()` caused misaligned buckets when the API was called across different regions.
 - **Codebase pattern**: The project consistently uses a "Repository-Service-Controller" separation where the Service layer is the sole owner of business logic, while Controllers strictly handle request parsing and response formatting.
 - **Correction**: Initially attempted to calculate trade volume directly in the SQL query for performance, but this bypassed the `TradeValidator` logic; refactored to fetch raw data and apply validation in the Service layer to ensure consistency with other endpoints.
+
+--- Story 436: Trade volume API (attempts: 5, 2026-03-13 05:46) ---
+- **Non-obvious pagination logic**: The API enforces a strict `limit` cap of 100 that silently overrides client requests; failing to handle this in the frontend caused infinite loops when total records exceeded the limit.
+- **Codebase convention**: Aggregation queries consistently use the `calculate` helper in `services/analytics` rather than raw SQL, ensuring all metrics are normalized before exposure to the API layer.
+- **Correction made**: Initially assumed `trade_volume` was a simple sum, but discovered it requires filtering out `status: 'CANCELLED'` records at the database level to match the legacy reporting dashboard's definition.

@@ -3512,3 +3512,18 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-13 09:32:01 UTC] deploy_ok: Story 435 deployed: Healthy after 0.0s
 [2026-03-13 09:32:10 UTC] story_done: Story 435 complete: Policy effectiveness API
 [2026-03-13 09:32:10 UTC] story_start: Story 436: Trade volume API
+[2026-03-13 09:41:55 UTC] deploy_ok: Story 435 deployed: Healthy after 0.1s
+[2026-03-13 09:42:12 UTC] story_done: Story 435 complete: Policy effectiveness API
+[2026-03-13 09:42:12 UTC] story_start: Story 436: Trade volume API
+[2026-03-13 09:42:48 UTC] deploy_ok: Story 436 deployed: Healthy after 0.1s
+[2026-03-13 09:42:56 UTC] story_done: Story 436 complete: Trade volume API
+[2026-03-13 09:42:57 UTC] story_start: Story 429: Building capacity upgrade
+[2026-03-13 09:43:06 UTC] deploy_ok: Story 436 deployed: Healthy after 0.1s
+[2026-03-13 09:43:12 UTC] deploy_ok: Story 436 deployed: Healthy after 0.1s
+[2026-03-13 09:43:14 UTC] story_done: Story 436 complete: Trade volume API
+[2026-03-13 09:43:15 UTC] story_start: Story 429: Building capacity upgrade
+[2026-03-13 09:43:20 UTC] story_done: Story 436 complete: Trade volume API
+[2026-03-13 09:43:21 UTC] story_start: Story 429: Building capacity upgrade
+[2026-03-13 09:43:46 UTC] deploy_ok: Story 436 deployed: Healthy after 0.0s
+[2026-03-13 09:43:55 UTC] story_done: Story 436 complete: Trade volume API
+[2026-03-13 09:43:56 UTC] story_start: Story 429: Building capacity upgrade
