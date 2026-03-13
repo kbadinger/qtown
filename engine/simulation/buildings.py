@@ -1257,3 +1257,27 @@ def get_public_buildings(db: Session) -> list[dict]:
         }
         for b in buildings
     ]
+
+
+def get_production_multiplier(db: Session, building_id: int) -> float:
+    """Calculate production multiplier for a building based on level and worker capacity."""
+    from engine.models import Building, NPC
+    
+    building = db.query(Building).filter(Building.id == building_id).first()
+    if not building:
+        return 1.0
+    
+    # Base multiplier from level: 1.0 + (level-1)*0.25
+    multiplier = 1.0 + (building.level - 1) * 0.25
+    
+    # Bonus if workers >= capacity and capacity > 0
+    if building.capacity and building.capacity > 0:
+        workers = db.query(NPC).filter(
+            NPC.work_building_id == building_id,
+            NPC.is_dead == 0
+        ).count()
+        
+        if workers >= building.capacity:
+            multiplier += 0.1
+    
+    return float(multiplier)

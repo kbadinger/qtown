@@ -2566,3 +2566,8 @@
 - **Tricky/Non-obvious**: The `AccessControlService` relies on a cached `RoleHierarchy` that is only invalidated on explicit admin actions, not on user profile updates; failing to trigger this cache refresh caused stale permissions during the test run.
 - **Patterns/Conventions**: This codebase strictly separates "authorization checks" (service layer) from "access enforcement" (middleware), and all public building endpoints must explicitly declare `@RequiresPermission(BUILDING_ACCESS)` rather than relying on role-based routing.
 - **Mistakes corrected**: Initially implemented a direct database lookup for building ownership, which bypassed the centralized `PermissionEvaluator`; corrected to use the evaluator to ensure audit logging and multi-tenant isolation rules were applied consistently.
+
+--- Story 423: Public building access (attempts: 5, 2026-03-13 02:02) ---
+*   **Tricky**: The access control logic relies on a complex intersection of `role`, `department`, and `building_zone` attributes; a simple `if` check fails when a user has multiple overlapping roles, requiring a set-based intersection approach.
+*   **Pattern**: The codebase consistently uses a `PolicyEvaluator` service that returns a `Result<AccessGranted, AccessDenied>` enum rather than throwing exceptions, ensuring all access decisions are traceable in the audit log.
+*   **Correction**: Initially attempted to cache the `building_zone` lookup in the controller, which caused stale data issues during dynamic zone updates; corrected by moving the cache invalidation logic to the `ZoneManager` event listener.
