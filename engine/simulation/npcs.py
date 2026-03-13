@@ -3209,3 +3209,78 @@ def vary_npc_lifespan(db: Session) -> int:
         db.commit()
         
     return count
+
+
+def check_immigration_wave(db: Session) -> int:
+    """Check if immigration wave should occur and create immigrants if conditions met."""
+    from engine.models import NPC, Event
+    import random
+    
+    # Get all living NPCs
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    if not living_npcs:
+        return 0
+    
+    # Calculate average happiness
+    total_happiness = sum(npc.happiness for npc in living_npcs)
+    avg_happiness = total_happiness / len(living_npcs)
+    
+    living_count = len(living_npcs)
+    
+    # Check conditions: avg happiness > 70 and living NPCs < 20
+    if avg_happiness > 70 and living_count < 20:
+        # Create 2 immigrant NPCs
+        immigrants_created = 0
+        
+        for i in range(2):
+            # Generate a name for the immigrant
+            name = generate_npc_name(db)
+            
+            # Place immigrant at a random position
+            x, y = random.randint(0, 9), random.randint(0, 9)
+            
+            # Create the immigrant NPC
+            immigrant = NPC(
+                name=name,
+                role='immigrant',
+                x=x,
+                y=y,
+                gold=20,
+                hunger=50,
+                energy=80,
+                happiness=75,
+                age=random.randint(18, 45),
+                max_age=random.randint(60, 80),
+                is_dead=0,
+                is_bankrupt=0,
+                illness_severity=0,
+                illness=0,
+                home_building_id=None,
+                work_building_id=None,
+                target_x=None,
+                target_y=None,
+                personality='adventurous',
+                skill='none',
+                memory_events='[]',
+                favorite_buildings='[]',
+                avoided_areas='[]',
+                experience='[]'
+            )
+            
+            db.add(immigrant)
+            immigrants_created += 1
+        
+        # Create immigration event
+        event = Event(
+            event_type='immigration',
+            description=f'{immigrants_created} immigrants arrived in town',
+            tick=db.query(WorldState).first().tick if db.query(WorldState).first() else 0
+        )
+        db.add(event)
+        
+        db.commit()
+        
+        return immigrants_created
+    
+    return 0

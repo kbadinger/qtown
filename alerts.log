@@ -11,3 +11,17 @@ Indexing...
 Uploading..
 [2026-03-13 20:43:00 UTC] story_done: Story 442 complete: NPC lifespan variation
 [2026-03-13 20:43:00 UTC] story_start: Story 443: Town reputation score
+[2026-03-13 20:59:12 UTC] WARN deploy_fail: Story 443 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   777ba11..b3baf34  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 20:59:12 UTC] story_done: Story 443 complete: Town reputation score
+[2026-03-13 20:59:13 UTC] story_start: Story 444: Immigration wave
+[2026-03-13 21:02:45 UTC] WARN story_fail: Story 444 struggling — attempt 5/12
+Immigration wave
+[2026-03-13 21:03:22 UTC] CRITICAL loop: Story 444: same error 5x in a row — requesting help
+`tests/test_npcs.py::test_s444_check_immigration_wave FAILED              [100%]`
+[2026-03-13 21:03:22 UTC] CRITICAL needs_help: Story 444 needs help — waiting 10min for fix
+`tests/test_npcs.py::test_s444_check_immigration_wave FAILED              [100%]`

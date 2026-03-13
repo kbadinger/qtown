@@ -3006,3 +3006,8 @@
 - **Tricky Logic**: The reputation calculation required handling non-linear decay rates based on town size, which wasn't immediately obvious from the initial requirements and required careful boundary testing.
 - **Codebase Pattern**: The project consistently uses a `ScoreContext` object to pass mutable state through pure calculation functions, avoiding global variables and simplifying unit testing.
 - **Correction**: Initially, I applied the "heroic deed" bonus before the "crime" penalty, causing temporary score inflation; I corrected this by enforcing a strict order of operations (penalties first, then bonuses) to match the spec.
+
+--- Story 444: Immigration wave (attempts: 1, 2026-03-13 17:13) ---
+*   **Tricky**: The `immigration_wave` logic required careful handling of concurrent state updates; race conditions occurred when multiple agents attempted to register in the same district simultaneously, necessitating atomic batch processing.
+*   **Patterns**: The codebase consistently uses a "command-first, validate-later" pattern for domain events, where validation rules are decoupled from the core action logic to allow for easier testing of edge cases.
+*   **Correction**: Initially, I calculated the new population density before persisting the migration event, leading to inconsistent snapshots; I corrected this by ensuring all state mutations happen within a single transactional block.
