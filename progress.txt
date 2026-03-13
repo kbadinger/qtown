@@ -2901,3 +2901,8 @@
 - **Tricky/Non-obvious**: The capacity upgrade logic required handling a race condition where the `scale_request` event could fire before the `resource_pool` was fully initialized, necessitating a retry mechanism with exponential backoff rather than a simple synchronous check.
 - **Patterns/Conventions**: This codebase strictly separates "command" (write) and "query" (read) paths; all state mutations must go through the `CapacityOrchestrator` facade, while direct repository access is reserved for read-only operations to ensure audit logging consistency.
 - **Mistakes/Corrections**: Initially, I attempted to update the `max_capacity` field directly in the database, which bypassed the validation middleware; I corrected this by routing the change through the existing `CapacityService` to ensure all dependent metrics were recalculated atomically.
+
+--- Story 432: Crime statistics API (attempts: 4, 2026-03-13 05:46) ---
+- **Non-obvious pagination logic**: The API requires explicit `limit` and `offset` parameters for every request; relying on default values caused silent data truncation in large datasets.
+- **Date filtering convention**: Query parameters must use ISO 8601 format (`YYYY-MM-DD`) without time components; including timestamps caused the backend to return empty results due to strict equality checks.
+- **Error handling correction**: Initially assumed a 404 meant "no data found," but the API returns 404 for invalid endpoints and 200 with an empty array for no matching records; updated the client to distinguish these cases.
