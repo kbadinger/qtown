@@ -3127,3 +3127,11 @@ Uploading..
 Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
 [2026-03-13 05:29:07 UTC] story_done: Story 419 complete: Building decoration
 [2026-03-13 05:29:07 UTC] story_start: Story 422: Building blueprint system
+[2026-03-13 05:37:19 UTC] WARN deploy_fail: Story 422 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   f989d57..10a7339  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 05:37:20 UTC] story_done: Story 422 complete: Building blueprint system
+[2026-03-13 05:37:20 UTC] story_start: Story 423: Public building access

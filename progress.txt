@@ -2536,3 +2536,8 @@
 - **Non-obvious complexity**: Handling the recursive dependency resolution for nested blueprint components was trickier than expected; a simple depth-first traversal failed to detect circular references, requiring an explicit "visited" set to prevent infinite loops.
 - **Codebase pattern**: The project consistently separates "definition" (schema/structure) from "instantiation" (runtime object creation) using a factory pattern, which I initially bypassed but later adopted to maintain consistency with existing serialization logic.
 - **Correction**: I initially stored blueprint metadata directly in the global state, causing race conditions during concurrent loads; I corrected this by scoping the metadata to a transient build context that is cleared after compilation.
+
+--- Story 422: Building blueprint system (attempts: 1, 2026-03-13 01:37) ---
+- **Non-obvious state coupling**: The blueprint validation logic unexpectedly relied on the global `projectContext` rather than isolated props, requiring a refactor to inject context explicitly to prevent race conditions during async saves.
+- **Codebase convention**: Discovered a strict "Builder-Validator-Renderer" separation pattern; validation rules are defined as pure functions in `utils/rules.ts` and never mixed with React component logic.
+- **Correction**: Initially attempted to memoize the entire blueprint tree, causing stale data issues; switched to memoizing only leaf-node calculations to ensure reactivity when parent constraints changed.
