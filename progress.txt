@@ -2711,3 +2711,8 @@
 *   **Non-obvious state coupling**: The stall's inventory capacity is dynamically tied to the merchant's `reputation_level` rather than being a static config, requiring careful recalculation whenever reputation changes to prevent overflow errors.
 *   **Codebase convention**: This system strictly separates "display logic" (what the player sees) from "transaction logic" (price calculation and stock deduction), with all state mutations routed through the `MarketService` singleton to ensure auditability.
 *   **Correction**: Initially attempted to handle currency exchange directly in the UI component; refactored to a dedicated `TransactionValidator` to prevent race conditions when multiple players interact with the same stall simultaneously.
+
+--- Story 428: Market stall system (attempts: 5, 2026-03-13 03:46) ---
+- **Tricky/Non-obvious**: The `MarketStall` entity requires explicit lifecycle management for its inventory; simply adding items to the list doesn't trigger the `onStockChanged` event unless the `notifyObservers` method is called manually after the mutation.
+- **Patterns/Conventions**: The codebase strictly separates data access from business logic; all direct database writes for stall transactions must go through the `TransactionRepository` interface, never directly within the service layer.
+- **Mistakes corrected**: Initially implemented a synchronous loop to calculate stall revenue, which caused timeouts during high-volume market days; corrected by switching to an asynchronous aggregation job that runs on a separate thread pool.
