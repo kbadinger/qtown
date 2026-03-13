@@ -2646,3 +2646,8 @@
 - **Non-obvious logic**: The fire safety rating calculation relies on a weighted sum of component ratings, but the `fire_suppression` multiplier only applies if the `sprinkler_coverage` exceeds 90%, a condition easily missed without tracing the full dependency chain.
 - **Codebase pattern**: This module consistently uses a "builder" pattern for configuration objects, where optional safety features are initialized as `null` and defaulted to zero inside the `calculate()` method rather than at the constructor level.
 - **Correction made**: Initially treated the `evacuation_route` score as a linear addition, but corrected it to use a lookup table after realizing the rating caps at 100 regardless of individual component scores.
+
+--- Story 425: Building fire safety rating (attempts: 1, 2026-03-13 03:24) ---
+- **Tricky Logic**: The rating calculation required handling a "weakest link" scenario where a single missing component (e.g., smoke detectors) invalidates the entire system score, rather than just reducing it proportionally.
+- **Codebase Pattern**: The project consistently uses a `RatingCalculator` service object with a chain of responsibility pattern for validation rules, keeping the controller logic thin.
+- **Correction**: Initially, I returned the raw integer score from the API; I corrected this to return a standardized enum string (e.g., "A", "B", "Fail") to align with the frontend's display requirements and avoid magic numbers.
