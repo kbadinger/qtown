@@ -2821,3 +2821,8 @@
 - **Non-obvious pagination**: The API uses offset-based pagination but requires explicit handling of the `total` count field to calculate the correct `next_cursor`, which wasn't immediately clear from the initial schema.
 - **Date filtering convention**: Historical election data relies on `YYYY-MM-DD` strings for range queries; passing ISO 8601 timestamps with time components causes silent failures, so strict date-only formatting is required.
 - **Correction on null handling**: Initially returned `null` for missing candidate names, but the frontend expects an empty string `""` to avoid rendering `null` in the UI; updated the serialization layer to normalize these fields.
+
+--- Story 434: Election history API (attempts: 3, 2026-03-13 05:30) ---
+*   **Non-obvious API constraints**: The election history endpoint required strict pagination handling where the `next_cursor` parameter is mandatory for subsequent requests, unlike standard offset-based pagination.
+*   **Codebase pattern**: The project consistently uses a "service-layer" abstraction for external API calls, isolating HTTP logic from business logic to facilitate mocking in unit tests.
+*   **Correction**: Initially attempted to cache the entire response in memory; corrected to implement a streaming iterator to handle large datasets without hitting memory limits.
