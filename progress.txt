@@ -2726,3 +2726,8 @@
 - **Non-obvious complexity**: Handling inventory state transitions required careful sequencing; updating the stall's display before finalizing the transaction caused race conditions in the UI, necessitating a "pending" state lock.
 - **Codebase pattern**: The project strictly separates `MarketEntity` data models from `StallController` logic; direct manipulation of entity properties outside the controller methods is consistently refactored during code review.
 - **Correction made**: Initially attempted to calculate taxes at the point of sale, but discovered the existing `PricingStrategy` interface already handles regional tax rules, so I removed the redundant logic to avoid double-charging.
+
+--- Story 428: Market stall system (attempts: 3, 2026-03-13 03:53) ---
+- **Tricky/Non-obvious**: Handling the `stall_capacity` constraint required careful ordering of operations; attempting to sell before validating available stock caused race conditions in the test suite, necessitating a pre-check guard clause.
+- **Patterns/Conventions**: The codebase consistently uses a "Command-Query Separation" pattern where state mutations (e.g., `sell_item`) are strictly separated from data retrieval (e.g., `get_inventory`), and all domain entities are immutable by default.
+- **Mistakes/Corrections**: Initially attempted to modify the `MarketStall` object directly within the transaction loop, which broke isolation; corrected by introducing a `StallTransaction` aggregate that validates the entire batch before committing changes.

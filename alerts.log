@@ -3342,3 +3342,22 @@ Indexing...
 Uploading..
 [2026-03-13 07:46:57 UTC] story_done: Story 428 complete: Market stall system
 [2026-03-13 07:46:58 UTC] story_start: Story 429: Building capacity upgrade
+[2026-03-13 07:46:59 UTC] WARN deploy_fail: Story 428 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   19c99dc..d6f3084  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 07:46:59 UTC] story_done: Story 428 complete: Market stall system
+[2026-03-13 07:47:00 UTC] story_start: Story 429: Building capacity upgrade
+[2026-03-13 07:47:06 UTC] WARN deploy_fail: Story 428 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   d6f3084..fb4caca  main -> main
+
+Indexing...
+Uploading..
+[2026-03-13 07:47:07 UTC] story_done: Story 428 complete: Market stall system
+[2026-03-13 07:47:07 UTC] story_start: Story 429: Building capacity upgrade
+[2026-03-13 07:48:05 UTC] deploy_ok: Story 428 deployed: Healthy after 0.1s
+[2026-03-13 07:48:21 UTC] story_done: Story 428 complete: Market stall system
+[2026-03-13 07:48:22 UTC] story_start: Story 429: Building capacity upgrade
