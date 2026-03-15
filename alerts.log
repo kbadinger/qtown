@@ -76,3 +76,8 @@ Indexing...
 Uploading..
 [2026-03-15 04:36:42 UTC] story_done: Story 217 complete: Mood contagion between NPCs
 [2026-03-15 04:36:42 UTC] story_start: Story 218: NPC daily routines based on time of day
+[2026-03-15 04:38:39 UTC] WARN deploy_fail: Story 218 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build FAILED after 97.0s
+
+Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 's
+[2026-03-15 04:38:40 UTC] story_done: Story 218 complete: NPC daily routines based on time of day
+[2026-03-15 04:38:40 UTC] story_start: Story 219: NPC gossip system

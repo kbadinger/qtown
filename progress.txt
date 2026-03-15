@@ -3051,3 +3051,8 @@
 - **Time-based state transitions are non-linear**: Implementing routines required handling "drift" where NPCs don't snap instantly to a new state at the hour mark, but rather transition based on a `progress` float that accumulates over the day cycle.
 - **Convention of `Tick` vs. `Update`**: The codebase strictly separates `Tick` (time-driven logic like routine checks) from `Update` (frame-driven logic like animation), preventing routine checks from running every frame and causing performance spikes.
 - **Correction on edge-case handling**: Initially failed to handle the midnight wrap-around correctly, causing NPCs to get stuck in a "night" state; fixed by normalizing the `currentHour` against the 24-hour cycle before comparing against routine thresholds.
+
+--- Story 219: NPC gossip system (attempts: 1, 2026-03-15 01:11) ---
+- **Tricky**: The non-obvious dependency on the `WorldState` singleton for gossip propagation meant that isolated unit tests failed without mocking the global context; I had to refactor the gossip logic to accept a state interface for testability.
+- **Patterns**: This codebase consistently uses a "Event Bus" pattern for decoupled communication between NPCs and the player, rather than direct method calls, which simplifies adding new gossip triggers later.
+- **Mistakes**: I initially stored gossip history in a flat list, causing O(n) lookups for duplicate detection; I corrected this by switching to a `Set` keyed by `NPC_ID` and `Topic_ID` to ensure constant-time checks.

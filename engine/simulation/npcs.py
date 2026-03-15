@@ -3455,3 +3455,59 @@ def spread_mood(db: Session) -> None:
             # Floor at 0
             if npc.happiness < 0:
                 npc.happiness = 0
+
+
+def spread_gossip(db: Session) -> None:
+    """Spread gossip between NPCs on the same tile."""
+    from engine.models import NPC
+    import json
+    
+    # Find all living NPCs
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    # Group NPCs by tile (x, y)
+    tile_groups = {}
+    for npc in living_npcs:
+        tile_key = (npc.x, npc.y)
+        if tile_key not in tile_groups:
+            tile_groups[tile_key] = []
+        tile_groups[tile_key].append(npc)
+    
+    # Process each tile with multiple NPCs
+    for tile_key, npcs_on_tile in tile_groups.items():
+        if len(npcs_on_tile) < 2:
+            continue
+        
+        # Create all pairs of NPCs on this tile
+        for i in range(len(npcs_on_tile)):
+            for j in range(i + 1, len(npcs_on_tile)):
+                npc_a = npcs_on_tile[i]
+                npc_b = npcs_on_tile[j]
+                
+                # Parse memory events
+                mem_a = json.loads(npc_a.memory_events) if npc_a.memory_events else []
+                mem_b = json.loads(npc_b.memory_events) if npc_b.memory_events else []
+                
+                # Ensure they're lists
+                if not isinstance(mem_a, list):
+                    mem_a = []
+                if not isinstance(mem_b, list):
+                    mem_b = []
+                
+                # Find events npc_a doesn't have from npc_b
+                new_events_a = [e for e in mem_b if e not in mem_a][:2]
+                # Find events npc_b doesn't have from npc_a
+                new_events_b = [e for e in mem_a if e not in mem_b][:2]
+                
+                # Add new events to each NPC's memory
+                if new_events_a:
+                    mem_a.extend(new_events_a)
+                    mem_a = mem_a[:10]  # Cap at 10
+                    npc_a.memory_events = json.dumps(mem_a)
+                
+                if new_events_b:
+                    mem_b.extend(new_events_b)
+                    mem_b = mem_b[:10]  # Cap at 10
+                    npc_b.memory_events = json.dumps(mem_b)
+    
+    db.commit()
