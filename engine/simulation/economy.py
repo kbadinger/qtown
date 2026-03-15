@@ -2169,3 +2169,41 @@ def calculate_town_reputation(db: Session) -> dict:
         "happiness": happiness,
         "reputation": reputation
     }
+
+
+def apply_resource_spoilage(db: Session) -> None:
+    """Apply 10% spoilage to Food, Fish, and Bread resources (excluding warehouses)."""
+    from engine.models import Resource, Building, Event, WorldState
+    
+    # Get all food-type resources
+    food_resources = db.query(Resource).filter(
+        Resource.name.in_(['Food', 'Fish', 'Bread'])
+    ).all()
+    
+    total_spoiled = 0
+    
+    for resource in food_resources:
+        # Check if this resource is in a warehouse
+        if resource.building_id:
+            building = db.query(Building).filter(Building.id == resource.building_id).first()
+            if building and building.building_type == 'warehouse':
+                continue  # Skip warehouse resources
+        
+        # Apply 10% spoilage (integer division)
+        spoiled_amount = resource.quantity // 10
+        if spoiled_amount > 0:
+            resource.quantity -= spoiled_amount
+            total_spoiled += spoiled_amount
+    
+    # Create event if there was any spoilage
+    if total_spoiled > 0:
+        # Get current tick from WorldState
+        world_state = db.query(WorldState).first()
+        current_tick = world_state.tick if world_state else 0
+        
+        event = Event(
+            event_type='spoilage',
+            description=f'{total_spoiled} units of food spoiled',
+            tick=current_tick
+        )
+        db.add(event)
