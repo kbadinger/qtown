@@ -42,3 +42,21 @@ Indexing...
 Uploading..
 [2026-03-13 22:19:32 UTC] story_done: Story 447 complete: Town naming ceremony
 [2026-03-13 22:19:33 UTC] story_start: Story 448: Resource discovery
+[2026-03-13 22:41:24 UTC] deploy_ok: Story 448 deployed: Healthy after 0.1s
+[2026-03-13 22:41:41 UTC] story_done: Story 448 complete: Resource discovery
+[2026-03-13 22:41:41 UTC] story_start: Story 449: Legacy system
+[2026-03-13 22:54:29 UTC] WARN story_fail: Story 449 struggling — attempt 5/12
+Legacy system
+[2026-03-13 22:55:41 UTC] CRITICAL loop: Story 449: same error 5x in a row — requesting help
+`tests/test_npcs.py::test_s449_record_npc_legacy FAILED                   [100%]`
+[2026-03-13 22:55:41 UTC] CRITICAL needs_help: Story 449 needs help — waiting 10min for fix
+`tests/test_npcs.py::test_s449_record_npc_legacy FAILED                   [100%]`
+[2026-03-13 23:17:46 UTC] CRITICAL critical: Story 449: still failing after help + 3 retries — stopping
+`tests/test_npcs.py::test_s449_record_npc_legacy FAILED                   [100%]`
+[2026-03-13 23:17:47 UTC] CRITICAL critical: Story 449 failed: Legacy system
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-14 23:01:28 UTC] story_start: Story 449: Legacy system
+[2026-03-14 23:01:33 UTC] start: Ralph online — 394/450 stories complete
+[2026-03-14 23:01:33 UTC] story_start: Story 449: Legacy system
+[2026-03-15 03:01:47 UTC] start: Ralph online — 395/450 stories complete
+[2026-03-15 03:01:47 UTC] story_start: Story 450: Simulation speed report

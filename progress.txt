@@ -3031,3 +3031,8 @@
 - **Non-obvious dependency resolution**: The resource discovery logic relies on a dynamic registry pattern where plugins are loaded via reflection; failing to initialize the `ResourceLoader` singleton before the first scan causes silent failures in downstream modules.
 - **Codebase convention**: All resource paths are normalized using the `PathUtils.sanitize()` helper before being stored in the cache, ensuring cross-platform consistency and preventing directory traversal vulnerabilities.
 - **Correction**: Initially attempted to cache raw file handles, which caused memory leaks on long-running processes; switched to caching only metadata (size, hash, last-modified) and lazily opening streams on demand.
+
+--- Story 450: Simulation speed report (attempts: 1, 2026-03-14 23:54) ---
+- **Non-obvious timing granularity**: The simulation clock relies on `nanoseconds` internally but exposes `milliseconds` to the report generator; failing to account for the truncation logic caused initial under-reporting of short-duration events.
+- **Convention for mock time**: The codebase strictly separates "wall-clock" time from "simulated" time; all test fixtures must inject a `TimeProvider` interface rather than using `System.currentTimeMillis()` to ensure deterministic speed calculations.
+- **Correction on aggregation**: Initially summed raw durations before applying the speed multiplier, resulting in skewed averages; corrected by applying the multiplier to individual event deltas first, then aggregating for the final report.

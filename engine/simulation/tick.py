@@ -790,3 +790,32 @@ def save_town_snapshot(db: Session) -> dict | None:
     db.commit()
     
     return snapshot
+
+
+def generate_speed_report(db: Session) -> dict:
+    """Generate simulation speed report with entity counts and complexity."""
+    from engine.models import NPC, Building, Resource, Event, Transaction, WorldState
+    
+    total_npcs = db.query(NPC).count()
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).count()
+    buildings = db.query(Building).count()
+    resources = db.query(Resource).count()
+    events = db.query(Event).count()
+    transactions = db.query(Transaction).count()
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    tick = world_state.tick if world_state else 0
+    
+    complexity = total_npcs * buildings
+    
+    return {
+        "tick": tick,
+        "total_npcs": total_npcs,
+        "living_npcs": living_npcs,
+        "buildings": buildings,
+        "resources": resources,
+        "events": events,
+        "transactions": transactions,
+        "complexity": complexity
+    }
