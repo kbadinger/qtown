@@ -184,3 +184,6 @@ Uploading..
 [2026-03-15 18:54:08 UTC] deploy_ok: Story 241 deployed: Healthy after 0.1s
 [2026-03-15 18:54:26 UTC] story_done: Story 241 complete: Refugee wave after disasters
 [2026-03-15 18:54:26 UTC] story_start: Story 242: Policy effect enforcement
+[2026-03-15 19:29:20 UTC] deploy_ok: Story 242 deployed: Healthy after 0.1s
+[2026-03-15 19:29:37 UTC] story_done: Story 242 complete: Policy effect enforcement
+[2026-03-15 19:29:37 UTC] story_start: Story 243: Mayor corruption system

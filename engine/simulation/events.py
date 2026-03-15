@@ -2924,3 +2924,56 @@ def apply_policy_effects(db: Session) -> int:
     
     db.commit()
     return count
+
+
+def check_corruption(db: Session) -> float:
+    """Check for mayor corruption and steal gold if greedy."""
+    from engine.models import NPC, Treasury, Crime
+    import json
+    
+    # Find mayor
+    mayor = db.query(NPC).filter(NPC.role == 'mayor').first()
+    
+    if not mayor:
+        return 0.0
+    
+    # Check personality for 'greedy' trait
+    personality_data = {}
+    if mayor.personality:
+        try:
+            parsed = json.loads(mayor.personality)
+            if isinstance(parsed, dict):
+                personality_data = parsed
+        except (json.JSONDecodeError, TypeError):
+            pass
+    
+    if 'greedy' not in personality_data:
+        return 0.0
+    
+    # Find first Treasury
+    treasury = db.query(Treasury).first()
+    
+    if not treasury:
+        return 0.0
+    
+    # Get current treasury gold (handle potential None)
+    treasury_gold = treasury.gold if treasury.gold else 0.0
+    
+    if treasury_gold <= 0:
+        return 0.0
+    
+    # Calculate stolen amount (10%)
+    stolen_amount = treasury_gold * 0.1
+    
+    # Move gold
+    treasury.gold = treasury_gold - stolen_amount
+    mayor.gold = (mayor.gold if mayor.gold else 0.0) + stolen_amount
+    
+    # Create Crime record
+    crime = Crime(
+        type='corruption',
+        criminal_npc_id=mayor.id
+    )
+    db.add(crime)
+    
+    return stolen_amount

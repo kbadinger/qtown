@@ -3171,3 +3171,8 @@
 - **Tricky**: Determining the correct scope for policy enforcement was non-obvious; the logic must run *before* the transaction commits but *after* the initial validation to avoid race conditions with concurrent updates.
 - **Patterns**: The codebase consistently separates policy definition (data) from enforcement logic (service layer), using a dedicated `PolicyEnforcer` interface that injects context-aware checks rather than hardcoding rules in controllers.
 - **Correction**: Initially attempted to return raw policy violations to the UI, which exposed internal logic details; corrected by mapping specific policy codes to generic, user-friendly error messages in the exception handler.
+
+--- Story 243: Mayor corruption system (attempts: 1, 2026-03-15 16:09) ---
+- **Non-obvious Scope**: The corruption logic required intercepting the `Vote` event at the transaction level, not just updating a state variable, to ensure the audit trail remained immutable while the public result was altered.
+- **Codebase Pattern**: The system relies heavily on the `RoleManager` contract for permission checks; adding new corruption vectors required extending this manager rather than creating isolated access controls.
+- **Correction**: Initially attempted to store the "real" vote in a separate mapping, which broke the gas optimization pattern; corrected by using a private modifier that only alters the return value of the getter function without duplicating storage.
