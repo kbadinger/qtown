@@ -2558,3 +2558,37 @@ def trigger_merchant_caravan(db: Session) -> None:
     # Sells at 2x calculate_price, buys at 0.5x
     event.description = f"A merchant caravan has arrived at the town edge (sells at 2x, buys at 0.5x)"
     db.flush()
+
+
+def check_seasonal_events(db: Session) -> None:
+    """Check for seasonal events like harvest festival and winter begins."""
+    from engine.models import Resource
+    from sqlalchemy import func
+    
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return
+    
+    season = get_season(db)
+    current_day = world_state.day
+    
+    # Check for fall harvest festival
+    if season == 'fall' and current_day % 25 == 1:
+        # Check total food resource quantity
+        total_food = db.query(func.sum(Resource.quantity)).filter(
+            Resource.name.ilike("%food%") | Resource.name.ilike("%grain%")
+        ).scalar() or 0
+        
+        if total_food > 50:
+            trigger_harvest_festival(db)
+    
+    # Check for winter begins
+    if season == 'winter' and current_day % 25 == 1:
+        winter_event = Event(
+            event_type="winter_begins",
+            description="Winter has begun",
+            tick=world_state.tick,
+            severity="low"
+        )
+        db.add(winter_event)
+        db.commit()
