@@ -2660,3 +2660,36 @@ def spread_epidemic(db: Session) -> int:
                 new_infections += 1
     
     return new_infections
+
+
+def check_infrastructure_collapse(db: Session) -> bool:
+    """Check if infrastructure has collapsed (50%+ buildings with capacity < 5)."""
+    from engine.models import Building, Event, WorldState
+    
+    # Count total buildings and damaged buildings (capacity < 5)
+    total_buildings = db.query(Building).count()
+    
+    if total_buildings == 0:
+        return False
+    
+    damaged_buildings = db.query(Building).filter(Building.capacity < 5).count()
+    
+    damaged_ratio = damaged_buildings / total_buildings
+    
+    if damaged_ratio > 0.5:
+        # Create infrastructure collapse event
+        event = Event(
+            event_type='infrastructure_collapse',
+            severity='critical',
+            description='Infrastructure collapse detected: over 50% of buildings damaged'
+        )
+        db.add(event)
+        
+        # Set infrastructure score to 0
+        world_state = db.query(WorldState).first()
+        if world_state:
+            world_state.infrastructure_score = 0
+        
+        return True
+    
+    return False

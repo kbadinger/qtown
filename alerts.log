@@ -164,3 +164,6 @@ Indexing...
 Uploading..
 [2026-03-15 14:46:38 UTC] story_done: Story 236 complete: Winter hardship effects
 [2026-03-15 14:46:39 UTC] story_start: Story 237: Epidemic contagion spread
+[2026-03-15 15:43:10 UTC] deploy_ok: Story 237 deployed: Healthy after 0.1s
+[2026-03-15 15:43:27 UTC] story_done: Story 237 complete: Epidemic contagion spread
+[2026-03-15 15:43:28 UTC] story_start: Story 238: Infrastructure collapse cascade
