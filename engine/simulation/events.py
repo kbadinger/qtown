@@ -3006,3 +3006,45 @@ def calculate_approval(db: Session) -> int:
         db.add(Event(event_type='prosperity', tick=tick))
         
     return approval
+
+
+def check_emergency_election(db: Session) -> bool:
+    """Check if an emergency election should be held.
+    
+    Counts 'unrest' Events in the last 50 ticks.
+    If count >= 3, triggers hold_election(db) and creates an Event with event_type='emergency_election'.
+    Returns True if election triggered, False otherwise.
+    """
+    from engine.models import WorldState, Event
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return False
+    
+    current_tick = world_state.tick
+    start_tick = current_tick - 50
+    
+    # Count unrest events in the last 50 ticks
+    unrest_count = db.query(Event).filter(
+        Event.event_type == 'unrest',
+        Event.tick >= start_tick,
+        Event.tick <= current_tick
+    ).count()
+    
+    if unrest_count >= 3:
+        # Trigger the election
+        hold_election(db)
+        
+        # Create the emergency election event
+        emergency_event = Event(
+            event_type='emergency_election',
+            description=f"Emergency election triggered due to {unrest_count} unrest events.",
+            tick=current_tick
+        )
+        db.add(emergency_event)
+        db.commit()
+        
+        return True
+    
+    return False

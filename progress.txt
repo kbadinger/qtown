@@ -3181,3 +3181,8 @@
 *   **Non-obvious dependency**: The approval rating calculation relies on a cached `UserPreference` context that isn't refreshed on every render, requiring manual invalidation when external survey data updates.
 *   **Codebase convention**: All rating metrics are normalized to a 0–100 float before being passed to the UI layer; raw percentages must never be used directly in the `RatingBadge` component.
 *   **Correction**: Initially missed the edge case where `null` survey responses caused a division-by-zero error; fixed by adding a guard clause that defaults to `0.0` instead of throwing.
+
+--- Story 245: Emergency election on low approval (attempts: 1, 2026-03-15 16:58) ---
+- **Non-obvious dependency**: The election trigger relies on a cached `approval_score` snapshot rather than the live database value; updating the score mid-process without refreshing the cache causes the election to fail silently.
+- **Codebase pattern**: State transitions in the election module strictly follow the `Event -> Validator -> StateUpdater` chain; bypassing the validator for "emergency" flags breaks the audit trail and is a recurring anti-pattern.
+- **Correction made**: Initially assumed the `low_approval` threshold was a global constant, but discovered it's a dynamic config per region; fixed the unit tests to inject region-specific thresholds instead of hardcoding the global default.
