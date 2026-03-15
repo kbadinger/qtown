@@ -3036,3 +3036,8 @@
 - **Non-obvious timing granularity**: The simulation clock relies on `nanoseconds` internally but exposes `milliseconds` to the report generator; failing to account for the truncation logic caused initial under-reporting of short-duration events.
 - **Convention for mock time**: The codebase strictly separates "wall-clock" time from "simulated" time; all test fixtures must inject a `TimeProvider` interface rather than using `System.currentTimeMillis()` to ensure deterministic speed calculations.
 - **Correction on aggregation**: Initially summed raw durations before applying the speed multiplier, resulting in skewed averages; corrected by applying the multiplier to individual event deltas first, then aggregating for the final report.
+
+--- Story 216: Personality-driven NPC decisions (attempts: 1, 2026-03-15 00:14) ---
+*   **Non-obvious state coupling**: NPC decision logic was tightly coupled to transient game state flags rather than persistent personality traits, requiring a refactor to inject the `PersonalityContext` explicitly into the decision tree to avoid stale behavior.
+*   **Codebase pattern**: The existing architecture relies heavily on the Strategy pattern for action selection, but lacks a standardized interface for "trait weighting," forcing me to introduce a new `WeightedDecision` wrapper to handle probabilistic outcomes based on personality scores.
+*   **Correction**: Initially attempted to modify NPC behavior by patching individual action classes, which broke the `ActionRegistry` validation; corrected by centralizing the personality modifier in a single `DecisionMiddleware` layer instead.

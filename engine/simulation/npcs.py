@@ -3370,3 +3370,36 @@ def record_npc_legacy(db: Session) -> int:
 
     db.commit()
     return count
+
+
+def personality_decision(db: Session, npc_id: int) -> str:
+    """Make decisions based on NPC personality traits."""
+    from engine.models import NPC
+    
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return "No NPC found"
+    
+    # Parse personality JSON
+    parsed = json.loads(npc.personality) if npc.personality else {}
+    personality = parsed if isinstance(parsed, dict) else {}
+    
+    decisions = []
+    
+    # Greedy trait: save 50% of gold (won't buy non-essentials if gold < 50)
+    if personality.get('greedy', False):
+        if npc.gold < 50:
+            decisions.append("Saving gold due to greed")
+    
+    # Social trait: move toward nearest other NPC
+    if personality.get('social', False):
+        other_npcs = db.query(NPC).filter(NPC.id != npc_id, NPC.is_dead == 0).all()
+        if other_npcs:
+            decisions.append("Moving toward nearest NPC")
+    
+    # Lazy trait: skip work 25% of ticks
+    if personality.get('lazy', False):
+        if random.random() < 0.25:
+            decisions.append("Skipping work due to laziness")
+    
+    return "; ".join(decisions) if decisions else "No personality-driven decision"

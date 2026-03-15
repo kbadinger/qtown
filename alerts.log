@@ -60,3 +60,6 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-14 23:01:33 UTC] story_start: Story 449: Legacy system
 [2026-03-15 03:01:47 UTC] start: Ralph online — 395/450 stories complete
 [2026-03-15 03:01:47 UTC] story_start: Story 450: Simulation speed report
+[2026-03-15 03:56:51 UTC] deploy_ok: Story 450 deployed: Healthy after 0.5s
+[2026-03-15 03:57:18 UTC] story_done: Story 450 complete: Simulation speed report
+[2026-03-15 03:57:18 UTC] story_start: Story 216: Personality-driven NPC decisions
