@@ -144,3 +144,6 @@ Merchant caravan events
 [2026-03-15 12:13:26 UTC] deploy_ok: Story 231 deployed: Healthy after 0.1s
 [2026-03-15 12:13:43 UTC] story_done: Story 231 complete: Trade surplus auto-export
 [2026-03-15 12:13:43 UTC] story_start: Story 232: Skill-based wage multiplier
+[2026-03-15 13:06:05 UTC] deploy_ok: Story 232 deployed: Healthy after 0.1s
+[2026-03-15 13:06:21 UTC] story_done: Story 232 complete: Skill-based wage multiplier
+[2026-03-15 13:06:22 UTC] story_start: Story 233: Bank interest for savers

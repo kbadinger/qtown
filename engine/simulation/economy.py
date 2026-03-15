@@ -2417,3 +2417,32 @@ def calculate_skill_wage(db: Session, npc_id: int) -> int:
         multiplier = 0.75
     
     return int(base_wage * multiplier)
+
+
+def apply_bank_interest(db: Session) -> int:
+    """Apply 2% bank interest to living NPCs with gold > 50."""
+    from engine.models import Building, NPC, Transaction
+    
+    # Check if at least one bank building exists
+    bank = db.query(Building).filter(Building.building_type == 'bank').first()
+    if not bank:
+        return 0
+    
+    total_interest = 0
+    # Query living NPCs with gold > 50
+    npcs = db.query(NPC).filter(NPC.is_dead == 0, NPC.gold > 50).all()
+    
+    for npc in npcs:
+        # Calculate interest: 2% of gold, rounded down, minimum 1
+        interest = max(1, int(npc.gold * 0.02))
+        
+        # Update NPC gold
+        npc.gold += interest
+        
+        # Create transaction record
+        tx = Transaction(npc_id=npc.id, amount=interest, reason='bank_interest')
+        db.add(tx)
+        
+        total_interest += interest
+    
+    return total_interest

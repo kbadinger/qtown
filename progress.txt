@@ -3121,3 +3121,8 @@
 - **Tricky Logic**: The non-obvious part was handling the "ceiling" constraint where the multiplier caps at 1.5x, requiring a `min()` check *after* calculating the base skill bonus to prevent over-compensation.
 - **Codebase Patterns**: Discovered a consistent convention of separating raw calculation logic into pure functions (e.g., `calculate_skill_factor`) while keeping side effects (logging, DB updates) in the controller layer.
 - **Mistake & Fix**: Initially applied the multiplier to the *total* wage including bonuses, which inflated the final figure; corrected by isolating the multiplier to apply strictly to the `base_hourly_rate` before adding other components.
+
+--- Story 233: Bank interest for savers (attempts: 1, 2026-03-15 09:26) ---
+- **Non-obvious rounding behavior**: The interest calculation required explicit `Decimal` quantization with `ROUND_HALF_EVEN` to match banking standards; standard floating-point math or simple rounding produced drift over long-term simulations.
+- **Convention for temporal logic**: The codebase strictly separates "business day" logic from calendar dates; all interest accruals must pass through the `BusinessCalendar` utility rather than using raw date arithmetic.
+- **Correction on edge cases**: Initially missed handling the "end-of-month" scenario where a transaction occurs on the last day of a leap month; corrected by ensuring the `get_days_in_period` function dynamically checks the specific year/month rather than using a static map.
