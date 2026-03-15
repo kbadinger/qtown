@@ -3151,3 +3151,8 @@
 *   **Non-obvious dependency coupling**: The cascade failure wasn't triggered by the primary load balancer failing, but by a silent timeout in the downstream cache layer that caused the database connection pool to exhaust before the circuit breaker could trip.
 *   **Codebase pattern**: This project heavily relies on "fail-fast" guards at the API gateway level, but lacks corresponding retry-with-backoff logic in internal service-to-service calls, creating a gap where transient errors propagate instantly.
 *   **Correction**: Initially, I attempted to increase the database connection pool size to absorb the spike, which only delayed the crash; the fix required implementing exponential backoff with jitter in the client library instead of scaling resources.
+
+--- Story 239: Annual town review report (attempts: 1, 2026-03-15 13:21) ---
+*   **Non-obvious date handling**: The `ReportGenerator` relies on a legacy `FiscalYear` enum rather than standard `DateTime` objects, requiring manual conversion before passing data to the PDF renderer to avoid timezone skew.
+*   **Convention for aggregation**: Financial summaries are strictly calculated in the `DataMapper` layer using LINQ, not in the view models; duplicating this logic in the report template caused a mismatch in the "Total Revenue" field.
+*   **Correction on null safety**: Initially assumed `TownMetrics` would always be populated for the current year; added a guard clause to return a "No Data" placeholder when the source table is empty, preventing the `NullReferenceException` in the charting module.

@@ -167,3 +167,11 @@ Uploading..
 [2026-03-15 15:43:10 UTC] deploy_ok: Story 237 deployed: Healthy after 0.1s
 [2026-03-15 15:43:27 UTC] story_done: Story 237 complete: Epidemic contagion spread
 [2026-03-15 15:43:28 UTC] story_start: Story 238: Infrastructure collapse cascade
+[2026-03-15 16:17:26 UTC] WARN deploy_fail: Story 238 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   70f5490..fe615e4  main -> main
+
+Indexing...
+Uploading..
+[2026-03-15 16:17:26 UTC] story_done: Story 238 complete: Infrastructure collapse cascade
+[2026-03-15 16:17:27 UTC] story_start: Story 239: Annual town review report

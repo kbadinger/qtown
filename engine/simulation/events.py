@@ -2693,3 +2693,65 @@ def check_infrastructure_collapse(db: Session) -> bool:
         return True
     
     return False
+
+
+def generate_town_review(db: Session) -> dict:
+    """Generate an annual town review report with population, gold, happiness, buildings, and crime stats."""
+    from sqlalchemy import func
+    from engine.models import NPC, Building, Crime, Newspaper, WorldState
+    
+    # Calculate population (living NPCs)
+    population = db.query(NPC).filter(NPC.is_dead == 0).count()
+    
+    # Calculate total gold
+    total_gold_result = db.query(func.sum(NPC.gold)).filter(NPC.is_dead == 0).scalar()
+    total_gold = total_gold_result if total_gold_result else 0
+    
+    # Calculate average happiness
+    happiness_result = db.query(func.avg(NPC.happiness)).filter(NPC.is_dead == 0).scalar()
+    avg_happiness = float(happiness_result) if happiness_result is not None else 0.0
+    
+    # Calculate building count
+    building_count = db.query(Building).count()
+    
+    # Calculate crime count (unresolved)
+    crime_count = db.query(Crime).filter(Crime.resolved == 0).count()
+    
+    # Get current tick for the newspaper
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Create the stats dict
+    stats = {
+        "population": population,
+        "total_gold": total_gold,
+        "avg_happiness": round(avg_happiness, 2),
+        "building_count": building_count,
+        "crime_count": crime_count
+    }
+    
+    # Generate newspaper article
+    body_text = (
+        f"Annual Town Review Report\n\n"
+        f"Population: {population}\n"
+        f"Total Gold in Town: {total_gold}\n"
+        f"Average Happiness: {stats['avg_happiness']}\n"
+        f"Total Buildings: {building_count}\n"
+        f"Unresolved Crimes: {crime_count}\n\n"
+        f"The town continues to grow and prosper. "
+        f"Residents report a happiness level of {stats['avg_happiness']}. "
+        f"Local authorities are working to reduce the {crime_count} unresolved crimes."
+    )
+    
+    newspaper = Newspaper(
+        day=current_tick,
+        headline="Annual Town Review",
+        body=body_text,
+        author_npc_id=None,
+        tick=current_tick
+    )
+    
+    db.add(newspaper)
+    db.flush()
+    
+    return stats
