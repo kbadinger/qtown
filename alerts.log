@@ -132,3 +132,6 @@ Merchant caravan events
 [2026-03-15 10:23:28 UTC] deploy_ok: Story 227 deployed: Healthy after 0.1s
 [2026-03-15 10:23:44 UTC] story_done: Story 227 complete: Resource spoilage system
 [2026-03-15 10:23:45 UTC] story_start: Story 228: NPC economic class system
+[2026-03-15 10:41:12 UTC] deploy_ok: Story 228 deployed: Healthy after 0.1s
+[2026-03-15 10:41:28 UTC] story_done: Story 228 complete: NPC economic class system
+[2026-03-15 10:41:29 UTC] story_start: Story 229: Supply chain disruption detection

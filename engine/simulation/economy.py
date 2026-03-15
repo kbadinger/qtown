@@ -2248,3 +2248,46 @@ def classify_npcs(db: Session) -> dict:
         npc.happiness = max(0, min(100, npc.happiness + happiness_change))
     
     return counts
+
+
+def detect_supply_disruptions(db: Session) -> list[str]:
+    """Detect supply chain disruptions based on missing resources for buildings.
+    
+    Checks production dependencies:
+    - Bakery needs Wheat
+    - Blacksmith needs Ore
+    
+    If required input resource quantity == 0, creates an Event with event_type='supply_disruption'.
+    Returns list of disrupted building types.
+    """
+    disrupted_types = []
+    
+    # Define dependencies: building_type -> required_resource_name
+    dependencies = {
+        "bakery": "Wheat",
+        "blacksmith": "Ore"
+    }
+    
+    for building_type, required_resource in dependencies.items():
+        # Check if any building of this type exists
+        buildings = db.query(Building).filter(Building.building_type == building_type).all()
+        
+        if not buildings:
+            continue
+            
+        # Check resource quantity
+        resource = db.query(Resource).filter(Resource.name == required_resource).first()
+        
+        if resource and resource.quantity == 0:
+            # Create disruption event
+            event = Event(
+                event_type="supply_disruption",
+                description=f"Supply disruption: {building_type} has no {required_resource}",
+                building_id=buildings[0].id if buildings else None
+            )
+            db.add(event)
+            
+            if building_type not in disrupted_types:
+                disrupted_types.append(building_type)
+    
+    return disrupted_types

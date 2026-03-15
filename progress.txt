@@ -3101,3 +3101,8 @@
 *   **Non-obvious coupling**: The economic class logic is tightly coupled with the `Inventory` system's weight calculations; changing class multipliers unexpectedly broke the "burden" mechanic because the base weight wasn't normalized before applying class modifiers.
 *   **Codebase convention**: The project strictly enforces a "Strategy Pattern" for all player stats, meaning new economic tiers must implement the `StatModifier` interface rather than using direct conditional logic, which prevents future branching complexity.
 *   **Correction**: Initially, I attempted to cache the calculated class value in a static variable, causing race conditions in multi-threaded server environments; I corrected this by moving the calculation to a pure function that accepts the player state as an argument.
+
+--- Story 229: Supply chain disruption detection (attempts: 1, 2026-03-15 07:35) ---
+- **Tricky Logic**: The distinction between a "delay" and a "disruption" was non-obvious; the logic required checking if a delay exceeded a dynamic threshold based on the supplier's historical SLA, not just a static time window.
+- **Codebase Patterns**: The project consistently uses a `DomainEvent` pattern where detection logic publishes events to a central bus, rather than returning boolean flags directly to the controller layer.
+- **Correction**: Initially, I aggregated alerts by `supplier_id` alone, which caused duplicate notifications for multi-leg shipments; I corrected this by including `shipment_id` in the deduplication key.
