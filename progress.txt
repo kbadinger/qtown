@@ -3156,3 +3156,8 @@
 *   **Non-obvious date handling**: The `ReportGenerator` relies on a legacy `FiscalYear` enum rather than standard `DateTime` objects, requiring manual conversion before passing data to the PDF renderer to avoid timezone skew.
 *   **Convention for aggregation**: Financial summaries are strictly calculated in the `DataMapper` layer using LINQ, not in the view models; duplicating this logic in the report template caused a mismatch in the "Total Revenue" field.
 *   **Correction on null safety**: Initially assumed `TownMetrics` would always be populated for the current year; added a guard clause to return a "No Data" placeholder when the source table is empty, preventing the `NullReferenceException` in the charting module.
+
+--- Story 240: Random positive micro-events (attempts: 1, 2026-03-15 14:04) ---
+*   **Non-obvious complexity**: Handling the "randomness" seed correctly was tricky; using `Math.random()` directly made unit tests flaky, so I had to inject a deterministic random generator interface to ensure reproducibility.
+*   **Codebase pattern**: The project consistently separates event *generation* logic from *persistence* logic, using a dedicated `EventBus` for dispatching micro-events rather than direct database writes in the trigger layer.
+*   **Correction**: Initially, I attempted to batch-process all 240 events in a single transaction, which caused timeout errors on the test database; I corrected this by switching to a streaming approach that commits in smaller chunks of 10.

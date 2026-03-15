@@ -2755,3 +2755,62 @@ def generate_town_review(db: Session) -> dict:
     db.flush()
     
     return stats
+
+
+def trigger_random_boon(db: Session) -> str | None:
+    """Trigger random positive micro-events (1% chance per tick)."""
+    from engine.models import Event, NPC, Resource
+    from sqlalchemy import func
+    
+    if random.random() >= 0.01:
+        return None
+    
+    # Pick one of 3 boons
+    boon_type = random.choice(['gold_vein', 'bumper_crop', 'inspiration'])
+    
+    current_tick = db.query(func.max(Event.tick)).scalar() or 0
+    
+    if boon_type == 'gold_vein':
+        # Add 100 gold to random NPC
+        npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+        if npcs:
+            npc = random.choice(npcs)
+            npc.gold = npc.gold + 100
+            event = Event(
+                event_type='gold_vein',
+                description=f'{npc.name} found a gold vein and gained 100 gold!',
+                tick=current_tick
+            )
+            db.add(event)
+            db.flush()
+            return 'gold_vein'
+    
+    elif boon_type == 'bumper_crop':
+        # Add 50 to first Food resource
+        food_resource = db.query(Resource).filter(Resource.resource_name == 'Food').first()
+        if food_resource:
+            food_resource.amount = food_resource.amount + 50
+            event = Event(
+                event_type='bumper_crop',
+                description='A bumper crop has increased food reserves by 50!',
+                tick=current_tick
+            )
+            db.add(event)
+            db.flush()
+            return 'bumper_crop'
+    
+    elif boon_type == 'inspiration':
+        # All NPCs +5 happiness
+        npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+        for npc in npcs:
+            npc.happiness = min(npc.happiness + 5, 100)
+        event = Event(
+            event_type='inspiration',
+            description='A wave of inspiration has lifted the spirits of all townsfolk!',
+            tick=current_tick
+        )
+        db.add(event)
+        db.flush()
+        return 'inspiration'
+    
+    return None
