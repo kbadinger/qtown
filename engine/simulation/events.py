@@ -2490,3 +2490,71 @@ def check_naming_ceremony(db: Session) -> str | None:
                 return milestone_name
     
     return None
+
+
+def trigger_merchant_caravan(db: Session) -> None:
+    """Trigger a merchant caravan event at a random edge tile."""
+    from engine.models import NPC, Event, WorldState
+    from engine.simulation.economy import calculate_price
+    import random
+    from datetime import datetime
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Generate random edge position (x=0 or x=49 or y=0 or y=49)
+    if random.random() < 0.5:
+        # Horizontal edge (y=0 or y=49)
+        x = random.randint(0, 49)
+        y = 0 if random.random() < 0.5 else 49
+    else:
+        # Vertical edge (x=0 or x=49)
+        x = 0 if random.random() < 0.5 else 49
+        y = random.randint(0, 49)
+    
+    # Create merchant NPC with role='caravan_merchant', gold=200
+    merchant = NPC(
+        name=f"Caravan Merchant {current_tick}",
+        role="caravan_merchant",
+        x=x,
+        y=y,
+        gold=200,
+        hunger=50,
+        energy=50,
+        happiness=50,
+        age=30,
+        max_age=80,
+        is_dead=0,
+        is_bankrupt=0,
+        illness_severity=0,
+        illness=0,
+        home_building_id=None,
+        work_building_id=None,
+        target_x=x,
+        target_y=y,
+        personality="{'merchant': 0.9, 'friendly': 0.7}",
+        skill="{'trading': 0.8, 'persuasion': 0.6}",
+        memory_events='[]',
+        favorite_buildings='[]',
+        avoided_areas='[]',
+        experience='{}'
+    )
+    db.add(merchant)
+    
+    # Create Event with event_type='merchant_caravan'
+    event = Event(
+        event_type="merchant_caravan",
+        description="A merchant caravan has arrived at the town edge",
+        tick=current_tick,
+        severity="info",
+        affected_npc_id=merchant.id,
+        affected_building_id=None,
+        created_at=datetime.now()
+    )
+    db.add(event)
+    
+    # Store merchant pricing info in event description for reference
+    # Sells at 2x calculate_price, buys at 0.5x
+    event.description = f"A merchant caravan has arrived at the town edge (sells at 2x, buys at 0.5x)"
+    db.flush()

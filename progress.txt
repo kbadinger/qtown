@@ -3086,3 +3086,8 @@
 - **Tricky Logic**: The rivalry resolution relied on a non-obvious interaction between the `reputation` decay rate and the `cooldown` timer; failing to account for the timer resetting on every interaction caused infinite loops in the simulation.
 - **Codebase Patterns**: The project consistently uses a `StatefulComponent` base class for all competitive entities, where internal logic is encapsulated in `update()` methods rather than event-driven callbacks.
 - **Correction**: Initially, I treated the rival's AI as a static script, but the codebase expects dynamic behavior based on the player's current `difficulty` setting, requiring a refactor to inject the difficulty multiplier into the rival's decision tree.
+
+--- Story 226: Merchant caravan events (attempts: 1, 2026-03-15 05:46) ---
+*   **State Synchronization**: Handling the transition between "encounter detected" and "interaction resolved" was non-obvious; the `CaravanState` enum must be updated *before* triggering the event handler to prevent race conditions where the UI renders a stale state.
+*   **Event Dispatching Pattern**: The codebase consistently uses a centralized `EventBus` for caravan logic rather than direct method calls, ensuring that loot generation, dialogue, and combat systems remain decoupled and testable in isolation.
+*   **Correction on RNG**: Initially, I seeded the random number generator inside the loop for loot drops, causing identical inventories for all caravan members; moved the seed initialization to the event creation scope to ensure unique outcomes per encounter.
