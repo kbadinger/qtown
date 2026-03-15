@@ -3176,3 +3176,8 @@
 - **Non-obvious Scope**: The corruption logic required intercepting the `Vote` event at the transaction level, not just updating a state variable, to ensure the audit trail remained immutable while the public result was altered.
 - **Codebase Pattern**: The system relies heavily on the `RoleManager` contract for permission checks; adding new corruption vectors required extending this manager rather than creating isolated access controls.
 - **Correction**: Initially attempted to store the "real" vote in a separate mapping, which broke the gas optimization pattern; corrected by using a private modifier that only alters the return value of the getter function without duplicating storage.
+
+--- Story 244: Public approval rating (attempts: 1, 2026-03-15 16:30) ---
+*   **Non-obvious dependency**: The approval rating calculation relies on a cached `UserPreference` context that isn't refreshed on every render, requiring manual invalidation when external survey data updates.
+*   **Codebase convention**: All rating metrics are normalized to a 0–100 float before being passed to the UI layer; raw percentages must never be used directly in the `RatingBadge` component.
+*   **Correction**: Initially missed the edge case where `null` survey responses caused a division-by-zero error; fixed by adding a guard clause that defaults to `0.0` instead of throwing.

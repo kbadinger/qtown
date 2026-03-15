@@ -2977,3 +2977,32 @@ def check_corruption(db: Session) -> float:
     db.add(crime)
     
     return stolen_amount
+
+
+def calculate_approval(db: Session) -> int:
+    """Calculate public approval rating based on NPC happiness."""
+    from engine.models import NPC, Event, WorldState
+    
+    # Get current tick
+    ws = db.query(WorldState).first()
+    tick = ws.tick if ws else 0
+    
+    # Get living NPCs (is_dead == 0 for Postgres compatibility)
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    if not living_npcs:
+        approval = 0
+    else:
+        total_happiness = sum(npc.happiness for npc in living_npcs)
+        approval = int(round(total_happiness / len(living_npcs)))
+    
+    # Ensure rating is within 0-100
+    approval = max(0, min(100, approval))
+    
+    # Trigger events based on approval thresholds
+    if approval < 30:
+        db.add(Event(event_type='unrest', tick=tick))
+    if approval > 70:
+        db.add(Event(event_type='prosperity', tick=tick))
+        
+    return approval
