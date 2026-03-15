@@ -3081,3 +3081,8 @@
 - **Tricky**: The `HomeSickness` component required careful handling of the `last_visited_town` state; it must persist across scene transitions but reset only when the player explicitly interacts with a "home" marker, not just by entering the zone.
 - **Patterns**: This codebase consistently uses a `Component` + `System` split where components hold raw data (like `days_since_home`) and systems handle the logic (calculating mood penalties), avoiding direct entity mutation in the component.
 - **Correction**: Initially, I triggered the homesickness event every frame the player was away, causing performance spikes; I corrected this by adding a `cooldown_timer` check to ensure the effect only updates once per in-game day.
+
+--- Story 225: NPC rivalry competition (attempts: 1, 2026-03-15 04:22) ---
+- **Tricky Logic**: The rivalry resolution relied on a non-obvious interaction between the `reputation` decay rate and the `cooldown` timer; failing to account for the timer resetting on every interaction caused infinite loops in the simulation.
+- **Codebase Patterns**: The project consistently uses a `StatefulComponent` base class for all competitive entities, where internal logic is encapsulated in `update()` methods rather than event-driven callbacks.
+- **Correction**: Initially, I treated the rival's AI as a static script, but the codebase expects dynamic behavior based on the player's current `difficulty` setting, requiring a refactor to inject the difficulty multiplier into the rival's decision tree.

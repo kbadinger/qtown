@@ -3717,3 +3717,52 @@ def apply_homesickness(db: Session) -> None:
         db.add(npc)
     
     db.flush()
+
+
+def process_rivalries(db: Session) -> None:
+    """Process rivalry competition between NPCs."""
+    from sqlalchemy.orm import Session
+    from engine.models import Relationship, NPC, Crime
+    
+    # Query all rivalry relationships
+    rivalries = db.query(Relationship).filter(
+        Relationship.relationship_type == 'rival'
+    ).all()
+    
+    for relationship in rivalries:
+        npc1_id = relationship.npc_id
+        npc2_id = relationship.other_npc_id
+        
+        # Get both NPCs
+        npc1 = db.query(NPC).filter(NPC.id == npc1_id).first()
+        npc2 = db.query(NPC).filter(NPC.id == npc2_id).first()
+        
+        if not npc1 or not npc2:
+            continue
+        
+        # Check if both NPCs are alive
+        if npc1.is_dead == 1 or npc2.is_dead == 1:
+            continue
+        
+        # Compare gold and adjust happiness for NPC1
+        if npc1.gold < npc2.gold:
+            npc1.happiness = max(0, npc1.happiness - 3)  # jealousy
+        elif npc1.gold > npc2.gold:
+            npc1.happiness = min(100, npc1.happiness + 2)  # satisfaction
+        
+        # Compare gold and adjust happiness for NPC2
+        if npc2.gold < npc1.gold:
+            npc2.happiness = max(0, npc2.happiness - 3)  # jealousy
+        elif npc2.gold > npc1.gold:
+            npc2.happiness = min(100, npc2.happiness + 2)  # satisfaction
+        
+        # Check for theft opportunity (if rivalry strength > 80)
+        if relationship.strength > 80 and random.random() < 0.1:
+            # Create theft crime record
+            crime = Crime(
+                npc_id=npc2.id,
+                victim_npc_id=npc1.id,
+                crime_type='theft',
+                severity=1
+            )
+            db.add(crime)

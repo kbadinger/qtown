@@ -108,3 +108,11 @@ Uploading..
 Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and '
 [2026-03-15 07:48:10 UTC] story_done: Story 223 complete: Mentor-apprentice skill transfer
 [2026-03-15 07:48:10 UTC] story_start: Story 224: NPC homesickness mechanic
+[2026-03-15 08:04:50 UTC] WARN deploy_fail: Story 224 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   4edabba..b4366e3  main -> main
+
+Indexing...
+Uploading..
+[2026-03-15 08:04:51 UTC] story_done: Story 224 complete: NPC homesickness mechanic
+[2026-03-15 08:04:51 UTC] story_start: Story 225: NPC rivalry competition
