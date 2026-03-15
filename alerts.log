@@ -81,3 +81,11 @@ Uploading..
 Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 's
 [2026-03-15 04:38:40 UTC] story_done: Story 218 complete: NPC daily routines based on time of day
 [2026-03-15 04:38:40 UTC] story_start: Story 219: NPC gossip system
+[2026-03-15 05:11:42 UTC] WARN deploy_fail: Story 219 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   5c24dfc..bb22ee5  main -> main
+
+Indexing...
+Uploading..
+[2026-03-15 05:11:43 UTC] story_done: Story 219 complete: NPC gossip system
+[2026-03-15 05:11:43 UTC] story_start: Story 220: NPC goal pursuit system

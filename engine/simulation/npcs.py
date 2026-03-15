@@ -3511,3 +3511,37 @@ def spread_gossip(db: Session) -> None:
                     npc_b.memory_events = json.dumps(mem_b)
     
     db.commit()
+
+
+def pursue_goals(db: Session) -> int:
+    """Assign goals to NPCs based on their current state."""
+    import json
+    from engine.models import NPC
+    
+    count = 0
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    for npc in npcs:
+        experience = npc.experience
+        if isinstance(experience, str):
+            try:
+                experience_list = json.loads(experience)
+            except (json.JSONDecodeError, TypeError):
+                experience_list = []
+        else:
+            experience_list = []
+        
+        if not isinstance(experience_list, list):
+            experience_list = []
+        
+        if not experience_list:
+            goal = 'earn_gold' if npc.gold < 20 else 'find_food' if npc.hunger > 60 else 'find_joy' if npc.happiness < 30 else 'learn' if npc.skill < 3 else 'explore'
+            if goal not in experience_list:
+                experience_list.append(goal)
+                npc.experience = json.dumps(experience_list)
+        
+        if experience_list:
+            count += 1
+    
+    db.commit()
+    return count

@@ -3056,3 +3056,8 @@
 - **Tricky**: The non-obvious dependency on the `WorldState` singleton for gossip propagation meant that isolated unit tests failed without mocking the global context; I had to refactor the gossip logic to accept a state interface for testability.
 - **Patterns**: This codebase consistently uses a "Event Bus" pattern for decoupled communication between NPCs and the player, rather than direct method calls, which simplifies adding new gossip triggers later.
 - **Mistakes**: I initially stored gossip history in a flat list, causing O(n) lookups for duplicate detection; I corrected this by switching to a `Set` keyed by `NPC_ID` and `Topic_ID` to ensure constant-time checks.
+
+--- Story 220: NPC goal pursuit system (attempts: 1, 2026-03-15 02:06) ---
+- **Non-obvious state persistence**: The goal system relies on a deferred update loop rather than immediate state changes; modifying `currentGoal` directly during the `OnUpdate` phase causes race conditions with the pathfinding validator.
+- **Codebase convention**: All NPC behaviors must inherit from `BaseGoal` and implement the `IsAchieved()` check, which is the single entry point for the scheduler to transition states.
+- **Correction**: Initially attempted to cache the target location in the goal constructor, which failed when the target moved; switched to a lazy `GetTargetLocation()` call to ensure dynamic path updates.
