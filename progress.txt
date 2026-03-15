@@ -3141,3 +3141,8 @@
 - **Non-obvious State Propagation**: The `WinterHardship` effect relies on a delayed `seasonalCycle` flag that doesn't update until the next tick; immediate checks against `currentSeason` were misleading and caused false negatives in the initial implementation.
 - **Convention for Conditional Effects**: This codebase consistently uses the `applyIf` helper with a `precondition` lambda for environmental effects, rather than scattering `if` statements directly inside the `apply()` method, ensuring side effects are isolated.
 - **Correction on Resource Decay**: Initially, I attempted to modify the `resourcePool` directly within the effect, which broke the undo/redo stack; corrected by switching to the `registerDelta` pattern to ensure all state changes are transactional and reversible.
+
+--- Story 237: Epidemic contagion spread (attempts: 1, 2026-03-15 11:40) ---
+*   **Non-obvious state coupling**: The contagion spread logic relied on a hidden dependency between the `population` map and the `simulation clock`; updating infection status without synchronizing the tick counter caused race conditions where agents were infected multiple times per cycle.
+*   **Codebase convention**: This module strictly separates "deterministic rules" (transmission rates) from "stochastic events" (random spread), requiring all random number generation to be passed as a dependency rather than called inline, ensuring testability.
+*   **Correction**: Initially, I attempted to optimize spread by iterating over a flat array of coordinates, which broke the grid-based adjacency checks; switching to a neighbor-lookup cache based on the existing grid structure fixed the logic and improved performance.

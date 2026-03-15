@@ -156,3 +156,11 @@ Merchant caravan events
 [2026-03-15 13:48:12 UTC] deploy_ok: Story 235 deployed: Healthy after 0.1s
 [2026-03-15 13:48:29 UTC] story_done: Story 235 complete: Auto-trigger harvest festival in fall
 [2026-03-15 13:48:29 UTC] story_start: Story 236: Winter hardship effects
+[2026-03-15 14:46:38 UTC] WARN deploy_fail: Story 236 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   e0b28f5..e7420d2  main -> main
+
+Indexing...
+Uploading..
+[2026-03-15 14:46:38 UTC] story_done: Story 236 complete: Winter hardship effects
+[2026-03-15 14:46:39 UTC] story_start: Story 237: Epidemic contagion spread

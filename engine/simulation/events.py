@@ -2628,3 +2628,35 @@ def apply_winter_effects(db: Session) -> None:
             resolved=0
         )
         db.add(event)
+
+
+def spread_epidemic(db: Session) -> int:
+    """Spread epidemic to healthy NPCs on the same tile as infected NPCs."""
+    from engine.models import NPC
+    
+    # Get all living NPCs with illness_severity > 0 (infected)
+    infected_npcs = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.illness_severity > 0
+    ).all()
+    
+    new_infections = 0
+    
+    for infected in infected_npcs:
+        # Find other living NPCs on the same tile who are healthy
+        neighbors = db.query(NPC).filter(
+            NPC.id != infected.id,
+            NPC.is_dead == 0,
+            NPC.x == infected.x,
+            NPC.y == infected.y,
+            NPC.illness_severity == 0
+        ).all()
+        
+        for neighbor in neighbors:
+            # 30% chance to get infected
+            if random.random() < 0.3:
+                neighbor.illness_severity = 10
+                neighbor.illness = 10
+                new_infections += 1
+    
+    return new_infections
