@@ -3106,3 +3106,8 @@
 - **Tricky Logic**: The distinction between a "delay" and a "disruption" was non-obvious; the logic required checking if a delay exceeded a dynamic threshold based on the supplier's historical SLA, not just a static time window.
 - **Codebase Patterns**: The project consistently uses a `DomainEvent` pattern where detection logic publishes events to a central bus, rather than returning boolean flags directly to the controller layer.
 - **Correction**: Initially, I aggregated alerts by `supplier_id` alone, which caused duplicate notifications for multi-leg shipments; I corrected this by including `shipment_id` in the deduplication key.
+
+--- Story 230: Progressive tax brackets (attempts: 1, 2026-03-15 07:53) ---
+- **Edge cases in bracket logic**: The trickiest part was handling the "waterfall" calculation where income spans multiple brackets; a simple percentage on total income fails, requiring a loop to calculate tax per segment until the remaining income is exhausted.
+- **Immutable data patterns**: The codebase consistently avoids mutating the `income` or `brackets` arrays directly; instead, it creates new arrays or uses `reduce` to accumulate tax, ensuring the original configuration remains unchanged for subsequent calculations.
+- **Floating point precision**: Initially, I used standard `*` and `+` operators, which introduced rounding errors for large incomes; I corrected this by converting amounts to integers (cents) before calculation and rounding only at the final output stage.

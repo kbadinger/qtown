@@ -2291,3 +2291,69 @@ def detect_supply_disruptions(db: Session) -> list[str]:
                 disrupted_types.append(building_type)
     
     return disrupted_types
+
+
+def collect_progressive_taxes(db: Session) -> float:
+    """Collect progressive taxes from NPCs based on their gold.
+    
+    Tax brackets:
+    - gold > 100: 15%
+    - gold 20-100: 10%
+    - gold < 20: 5%
+    
+    Deducts tax from NPC gold, adds to first Treasury, creates Transaction for each payment.
+    Returns total tax collected.
+    """
+    from engine.models import NPC, Treasury, Transaction, WorldState
+    
+    total_collected = 0.0
+    
+    # Get all living NPCs
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    # Get the first treasury
+    treasury = db.query(Treasury).first()
+    if not treasury:
+        return 0.0
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    for npc in npcs:
+        if npc.gold <= 0:
+            continue
+        
+        # Calculate tax based on progressive brackets
+        if npc.gold > 100:
+            tax_rate = 0.15
+        elif npc.gold >= 20:
+            tax_rate = 0.10
+        else:
+            tax_rate = 0.05
+        
+        tax_amount = npc.gold * tax_rate
+        
+        # Deduct from NPC
+        npc.gold -= tax_amount
+        db.add(npc)
+        
+        # Add to treasury
+        if treasury.gold is not None:
+            treasury.gold += tax_amount
+        db.add(treasury)
+        
+        # Create transaction
+        transaction = Transaction(
+            from_npc_id=npc.id,
+            to_npc_id=None,
+            amount=tax_amount,
+            transaction_type="tax",
+            tick=current_tick
+        )
+        db.add(transaction)
+        
+        total_collected += tax_amount
+    
+    db.flush()
+    return total_collected

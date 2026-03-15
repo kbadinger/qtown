@@ -135,3 +135,6 @@ Merchant caravan events
 [2026-03-15 10:41:12 UTC] deploy_ok: Story 228 deployed: Healthy after 0.1s
 [2026-03-15 10:41:28 UTC] story_done: Story 228 complete: NPC economic class system
 [2026-03-15 10:41:29 UTC] story_start: Story 229: Supply chain disruption detection
+[2026-03-15 11:36:48 UTC] deploy_ok: Story 229 deployed: Healthy after 0.1s
+[2026-03-15 11:37:05 UTC] story_done: Story 229 complete: Supply chain disruption detection
+[2026-03-15 11:37:05 UTC] story_start: Story 230: Progressive tax brackets
