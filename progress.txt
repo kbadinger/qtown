@@ -3046,3 +3046,8 @@
 - **Non-obvious state coupling**: The contagion logic relies on implicit time-step synchronization; updating an NPC's mood immediately without queuing the change caused race conditions where the source NPC's state was read before the target's update propagated.
 - **Codebase convention**: This project strictly separates "simulation logic" (mood calculation) from "rendering logic" (visual indicators), requiring all state changes to be pushed to a central `WorldState` buffer rather than modifying entity properties directly.
 - **Correction**: Initially, I used a simple distance check for contagion range, which failed for non-Euclidean map layouts; I corrected this by leveraging the existing `PathfindingGraph` to calculate actual walkable distance instead of straight-line coordinates.
+
+--- Story 218: NPC daily routines based on time of day (attempts: 1, 2026-03-15 00:36) ---
+- **Time-based state transitions are non-linear**: Implementing routines required handling "drift" where NPCs don't snap instantly to a new state at the hour mark, but rather transition based on a `progress` float that accumulates over the day cycle.
+- **Convention of `Tick` vs. `Update`**: The codebase strictly separates `Tick` (time-driven logic like routine checks) from `Update` (frame-driven logic like animation), preventing routine checks from running every frame and causing performance spikes.
+- **Correction on edge-case handling**: Initially failed to handle the midnight wrap-around correctly, causing NPCs to get stuck in a "night" state; fixed by normalizing the `currentHour` against the 24-hour cycle before comparing against routine thresholds.

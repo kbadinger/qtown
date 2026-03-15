@@ -68,3 +68,11 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and '
 [2026-03-15 04:16:37 UTC] story_done: Story 216 complete: Personality-driven NPC decisions
 [2026-03-15 04:16:37 UTC] story_start: Story 217: Mood contagion between NPCs
+[2026-03-15 04:36:41 UTC] WARN deploy_fail: Story 217 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   dd502ab..1eca481  main -> main
+
+Indexing...
+Uploading..
+[2026-03-15 04:36:42 UTC] story_done: Story 217 complete: Mood contagion between NPCs
+[2026-03-15 04:36:42 UTC] story_start: Story 218: NPC daily routines based on time of day
