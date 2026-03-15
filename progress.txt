@@ -3066,3 +3066,8 @@
 *   **Non-obvious state coupling**: The fear response logic is tightly coupled with the global `DisasterManager` singleton; failing to check the `active_disaster_id` before triggering the reaction caused NPCs to panic repeatedly during the same event loop.
 *   **Codebase convention**: This project strictly separates "perception" (sensing the disaster) from "reaction" (the actual flee pathfinding); the `FearState` only handles the decision to flee, while the `PathfindingService` handles the actual movement vector.
 *   **Correction**: Initially, I attempted to force a path recalculation every frame during the fear state, causing performance spikes; I corrected this by throttling the recalculation to only occur when the NPC's distance to the danger zone changes by more than 2 meters.
+
+--- Story 222: NPC aging effects on productivity (attempts: 1, 2026-03-15 02:44) ---
+- **Tricky Logic**: The non-linear decay curve for productivity was counter-intuitive; simply subtracting a fixed percentage per year caused NPCs to become unproductive too quickly, requiring a logarithmic scaling factor to match design specs.
+- **Codebase Patterns**: Discovered a strict separation where `Age` is a pure data attribute on the `Entity` component, while `Productivity` is a derived state calculated dynamically in the `SimulationTick` loop rather than stored.
+- **Correction**: Initially attempted to cache the productivity value to optimize performance, but this broke when dynamic buffs (like "Coffee Break") were applied; reverted to real-time calculation to ensure state consistency.

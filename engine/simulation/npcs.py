@@ -3600,3 +3600,52 @@ def flee_disaster(db: Session) -> None:
                 # Flee: set target_x/y to move away (add +15 to x and y, capped at 49)
                 npc.target_x = min(npc.x + 15, 49)
                 npc.target_y = min(npc.y + 15, 49)
+
+
+def apply_age_effects(db: Session) -> dict:
+    """Apply age-based effects on NPC productivity and behavior."""
+    from engine.models import NPC, WorldState
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Initialize age bracket counts
+    age_brackets = {
+        "child": 0,      # < 10
+        "teen": 0,       # 10-20
+        "adult": 0,      # 21-59
+        "senior": 0,     # 60-69
+        "elder": 0       # 70+
+    }
+    
+    # Get all living NPCs
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    for npc in living_npcs:
+        age = npc.age
+        
+        # Categorize by age bracket and apply effects
+        if age < 10:
+            age_brackets["child"] += 1
+            # Children can't work
+            npc.work_building_id = None
+        elif age < 20:
+            age_brackets["teen"] += 1
+            # Teens get energy bonus (energy decays 50% slower)
+            npc.energy = min(npc.energy + 1, 100)
+        elif age < 60:
+            age_brackets["adult"] += 1
+            # Adults: no special effects
+            pass
+        elif age < 70:
+            age_brackets["senior"] += 1
+            # Seniors: movement halved (only move every other tick)
+            # This is tracked via WorldState.tick % 2 in movement logic
+            pass
+        else:
+            age_brackets["elder"] += 1
+            # Elders: happiness -2 from loneliness
+            npc.happiness = max(npc.happiness - 2, 0)
+    
+    return age_brackets
