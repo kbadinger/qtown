@@ -3061,3 +3061,8 @@
 - **Non-obvious state persistence**: The goal system relies on a deferred update loop rather than immediate state changes; modifying `currentGoal` directly during the `OnUpdate` phase causes race conditions with the pathfinding validator.
 - **Codebase convention**: All NPC behaviors must inherit from `BaseGoal` and implement the `IsAchieved()` check, which is the single entry point for the scheduler to transition states.
 - **Correction**: Initially attempted to cache the target location in the goal constructor, which failed when the target moved; switched to a lazy `GetTargetLocation()` call to ensure dynamic path updates.
+
+--- Story 221: NPC fear response to disasters (attempts: 1, 2026-03-15 02:28) ---
+*   **Non-obvious state coupling**: The fear response logic is tightly coupled with the global `DisasterManager` singleton; failing to check the `active_disaster_id` before triggering the reaction caused NPCs to panic repeatedly during the same event loop.
+*   **Codebase convention**: This project strictly separates "perception" (sensing the disaster) from "reaction" (the actual flee pathfinding); the `FearState` only handles the decision to flee, while the `PathfindingService` handles the actual movement vector.
+*   **Correction**: Initially, I attempted to force a path recalculation every frame during the fear state, causing performance spikes; I corrected this by throttling the recalculation to only occur when the NPC's distance to the danger zone changes by more than 2 meters.

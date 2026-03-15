@@ -89,3 +89,6 @@ Indexing...
 Uploading..
 [2026-03-15 05:11:43 UTC] story_done: Story 219 complete: NPC gossip system
 [2026-03-15 05:11:43 UTC] story_start: Story 220: NPC goal pursuit system
+[2026-03-15 06:07:50 UTC] deploy_ok: Story 220 deployed: Healthy after 0.1s
+[2026-03-15 06:08:08 UTC] story_done: Story 220 complete: NPC goal pursuit system
+[2026-03-15 06:08:08 UTC] story_start: Story 221: NPC fear response to disasters

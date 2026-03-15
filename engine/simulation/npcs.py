@@ -3545,3 +3545,58 @@ def pursue_goals(db: Session) -> int:
     
     db.commit()
     return count
+
+
+def flee_disaster(db: Session) -> None:
+    """NPCs flee from high/critical severity disasters."""
+    from sqlalchemy.orm import Session
+    from engine.models import Event, NPC, Building, WorldState
+    import json
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return
+    current_tick = world_state.tick
+    
+    # Query recent events with high or critical severity
+    events = db.query(Event).filter(
+        Event.severity.in_(['high', 'critical']),
+        Event.affected_building_id.isnot(None),
+        Event.tick > current_tick - 5
+    ).all()
+    
+    for event in events:
+        # Get the building location
+        building = db.query(Building).filter(Building.id == event.affected_building_id).first()
+        if not building:
+            continue
+        
+        # Find NPCs within 10 tiles (Manhattan distance)
+        # We query all NPCs and filter in Python for simplicity
+        all_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+        
+        for npc in all_npcs:
+            # Check distance
+            dx = abs(npc.x - building.x)
+            dy = abs(npc.y - building.y)
+            distance = dx + dy
+            
+            if distance <= 10:
+                # Check personality for 'brave' trait
+                try:
+                    personality = json.loads(npc.personality) if npc.personality else {}
+                    if isinstance(personality, str):
+                        personality = json.loads(personality)
+                    if not isinstance(personality, dict):
+                        personality = {}
+                except (json.JSONDecodeError, TypeError):
+                    personality = {}
+                
+                # Brave NPCs do not flee
+                if personality.get('brave') == 1:
+                    continue
+                
+                # Flee: set target_x/y to move away (add +15 to x and y, capped at 49)
+                npc.target_x = min(npc.x + 15, 49)
+                npc.target_y = min(npc.y + 15, 49)
