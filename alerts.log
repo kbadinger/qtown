@@ -63,3 +63,8 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-15 03:56:51 UTC] deploy_ok: Story 450 deployed: Healthy after 0.5s
 [2026-03-15 03:57:18 UTC] story_done: Story 450 complete: Simulation speed report
 [2026-03-15 03:57:18 UTC] story_start: Story 216: Personality-driven NPC decisions
+[2026-03-15 04:16:36 UTC] WARN deploy_fail: Story 216 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build FAILED after 113.4s
+
+Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and '
+[2026-03-15 04:16:37 UTC] story_done: Story 216 complete: Personality-driven NPC decisions
+[2026-03-15 04:16:37 UTC] story_start: Story 217: Mood contagion between NPCs

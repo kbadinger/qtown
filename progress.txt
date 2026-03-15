@@ -3041,3 +3041,8 @@
 *   **Non-obvious state coupling**: NPC decision logic was tightly coupled to transient game state flags rather than persistent personality traits, requiring a refactor to inject the `PersonalityContext` explicitly into the decision tree to avoid stale behavior.
 *   **Codebase pattern**: The existing architecture relies heavily on the Strategy pattern for action selection, but lacks a standardized interface for "trait weighting," forcing me to introduce a new `WeightedDecision` wrapper to handle probabilistic outcomes based on personality scores.
 *   **Correction**: Initially attempted to modify NPC behavior by patching individual action classes, which broke the `ActionRegistry` validation; corrected by centralizing the personality modifier in a single `DecisionMiddleware` layer instead.
+
+--- Story 217: Mood contagion between NPCs (attempts: 1, 2026-03-15 00:36) ---
+- **Non-obvious state coupling**: The contagion logic relies on implicit time-step synchronization; updating an NPC's mood immediately without queuing the change caused race conditions where the source NPC's state was read before the target's update propagated.
+- **Codebase convention**: This project strictly separates "simulation logic" (mood calculation) from "rendering logic" (visual indicators), requiring all state changes to be pushed to a central `WorldState` buffer rather than modifying entity properties directly.
+- **Correction**: Initially, I used a simple distance check for contagion range, which failed for non-Euclidean map layouts; I corrected this by leveraging the existing `PathfindingGraph` to calculate actual walkable distance instead of straight-line coordinates.

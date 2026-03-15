@@ -3403,3 +3403,55 @@ def personality_decision(db: Session, npc_id: int) -> str:
             decisions.append("Skipping work due to laziness")
     
     return "; ".join(decisions) if decisions else "No personality-driven decision"
+
+
+def spread_mood(db: Session) -> None:
+    """Spread mood contagion between nearby NPCs."""
+    import math
+    from engine.models import NPC
+    
+    # Fetch all living NPCs
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    # Map for quick lookup
+    npc_map = {npc.id: npc for npc in npcs}
+    
+    # Calculate mood deltas for each NPC
+    mood_deltas = {}
+    
+    for source_npc in npcs:
+        # Determine contagion effect
+        effect = 0
+        if source_npc.happiness > 70:
+            effect = 2
+        elif source_npc.happiness < 30:
+            effect = -1
+        
+        if effect == 0:
+            continue
+        
+        for target_npc in npcs:
+            if source_npc.id == target_npc.id:
+                continue
+            
+            # Calculate Euclidean distance
+            dx = source_npc.x - target_npc.x
+            dy = source_npc.y - target_npc.y
+            distance = math.sqrt(dx*dx + dy*dy)
+            
+            if distance <= 3:
+                if target_npc.id not in mood_deltas:
+                    mood_deltas[target_npc.id] = 0
+                mood_deltas[target_npc.id] += effect
+    
+    # Apply mood changes
+    for npc_id, delta in mood_deltas.items():
+        npc = npc_map.get(npc_id)
+        if npc:
+            npc.happiness += delta
+            # Cap at 100
+            if npc.happiness > 100:
+                npc.happiness = 100
+            # Floor at 0
+            if npc.happiness < 0:
+                npc.happiness = 0
