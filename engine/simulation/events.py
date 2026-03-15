@@ -2891,3 +2891,36 @@ def process_refugees(db: Session) -> int:
     
     db.flush()
     return count
+
+
+def apply_policy_effects(db: Session) -> int:
+    """Apply effects from passed policies to WorldState and mark as enacted."""
+    from engine.models import Policy, WorldState
+    import json
+    
+    # Get all passed policies
+    passed_policies = db.query(Policy).filter(Policy.status == 'passed').all()
+    
+    count = 0
+    for policy in passed_policies:
+        # Parse policy effects JSON
+        effects = json.loads(policy.effect) if policy.effect else {}
+        
+        # Apply tax_rate if present
+        if 'tax_rate' in effects:
+            world_state = db.query(WorldState).first()
+            if world_state:
+                world_state.tax_rate = effects['tax_rate']
+        
+        # Apply base_wage if present
+        if 'base_wage' in effects:
+            world_state = db.query(WorldState).first()
+            if world_state:
+                world_state.base_wage = effects['base_wage']
+        
+        # Mark policy as enacted
+        policy.status = 'enacted'
+        count += 1
+    
+    db.commit()
+    return count

@@ -3166,3 +3166,8 @@
 - **Non-obvious state synchronization**: Handling the "refugee wave" event required decoupling the visual animation trigger from the actual population data update to prevent race conditions when multiple disasters overlap.
 - **Codebase pattern**: The project consistently uses a `DisasterContext` provider to manage global event states, meaning new disaster types must extend the base `DisasterEvent` class rather than creating isolated handlers.
 - **Correction**: Initially, I calculated refugee displacement based on total city population instead of the `available_capacity` metric, which caused negative population counts; I corrected this by adding a boundary check before applying the reduction formula.
+
+--- Story 242: Policy effect enforcement (attempts: 1, 2026-03-15 15:28) ---
+- **Tricky**: Determining the correct scope for policy enforcement was non-obvious; the logic must run *before* the transaction commits but *after* the initial validation to avoid race conditions with concurrent updates.
+- **Patterns**: The codebase consistently separates policy definition (data) from enforcement logic (service layer), using a dedicated `PolicyEnforcer` interface that injects context-aware checks rather than hardcoding rules in controllers.
+- **Correction**: Initially attempted to return raw policy violations to the UI, which exposed internal logic details; corrected by mapping specific policy codes to generic, user-friendly error messages in the exception handler.
