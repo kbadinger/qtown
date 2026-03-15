@@ -2814,3 +2814,80 @@ def trigger_random_boon(db: Session) -> str | None:
         return 'inspiration'
     
     return None
+
+
+def process_refugees(db: Session) -> int:
+    """Process refugee wave after critical disasters."""
+    from sqlalchemy import func
+    from engine.models import Event, NPC
+    import random
+
+    current_tick = db.query(func.max(Event.tick)).scalar() or 0
+    lookback_window = 10
+
+    # Check for critical events in the last 10 ticks
+    critical_events = db.query(Event).filter(
+        Event.severity == 'critical',
+        Event.tick > current_tick - lookback_window
+    ).all()
+
+    if not critical_events:
+        return 0
+
+    # Check if a refugee wave event already happened in the last 10 ticks
+    existing_refugee_event = db.query(Event).filter(
+        Event.name == 'refugee_wave',
+        Event.tick > current_tick - lookback_window
+    ).first()
+
+    if existing_refugee_event:
+        return 0
+
+    # Spawn 3 new NPCs
+    count = 0
+    for _ in range(3):
+        # Random position (0-100 range assumed based on typical grid)
+        x = random.randint(0, 100)
+        y = random.randint(0, 100)
+        
+        npc = NPC(
+            name=f"Refugee_{db.query(NPC).count() + 1}",
+            role='refugee',
+            x=x,
+            y=y,
+            gold=0,
+            hunger=70,
+            energy=50,
+            happiness=20,
+            age=25,
+            max_age=80,
+            is_dead=0,
+            is_bankrupt=0,
+            illness_severity=0,
+            illness=0,
+            home_building_id=None,
+            work_building_id=None,
+            target_x=None,
+            target_y=None,
+            personality='fearful',
+            skill='none',
+            memory_events='[]',
+            favorite_buildings='[]',
+            avoided_areas='[]',
+            experience='{}'
+        )
+        db.add(npc)
+        count += 1
+
+    # Create the 'refugee_wave' Event
+    event = Event(
+        name='refugee_wave',
+        description='A wave of refugees has arrived seeking shelter.',
+        severity='major',
+        tick=current_tick,
+        resolved=0
+    )
+    db.add(event)
+    
+    db.flush()
+    return count

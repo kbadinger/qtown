@@ -3161,3 +3161,8 @@
 *   **Non-obvious complexity**: Handling the "randomness" seed correctly was tricky; using `Math.random()` directly made unit tests flaky, so I had to inject a deterministic random generator interface to ensure reproducibility.
 *   **Codebase pattern**: The project consistently separates event *generation* logic from *persistence* logic, using a dedicated `EventBus` for dispatching micro-events rather than direct database writes in the trigger layer.
 *   **Correction**: Initially, I attempted to batch-process all 240 events in a single transaction, which caused timeout errors on the test database; I corrected this by switching to a streaming approach that commits in smaller chunks of 10.
+
+--- Story 241: Refugee wave after disasters (attempts: 1, 2026-03-15 14:51) ---
+- **Non-obvious state synchronization**: Handling the "refugee wave" event required decoupling the visual animation trigger from the actual population data update to prevent race conditions when multiple disasters overlap.
+- **Codebase pattern**: The project consistently uses a `DisasterContext` provider to manage global event states, meaning new disaster types must extend the base `DisasterEvent` class rather than creating isolated handlers.
+- **Correction**: Initially, I calculated refugee displacement based on total city population instead of the `available_capacity` metric, which caused negative population counts; I corrected this by adding a boundary check before applying the reduction formula.
