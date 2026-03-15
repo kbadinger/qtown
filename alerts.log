@@ -147,3 +147,6 @@ Merchant caravan events
 [2026-03-15 13:06:05 UTC] deploy_ok: Story 232 deployed: Healthy after 0.1s
 [2026-03-15 13:06:21 UTC] story_done: Story 232 complete: Skill-based wage multiplier
 [2026-03-15 13:06:22 UTC] story_start: Story 233: Bank interest for savers
+[2026-03-15 13:27:35 UTC] deploy_ok: Story 233 deployed: Healthy after 0.1s
+[2026-03-15 13:27:52 UTC] story_done: Story 233 complete: Bank interest for savers
+[2026-03-15 13:27:52 UTC] story_start: Story 234: Seasonal cycle system
