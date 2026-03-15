@@ -3071,3 +3071,8 @@
 - **Tricky Logic**: The non-linear decay curve for productivity was counter-intuitive; simply subtracting a fixed percentage per year caused NPCs to become unproductive too quickly, requiring a logarithmic scaling factor to match design specs.
 - **Codebase Patterns**: Discovered a strict separation where `Age` is a pure data attribute on the `Entity` component, while `Productivity` is a derived state calculated dynamically in the `SimulationTick` loop rather than stored.
 - **Correction**: Initially attempted to cache the productivity value to optimize performance, but this broke when dynamic buffs (like "Coffee Break") were applied; reverted to real-time calculation to ensure state consistency.
+
+--- Story 223: Mentor-apprentice skill transfer (attempts: 1, 2026-03-15 03:46) ---
+- **Tricky Aspect**: The implicit coupling between the mentor's `validate` method and the apprentice's `execute` logic required a custom middleware layer to prevent race conditions during state transitions.
+- **Pattern Discovered**: The codebase consistently uses a "Command-Response" wrapper for all skill transfer operations, where the response object must explicitly include a `rollbackToken` for atomic failure recovery.
+- **Correction Made**: Initially attempted to serialize the entire skill context for transfer, causing memory spikes; switched to a lazy-loading pointer reference to the shared skill registry instead.

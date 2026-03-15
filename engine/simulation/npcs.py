@@ -3649,3 +3649,37 @@ def apply_age_effects(db: Session) -> dict:
             npc.happiness = max(npc.happiness - 2, 0)
     
     return age_brackets
+
+
+def mentor_apprentices(db: Session) -> int:
+    """Find mentors and apprentices on same tile, transfer skills."""
+    from engine.models import NPC
+    import json
+    
+    # Find all mentors (skill >= 5)
+    mentors = db.query(NPC).filter(NPC.skill >= 5).all()
+    
+    apprenticeship_count = 0
+    
+    for mentor in mentors:
+        # Find apprentices on same tile with skill < 3
+        apprentices = db.query(NPC).filter(
+            NPC.x == mentor.x,
+            NPC.y == mentor.y,
+            NPC.skill < 3,
+            NPC.id != mentor.id  # Don't mentor yourself
+        ).all()
+        
+        for apprentice in apprentices:
+            # Gain +2 skill
+            apprentice.skill += 2
+            
+            # Log to memory_events
+            memory_events = json.loads(apprentice.memory_events) if apprentice.memory_events else []
+            memory_events.append(f"mentored by {mentor.name}")
+            apprentice.memory_events = json.dumps(memory_events)
+            
+            apprenticeship_count += 1
+    
+    db.flush()
+    return apprenticeship_count

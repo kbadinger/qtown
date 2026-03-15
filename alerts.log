@@ -100,3 +100,6 @@ Indexing...
 Uploading..
 [2026-03-15 06:28:22 UTC] story_done: Story 221 complete: NPC fear response to disasters
 [2026-03-15 06:28:22 UTC] story_start: Story 222: NPC aging effects on productivity
+[2026-03-15 06:46:44 UTC] deploy_ok: Story 222 deployed: Healthy after 0.1s
+[2026-03-15 06:47:01 UTC] story_done: Story 222 complete: NPC aging effects on productivity
+[2026-03-15 06:47:01 UTC] story_start: Story 223: Mentor-apprentice skill transfer
