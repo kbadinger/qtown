@@ -2391,3 +2391,29 @@ def process_exports(db: Session) -> list:
             exported.append(resource)
     
     return exported
+
+
+def calculate_skill_wage(db: Session, npc_id: int) -> int:
+    """Calculate wage based on NPC skill level."""
+    from engine.models import NPC, WorldState
+    
+    npc = db.query(NPC).filter(NPC.id == npc_id).first()
+    if not npc:
+        return 0
+    
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return 0
+    
+    base_wage = world_state.base_wage
+    skill = npc.skill
+    
+    multiplier = 1.0
+    if skill >= 10:
+        multiplier = 2.0
+    elif skill >= 5:
+        multiplier = 1.5
+    elif skill < 2:
+        multiplier = 0.75
+    
+    return int(base_wage * multiplier)

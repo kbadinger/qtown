@@ -3116,3 +3116,8 @@
 - **Non-obvious logic**: The trade surplus calculation requires normalizing export values against a dynamic baseline that updates monthly, not just a static fiscal year target; missing this caused initial overestimation of surplus.
 - **Codebase pattern**: All financial aggregations in this module rely on the `CurrencyConverter` service for normalization before any arithmetic, ensuring consistent handling of multi-currency auto-exports.
 - **Correction**: Initially treated "auto-export" as a single SKU category, but discovered it requires filtering by `product_type` AND `destination_region` flags to exclude domestic re-exports.
+
+--- Story 232: Skill-based wage multiplier (attempts: 1, 2026-03-15 09:04) ---
+- **Tricky Logic**: The non-obvious part was handling the "ceiling" constraint where the multiplier caps at 1.5x, requiring a `min()` check *after* calculating the base skill bonus to prevent over-compensation.
+- **Codebase Patterns**: Discovered a consistent convention of separating raw calculation logic into pure functions (e.g., `calculate_skill_factor`) while keeping side effects (logging, DB updates) in the controller layer.
+- **Mistake & Fix**: Initially applied the multiplier to the *total* wage including bonuses, which inflated the final figure; corrected by isolating the multiplier to apply strictly to the `base_hourly_rate` before adding other components.
