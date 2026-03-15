@@ -3096,3 +3096,8 @@
 - **Tricky Logic**: Handling the transition from "fresh" to "spoiled" required careful state management to ensure items didn't skip the visual degradation phase or trigger the spoil event before the timer fully elapsed.
 - **Codebase Pattern**: The existing architecture heavily relies on a centralized `GameTick` event dispatcher; integrating the new system required adhering to this pattern rather than creating local timers to maintain synchronization with other game mechanics.
 - **Correction**: Initially, I attempted to update spoilage states directly in the item's `Update` method, which caused race conditions with the save/load system; I corrected this by moving all state transitions to the dedicated tick handler to ensure atomic updates.
+
+--- Story 228: NPC economic class system (attempts: 1, 2026-03-15 06:40) ---
+*   **Non-obvious coupling**: The economic class logic is tightly coupled with the `Inventory` system's weight calculations; changing class multipliers unexpectedly broke the "burden" mechanic because the base weight wasn't normalized before applying class modifiers.
+*   **Codebase convention**: The project strictly enforces a "Strategy Pattern" for all player stats, meaning new economic tiers must implement the `StatModifier` interface rather than using direct conditional logic, which prevents future branching complexity.
+*   **Correction**: Initially, I attempted to cache the calculated class value in a static variable, causing race conditions in multi-threaded server environments; I corrected this by moving the calculation to a pure function that accepts the player state as an argument.

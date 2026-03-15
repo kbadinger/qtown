@@ -129,3 +129,6 @@ Merchant caravan events
 [2026-03-15 09:47:51 UTC] deploy_ok: Story 226 deployed: Healthy after 0.1s
 [2026-03-15 09:48:18 UTC] story_done: Story 226 complete: Merchant caravan events
 [2026-03-15 09:48:18 UTC] story_start: Story 227: Resource spoilage system
+[2026-03-15 10:23:28 UTC] deploy_ok: Story 227 deployed: Healthy after 0.1s
+[2026-03-15 10:23:44 UTC] story_done: Story 227 complete: Resource spoilage system
+[2026-03-15 10:23:45 UTC] story_start: Story 228: NPC economic class system

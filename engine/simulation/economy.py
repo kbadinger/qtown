@@ -2207,3 +2207,44 @@ def apply_resource_spoilage(db: Session) -> None:
             tick=current_tick
         )
         db.add(event)
+
+
+def classify_npcs(db: Session) -> dict:
+    """Classify NPCs into economic classes based on gold."""
+    import json
+    from engine.models import NPC
+    
+    counts = {'poor': 0, 'middle': 0, 'rich': 0}
+    
+    # Get all living NPCs (is_dead == 0 for Postgres compatibility)
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    for npc in npcs:
+        # Determine economic class based on gold
+        if npc.gold < 20:
+            economic_class = 'poor'
+            happiness_change = -3
+        elif npc.gold <= 100:
+            economic_class = 'middle'
+            happiness_change = 0
+        else:
+            economic_class = 'rich'
+            happiness_change = 3
+        
+        # Update counts
+        counts[economic_class] += 1
+        
+        # Update NPC experience JSON
+        try:
+            parsed = json.loads(npc.experience) if npc.experience else {}
+            experience = parsed if isinstance(parsed, dict) else {}
+        except (json.JSONDecodeError, TypeError):
+            experience = {}
+        
+        experience['economic_class'] = economic_class
+        npc.experience = json.dumps(experience)
+        
+        # Apply happiness change (clamped between 0 and 100)
+        npc.happiness = max(0, min(100, npc.happiness + happiness_change))
+    
+    return counts
