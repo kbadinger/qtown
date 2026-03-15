@@ -3325,5 +3325,48 @@ def check_emigration_wave(db: Session) -> int:
     )
     db.add(event)
     db.commit()
-    
+
     return 1
+
+
+def record_npc_legacy(db: Session) -> int:
+    """Record legacy for dead NPCs without legacy_recorded in memory_events."""
+    from engine.models import NPC, Transaction, Relationship, Crime, Event
+    import json
+
+    count = 0
+
+    dead_npcs = db.query(NPC).filter(NPC.is_dead == 1).all()
+
+    for npc in dead_npcs:
+        memory_events = json.loads(npc.memory_events) if npc.memory_events else []
+
+        if "legacy_recorded" in memory_events:
+            continue
+
+        tx_count = db.query(Transaction).filter(
+            (Transaction.sender_id == npc.id) |
+            (Transaction.receiver_id == npc.id)
+        ).count()
+
+        rel_count = db.query(Relationship).filter(
+            Relationship.npc_id == npc.id
+        ).count()
+
+        crime_count = db.query(Crime).filter(Crime.criminal_npc_id == npc.id).count()
+
+        legacy_event = Event(
+            event_type='npc_legacy',
+            description=f"Legacy recorded for {npc.name}: {tx_count} transactions, {rel_count} relationships, {crime_count} crimes",
+            tick=0,
+            affected_npc_id=npc.id
+        )
+        db.add(legacy_event)
+
+        memory_events.append("legacy_recorded")
+        npc.memory_events = json.dumps(memory_events)
+
+        count += 1
+
+    db.commit()
+    return count
