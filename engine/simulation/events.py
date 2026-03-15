@@ -2592,3 +2592,39 @@ def check_seasonal_events(db: Session) -> None:
         )
         db.add(winter_event)
         db.commit()
+
+
+def apply_winter_effects(db: Session) -> None:
+    """Apply winter hardship effects to NPCs."""
+    from engine.models import NPC, Event
+    
+    season = get_season(db)
+    if season != 'winter':
+        return
+    
+    # Get all living NPCs
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    has_hardship = False
+    
+    for npc in npcs:
+        # Increase hunger by +3 extra for winter
+        npc.hunger = min(100, npc.hunger + 3)
+        
+        # NPCs without home lose -5 energy extra
+        if npc.home_building_id is None:
+            npc.energy = max(0, npc.energy - 5)
+        
+        # Check if energy drops below 10 for hardship event
+        if npc.energy < 10:
+            has_hardship = True
+    
+    # Create winter_hardship event if any NPC is struggling
+    if has_hardship:
+        event = Event(
+            event_type='winter_hardship',
+            description='Winter hardship affecting the town',
+            severity=1,
+            resolved=0
+        )
+        db.add(event)

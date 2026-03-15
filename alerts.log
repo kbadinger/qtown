@@ -153,3 +153,6 @@ Merchant caravan events
 [2026-03-15 13:28:59 UTC] deploy_ok: Story 234 deployed: Healthy after 0.1s
 [2026-03-15 13:29:08 UTC] story_done: Story 234 complete: Seasonal cycle system
 [2026-03-15 13:29:08 UTC] story_start: Story 235: Auto-trigger harvest festival in fall
+[2026-03-15 13:48:12 UTC] deploy_ok: Story 235 deployed: Healthy after 0.1s
+[2026-03-15 13:48:29 UTC] story_done: Story 235 complete: Auto-trigger harvest festival in fall
+[2026-03-15 13:48:29 UTC] story_start: Story 236: Winter hardship effects

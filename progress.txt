@@ -3136,3 +3136,8 @@
 *   **Non-obvious State Dependencies**: The harvest festival logic relies on a hidden `seasonal_event_queue` rather than a direct date check; triggering the event requires ensuring the queue is flushed first, or the festival won't register even if the date is correct.
 *   **Codebase Convention**: Event triggers in this system follow a "check-then-emit" pattern using the `GameEventDispatcher`, where the `is_valid_trigger` method must return `true` before any UI or gameplay state changes are applied.
 *   **Correction Made**: Initially, I attempted to force the festival state directly on the `WorldManager`, which caused a race condition with the NPC pathfinding system; I corrected this by routing the trigger through the central `SeasonalCycle` service to ensure atomic state updates.
+
+--- Story 236: Winter hardship effects (attempts: 1, 2026-03-15 10:46) ---
+- **Non-obvious State Propagation**: The `WinterHardship` effect relies on a delayed `seasonalCycle` flag that doesn't update until the next tick; immediate checks against `currentSeason` were misleading and caused false negatives in the initial implementation.
+- **Convention for Conditional Effects**: This codebase consistently uses the `applyIf` helper with a `precondition` lambda for environmental effects, rather than scattering `if` statements directly inside the `apply()` method, ensuring side effects are isolated.
+- **Correction on Resource Decay**: Initially, I attempted to modify the `resourcePool` directly within the effect, which broke the undo/redo stack; corrected by switching to the `registerDelta` pattern to ensure all state changes are transactional and reversible.
