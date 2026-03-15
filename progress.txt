@@ -3076,3 +3076,8 @@
 - **Tricky Aspect**: The implicit coupling between the mentor's `validate` method and the apprentice's `execute` logic required a custom middleware layer to prevent race conditions during state transitions.
 - **Pattern Discovered**: The codebase consistently uses a "Command-Response" wrapper for all skill transfer operations, where the response object must explicitly include a `rollbackToken` for atomic failure recovery.
 - **Correction Made**: Initially attempted to serialize the entire skill context for transfer, causing memory spikes; switched to a lazy-loading pointer reference to the shared skill registry instead.
+
+--- Story 224: NPC homesickness mechanic (attempts: 1, 2026-03-15 04:04) ---
+- **Tricky**: The `HomeSickness` component required careful handling of the `last_visited_town` state; it must persist across scene transitions but reset only when the player explicitly interacts with a "home" marker, not just by entering the zone.
+- **Patterns**: This codebase consistently uses a `Component` + `System` split where components hold raw data (like `days_since_home`) and systems handle the logic (calculating mood penalties), avoiding direct entity mutation in the component.
+- **Correction**: Initially, I triggered the homesickness event every frame the player was away, causing performance spikes; I corrected this by adding a `cooldown_timer` check to ensure the effect only updates once per in-game day.

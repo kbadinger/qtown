@@ -13,6 +13,7 @@ from sqlalchemy import func
 from engine.models import Dialogue, NPC, Event, WorldState
 from typing import Optional
 from engine.models import Crime
+import math
 
 
 
@@ -3683,3 +3684,36 @@ def mentor_apprentices(db: Session) -> int:
     
     db.flush()
     return apprenticeship_count
+
+
+def apply_homesickness(db: Session) -> None:
+    """Apply homesickness effects to NPCs based on distance from home."""
+    from engine.models import NPC, Building
+    
+    # Get all living NPCs with a home building assigned
+    npcs = db.query(NPC).filter(NPC.is_dead == 0, NPC.home_building_id != None).all()
+    
+    for npc in npcs:
+        # Get the home building
+        home_building = db.query(Building).filter(Building.id == npc.home_building_id).first()
+        if not home_building:
+            continue
+        
+        # Calculate Euclidean distance from NPC to home building
+        dx = npc.x - home_building.x
+        dy = npc.y - home_building.y
+        distance = math.sqrt(dx * dx + dy * dy)
+        
+        # Apply homesickness effects based on distance
+        if distance > 10:
+            # Reduce happiness by 1 per 5 tiles of distance beyond 10
+            excess_distance = distance - 10
+            happiness_penalty = int(excess_distance / 5)
+            npc.happiness = max(0, npc.happiness - happiness_penalty)
+        elif distance <= 3:
+            # Comfort bonus when close to home
+            npc.happiness = min(100, npc.happiness + 2)
+        
+        db.add(npc)
+    
+    db.flush()

@@ -103,3 +103,8 @@ Uploading..
 [2026-03-15 06:46:44 UTC] deploy_ok: Story 222 deployed: Healthy after 0.1s
 [2026-03-15 06:47:01 UTC] story_done: Story 222 complete: NPC aging effects on productivity
 [2026-03-15 06:47:01 UTC] story_start: Story 223: Mentor-apprentice skill transfer
+[2026-03-15 07:48:09 UTC] WARN deploy_fail: Story 223 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build FAILED after 112.7s
+
+Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and '
+[2026-03-15 07:48:10 UTC] story_done: Story 223 complete: Mentor-apprentice skill transfer
+[2026-03-15 07:48:10 UTC] story_start: Story 224: NPC homesickness mechanic
