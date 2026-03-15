@@ -2357,3 +2357,37 @@ def collect_progressive_taxes(db: Session) -> float:
     
     db.flush()
     return total_collected
+
+
+def process_exports(db: Session) -> list:
+    """Export surplus resources (quantity > 200)."""
+    from engine.models import Resource, Treasury, Event
+    
+    exported = []
+    
+    # Get resources with surplus
+    resources = db.query(Resource).filter(Resource.quantity > 200).all()
+    
+    # Get first treasury
+    treasury = db.query(Treasury).first()
+    
+    for resource in resources:
+        if resource.quantity > 200:
+            # Export 50 units
+            resource.quantity -= 50
+            
+            # Add gold to treasury
+            if treasury:
+                treasury.gold += 50
+            
+            # Create export event
+            event = Event(
+                event_type='export',
+                description=f"Exported 50 units of {resource.name}",
+                tick=0
+            )
+            db.add(event)
+            
+            exported.append(resource)
+    
+    return exported

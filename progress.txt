@@ -3111,3 +3111,8 @@
 - **Edge cases in bracket logic**: The trickiest part was handling the "waterfall" calculation where income spans multiple brackets; a simple percentage on total income fails, requiring a loop to calculate tax per segment until the remaining income is exhausted.
 - **Immutable data patterns**: The codebase consistently avoids mutating the `income` or `brackets` arrays directly; instead, it creates new arrays or uses `reduce` to accumulate tax, ensuring the original configuration remains unchanged for subsequent calculations.
 - **Floating point precision**: Initially, I used standard `*` and `+` operators, which introduced rounding errors for large incomes; I corrected this by converting amounts to integers (cents) before calculation and rounding only at the final output stage.
+
+--- Story 231: Trade surplus auto-export (attempts: 1, 2026-03-15 08:12) ---
+- **Non-obvious logic**: The trade surplus calculation requires normalizing export values against a dynamic baseline that updates monthly, not just a static fiscal year target; missing this caused initial overestimation of surplus.
+- **Codebase pattern**: All financial aggregations in this module rely on the `CurrencyConverter` service for normalization before any arithmetic, ensuring consistent handling of multi-currency auto-exports.
+- **Correction**: Initially treated "auto-export" as a single SKU category, but discovered it requires filtering by `product_type` AND `destination_region` flags to exclude domestic re-exports.
