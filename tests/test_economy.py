@@ -1148,3 +1148,78 @@ def test_s448_discover_new_resource(db):
     # At least function should work without error
     assert any(r is None for r in results) or any(r is not None for r in results), "Function should return name or None"
     db.flush()
+
+
+# =========================================================================
+# Stories 466-490: Interconnection Stories
+# =========================================================================
+
+
+def test_s466_weather_crop_modifier(db):
+    """Weather crop yield modifier."""
+    _setup_world(db)
+    from engine.simulation import weather_crop_modifier
+
+    result = weather_crop_modifier(db)
+    assert isinstance(result, dict), "Should return dict of resource quantities"
+    db.flush()
+
+
+def test_s467_check_food_scarcity(db):
+    """Food scarcity price spike."""
+    _setup_world(db)
+    from engine.simulation import check_food_scarcity
+
+    result = check_food_scarcity(db)
+    assert isinstance(result, bool), "Should return True or False"
+    db.flush()
+
+
+def test_s474_apply_tax_mood(db):
+    """Tax policy happiness effect."""
+    _setup_world(db)
+    from engine.simulation import apply_tax_mood
+
+    result = apply_tax_mood(db)
+    assert isinstance(result, int), "Should return count of affected NPCs"
+    db.flush()
+
+
+def test_s479_process_visitor_arrivals(db):
+    """Visitor gold boost from reputation."""
+    _setup_world(db)
+    from engine.simulation import process_visitor_arrivals
+
+    result = process_visitor_arrivals(db)
+    assert result in (0, 1), "Should return 0 or 1"
+    db.flush()
+
+
+def test_s481_apply_friendship_bonus(db):
+    """Relationships boost work output."""
+    _setup_world(db)
+    from engine.simulation import apply_friendship_bonus
+
+    result = apply_friendship_bonus(db)
+    assert isinstance(result, dict), "Should return dict of bonuses"
+    db.flush()
+
+
+def test_s482_check_economic_cycle(db):
+    """Boom and bust cycle."""
+    _setup_world(db)
+    from engine.simulation import check_economic_cycle
+
+    result = check_economic_cycle(db)
+    assert isinstance(result, str), "Should return economic status string"
+    db.flush()
+
+
+def test_s483_check_wealth_inequality(db):
+    """Wealth inequality triggers unrest."""
+    _setup_world(db)
+    from engine.simulation import check_wealth_inequality
+
+    result = check_wealth_inequality(db)
+    assert isinstance(result, bool), "Should return True or False"
+    db.flush()

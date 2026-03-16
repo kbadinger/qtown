@@ -1285,3 +1285,87 @@ def test_s447_check_naming_ceremony(db):
     # Can be milestone name or None
     assert result is None or isinstance(result, str), "Should return milestone name or None"
     db.flush()
+
+
+# =========================================================================
+# Stories 466-490: Interconnection Stories
+# =========================================================================
+
+
+def test_s476_apply_drought_starvation(db):
+    """Drought causes starvation."""
+    _setup_world(db)
+    from engine.simulation import apply_drought_starvation
+    from engine.models import WorldState, NPC
+
+    # Set drought active and high hunger
+    ws = db.query(WorldState).first()
+    ws.drought_active = 1
+    for npc in db.query(NPC).filter(NPC.is_dead == 0).limit(2).all():
+        npc.hunger = 95
+    db.flush()
+
+    result = apply_drought_starvation(db)
+    assert isinstance(result, int), "Should return count of deaths"
+    db.flush()
+
+
+def test_s478_check_plague_overwhelm(db):
+    """Plague overwhelms hospital."""
+    _setup_world(db)
+    from engine.simulation import check_plague_overwhelm
+    from engine.models import NPC
+
+    # Make some NPCs sick
+    for npc in db.query(NPC).filter(NPC.is_dead == 0).limit(3).all():
+        npc.illness_severity = 50
+    db.flush()
+
+    result = check_plague_overwhelm(db)
+    assert isinstance(result, int), "Should return sick count"
+    db.flush()
+
+
+def test_s480_apply_newspaper_mood(db):
+    """Newspaper affects NPC mood."""
+    _setup_world(db)
+    from engine.simulation import apply_newspaper_mood
+
+    result = apply_newspaper_mood(db)
+    assert isinstance(result, int), "Should return count of affected NPCs"
+    db.flush()
+
+
+def test_s485_apply_winter_drain(db):
+    """Winter energy drain."""
+    _setup_world(db)
+    from engine.simulation import apply_winter_drain
+    from engine.models import WorldState
+
+    ws = db.query(WorldState).first()
+    ws.weather = "snow"
+    db.flush()
+
+    result = apply_winter_drain(db)
+    assert isinstance(result, int), "Should return count of affected NPCs"
+    db.flush()
+
+
+def test_s486_check_summer_festival(db):
+    """Summer festival happiness."""
+    _setup_world(db)
+    from engine.simulation import check_summer_festival
+
+    result = check_summer_festival(db)
+    assert isinstance(result, int), "Should return count of NPCs affected"
+    db.flush()
+
+
+def test_s488_roll_disaster(db):
+    """Disaster probability each tick."""
+    _setup_world(db)
+    from engine.simulation import roll_disaster
+
+    result = roll_disaster(db)
+    assert isinstance(result, list), "Should return list of disaster names"
+    db.flush()

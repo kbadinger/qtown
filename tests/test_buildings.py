@@ -1394,3 +1394,51 @@ def test_s430_calculate_network_effects(db):
     result = calculate_network_effects(db)
     assert isinstance(result, dict), "Should return dict of building network data"
     db.flush()
+
+
+# =========================================================================
+# Stories 466-490: Interconnection Stories
+# =========================================================================
+
+
+def _setup_world(db):
+    """Helper: init grid + seed buildings + seed NPCs."""
+    from engine.simulation import init_world_state, init_grid, seed_buildings, seed_npcs
+
+    init_world_state(db)
+    init_grid(db)
+    seed_buildings(db)
+    seed_npcs(db)
+
+
+def test_s471_apply_crime_penalty(db):
+    """Crime lowers building value."""
+    _setup_world(db)
+    from engine.simulation import apply_crime_penalty
+
+    result = apply_crime_penalty(db)
+    assert isinstance(result, int), "Should return count of downgraded buildings"
+    db.flush()
+
+
+def test_s472_check_housing_pressure(db):
+    """Population housing pressure."""
+    _setup_world(db)
+    from engine.simulation import check_housing_pressure
+
+    result = check_housing_pressure(db)
+    assert isinstance(result, dict), "Should return dict with population/capacity/pressure"
+    assert "population" in result
+    assert "capacity" in result
+    assert "pressure" in result
+    db.flush()
+
+
+def test_s477_trigger_rebuilding_boom(db):
+    """Fire triggers rebuilding boom."""
+    _setup_world(db)
+    from engine.simulation import trigger_rebuilding_boom
+
+    result = trigger_rebuilding_boom(db)
+    assert isinstance(result, int), "Should return count of rebuilt buildings"
+    db.flush()

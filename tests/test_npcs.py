@@ -2658,3 +2658,87 @@ def test_s449_record_npc_legacy(db):
     result = record_npc_legacy(db)
     assert isinstance(result, int), "Should return count of legacies recorded"
     db.flush()
+
+
+# =========================================================================
+# Stories 466-490: Interconnection Stories
+# =========================================================================
+
+
+def _setup_world(db):
+    """Helper: init grid + seed buildings + seed NPCs."""
+    from engine.simulation import init_world_state, init_grid, seed_buildings, seed_npcs
+
+    init_world_state(db)
+    init_grid(db)
+    seed_buildings(db)
+    seed_npcs(db)
+
+
+def test_s468_apply_hunger_penalty(db):
+    """Hunger drives unhappiness."""
+    _setup_world(db)
+    from engine.simulation import apply_hunger_penalty
+    from engine.models import NPC
+
+    # Set high hunger on some NPCs
+    for npc in db.query(NPC).filter(NPC.is_dead == 0).limit(2).all():
+        npc.hunger = 80
+    db.flush()
+
+    result = apply_hunger_penalty(db)
+    assert isinstance(result, int), "Should return count of penalized NPCs"
+    db.flush()
+
+
+def test_s469_check_poverty_crime(db):
+    """Poverty drives crime."""
+    _setup_world(db)
+    from engine.simulation import check_poverty_crime
+    from engine.models import NPC
+
+    # Set poverty conditions
+    for npc in db.query(NPC).filter(NPC.is_dead == 0).limit(3).all():
+        npc.gold = 2
+        npc.happiness = 20
+    db.flush()
+
+    result = check_poverty_crime(db)
+    assert isinstance(result, int), "Should return count of new crimes"
+    db.flush()
+
+
+def test_s470_check_guard_demand(db):
+    """Crime rate triggers guard recruitment."""
+    _setup_world(db)
+    from engine.simulation import check_guard_demand
+
+    result = check_guard_demand(db)
+    assert result in (0, 1), "Should return 0 or 1"
+    db.flush()
+
+
+def test_s473_reputation_immigration(db):
+    """Reputation drives immigration."""
+    _setup_world(db)
+    from engine.simulation import reputation_immigration
+
+    result = reputation_immigration(db)
+    assert result in (0, 1), "Should return 0 or 1"
+    db.flush()
+
+
+def test_s484_transfer_mentor_skills(db):
+    """Mentor skill transfer on death."""
+    _setup_world(db)
+    from engine.simulation import transfer_mentor_skills
+    from engine.models import NPC
+
+    # Mark one NPC as dead
+    npc = db.query(NPC).first()
+    npc.is_dead = 1
+    db.flush()
+
+    result = transfer_mentor_skills(db)
+    assert isinstance(result, int), "Should return count of transfers"
+    db.flush()

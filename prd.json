@@ -4378,7 +4378,7 @@
       "context_files": [
         "engine/simulation/events.py"
       ],
-      "status": "in_progress",
+      "status": "done",
       "phase": "development",
       "attempts": 1
     },
@@ -7417,6 +7417,281 @@
       "priority": 450,
       "status": "done",
       "attempts": 1
+    },
+    {
+      "id": "466",
+      "title": "Weather crop yield modifier",
+      "description": "Create weather_crop_modifier(db) in engine/simulation/production.py. Get WorldState.weather. Modify Food/Wheat Resource quantities: rain=+20%, storm=-30%, snow=-50%, drought(drought_active==1)=-60%, clear/sunny=no change. Return dict of {resource_name: new_quantity}. Do NOT create Events.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/production.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "467",
+      "title": "Food scarcity price spike",
+      "description": "Create check_food_scarcity(db) in engine/simulation/economy.py. Sum all Resource where name==\"Food\". If total < 20, multiply all PriceHistory entries for \"Food\" price by 2.0 and create Event(event_type=\"food_scarcity\", description=\"Food shortage! Prices doubled.\", tick=WorldState.tick or 0). Return True if scarcity, False otherwise.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "468",
+      "title": "Hunger drives unhappiness",
+      "description": "Create apply_hunger_penalty(db) in engine/simulation/npcs.py. For each living NPC (is_dead==0) with hunger>70: happiness -= 10 (min 0). If hunger>90: happiness -= 20 instead (min 0). Return count of penalized NPCs.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "469",
+      "title": "Poverty drives crime",
+      "description": "Create check_poverty_crime(db) in engine/simulation/npcs.py. For each living NPC (is_dead==0) with gold<5 and happiness<30: 15% chance to create Crime(criminal_npc_id=npc.id, type=\"theft\", tick=WorldState.tick or 0, resolved=0). Return count of new crimes.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "470",
+      "title": "Crime rate triggers guard recruitment",
+      "description": "Create check_guard_demand(db) in engine/simulation/npcs.py. Count unresolved Crimes (resolved==0). Count living NPCs with role==\"guard\". If crimes > guards*2 and living NPC count < 30: create 1 new NPC(name=generate_npc_name(db), role=\"guard\", x=25, y=25, gold=30, hunger=50, energy=80, happiness=60, age=25, max_age=70, is_dead=0, is_bankrupt=0). Create Event(event_type=\"guard_recruited\", description=\"New guard recruited due to high crime\", tick=WorldState.tick or 0). Return 1 if recruited, 0 if not.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "471",
+      "title": "Crime lowers building value",
+      "description": "Create apply_crime_penalty(db) in engine/simulation/buildings.py. Count unresolved Crimes (Crime.resolved==0). If count>5: all buildings with level>1 have 5% chance to lose 1 level (level -= 1). Create Event(event_type=\"crime_damage\", description=\"High crime damaged building infrastructure\", tick=WorldState.tick or 0) for each affected building. Return count of downgraded buildings.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/simulation/buildings.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "472",
+      "title": "Population housing pressure",
+      "description": "Create check_housing_pressure(db) in engine/simulation/buildings.py. Count living NPCs (is_dead==0). Sum Building.capacity where building_type==\"residential\". If npc_count > total_capacity: create Event(event_type=\"housing_pressure\", description=f\"{npc_count} residents but only {total_capacity} housing capacity\", tick=WorldState.tick or 0). Return dict {\"population\": npc_count, \"capacity\": total_capacity, \"pressure\": npc_count > total_capacity}.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/simulation/buildings.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "473",
+      "title": "Reputation drives immigration",
+      "description": "Create reputation_immigration(db) in engine/simulation/npcs.py. Call calculate_town_reputation(db) from economy module (from engine.simulation.economy import calculate_town_reputation). If reputation[\"reputation\"]>70 and living NPC count<25: 20% chance spawn 1 immigrant NPC(name=generate_npc_name(db), role=random.choice([\"farmer\",\"merchant\",\"baker\"]), x=random.randint(0,9), y=random.randint(0,9), gold=40, hunger=50, energy=80, happiness=70, age=random.randint(20,40), max_age=random.randint(65,85), is_dead=0, is_bankrupt=0). Return 1 if spawned, 0 otherwise.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "474",
+      "title": "Tax policy happiness effect",
+      "description": "Create apply_tax_mood(db) in engine/simulation/economy.py. Get WorldState.tax_rate. If tax_rate>0.20: all living NPCs (is_dead==0) happiness -= 5 (min 0). If tax_rate<0.05: all living NPCs happiness += 3 (max 100). Return count of affected NPCs.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "475",
+      "title": "Corruption approval penalty",
+      "description": "Create apply_corruption_penalty(db) in engine/simulation/tick.py. Find mayor NPC (role==\"mayor\", is_dead==0). If no mayor, return 0. Calculate avg_gold of all living non-mayor NPCs. If mayor.gold > avg_gold*3: all living NPCs happiness -= 8 (min 0). Create Event(event_type=\"corruption_scandal\", description=f\"Mayor {mayor.name} hoarding wealth! Public outrage.\", tick=WorldState.tick or 0). Return 1 if scandal, 0 otherwise.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "476",
+      "title": "Drought causes starvation",
+      "description": "Create apply_drought_starvation(db) in engine/simulation/events.py. If WorldState.drought_active==1: for each living NPC (is_dead==0) with hunger>85, 10% chance set is_dead=1. Create Event(event_type=\"starvation_death\", description=f\"{npc.name} died of starvation during drought\", tick=WorldState.tick or 0, affected_npc_id=npc.id) for each death. Return count of deaths.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "477",
+      "title": "Fire triggers rebuilding boom",
+      "description": "Create trigger_rebuilding_boom(db) in engine/simulation/buildings.py. Find buildings with capacity==0 (destroyed). For each: set capacity=5, level=1. Deduct 30 gold from first Treasury per building rebuilt. Create Event(event_type=\"rebuilding\", description=f\"Rebuilt {building.name}\", tick=WorldState.tick or 0, affected_building_id=building.id). Return count of rebuilt buildings.",
+      "test_file": "tests/test_buildings.py",
+      "context_files": [
+        "engine/simulation/buildings.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "478",
+      "title": "Plague overwhelms hospital",
+      "description": "Create check_plague_overwhelm(db) in engine/simulation/events.py. Count living NPCs with illness_severity>0. Count total hospital building capacity (Building where building_type==\"hospital\", sum capacity). If sick_count > hospital_capacity*2: all sick NPCs illness_severity += 10 (cap 100). Create Event(event_type=\"hospital_overwhelmed\", description=f\"Hospital overwhelmed: {sick_count} sick, only {hospital_capacity} capacity\", tick=WorldState.tick or 0). Return sick_count.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "479",
+      "title": "Visitor gold boost from reputation",
+      "description": "Create process_visitor_arrivals(db) in engine/simulation/economy.py. Call calculate_town_reputation(db). If reputation[\"reputation\"]>60: 25% chance create VisitorLog(arrival_tick=WorldState.tick or 0). Add 50 gold to first Treasury.gold_stored. Create Event(event_type=\"visitor_arrival\", description=\"A wealthy visitor arrived, boosting the economy\", tick=WorldState.tick or 0). Return 1 if visitor arrived, 0 otherwise.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "480",
+      "title": "Newspaper affects NPC mood",
+      "description": "Create apply_newspaper_mood(db) in engine/simulation/events.py. Get latest Newspaper (order by id desc, limit 1). If no newspaper, return 0. If headline contains \"death\" or \"plague\" or \"fire\" or \"crime\": all living NPCs (is_dead==0) happiness -= 5 (min 0). If headline contains \"celebration\" or \"festival\" or \"boom\" or \"prosperity\": all living NPCs happiness += 5 (max 100). Return count of affected NPCs.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "481",
+      "title": "Relationships boost work output",
+      "description": "Create apply_friendship_bonus(db) in engine/simulation/production.py. For each Resource with a building_id: find workers (NPC where work_building_id==Resource.building_id and is_dead==0). Count Relationships between those workers (Relationship.npc_id in worker_ids AND Relationship.target_npc_id in worker_ids AND relationship_type==\"friend\"). If friend_pairs>=2: resource.quantity += int(resource.quantity * 0.10). Return dict of {resource.name: bonus_amount}. Note: Resource column is .name not .resource_name.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/production.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "482",
+      "title": "Boom and bust cycle",
+      "description": "Create check_economic_cycle(db) in engine/simulation/economy.py. Get WorldState. Sum all Treasury.gold_stored. If total_treasury>1000 and WorldState.economic_status!=\"boom\": set economic_status=\"boom\", base_wage *= 1.2. If total_treasury<100 and economic_status!=\"bust\": set economic_status=\"bust\", base_wage *= 0.8. Create Event(event_type=\"economic_shift\", description=f\"Economy shifted to {economic_status}\", tick=WorldState.tick or 0) on any change. Return WorldState.economic_status string.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "483",
+      "title": "Wealth inequality triggers unrest",
+      "description": "Create check_wealth_inequality(db) in engine/simulation/economy.py. Get gold of all living NPCs (is_dead==0). If fewer than 5 living NPCs, return False. Calculate max_gold and min_gold. If max_gold > min_gold*10: find richest NPC happiness += 10 (max 100), find 3 poorest NPCs happiness -= 15 (min 0). Create Event(event_type=\"wealth_inequality\", description=\"Growing wealth gap causing unrest among the poor\", tick=WorldState.tick or 0). Return True if inequality detected, False otherwise.",
+      "test_file": "tests/test_economy.py",
+      "context_files": [
+        "engine/simulation/economy.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "484",
+      "title": "Mentor skill transfer on death",
+      "description": "Create transfer_mentor_skills(db) in engine/simulation/npcs.py. For each dead NPC (is_dead==1): parse memory_events JSON list, skip if \"skills_transferred\" already in list. Find living NPCs (is_dead==0) at same work_building_id (skip if work_building_id is None). If any found, first one gets skill += 3. Create Event(event_type=\"skill_transfer\", description=f\"{dead_npc.name} expertise passed to {recipient.name}\", tick=WorldState.tick or 0, affected_npc_id=recipient.id). Append \"skills_transferred\" to dead NPC memory_events JSON list. Return count of transfers.",
+      "test_file": "tests/test_npcs.py",
+      "context_files": [
+        "engine/simulation/npcs.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "485",
+      "title": "Winter energy drain",
+      "description": "Create apply_winter_drain(db) in engine/simulation/weather.py. If WorldState.weather==\"snow\": all living NPCs (is_dead==0) energy -= 5 (min 0) and hunger += 5 (max 100). NPCs with home_building_id not None get half penalty (energy -2, hunger +2 instead). Return count of affected NPCs. If weather is not snow, return 0.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/weather.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "486",
+      "title": "Summer festival happiness",
+      "description": "Create check_summer_festival(db) in engine/simulation/events.py. Get season from WorldState.day: season = (day % 96) // 24. If season==1 (summer) and day%24==12 (mid-season): all living NPCs (is_dead==0) happiness += 10 (max 100), energy += 5 (max 100). Create Event(event_type=\"summer_festival\", description=\"The annual summer festival brings joy to all!\", tick=WorldState.tick or 0). Return count of NPCs affected. If not summer or not mid-season day, return 0.",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "487",
+      "title": "Periodic interconnection checks",
+      "description": "Create run_periodic_checks(db, tick) in engine/simulation/tick.py. Call existing functions on schedule: every 10 ticks call apply_hunger_penalty(db) from engine.simulation.npcs and apply_tax_mood(db) from engine.simulation.economy. Every 25 ticks call check_food_scarcity(db) from engine.simulation.economy and check_housing_pressure(db) from engine.simulation.buildings. Every 50 ticks call check_poverty_crime(db) from engine.simulation.npcs and check_economic_cycle(db) from engine.simulation.economy. Every 100 ticks call check_guard_demand(db) from engine.simulation.npcs and apply_crime_penalty(db) from engine.simulation.buildings. Return dict of {function_name: result} for functions that ran this tick only.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "488",
+      "title": "Disaster probability each tick",
+      "description": "Create roll_disaster(db) in engine/simulation/events.py. Each call: 1% chance call trigger_drought(db), 1% chance call trigger_flood(db), 0.5% chance call trigger_fire(db), 0.5% chance call trigger_plague(db). All from engine.simulation.events module. Use random.random() for each independently. If WorldState.weather==\"storm\": flood chance doubles to 2%. If weather==\"hot\" or WorldState.drought_active==1: fire chance doubles to 1%. Return list of disaster type strings triggered (e.g. [\"drought\", \"fire\"]) or empty list [].",
+      "test_file": "tests/test_events.py",
+      "context_files": [
+        "engine/simulation/events.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "489",
+      "title": "Daily interconnection summary",
+      "description": "Create generate_daily_summary(db) in engine/simulation/tick.py. Count: living NPCs (is_dead==0), dead NPCs (is_dead==1), total gold (sum NPC.gold where is_dead==0), unresolved crimes (Crime where resolved==0), total building capacity (sum Building.capacity), avg happiness of living NPCs. Create Event(event_type=\"daily_summary\", description=f\"Day {WorldState.day}: {living} alive, {dead} dead, {gold}g, {crimes} crimes, avg happiness {happiness:.0f}\", tick=WorldState.tick or 0). Return dict with keys: living, dead, gold, crimes, capacity, happiness.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "status": "pending",
+      "phase": "development"
+    },
+    {
+      "id": "490",
+      "title": "Cascade chain: weather to emigration",
+      "description": "Create check_cascade_effects(db) in engine/simulation/tick.py. Full cause-effect chain: 1) Get weather from WorldState. 2) If weather==\"snow\" or WorldState.drought_active==1: count living NPCs (is_dead==0) with happiness<20 as miserable_count. 3) If miserable_count >= 3: pick one random miserable NPC, set is_dead=1, create Event(event_type=\"emigration\", description=f\"{npc.name} left town due to harsh conditions\", tick=WorldState.tick or 0, affected_npc_id=npc.id). Return {\"weather\": weather, \"miserable\": miserable_count, \"emigrated\": 1}. If conditions not met, return {\"weather\": weather, \"miserable\": 0, \"emigrated\": 0}.",
+      "test_file": "tests/test_tick.py",
+      "context_files": [
+        "engine/simulation/tick.py"
+      ],
+      "status": "pending",
+      "phase": "development"
     }
   ]
 }

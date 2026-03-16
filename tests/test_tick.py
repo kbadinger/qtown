@@ -623,3 +623,53 @@ def test_s450_generate_speed_report(db):
     assert "tick" in result, "Should have tick key"
     assert "complexity" in result, "Should have complexity key"
     db.flush()
+
+
+# =========================================================================
+# Stories 466-490: Interconnection Stories
+# =========================================================================
+
+
+def test_s475_apply_corruption_penalty(db):
+    """Corruption approval penalty."""
+    _setup_world(db)
+    from engine.simulation import apply_corruption_penalty
+
+    result = apply_corruption_penalty(db)
+    assert result in (0, 1), "Should return 0 or 1"
+    db.flush()
+
+
+def test_s487_run_periodic_checks(db):
+    """Periodic interconnection checks."""
+    _setup_world(db)
+    from engine.simulation import run_periodic_checks
+
+    # tick=10 should trigger the 10-tick functions
+    result = run_periodic_checks(db, tick=10)
+    assert isinstance(result, dict), "Should return dict of results"
+    db.flush()
+
+
+def test_s489_generate_daily_summary(db):
+    """Daily interconnection summary."""
+    _setup_world(db)
+    from engine.simulation import generate_daily_summary
+
+    result = generate_daily_summary(db)
+    assert isinstance(result, dict), "Should return summary dict"
+    assert "living" in result
+    assert "gold" in result
+    db.flush()
+
+
+def test_s490_check_cascade_effects(db):
+    """Cascade chain: weather to emigration."""
+    _setup_world(db)
+    from engine.simulation import check_cascade_effects
+
+    result = check_cascade_effects(db)
+    assert isinstance(result, dict), "Should return dict with weather/miserable/emigrated"
+    assert "weather" in result
+    assert "emigrated" in result
+    db.flush()
