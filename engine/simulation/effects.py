@@ -298,3 +298,51 @@ def process_bounties(db: Session) -> int:
     
     db.commit()
     return bounties_collected
+
+
+def vigilante_justice(db: Session) -> int:
+    """Vigilante justice without guards."""
+    import random
+    import json
+    from engine.models import NPC, Crime
+
+    # Check if any guards exist (role='guard', is_dead==0)
+    guards = db.query(NPC).filter(NPC.role == 'guard', NPC.is_dead == 0).all()
+    if guards:
+        return 0
+
+    # Find unresolved crimes (resolved==0)
+    crimes = db.query(Crime).filter(Crime.resolved == 0).all()
+    
+    count_resolved = 0
+    
+    for crime in crimes:
+        # Get criminal NPC to find location
+        criminal = db.query(NPC).filter(NPC.id == crime.criminal_npc_id).first()
+        if not criminal:
+            continue
+            
+        # Find brave NPCs on same tile (x, y)
+        brave_npcs = db.query(NPC).filter(
+            NPC.x == criminal.x,
+            NPC.y == criminal.y,
+            NPC.is_dead == 0
+        ).all()
+        
+        for npc in brave_npcs:
+            # Check personality for 'brave' == True
+            try:
+                personality = json.loads(npc.personality)
+                if isinstance(personality, dict) and personality.get('brave') == True:
+                    # 50% chance to resolve
+                    if random.random() < 0.5:
+                        # Resolve crime
+                        crime.resolved = 1
+                        # Increase happiness
+                        npc.happiness += 5
+                        count_resolved += 1
+                        break # One resolution per crime
+            except (json.JSONDecodeError, TypeError):
+                continue
+                
+    return count_resolved

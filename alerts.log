@@ -224,3 +224,6 @@ Uploading..
 [2026-03-16 01:51:00 UTC] deploy_ok: Story 249 deployed: Healthy after 0.1s
 [2026-03-16 01:51:17 UTC] story_done: Story 249 complete: Prison sentence serving
 [2026-03-16 01:51:17 UTC] story_start: Story 250: Bounty board for unresolved crimes
+[2026-03-16 02:13:06 UTC] deploy_ok: Story 250 deployed: Healthy after 0.1s
+[2026-03-16 02:13:23 UTC] story_done: Story 250 complete: Bounty board for unresolved crimes
+[2026-03-16 02:13:23 UTC] story_start: Story 251: Vigilante justice without guards

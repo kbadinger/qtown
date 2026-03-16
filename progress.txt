@@ -3211,3 +3211,8 @@
 - **Non-obvious State Handling**: The `BountyBoard` component relies on a derived `unresolved` list that filters based on *both* the `status` enum and a hidden `is_archived` flag; missing the latter caused stale data to appear even after status updates.
 - **Codebase Convention**: This project strictly separates "data fetching" (in `hooks/useBounties`) from "business logic" (in `services/bountyService.ts`); placing filtering logic directly in the component violates this separation and breaks unit test isolation.
 - **Correction**: Initially, I attempted to mutate the global store directly to update bounty statuses, which triggered infinite re-renders; I corrected this by dispatching an immutable action that recalculates the board state on the server side before syncing to the client.
+
+--- Story 251: Vigilante justice without guards (attempts: 1, 2026-03-15 22:33) ---
+- **Tricky Logic**: The distinction between "guard presence" and "guard authority" was non-obvious; the system required a separate state flag for `is_guarded` rather than just checking if a guard entity existed in the scene.
+- **Codebase Pattern**: The project consistently uses a `Context` object to pass environmental constraints (like `has_guards`) to action handlers, avoiding direct global state checks within individual story nodes.
+- **Correction**: Initially, I attempted to modify the `guard` object's properties directly to disable them, which broke the undo mechanism; I corrected this by introducing a temporary `override` flag that resets after the story step completes.
