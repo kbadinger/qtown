@@ -461,3 +461,55 @@ def hold_performance(db: Session) -> int:
 
     db.commit()
     return attendee_count
+
+
+def hold_ceremony(db: Session) -> int:
+    """Hold a church ceremony, boosting happiness and relationships for nearby NPCs."""
+    from sqlalchemy.orm import Session
+    from engine.models import Building, NPC, Relationship, Event, WorldState
+    
+    # Find all church buildings
+    churches = db.query(Building).filter(Building.building_type == 'church').all()
+    if not churches:
+        return 0
+    
+    attendees = set()
+    # Query alive NPCs (is_dead is Integer, 0 = alive)
+    all_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    # Check each NPC against all churches
+    for npc in all_npcs:
+        for church in churches:
+            dx = npc.x - church.x
+            dy = npc.y - church.y
+            # Euclidean distance squared <= 10^2
+            if dx * dx + dy * dy <= 100:
+                attendees.add(npc.id)
+                npc.happiness += 12
+                break  # Count happiness only once per NPC
+    
+    if not attendees:
+        return 0
+    
+    # Strengthen relationships between attendees
+    attendee_list = list(attendees)
+    # Filter relationships where both participants are in the attendee list
+    relationships = db.query(Relationship).filter(
+        Relationship.npc1_id.in_(attendee_list),
+        Relationship.npc2_id.in_(attendee_list)
+    ).all()
+    
+    for rel in relationships:
+        rel.strength += 3
+    
+    # Record the event
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    event = Event(
+        event_type='church_ceremony',
+        tick=current_tick
+    )
+    db.add(event)
+    
+    return len(attendees)

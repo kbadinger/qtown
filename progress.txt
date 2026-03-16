@@ -3231,3 +3231,8 @@
 *   **Tricky Logic**: Handling the "soft cancellation" state for performances was non-obvious; the system must distinguish between a performance being removed from the schedule versus a performance that is simply sold out, as both affect availability but require different downstream actions.
 *   **Patterns**: The codebase consistently uses a `DomainEvent` pattern for state changes in `Performance`, triggering separate `Aggregate` updates for `Ticket` inventory and `Venue` capacity, rather than direct database writes within the service layer.
 *   **Correction**: Initially, I attempted to validate seat availability at the service level before persisting the event, which caused race conditions; I corrected this by moving the validation logic into the `Performance` aggregate's internal state transition to ensure atomicity.
+
+--- Story 255: Church ceremony happiness boost (attempts: 1, 2026-03-16 00:02) ---
+- **Tricky Logic**: The happiness boost calculation required careful handling of edge cases where the ceremony duration was zero or negative, which initially caused a division-by-zero error in the bonus multiplier.
+- **Codebase Pattern**: Event-driven updates in this module consistently rely on the `CeremonyLifecycle` observer pattern rather than direct state mutation, ensuring the UI and analytics services stay in sync.
+- **Correction**: I initially applied the happiness modifier to the global user state before validating the ceremony's completion status; I refactored this to wrap the logic in a transactional guard to prevent partial state updates on failure.
