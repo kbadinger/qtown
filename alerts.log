@@ -221,3 +221,6 @@ Uploading..
 [2026-03-16 01:25:34 UTC] deploy_ok: Story 248 deployed: Healthy after 0.1s
 [2026-03-16 01:25:51 UTC] story_done: Story 248 complete: Crime motivation from poverty
 [2026-03-16 01:25:52 UTC] story_start: Story 249: Prison sentence serving
+[2026-03-16 01:51:00 UTC] deploy_ok: Story 249 deployed: Healthy after 0.1s
+[2026-03-16 01:51:17 UTC] story_done: Story 249 complete: Prison sentence serving
+[2026-03-16 01:51:17 UTC] story_start: Story 250: Bounty board for unresolved crimes

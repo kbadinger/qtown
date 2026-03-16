@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from engine.models import NPC, Building, Resource, WorldState, Event
 import json
 import random
+from engine.models import Crime
 
 
 def process_hospital(db: Session) -> None:
@@ -245,3 +246,55 @@ def serve_sentences(db: Session) -> int:
     
     db.commit()
     return released_count
+
+
+def process_bounties(db: Session) -> int:
+    """Process bounty collection for unresolved crimes.
+    
+    For each unresolved crime, if a guard NPC is within 5 tiles of the criminal NPC,
+    resolve the crime and give guard +10 gold. Creates Event event_type='bounty_collected'.
+    Returns count of bounties collected.
+    """
+    # Get unresolved crimes (resolved == 0 for Postgres compatibility)
+    unresolved_crimes = db.query(Crime).filter(Crime.resolved == 0).all()
+    
+    # Get all active guards
+    guards = db.query(NPC).filter(NPC.role == 'guard', NPC.is_dead == 0).all()
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    bounties_collected = 0
+    
+    for crime in unresolved_crimes:
+        criminal = db.query(NPC).filter(NPC.id == crime.criminal_npc_id).first()
+        if not criminal:
+            continue
+        
+        # Find a guard within 5 tiles
+        for guard in guards:
+            distance = math.sqrt((guard.x - criminal.x) ** 2 + (guard.y - criminal.y) ** 2)
+            if distance <= 5:
+                # Resolve crime
+                crime.resolved = 1
+                
+                # Reward guard
+                guard.gold += 10
+                
+                # Create event
+                event = Event(
+                    event_type="bounty_collected",
+                    description=f"{guard.name} collected bounty for {criminal.name}",
+                    tick=current_tick,
+                    severity="info",
+                    affected_npc_id=guard.id,
+                    affected_building_id=None
+                )
+                db.add(event)
+                
+                bounties_collected += 1
+                break # One guard per crime
+    
+    db.commit()
+    return bounties_collected

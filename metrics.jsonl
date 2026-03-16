@@ -3299,3 +3299,4 @@
 {"story_id": "247", "attempt": 1, "passed": true, "duration_sec": 67.31, "error": null, "tokens_in": 6342, "tokens_out": 1896, "timestamp": "2026-03-15T20:43:13"}
 {"story_id": "248", "attempt": 1, "passed": true, "duration_sec": 262.97, "error": null, "tokens_in": 6417, "tokens_out": 7675, "timestamp": "2026-03-15T21:05:04"}
 {"story_id": "249", "attempt": 1, "passed": true, "duration_sec": 347.25, "error": null, "tokens_in": 7415, "tokens_out": 9849, "timestamp": "2026-03-15T21:31:45"}
+{"story_id": "250", "attempt": 1, "passed": true, "duration_sec": 231.52, "error": null, "tokens_in": 7808, "tokens_out": 6671, "timestamp": "2026-03-15T21:55:15"}
