@@ -3201,3 +3201,8 @@
 *   **Non-obvious state coupling**: The `MotivationEngine` relies on a hidden global flag for `economic_stress_level` that isn't passed explicitly to the `Character` constructor, causing race conditions if the simulation runs in parallel threads.
 *   **Codebase convention**: Poverty-driven actions are modeled via a `threshold_check` pattern rather than a direct `if` statement, allowing dynamic difficulty adjustment through a central `EconomyConfig` singleton.
 *   **Correction**: Initially implemented the motivation trigger as a synchronous block, which froze the simulation loop; refactored to use an event-driven `on_poverty_spike` callback to maintain frame rate stability.
+
+--- Story 249: Prison sentence serving (attempts: 1, 2026-03-15 21:49) ---
+*   **Non-obvious state transitions**: The `serving_sentence` flag requires explicit handling of parole eligibility checks before allowing a status change to `released`; relying solely on `current_date` comparisons caused premature releases in edge cases.
+*   **Codebase convention**: Inheritance is strictly avoided for status logic; instead, the codebase relies on a `StatusRegistry` pattern where each state (e.g., `Incarcerated`, `Parole`, `Released`) implements a `handle_event()` method to ensure type-safe transitions.
+*   **Correction made**: Initially attempted to mutate the `Sentence` object directly during the daily cron job; corrected to use immutable value objects and generate a new `DailyLog` entry to maintain an audit trail required by the compliance module.

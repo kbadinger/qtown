@@ -218,3 +218,6 @@ Indexing...
 Uploading..
 [2026-03-16 01:00:34 UTC] story_done: Story 247 complete: Guard patrol movement
 [2026-03-16 01:00:35 UTC] story_start: Story 248: Crime motivation from poverty
+[2026-03-16 01:25:34 UTC] deploy_ok: Story 248 deployed: Healthy after 0.1s
+[2026-03-16 01:25:51 UTC] story_done: Story 248 complete: Crime motivation from poverty
+[2026-03-16 01:25:52 UTC] story_start: Story 249: Prison sentence serving

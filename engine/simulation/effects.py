@@ -4,6 +4,8 @@ import math
 from sqlalchemy.orm import Session
 
 from engine.models import NPC, Building, Resource, WorldState, Event
+import json
+import random
 
 
 def process_hospital(db: Session) -> None:
@@ -198,3 +200,48 @@ def process_punishment(db: Session) -> None:
     crimes = db.query(Crime).filter(Crime.resolved == 1).all()
     # Placeholder — Qwen will flesh out sentence tracking in later stories
     db.commit()
+
+
+def serve_sentences(db: Session) -> int:
+    """Process prison sentences for NPCs."""
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return 0
+    current_tick = world_state.tick
+    
+    prisons = db.query(Building).filter(Building.building_type == "prison").all()
+    prison_ids = [p.id for p in prisons]
+    if not prison_ids:
+        return 0
+    
+    inmates = db.query(NPC).filter(NPC.work_building_id.in_(prison_ids), NPC.is_dead == 0).all()
+    released_count = 0
+    
+    for npc in inmates:
+        mem = {}
+        if npc.memory_events:
+            try:
+                mem = json.loads(npc.memory_events)
+                if isinstance(mem, list):
+                    mem = {}
+            except (json.JSONDecodeError, TypeError):
+                pass
+        
+        if 'imprisoned_tick' not in mem:
+            mem['imprisoned_tick'] = current_tick
+        
+        if current_tick - mem['imprisoned_tick'] >= 50:
+            non_prisons = db.query(Building).filter(Building.building_type != "prison").all()
+            if non_prisons:
+                target = random.choice(non_prisons)
+                npc.x, npc.y = target.x, target.y
+            npc.work_building_id = None
+            npc.happiness = max(0, npc.happiness - 20)
+            if 'imprisoned_tick' in mem:
+                del mem['imprisoned_tick']
+            released_count += 1
+        
+        npc.memory_events = json.dumps(mem)
+    
+    db.commit()
+    return released_count
