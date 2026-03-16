@@ -193,3 +193,17 @@ Uploading..
 [2026-03-15 20:31:57 UTC] deploy_ok: Story 244 deployed: Healthy after 0.1s
 [2026-03-15 20:32:14 UTC] story_done: Story 244 complete: Public approval rating
 [2026-03-15 20:32:14 UTC] story_start: Story 245: Emergency election on low approval
+[2026-03-15 20:58:44 UTC] WARN deploy_fail: Story 245 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   f98274b..a105dda  main -> main
+
+Indexing...
+Uploading..
+[2026-03-15 20:58:45 UTC] story_done: Story 245 complete: Emergency election on low approval
+[2026-03-15 20:58:45 UTC] story_start: Story 246: Town budget allocation
+[2026-03-15 21:18:21 UTC] WARN story_fail: Story 246 struggling — attempt 5/12
+Town budget allocation
+[2026-03-15 22:02:53 UTC] WARN story_fail: Story 246 failed after 12 attempts: Town budget allocation
+[2026-03-15 22:02:54 UTC] CRITICAL critical: Story 246 failed: Town budget allocation
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-16 00:39:55 UTC] story_start: Story 246: Town budget allocation

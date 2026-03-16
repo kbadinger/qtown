@@ -3186,3 +3186,8 @@
 - **Non-obvious dependency**: The election trigger relies on a cached `approval_score` snapshot rather than the live database value; updating the score mid-process without refreshing the cache causes the election to fail silently.
 - **Codebase pattern**: State transitions in the election module strictly follow the `Event -> Validator -> StateUpdater` chain; bypassing the validator for "emergency" flags breaks the audit trail and is a recurring anti-pattern.
 - **Correction made**: Initially assumed the `low_approval` threshold was a global constant, but discovered it's a dynamic config per region; fixed the unit tests to inject region-specific thresholds instead of hardcoding the global default.
+
+--- Story 246: Town budget allocation (attempts: 2, 2026-03-15 20:40) ---
+- **Tricky**: The budget allocation logic required careful handling of floating-point precision; summing individual line items often drifted from the total due to rounding errors, necessitating a `decimal` type and explicit rounding at the aggregation step.
+- **Patterns**: The codebase consistently uses a "Command-Query Separation" pattern where budget modifications are strictly handled via command handlers, while read operations rely on pre-computed DTOs cached in the repository.
+- **Mistakes**: Initially, I attempted to validate budget constraints within the controller layer; I corrected this by moving validation rules into the domain service to ensure they are enforced regardless of the entry point.
