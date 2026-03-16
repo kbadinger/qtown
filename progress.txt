@@ -3196,3 +3196,8 @@
 - **Non-obvious collision logic**: The patrol reversal mechanism relies on checking the *next* tile's passability rather than the current one, requiring a lookahead offset that isn't immediately clear from the movement vector alone.
 - **Codebase convention**: Movement logic is consistently decoupled from rendering; updates modify the `position` struct first, while the `render()` function handles the visual interpolation and sprite flipping separately.
 - **Correction**: Initially applied the boundary check after updating the position, causing the guard to briefly clip into walls; fixed by validating the target coordinate before committing the state change.
+
+--- Story 248: Crime motivation from poverty (attempts: 1, 2026-03-15 21:24) ---
+*   **Non-obvious state coupling**: The `MotivationEngine` relies on a hidden global flag for `economic_stress_level` that isn't passed explicitly to the `Character` constructor, causing race conditions if the simulation runs in parallel threads.
+*   **Codebase convention**: Poverty-driven actions are modeled via a `threshold_check` pattern rather than a direct `if` statement, allowing dynamic difficulty adjustment through a central `EconomyConfig` singleton.
+*   **Correction**: Initially implemented the motivation trigger as a synchronous block, which froze the simulation loop; refactored to use an event-driven `on_poverty_spike` callback to maintain frame rate stability.

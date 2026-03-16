@@ -210,3 +210,11 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-16 00:41:38 UTC] deploy_ok: Story 246 deployed: Healthy after 0.1s
 [2026-03-16 00:41:59 UTC] story_done: Story 246 complete: Town budget allocation
 [2026-03-16 00:42:00 UTC] story_start: Story 247: Guard patrol movement
+[2026-03-16 01:00:34 UTC] WARN deploy_fail: Story 247 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   ebac4d6..d46ee1d  main -> main
+
+Indexing...
+Uploading..
+[2026-03-16 01:00:34 UTC] story_done: Story 247 complete: Guard patrol movement
+[2026-03-16 01:00:35 UTC] story_start: Story 248: Crime motivation from poverty

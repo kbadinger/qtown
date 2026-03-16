@@ -3792,3 +3792,45 @@ def patrol_guards(db: Session) -> None:
             new_target = random.choice(buildings)
             guard.target_x = new_target.x
             guard.target_y = new_target.y
+
+
+def check_crime_motivation(db: Session) -> int:
+    """Check for crime motivation due to poverty."""
+    crimes_count = 0
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Get living NPCs
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    for npc in living_npcs:
+        # Check poverty conditions
+        if npc.gold < 5 and npc.hunger > 70:
+            # Parse personality
+            personality = {}
+            if npc.personality:
+                try:
+                    parsed = json.loads(npc.personality)
+                    if isinstance(parsed, dict):
+                        personality = parsed
+                except (json.JSONDecodeError, TypeError):
+                    personality = {}
+            
+            # Determine chance
+            chance = 0.4 if personality.get('greedy') == True else 0.2
+            
+            if random.random() < chance:
+                # Find potential victims
+                victims = db.query(NPC).filter(NPC.is_dead == 0, NPC.gold >= 5).all()
+                if victims:
+                    victim = random.choice(victims)
+                    # Execute theft
+                    victim.gold -= 5
+                    npc.gold += 5
+                    crime = Crime(criminal_npc_id=npc.id, type='theft', tick=current_tick)
+                    db.add(crime)
+                    crimes_count += 1
+                    
+    return crimes_count
