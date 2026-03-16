@@ -3766,3 +3766,29 @@ def process_rivalries(db: Session) -> None:
                 severity=1
             )
             db.add(crime)
+
+
+def patrol_guards(db: Session) -> None:
+    """Make guards patrol between buildings."""
+    from engine.models import NPC, Building
+    import random
+    
+    # Get all living guards
+    guards = db.query(NPC).filter(NPC.role == 'guard', NPC.is_dead == 0).all()
+    
+    # Get all building positions
+    buildings = db.query(Building).all()
+    
+    if not buildings:
+        return
+    
+    for guard in guards:
+        # Check if guard has no target or is at current target
+        has_no_target = guard.target_x is None or guard.target_y is None
+        at_target = guard.x == guard.target_x and guard.y == guard.target_y
+        
+        if has_no_target or at_target:
+            # Pick random building
+            new_target = random.choice(buildings)
+            guard.target_x = new_target.x
+            guard.target_y = new_target.y

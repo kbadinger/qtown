@@ -3191,3 +3191,8 @@
 - **Tricky**: The budget allocation logic required careful handling of floating-point precision; summing individual line items often drifted from the total due to rounding errors, necessitating a `decimal` type and explicit rounding at the aggregation step.
 - **Patterns**: The codebase consistently uses a "Command-Query Separation" pattern where budget modifications are strictly handled via command handlers, while read operations rely on pre-computed DTOs cached in the repository.
 - **Mistakes**: Initially, I attempted to validate budget constraints within the controller layer; I corrected this by moving validation rules into the domain service to ensure they are enforced regardless of the entry point.
+
+--- Story 247: Guard patrol movement (attempts: 1, 2026-03-15 21:00) ---
+- **Non-obvious collision logic**: The patrol reversal mechanism relies on checking the *next* tile's passability rather than the current one, requiring a lookahead offset that isn't immediately clear from the movement vector alone.
+- **Codebase convention**: Movement logic is consistently decoupled from rendering; updates modify the `position` struct first, while the `render()` function handles the visual interpolation and sprite flipping separately.
+- **Correction**: Initially applied the boundary check after updating the position, causing the guard to briefly clip into walls; fixed by validating the target coordinate before committing the state change.
