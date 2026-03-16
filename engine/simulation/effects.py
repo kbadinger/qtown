@@ -346,3 +346,48 @@ def vigilante_justice(db: Session) -> int:
                 continue
                 
     return count_resolved
+
+
+def conduct_research(db: Session) -> str | None:
+    """Conduct research at a library building.
+    
+    If a library building exists, every call has 5% chance of a discovery.
+    Discoveries: 'farming_technique', 'medical_breakthrough', 'engineering'.
+    Creates Event with event_type='research_discovery'.
+    Returns discovery name or None.
+    """
+    from engine.models import Building, Event, Resource, NPC
+    
+    # Check if library exists
+    library = db.query(Building).filter(Building.building_type == 'library').first()
+    if not library:
+        return None
+    
+    # 5% chance of discovery
+    if random.random() >= 0.05:
+        return None
+    
+    # Randomly select discovery type
+    discoveries = ['farming_technique', 'medical_breakthrough', 'engineering']
+    discovery = random.choice(discoveries)
+    
+    # Apply discovery effects
+    if discovery == 'farming_technique':
+        # Add 10 to all Food resources
+        db.query(Resource).filter(Resource.resource_name == 'Food').update({'amount': Resource.amount + 10})
+    elif discovery == 'medical_breakthrough':
+        # Reduce all NPC illness_severity by 5 (minimum 0)
+        db.query(NPC).update({'illness_severity': db.func.GREATEST(NPC.illness_severity - 5, 0)})
+    elif discovery == 'engineering':
+        # All buildings +1 capacity
+        db.query(Building).update({'capacity': Building.capacity + 1})
+    
+    # Create Event record
+    event = Event(
+        event_type='research_discovery',
+        description=f'Discovery: {discovery}',
+        tick=0
+    )
+    db.add(event)
+    
+    return discovery

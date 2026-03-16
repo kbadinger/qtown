@@ -3221,3 +3221,8 @@
 - **Tricky Logic**: The interaction between the `specialization` enum and the `production_rate` multiplier was non-obvious; the bonus only applies if the `resource_type` strictly matches the specialization, not just if it's in the same category.
 - **Codebase Pattern**: The project consistently uses a `calculate_base()` followed by `apply_modifiers()` pattern for all economic calculations, ensuring the core logic remains decoupled from dynamic multipliers.
 - **Correction**: Initially, I applied the specialization bonus to the raw input cost rather than the final output yield, which inverted the intended economic advantage; corrected by moving the multiplier to the `yield` calculation step.
+
+--- Story 253: Library research discoveries (attempts: 1, 2026-03-15 23:11) ---
+- **Non-obvious complexity**: The legacy `BookIndex` class relies on implicit global state for pagination, making unit tests brittle; explicit dependency injection was required to isolate the search logic.
+- **Codebase patterns**: All repository methods follow a strict "Query -> Transform -> Cache" pipeline, but caching keys are constructed dynamically based on the full query string, which causes cache misses on minor parameter changes.
+- **Correction made**: Initially attempted to optimize search by pre-filtering in-memory lists, but corrected this to push filtering down to the database layer to avoid `OutOfMemoryError` on large datasets.
