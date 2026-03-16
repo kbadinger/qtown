@@ -233,3 +233,11 @@ Uploading..
 [2026-03-16 02:53:56 UTC] deploy_ok: Story 252 deployed: Healthy after 0.1s
 [2026-03-16 02:54:12 UTC] story_done: Story 252 complete: Skill specialization production bonus
 [2026-03-16 02:54:13 UTC] story_start: Story 253: Library research discoveries
+[2026-03-16 03:11:58 UTC] WARN deploy_fail: Story 253 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   2f57231..c8ec6ba  main -> main
+
+Indexing...
+Uploading..
+[2026-03-16 03:11:59 UTC] story_done: Story 253 complete: Library research discoveries
+[2026-03-16 03:11:59 UTC] story_start: Story 254: Theater performance events

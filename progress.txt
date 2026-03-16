@@ -3226,3 +3226,8 @@
 - **Non-obvious complexity**: The legacy `BookIndex` class relies on implicit global state for pagination, making unit tests brittle; explicit dependency injection was required to isolate the search logic.
 - **Codebase patterns**: All repository methods follow a strict "Query -> Transform -> Cache" pipeline, but caching keys are constructed dynamically based on the full query string, which causes cache misses on minor parameter changes.
 - **Correction made**: Initially attempted to optimize search by pre-filtering in-memory lists, but corrected this to push filtering down to the database layer to avoid `OutOfMemoryError` on large datasets.
+
+--- Story 254: Theater performance events (attempts: 1, 2026-03-15 23:38) ---
+*   **Tricky Logic**: Handling the "soft cancellation" state for performances was non-obvious; the system must distinguish between a performance being removed from the schedule versus a performance that is simply sold out, as both affect availability but require different downstream actions.
+*   **Patterns**: The codebase consistently uses a `DomainEvent` pattern for state changes in `Performance`, triggering separate `Aggregate` updates for `Ticket` inventory and `Venue` capacity, rather than direct database writes within the service layer.
+*   **Correction**: Initially, I attempted to validate seat availability at the service level before persisting the event, which caused race conditions; I corrected this by moving the validation logic into the `Performance` aggregate's internal state transition to ensure atomicity.

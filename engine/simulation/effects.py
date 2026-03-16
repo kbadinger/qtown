@@ -7,6 +7,7 @@ from engine.models import NPC, Building, Resource, WorldState, Event
 import json
 import random
 from engine.models import Crime
+from sqlalchemy import func
 
 
 def process_hospital(db: Session) -> None:
@@ -391,3 +392,72 @@ def conduct_research(db: Session) -> str | None:
     db.add(event)
     
     return discovery
+
+
+def hold_performance(db: Session) -> int:
+    """
+    Creates a theater performance event.
+    - Finds a theater building.
+    - Creates an Event with event_type='theater_performance'.
+    - Boosts happiness +8 for all NPCs within radius 15.
+    - Creates a Dialogue from a random attendee.
+    - Returns the count of attendees boosted.
+    """
+    from engine.models import Building, NPC, Event, Dialogue
+
+    # Find a theater building
+    theater = db.query(Building).filter(Building.building_type == "theater").first()
+    if not theater:
+        return 0
+
+    # Create the event
+    event = Event(
+        event_type="theater_performance",
+        description="A magical theater performance is happening!",
+        location_x=theater.x,
+        location_y=theater.y,
+        is_active=1
+    )
+    db.add(event)
+    db.flush()
+
+    # Find attendees within radius 15
+    # Using Euclidean distance squared to avoid sqrt: (x1-x2)^2 + (y1-y2)^2 <= 15^2 (225)
+    attendees = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        func.pow(NPC.x - theater.x, 2) + func.pow(NPC.y - theater.y, 2) <= 225
+    ).all()
+
+    attendee_count = len(attendees)
+    if attendee_count == 0:
+        return 0
+
+    # Boost happiness for attendees
+    for npc in attendees:
+        npc.happiness = min(100, npc.happiness + 8)
+        # Ensure happiness doesn't go negative if logic elsewhere allows it, though +8 is safe
+        if npc.happiness < 0:
+            npc.happiness = 0
+
+    # Create a dialogue from a random attendee
+    if attendees:
+        random_npc = random.choice(attendees)
+        dialogue_messages = [
+            "What a magnificent show!",
+            "I've never seen such talent before.",
+            "The theater brings so much joy to our town.",
+            "I wish I could see this every day.",
+            "Bravo! Bravo!"
+        ]
+        message = random.choice(dialogue_messages)
+        
+        dialogue = Dialogue(
+            speaker_npc_id=random_npc.id,
+            listener_npc_id=None, # Public announcement style
+            message=message,
+            tick=0 # Will be set by the orchestrator or we can leave as 0 if tick is not strictly required for creation
+        )
+        db.add(dialogue)
+
+    db.commit()
+    return attendee_count
