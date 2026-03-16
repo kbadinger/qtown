@@ -728,6 +728,7 @@ def discover_new_resource(db: Session) -> str | None:
     
     event = Event(
         event_type='resource_discovery',
+        description=f"Discovered {quantity} {name} at {building.name}",
         tick=current_tick
     )
     db.add(event)

@@ -2446,3 +2446,46 @@ def apply_bank_interest(db: Session) -> int:
         total_interest += interest
     
     return total_interest
+
+
+def allocate_budget(db: Session) -> dict:
+    """Allocate town budget from treasury."""
+    from engine.models import Treasury, WorldState, Building, Event
+    
+    treasury = db.query(Treasury).first()
+    if not treasury:
+        return {}
+    
+    total_gold = treasury.gold_stored
+    if total_gold <= 0:
+        return {}
+    
+    wages_allocation = int(total_gold * 0.40)
+    infrastructure_allocation = int(total_gold * 0.30)
+    defense_allocation = int(total_gold * 0.20)
+    total_allocated = wages_allocation + infrastructure_allocation + defense_allocation
+    
+    # 1. Wages: increase WorldState.base_wage by allocated/100
+    world_state = db.query(WorldState).first()
+    if world_state:
+        wage_increase = wages_allocation / 100
+        world_state.base_wage = world_state.base_wage + wage_increase
+    
+    # 2. Infrastructure: repair buildings (+1 capacity to all buildings with capacity < 10)
+    buildings = db.query(Building).filter(Building.capacity < 10).all()
+    for building in buildings:
+        building.capacity = building.capacity + 1
+    
+    # 3. Defense: create 'defense_budget' Event
+    defense_event = Event(event_type="defense_budget", description="Defense budget allocated", tick=world_state.tick if world_state else 0)
+    db.add(defense_event)
+    
+    # 4. Deduct total from treasury
+    treasury.gold_stored = treasury.gold_stored - total_allocated
+    
+    return {
+        "wages": wages_allocation,
+        "infrastructure": infrastructure_allocation,
+        "defense": defense_allocation,
+        "total": total_allocated
+    }
