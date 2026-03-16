@@ -3216,3 +3216,8 @@
 - **Tricky Logic**: The distinction between "guard presence" and "guard authority" was non-obvious; the system required a separate state flag for `is_guarded` rather than just checking if a guard entity existed in the scene.
 - **Codebase Pattern**: The project consistently uses a `Context` object to pass environmental constraints (like `has_guards`) to action handlers, avoiding direct global state checks within individual story nodes.
 - **Correction**: Initially, I attempted to modify the `guard` object's properties directly to disable them, which broke the undo mechanism; I corrected this by introducing a temporary `override` flag that resets after the story step completes.
+
+--- Story 252: Skill specialization production bonus (attempts: 1, 2026-03-15 22:52) ---
+- **Tricky Logic**: The interaction between the `specialization` enum and the `production_rate` multiplier was non-obvious; the bonus only applies if the `resource_type` strictly matches the specialization, not just if it's in the same category.
+- **Codebase Pattern**: The project consistently uses a `calculate_base()` followed by `apply_modifiers()` pattern for all economic calculations, ensuring the core logic remains decoupled from dynamic multipliers.
+- **Correction**: Initially, I applied the specialization bonus to the raw input cost rather than the final output yield, which inverted the intended economic advantage; corrected by moving the multiplier to the `yield` calculation step.

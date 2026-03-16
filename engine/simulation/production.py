@@ -735,3 +735,49 @@ def discover_new_resource(db: Session) -> str | None:
     
     db.commit()
     return name
+
+
+def apply_skill_bonuses(db: Session) -> dict:
+    """Apply skill-based production bonuses to resources.
+    
+    For each Resource, find NPCs working at that resource's building.
+    If worker skill >= 5, add 50% bonus to resource quantity.
+    If skill >= 10, add 100% bonus instead.
+    
+    Returns dict of {resource_name: bonus_applied}.
+    """
+    from engine.models import Resource, NPC
+    
+    bonus_dict = {}
+    
+    # Get all resources
+    resources = db.query(Resource).all()
+    
+    for resource in resources:
+        # Find NPCs working at this resource's building
+        workers = db.query(NPC).filter(
+            NPC.work_building_id == resource.building_id,
+            NPC.is_dead == 0
+        ).all()
+        
+        if not workers:
+            bonus_dict[resource.resource_name] = 0
+            continue
+        
+        # Calculate total skill bonus
+        total_bonus = 0
+        for worker in workers:
+            if worker.skill >= 10:
+                total_bonus += 1.0  # 100% bonus
+            elif worker.skill >= 5:
+                total_bonus += 0.5  # 50% bonus
+        
+        # Apply bonus to quantity
+        if total_bonus > 0:
+            original_quantity = resource.quantity
+            resource.quantity = int(resource.quantity * (1 + total_bonus))
+            bonus_dict[resource.resource_name] = total_bonus
+        else:
+            bonus_dict[resource.resource_name] = 0
+    
+    return bonus_dict
