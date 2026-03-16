@@ -3236,3 +3236,8 @@
 - **Tricky Logic**: The happiness boost calculation required careful handling of edge cases where the ceremony duration was zero or negative, which initially caused a division-by-zero error in the bonus multiplier.
 - **Codebase Pattern**: Event-driven updates in this module consistently rely on the `CeremonyLifecycle` observer pattern rather than direct state mutation, ensuring the UI and analytics services stay in sync.
 - **Correction**: I initially applied the happiness modifier to the global user state before validating the ceremony's completion status; I refactored this to wrap the logic in a transactional guard to prevent partial state updates on failure.
+
+--- Story 256: Town hall grievance meetings (attempts: 1, 2026-03-16 00:24) ---
+- **Tricky**: Handling the "grievance lifecycle" state machine was non-obvious; the code requires explicit `status` transitions rather than relying on implicit database timestamps, and the `notify` service must be idempotent to prevent duplicate alerts during retries.
+- **Patterns**: The codebase strictly enforces a "Command-Query Separation" pattern where all state mutations go through `GrievanceService` commands, while read-only operations use dedicated `GrievanceReadModel` projections.
+- **Mistakes**: Initially attempted to filter grievances by `created_at` in the query layer, but corrected this to use the `effective_date` field, which accounts for the manual "backdating" feature allowed by town hall moderators.

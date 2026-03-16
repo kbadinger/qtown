@@ -244,3 +244,12 @@ Uploading..
 [2026-03-16 03:40:04 UTC] deploy_ok: Story 254 deployed: Healthy after 0.1s
 [2026-03-16 03:40:21 UTC] story_done: Story 254 complete: Theater performance events
 [2026-03-16 03:40:21 UTC] story_start: Story 255: Church ceremony happiness boost
+[2026-03-16 04:03:59 UTC] deploy_ok: Story 255 deployed: Healthy after 0.1s
+[2026-03-16 04:04:16 UTC] story_done: Story 255 complete: Church ceremony happiness boost
+[2026-03-16 04:04:16 UTC] story_start: Story 256: Town hall grievance meetings
+[2026-03-16 04:11:53 UTC] WARN story_fail: Story 256 struggling — attempt 5/12
+Town hall grievance meetings
+[2026-03-16 04:12:46 UTC] CRITICAL loop: Story 256: same error 5x in a row — requesting help
+`tests/test_events.py::test_s256_hold_town_meeting FAILED                 [100%]`
+[2026-03-16 04:12:46 UTC] CRITICAL needs_help: Story 256 needs help — waiting 10min for fix
+`tests/test_events.py::test_s256_hold_town_meeting FAILED                 [100%]`

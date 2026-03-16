@@ -3048,3 +3048,57 @@ def check_emergency_election(db: Session) -> bool:
         return True
     
     return False
+
+
+def hold_town_meeting(db: Session) -> str:
+    """Hold a town hall meeting to address grievances."""
+    from engine.models import Building, NPC, Event, WorldState
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Find the civic building
+    civic_building = db.query(Building).filter(Building.building_type == 'civic').first()
+    if not civic_building:
+        return "No civic building found"
+    
+    # Find NPCs within 10 tiles of the civic building (Manhattan distance)
+    nearby_npcs = []
+    for npc in db.query(NPC).filter(NPC.is_dead == 0).all():
+        distance = abs(npc.x - civic_building.x) + abs(npc.y - civic_building.y)
+        if distance <= 10:
+            nearby_npcs.append(npc)
+    
+    if not nearby_npcs:
+        return "No NPCs nearby"
+    
+    # Calculate average stats for each complaint type
+    stats = ['hunger', 'energy', 'happiness', 'gold']
+    stat_averages = {}
+    
+    for stat in stats:
+        values = [getattr(npc, stat) for npc in nearby_npcs]
+        stat_averages[stat] = sum(values) / len(values) if values else 0
+    
+    # Find the lowest average (worst complaint)
+    complaint = min(stat_averages, key=stat_averages.get)
+    
+    # Create event description
+    description = f"Town meeting: Primary concern is {complaint}"
+    
+    # Create the event
+    event = Event(
+        event_type='town_meeting',
+        description=description,
+        tick=current_tick,
+        severity='info'
+    )
+    db.add(event)
+    db.flush()
+    
+    # Propose policy if hunger is the worst complaint
+    if complaint == 'hunger':
+        propose_policy(db, 'food_subsidy', 'Provide food subsidies to residents')
+    
+    return complaint
