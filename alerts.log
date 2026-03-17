@@ -282,3 +282,11 @@ Uploading..
 [2026-03-17 20:55:44 UTC] deploy_ok: Story 259 deployed: Healthy after 0.1s
 [2026-03-17 20:56:14 UTC] story_done: Story 259 complete: Housing crisis detection
 [2026-03-17 20:56:14 UTC] story_start: Story 260: Market building enables trading
+[2026-03-17 21:16:48 UTC] WARN deploy_fail: Story 260 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   bcaa9c3..f7067be  main -> main
+
+Indexing...
+Uploading..
+[2026-03-17 21:16:48 UTC] story_done: Story 260 complete: Market building enables trading
+[2026-03-17 21:16:49 UTC] story_start: Story 261: Building capacity from worker count

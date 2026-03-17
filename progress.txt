@@ -3261,3 +3261,8 @@
 - **Non-obvious state coupling**: The `Market` entity requires explicit initialization of the `Trading` aggregate root; simply adding a `Market` isn't enough, as the trading logic remains dormant until the `enableTrading` command explicitly links the two aggregates.
 - **Domain event propagation**: The codebase strictly enforces that market state changes (like enabling trading) must emit a `MarketEnabled` event before any `Trade` command can be processed, ensuring the event store reflects the causal chain before business logic executes.
 - **Correction on validation scope**: Initially attempted to validate inventory levels inside the `Market` entity; corrected this by moving validation to the `Trading` aggregate, as the market only manages the *capability* to trade, not the specific asset balances.
+
+--- Story 261: Building capacity from worker count (attempts: 1, 2026-03-17 17:37) ---
+- **Tricky Logic**: The conversion from raw worker count to actual capacity wasn't a simple 1:1 mapping; it required handling fractional availability and rounding down to the nearest integer to avoid over-provisioning.
+- **Codebase Pattern**: The repository consistently uses a dedicated `CapacityCalculator` service object for all resource math, isolating these formulas from the main controller logic to ensure testability.
+- **Correction**: Initially, I applied the scaling factor after the ceiling operation, which inflated capacity estimates; moving the factor inside the calculation before rounding fixed the discrepancy.

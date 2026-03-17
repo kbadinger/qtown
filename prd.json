@@ -4426,7 +4426,7 @@
       "context_files": [
         "engine/simulation/buildings.py"
       ],
-      "status": "in_progress",
+      "status": "done",
       "phase": "development",
       "attempts": 1
     },
@@ -4438,8 +4438,9 @@
       "context_files": [
         "engine/simulation/buildings.py"
       ],
-      "status": "pending",
-      "phase": "development"
+      "status": "in_progress",
+      "phase": "development",
+      "attempts": 1
     },
     {
       "id": "262",

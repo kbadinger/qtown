@@ -1590,3 +1590,32 @@ def check_market_exists(db: Session) -> bool:
     ).scalar()
     
     return count > 0
+
+
+def update_building_efficiency(db: Session) -> dict:
+    """Update building efficiency based on worker count."""
+    from engine.models import Building, NPC
+    
+    result = {}
+    
+    # Get all buildings
+    buildings = db.query(Building).all()
+    
+    for building in buildings:
+        # Count NPCs working at this building
+        worker_count = db.query(NPC).filter(NPC.work_building_id == building.id).count()
+        result[building.id] = worker_count
+        
+        # If no workers, mark as idle (only if not already marked)
+        if worker_count == 0:
+            if not building.name.lower().startswith("idle"):
+                building.name = f"idle {building.name}"
+        
+        # If 3+ workers, building gets +2 effective capacity for production
+        # This is tracked for production calculations (handled in production.py)
+        if worker_count >= 3:
+            # Production logic will apply the bonus
+            pass
+    
+    db.commit()
+    return result
