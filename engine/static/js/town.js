@@ -583,6 +583,20 @@
     drawNPCs(npcs);
     updateHUD(world);
     updateStatsFromWorld(world);
+
+    // Update mobile HUD if available
+    if (window._updateMobileHUD) {
+      window._updateMobileHUD({
+        world_state: world,
+        stats: {
+          population: npcs.length,
+          total_gold: world.total_gold || npcs.reduce(function(s,n){return s+(n.gold||0);},0),
+          avg_happiness: npcs.length ? Math.round(npcs.reduce(function(s,n){return s+(n.happiness||0);},0)/npcs.length) : null,
+          avg_age: npcs.length ? Math.round(npcs.reduce(function(s,n){return s+(n.age||0);},0)/npcs.length) : null,
+          treasury_gold: world.treasury || 0,
+        },
+      });
+    }
   }
 
   // -------------------------------------------------------------------------
@@ -637,6 +651,14 @@
           resEl.innerHTML = '<div class="text-gray-600">None yet</div>';
         }
       }
+
+      // Update mobile stats if available
+      if (window._updateMobileHUD) {
+        window._updateMobileHUD({
+          world_state: { tick: data.current_tick, day: data.current_day, weather: data.weather, time_of_day: data.time_of_day, economic_status: data.economic_status, tax_rate: data.tax_rate },
+          stats: { population: data.population, total_gold: data.total_gold, treasury_gold: data.treasury_gold, avg_happiness: data.avg_happiness, avg_age: data.avg_age, resources: data.resources },
+        });
+      }
     } catch(e) { /* ignore */ }
   }
 
@@ -681,6 +703,11 @@
       }
       listEl.innerHTML = html;
       listEl.scrollTop = listEl.scrollHeight;
+
+      // Update mobile activity
+      if (window._updateMobileActivity) {
+        window._updateMobileActivity(items);
+      }
     } catch(e) { /* ignore */ }
   }
 

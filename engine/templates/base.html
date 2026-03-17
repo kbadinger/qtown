@@ -14,11 +14,19 @@
     {% block head %}{% endblock %}
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen">
-    <!-- Navigation placeholder -->
+    <!-- Navigation -->
     <nav class="bg-gray-800 border-b border-gray-700 px-4 py-3">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <a href="/" class="text-xl font-bold text-amber-400 tracking-wide">Qwen Town</a>
-            <div class="flex items-center gap-4">
+            <!-- Hamburger (mobile) -->
+            <button id="nav-toggle" class="md:hidden text-gray-300 hover:text-amber-400 transition-colors" aria-label="Menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path id="nav-icon-open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    <path id="nav-icon-close" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+            <!-- Desktop links -->
+            <div class="hidden md:flex items-center gap-4">
                 <a href="/" class="text-gray-300 hover:text-amber-400 transition-colors text-sm font-medium">Game</a>
                 <a href="/about" class="text-gray-300 hover:text-amber-400 transition-colors text-sm font-medium">About</a>
                 <a href="/dashboard" class="text-gray-300 hover:text-amber-400 transition-colors text-sm font-medium">Dashboard</a>
@@ -28,6 +36,17 @@
                 {% block nav_items %}{% endblock %}
             </div>
         </div>
+        <!-- Mobile menu -->
+        <div id="nav-mobile" class="hidden md:hidden mt-3 pb-1 border-t border-gray-700 pt-3">
+            <div class="flex flex-col gap-2">
+                <a href="/" class="text-gray-300 hover:text-amber-400 transition-colors text-sm font-medium py-1">Game</a>
+                <a href="/about" class="text-gray-300 hover:text-amber-400 transition-colors text-sm font-medium py-1">About</a>
+                <a href="/dashboard" class="text-gray-300 hover:text-amber-400 transition-colors text-sm font-medium py-1">Dashboard</a>
+                <a href="/stories" class="text-gray-300 hover:text-amber-400 transition-colors text-sm font-medium py-1">Stories</a>
+                <a href="/timeline" class="text-gray-300 hover:text-amber-400 transition-colors text-sm font-medium py-1">Timeline</a>
+                <a href="/features" class="text-gray-300 hover:text-amber-400 transition-colors text-sm font-medium py-1">Features</a>
+            </div>
+        </div>
     </nav>
 
     <!-- Main content -->
@@ -35,6 +54,22 @@
         {% block content %}{% endblock %}
     </main>
 
+    <!-- Nav toggle script -->
+    <script>
+    (function() {
+        var btn = document.getElementById("nav-toggle");
+        var menu = document.getElementById("nav-mobile");
+        var iconOpen = document.getElementById("nav-icon-open");
+        var iconClose = document.getElementById("nav-icon-close");
+        if (btn && menu) {
+            btn.addEventListener("click", function() {
+                var open = menu.classList.toggle("hidden");
+                iconOpen.classList.toggle("hidden", !open);
+                iconClose.classList.toggle("hidden", open);
+            });
+        }
+    })();
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 </html>
