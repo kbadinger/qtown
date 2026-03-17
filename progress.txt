@@ -3246,3 +3246,8 @@
 - **Non-obvious State Management**: The interaction between the `RepairJob` lifecycle and the `PartsInventory` lock was trickier than expected; failing to release the inventory lock before updating job status caused race conditions during concurrent repairs.
 - **Codebase Convention**: The project strictly enforces a "Command-Query Separation" pattern where all state mutations must go through the `RepairOrchestrator` facade, while direct repository access is read-only.
 - **Correction on Error Handling**: Initially, I returned generic 500 errors for missing parts; I corrected this to return specific `PartUnavailable` exceptions with a `reorder_link` payload to allow the frontend to trigger a supply chain request immediately.
+
+--- Story 258: Building level production bonus (attempts: 1, 2026-03-17 16:28) ---
+- **Non-obvious state coupling**: The production bonus calculation unexpectedly depends on the `lastBuildTimestamp` stored in the global `ProductionContext`, not just the local building entity, requiring careful synchronization of timestamps across modules.
+- **Convention for side effects**: This codebase consistently isolates state mutations within `applyBonus()` helper functions rather than inline, ensuring that bonus logic remains testable and reversible without side effects during calculation.
+- **Correction on edge cases**: Initially missed handling the case where a building is demolished before the bonus duration expires; corrected by adding a `checkBuildingExists()` guard before applying the final yield adjustment to prevent null reference errors.

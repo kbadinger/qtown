@@ -263,3 +263,11 @@ Uploading..
 [2026-03-16 04:28:02 UTC] stop: Ralph offline — 437/450 stories complete
 [2026-03-17 19:22:47 UTC] start: Ralph online — 437/550 stories complete
 [2026-03-17 19:22:47 UTC] story_start: Story 257: Building auto-repair system
+[2026-03-17 20:08:29 UTC] WARN deploy_fail: Story 257 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   bcc9702..7e85d5f  main -> main
+
+Indexing...
+Uploading..
+[2026-03-17 20:08:30 UTC] story_done: Story 257 complete: Building auto-repair system
+[2026-03-17 20:08:30 UTC] story_start: Story 258: Building level production bonus

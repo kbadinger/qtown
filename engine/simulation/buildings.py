@@ -1524,3 +1524,17 @@ def repair_buildings(db: Session) -> int:
                 db.add(event)
     
     return repair_count
+
+
+def get_level_multiplier(building_level: int) -> float:
+    """Calculate production multiplier based on building level.
+    
+    Args:
+        building_level: The level of the building (1-5)
+    
+    Returns:
+        float: Production multiplier (1.0 for level 1, up to 2.0 for level 5)
+    
+    Formula: 1.0 + (level - 1) * 0.25
+    """
+    return 1.0 + (building_level - 1) * 0.25
