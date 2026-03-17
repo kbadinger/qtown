@@ -2742,3 +2742,162 @@ def test_s484_transfer_mentor_skills(db):
     result = transfer_mentor_skills(db)
     assert isinstance(result, int), "Should return count of transfers"
     db.flush()
+
+
+# =========================================================================
+# Stories 491-565: Deep Interconnection Stories
+# =========================================================================
+
+def test_s491_npc_daily_routine_by(db):
+    """NPC daily routine by role."""
+    _setup_world(db)
+    from engine.simulation import assign_daily_routine
+    result = assign_daily_routine(db)
+    assert result is not None
+    db.flush()
+
+def test_s492_npc_mood_contagion(db):
+    """NPC mood contagion."""
+    _setup_world(db)
+    from engine.simulation import spread_mood
+    result = spread_mood(db)
+    assert result is not None
+    db.flush()
+
+def test_s493_npc_skill_gain_from(db):
+    """NPC skill gain from work."""
+    _setup_world(db)
+    from engine.simulation import gain_work_experience
+    result = gain_work_experience(db)
+    assert result is not None
+    db.flush()
+
+def test_s494_npc_retirement_system(db):
+    """NPC retirement system."""
+    _setup_world(db)
+    from engine.simulation import process_retirements
+    result = process_retirements(db)
+    assert result is not None
+    db.flush()
+
+def test_s495_npc_drunkenness_from_tavern(db):
+    """NPC drunkenness from tavern."""
+    _setup_world(db)
+    from engine.simulation import apply_tavern_effects
+    result = apply_tavern_effects(db)
+    assert result is not None
+    db.flush()
+
+def test_s496_npc_rivalry_sabotage(db):
+    """NPC rivalry sabotage."""
+    _setup_world(db)
+    from engine.simulation import process_rivalries
+    result = process_rivalries(db)
+    assert result is not None
+    db.flush()
+
+def test_s497_npc_ambition_promotion(db):
+    """NPC ambition promotion."""
+    _setup_world(db)
+    from engine.simulation import check_promotions
+    result = check_promotions(db)
+    assert result is not None
+    db.flush()
+
+def test_s498_npc_book_reading_intelligence(db):
+    """NPC book reading intelligence."""
+    _setup_world(db)
+    from engine.simulation import process_library_visits
+    result = process_library_visits(db)
+    assert result is not None
+    db.flush()
+
+def test_s499_npc_homesickness_effect(db):
+    """NPC homesickness effect."""
+    _setup_world(db)
+    from engine.simulation import apply_homesickness
+    result = apply_homesickness(db)
+    assert result is not None
+    db.flush()
+
+def test_s500_npc_gossip_reputation(db):
+    """NPC gossip reputation."""
+    _setup_world(db)
+    from engine.simulation import spread_gossip
+    result = spread_gossip(db)
+    assert result is not None
+    db.flush()
+
+def test_s501_npc_marriage_happiness_boost(db):
+    """NPC marriage happiness boost."""
+    _setup_world(db)
+    from engine.simulation import apply_marriage_bonus
+    result = apply_marriage_bonus(db)
+    assert result is not None
+    db.flush()
+
+def test_s502_npc_funeral_mourning(db):
+    """NPC funeral mourning."""
+    _setup_world(db)
+    from engine.simulation import process_mourning
+    result = process_mourning(db)
+    assert result is not None
+    db.flush()
+
+def test_s503_npc_gift_giving(db):
+    """NPC gift giving."""
+    _setup_world(db)
+    from engine.simulation import process_gift_giving
+    result = process_gift_giving(db)
+    assert result is not None
+    db.flush()
+
+def test_s504_npc_illness_spread(db):
+    """NPC illness spread."""
+    _setup_world(db)
+    from engine.simulation import spread_illness
+    result = spread_illness(db)
+    assert result is not None
+    db.flush()
+
+def test_s505_npc_child_birth(db):
+    """NPC child birth."""
+    _setup_world(db)
+    from engine.simulation import check_births
+    result = check_births(db)
+    assert result is not None
+    db.flush()
+
+def test_s554_npc_biography_generator(db):
+    """NPC biography generator."""
+    _setup_world(db)
+    from engine.simulation import generate_biography
+    from engine.models import NPC
+    npc = db.query(NPC).first()
+    result = generate_biography(db, npc.id)
+    assert result is not None
+    db.flush()
+
+def test_s557_population_demographics(db):
+    """Population demographics."""
+    _setup_world(db)
+    from engine.simulation import get_demographics
+    result = get_demographics(db)
+    assert result is not None
+    db.flush()
+
+def test_s559_hall_of_fame(db):
+    """Hall of fame."""
+    _setup_world(db)
+    from engine.simulation import get_hall_of_fame
+    result = get_hall_of_fame(db)
+    assert result is not None
+    db.flush()
+
+def test_s562_npc_relationship_web_data(db):
+    """NPC relationship web data."""
+    _setup_world(db)
+    from engine.simulation import get_relationship_web
+    result = get_relationship_web(db)
+    assert result is not None
+    db.flush()

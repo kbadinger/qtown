@@ -673,3 +673,88 @@ def test_s490_check_cascade_effects(db):
     assert "weather" in result
     assert "emigrated" in result
     db.flush()
+
+
+# =========================================================================
+# Stories 491-565: Deep Interconnection Stories
+# =========================================================================
+
+def test_s544_campaign_promise_tracking(db):
+    """Campaign promise tracking."""
+    _setup_world(db)
+    from engine.simulation import check_campaign_promises
+    result = check_campaign_promises(db)
+    assert result is not None
+    db.flush()
+
+def test_s545_tax_revolt_trigger(db):
+    """Tax revolt trigger."""
+    _setup_world(db)
+    from engine.simulation import check_tax_revolt
+    result = check_tax_revolt(db)
+    assert result is not None
+    db.flush()
+
+def test_s546_public_works_project(db):
+    """Public works project."""
+    _setup_world(db)
+    from engine.simulation import start_public_works
+    result = start_public_works(db)
+    assert result is not None
+    db.flush()
+
+def test_s547_faction_popularity_check(db):
+    """Faction popularity check."""
+    _setup_world(db)
+    from engine.simulation import check_faction_popularity
+    result = check_faction_popularity(db)
+    assert result is not None
+    db.flush()
+
+def test_s549_bribery_detection(db):
+    """Bribery detection."""
+    _setup_world(db)
+    from engine.simulation import detect_bribery
+    result = detect_bribery(db)
+    assert result is not None
+    db.flush()
+
+def test_s550_term_limits_enforcement(db):
+    """Term limits enforcement."""
+    _setup_world(db)
+    from engine.simulation import enforce_term_limits
+    result = enforce_term_limits(db)
+    assert result is not None
+    db.flush()
+
+def test_s551_council_vote_on_policy(db):
+    """Council vote on policy."""
+    _setup_world(db)
+    from engine.simulation import hold_council_vote
+    result = hold_council_vote(db)
+    assert result is not None
+    db.flush()
+
+def test_s552_mayor_speech_effect(db):
+    """Mayor speech effect."""
+    _setup_world(db)
+    from engine.simulation import give_mayor_speech
+    result = give_mayor_speech(db)
+    assert result is not None
+    db.flush()
+
+def test_s553_impeachment_vote(db):
+    """Impeachment vote."""
+    _setup_world(db)
+    from engine.simulation import check_impeachment
+    result = check_impeachment(db)
+    assert result is not None
+    db.flush()
+
+def test_s565_town_age_and_statistics(db):
+    """Town age and statistics."""
+    _setup_world(db)
+    from engine.simulation import get_town_statistics
+    result = get_town_statistics(db)
+    assert result is not None
+    db.flush()

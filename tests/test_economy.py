@@ -1223,3 +1223,144 @@ def test_s483_check_wealth_inequality(db):
     result = check_wealth_inequality(db)
     assert isinstance(result, bool), "Should return True or False"
     db.flush()
+
+
+# =========================================================================
+# Stories 491-565: Deep Interconnection Stories
+# =========================================================================
+
+def test_s517_bank_interest_collection(db):
+    """Bank interest collection."""
+    _setup_world(db)
+    from engine.simulation import collect_bank_interest
+    result = collect_bank_interest(db)
+    assert result is not None
+    db.flush()
+
+def test_s519_supply_chain_farm_to(db):
+    """Supply chain farm to bakery."""
+    _setup_world(db)
+    from engine.simulation import process_supply_chain
+    result = process_supply_chain(db)
+    assert result is not None
+    db.flush()
+
+def test_s520_merchant_caravan_arrival(db):
+    """Merchant caravan arrival."""
+    _setup_world(db)
+    from engine.simulation import check_merchant_caravan
+    result = check_merchant_caravan(db)
+    assert result is not None
+    db.flush()
+
+def test_s521_loan_default_consequences(db):
+    """Loan default consequences."""
+    _setup_world(db)
+    from engine.simulation import process_loan_defaults
+    result = process_loan_defaults(db)
+    assert result is not None
+    db.flush()
+
+def test_s522_resource_spoilage(db):
+    """Resource spoilage."""
+    _setup_world(db)
+    from engine.simulation import apply_resource_spoilage
+    result = apply_resource_spoilage(db)
+    assert result is not None
+    db.flush()
+
+def test_s523_luxury_goods_demand(db):
+    """Luxury goods demand."""
+    _setup_world(db)
+    from engine.simulation import check_luxury_demand
+    result = check_luxury_demand(db)
+    assert result is not None
+    db.flush()
+
+def test_s524_guild_formation(db):
+    """Guild formation."""
+    _setup_world(db)
+    from engine.simulation import check_guild_formation
+    result = check_guild_formation(db)
+    assert result is not None
+    db.flush()
+
+def test_s525_market_price_update(db):
+    """Market price update."""
+    _setup_world(db)
+    from engine.simulation import update_market_prices
+    result = update_market_prices(db)
+    assert result is not None
+    db.flush()
+
+def test_s526_treasury_deficit_crisis(db):
+    """Treasury deficit crisis."""
+    _setup_world(db)
+    from engine.simulation import check_treasury_deficit
+    result = check_treasury_deficit(db)
+    assert result is not None
+    db.flush()
+
+def test_s527_economic_recovery_program(db):
+    """Economic recovery program."""
+    _setup_world(db)
+    from engine.simulation import run_economic_recovery
+    result = run_economic_recovery(db)
+    assert result is not None
+    db.flush()
+
+def test_s528_wage_negotiation(db):
+    """Wage negotiation."""
+    _setup_world(db)
+    from engine.simulation import negotiate_wages
+    result = negotiate_wages(db)
+    assert result is not None
+    db.flush()
+
+def test_s529_import_export_balance(db):
+    """Import export balance."""
+    _setup_world(db)
+    from engine.simulation import calculate_trade_balance
+    result = calculate_trade_balance(db)
+    assert result is not None
+    db.flush()
+
+def test_s530_resource_discovery_from_exploration(db):
+    """Resource discovery from exploration."""
+    _setup_world(db)
+    from engine.simulation import explore_for_resources
+    result = explore_for_resources(db)
+    assert result is not None
+    db.flush()
+
+def test_s555_economic_trend_calculator(db):
+    """Economic trend calculator."""
+    _setup_world(db)
+    from engine.simulation import calculate_economic_trend
+    result = calculate_economic_trend(db)
+    assert result is not None
+    db.flush()
+
+def test_s556_crime_statistics_summary(db):
+    """Crime statistics summary."""
+    _setup_world(db)
+    from engine.simulation import get_crime_summary
+    result = get_crime_summary(db)
+    assert result is not None
+    db.flush()
+
+def test_s560_resource_production_rate(db):
+    """Resource production rate."""
+    _setup_world(db)
+    from engine.simulation import calculate_production_rates
+    result = calculate_production_rates(db)
+    assert result is not None
+    db.flush()
+
+def test_s561_town_health_index(db):
+    """Town health index."""
+    _setup_world(db)
+    from engine.simulation import calculate_town_health
+    result = calculate_town_health(db)
+    assert result is not None
+    db.flush()

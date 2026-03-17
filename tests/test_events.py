@@ -1369,3 +1369,144 @@ def test_s488_roll_disaster(db):
     result = roll_disaster(db)
     assert isinstance(result, list), "Should return list of disaster names"
     db.flush()
+
+
+# =========================================================================
+# Stories 491-565: Deep Interconnection Stories
+# =========================================================================
+
+def test_s515_arena_tournament(db):
+    """Arena tournament."""
+    _setup_world(db)
+    from engine.simulation import hold_arena_tournament
+    result = hold_arena_tournament(db)
+    assert result is not None
+    db.flush()
+
+def test_s531_harvest_festival(db):
+    """Harvest festival."""
+    _setup_world(db)
+    from engine.simulation import hold_harvest_festival
+    result = hold_harvest_festival(db)
+    assert result is not None
+    db.flush()
+
+def test_s532_winter_solstice_ceremony(db):
+    """Winter solstice ceremony."""
+    _setup_world(db)
+    from engine.simulation import hold_winter_ceremony
+    result = hold_winter_ceremony(db)
+    assert result is not None
+    db.flush()
+
+def test_s533_coronation_event(db):
+    """Coronation event."""
+    _setup_world(db)
+    from engine.simulation import hold_coronation
+    result = hold_coronation(db)
+    assert result is not None
+    db.flush()
+
+def test_s534_wedding_celebration(db):
+    """Wedding celebration."""
+    _setup_world(db)
+    from engine.simulation import hold_wedding
+    result = hold_wedding(db)
+    assert result is not None
+    db.flush()
+
+def test_s535_refugee_wave(db):
+    """Refugee wave."""
+    _setup_world(db)
+    from engine.simulation import process_refugees
+    result = process_refugees(db)
+    assert result is not None
+    db.flush()
+
+def test_s536_royal_decree(db):
+    """Royal decree."""
+    _setup_world(db)
+    from engine.simulation import issue_royal_decree
+    result = issue_royal_decree(db)
+    assert result is not None
+    db.flush()
+
+def test_s537_earthquake_aftershocks(db):
+    """Earthquake aftershocks."""
+    _setup_world(db)
+    from engine.simulation import check_aftershocks
+    result = check_aftershocks(db)
+    assert result is not None
+    db.flush()
+
+def test_s538_flood_cleanup(db):
+    """Flood cleanup."""
+    _setup_world(db)
+    from engine.simulation import process_flood_cleanup
+    result = process_flood_cleanup(db)
+    assert result is not None
+    db.flush()
+
+def test_s539_disease_mutation(db):
+    """Disease mutation."""
+    _setup_world(db)
+    from engine.simulation import check_disease_mutation
+    result = check_disease_mutation(db)
+    assert result is not None
+    db.flush()
+
+def test_s540_comet_sighting_morale(db):
+    """Comet sighting morale."""
+    _setup_world(db)
+    from engine.simulation import check_comet_sighting
+    result = check_comet_sighting(db)
+    assert result is not None
+    db.flush()
+
+def test_s541_bandit_camp_formation(db):
+    """Bandit camp formation."""
+    _setup_world(db)
+    from engine.simulation import check_bandit_camp
+    result = check_bandit_camp(db)
+    assert result is not None
+    db.flush()
+
+def test_s542_diplomatic_envoy_visit(db):
+    """Diplomatic envoy visit."""
+    _setup_world(db)
+    from engine.simulation import check_diplomatic_envoy
+    result = check_diplomatic_envoy(db)
+    assert result is not None
+    db.flush()
+
+def test_s543_town_fire_drill(db):
+    """Town fire drill."""
+    _setup_world(db)
+    from engine.simulation import hold_fire_drill
+    result = hold_fire_drill(db)
+    assert result is not None
+    db.flush()
+
+def test_s548_propaganda_newspaper(db):
+    """Propaganda newspaper."""
+    _setup_world(db)
+    from engine.simulation import publish_propaganda
+    result = publish_propaganda(db)
+    assert result is not None
+    db.flush()
+
+def test_s558_weather_forecast(db):
+    """Weather forecast."""
+    _setup_world(db)
+    from engine.simulation import get_weather_forecast
+    result = get_weather_forecast(db)
+    assert result is not None
+    db.flush()
+
+def test_s564_event_history_by_type(db):
+    """Event history by type."""
+    _setup_world(db)
+    from engine.simulation import get_event_history
+    result = get_event_history(db)
+    assert result is not None
+    db.flush()

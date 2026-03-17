@@ -1442,3 +1442,104 @@ def test_s477_trigger_rebuilding_boom(db):
     result = trigger_rebuilding_boom(db)
     assert isinstance(result, int), "Should return count of rebuilt buildings"
     db.flush()
+
+
+# =========================================================================
+# Stories 491-565: Deep Interconnection Stories
+# =========================================================================
+
+def test_s506_building_adjacency_bonus(db):
+    """Building adjacency bonus."""
+    _setup_world(db)
+    from engine.simulation import apply_adjacency_bonus
+    result = apply_adjacency_bonus(db)
+    assert result is not None
+    db.flush()
+
+def test_s507_farm_seasonal_output(db):
+    """Farm seasonal output."""
+    _setup_world(db)
+    from engine.simulation import adjust_farm_output
+    result = adjust_farm_output(db)
+    assert result is not None
+    db.flush()
+
+def test_s508_mine_depletion(db):
+    """Mine depletion."""
+    _setup_world(db)
+    from engine.simulation import check_mine_depletion
+    result = check_mine_depletion(db)
+    assert result is not None
+    db.flush()
+
+def test_s509_building_maintenance_cost(db):
+    """Building maintenance cost."""
+    _setup_world(db)
+    from engine.simulation import collect_maintenance
+    result = collect_maintenance(db)
+    assert result is not None
+    db.flush()
+
+def test_s510_library_knowledge_accumulation(db):
+    """Library knowledge accumulation."""
+    _setup_world(db)
+    from engine.simulation import accumulate_knowledge
+    result = accumulate_knowledge(db)
+    assert result is not None
+    db.flush()
+
+def test_s511_prison_rehabilitation(db):
+    """Prison rehabilitation."""
+    _setup_world(db)
+    from engine.simulation import process_rehabilitation
+    result = process_rehabilitation(db)
+    assert result is not None
+    db.flush()
+
+def test_s512_graveyard_memorial_effect(db):
+    """Graveyard memorial effect."""
+    _setup_world(db)
+    from engine.simulation import apply_memorial_effect
+    result = apply_memorial_effect(db)
+    assert result is not None
+    db.flush()
+
+def test_s513_watchtower_crime_detection(db):
+    """Watchtower crime detection."""
+    _setup_world(db)
+    from engine.simulation import detect_crimes_from_watchtower
+    result = detect_crimes_from_watchtower(db)
+    assert result is not None
+    db.flush()
+
+def test_s514_windmill_grain_bonus(db):
+    """Windmill grain bonus."""
+    _setup_world(db)
+    from engine.simulation import apply_windmill_bonus
+    result = apply_windmill_bonus(db)
+    assert result is not None
+    db.flush()
+
+def test_s516_garden_food_production(db):
+    """Garden food production."""
+    _setup_world(db)
+    from engine.simulation import harvest_gardens
+    result = harvest_gardens(db)
+    assert result is not None
+    db.flush()
+
+def test_s518_warehouse_storage_bonus(db):
+    """Warehouse storage bonus."""
+    _setup_world(db)
+    from engine.simulation import apply_warehouse_bonus
+    result = apply_warehouse_bonus(db)
+    assert result is not None
+    db.flush()
+
+def test_s563_building_efficiency_report(db):
+    """Building efficiency report."""
+    _setup_world(db)
+    from engine.simulation import get_building_report
+    result = get_building_report(db)
+    assert result is not None
+    db.flush()
