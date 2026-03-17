@@ -3251,3 +3251,8 @@
 - **Non-obvious state coupling**: The production bonus calculation unexpectedly depends on the `lastBuildTimestamp` stored in the global `ProductionContext`, not just the local building entity, requiring careful synchronization of timestamps across modules.
 - **Convention for side effects**: This codebase consistently isolates state mutations within `applyBonus()` helper functions rather than inline, ensuring that bonus logic remains testable and reversible without side effects during calculation.
 - **Correction on edge cases**: Initially missed handling the case where a building is demolished before the bonus duration expires; corrected by adding a `checkBuildingExists()` guard before applying the final yield adjustment to prevent null reference errors.
+
+--- Story 259: Housing crisis detection (attempts: 1, 2026-03-17 16:53) ---
+- **Tricky Logic**: Determining "crisis" thresholds required distinguishing between absolute price spikes and relative affordability drops; the initial assumption that high prices alone indicated a crisis was corrected to include income-to-price ratios.
+- **Codebase Patterns**: The project consistently uses a `DataValidator` class for all input sanitization before passing data to the core detection engine, ensuring that malformed CSV rows don't crash the aggregation pipeline.
+- **Correction**: Initially, I hardcoded the inflation adjustment factor, which caused false positives in historical data; I corrected this by injecting the `InflationService` dependency to dynamically fetch period-specific rates.

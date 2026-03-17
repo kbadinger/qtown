@@ -1538,3 +1538,43 @@ def get_level_multiplier(building_level: int) -> float:
     Formula: 1.0 + (level - 1) * 0.25
     """
     return 1.0 + (building_level - 1) * 0.25
+
+
+def check_housing_crisis(db: Session) -> int:
+    """Check for housing crisis and apply effects to homeless NPCs."""
+    from engine.models import NPC, Event, WorldState
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Count homeless NPCs (home_building_id is None and not dead)
+    homeless_count = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.home_building_id == None
+    ).count()
+    
+    # Count total living NPCs
+    total_population = db.query(NPC).filter(NPC.is_dead == 0).count()
+    
+    # If homeless > 25% of population, create crisis event
+    if total_population > 0 and homeless_count > 0.25 * total_population:
+        # Create housing crisis event with required description
+        event = Event(
+            event_type='housing_crisis',
+            description='Housing crisis detected - over 25% of population is homeless',
+            severity='high',
+            tick=current_tick
+        )
+        db.add(event)
+        
+        # Apply happiness penalty to all homeless NPCs
+        homeless_npcs = db.query(NPC).filter(
+            NPC.is_dead == 0,
+            NPC.home_building_id == None
+        ).all()
+        
+        for npc in homeless_npcs:
+            npc.happiness = max(0, npc.happiness - 5)
+    
+    return homeless_count
