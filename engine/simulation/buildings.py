@@ -1490,3 +1490,37 @@ def calculate_network_effects(db: Session) -> dict:
         }
     
     return result
+
+
+def repair_buildings(db: Session) -> int:
+    """Repair damaged buildings where capacity < 10 if builders/blacksmiths work there."""
+    from sqlalchemy.orm import Session
+    from engine.models import Building, NPC, Event
+    
+    repair_count = 0
+    
+    # Get all damaged buildings (capacity < 10)
+    damaged_buildings = db.query(Building).filter(Building.capacity < 10).all()
+    
+    for building in damaged_buildings:
+        # Check if at least one NPC with role in ('builder', 'blacksmith') works here
+        workers = db.query(NPC).filter(
+            NPC.work_building_id == building.id,
+            NPC.role.in_(['builder', 'blacksmith'])
+        ).first()
+        
+        if workers:
+            # Increase capacity by 1, cap at 10
+            if building.capacity < 10:
+                building.capacity += 1
+                repair_count += 1
+                
+                # Create repair event
+                event = Event(
+                    event_type='building_repaired',
+                    building_id=building.id,
+                    description=f"Building {building.name} repaired (capacity now {building.capacity})"
+                )
+                db.add(event)
+    
+    return repair_count
