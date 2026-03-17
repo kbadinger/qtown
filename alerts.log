@@ -290,3 +290,6 @@ Indexing...
 Uploading..
 [2026-03-17 21:16:48 UTC] story_done: Story 260 complete: Market building enables trading
 [2026-03-17 21:16:49 UTC] story_start: Story 261: Building capacity from worker count
+[2026-03-17 21:42:55 UTC] deploy_ok: Story 261 deployed: Healthy after 0.1s
+[2026-03-17 21:43:13 UTC] story_done: Story 261 complete: Building capacity from worker count
+[2026-03-17 21:43:13 UTC] story_start: Story 262: Town statistics API endpoint

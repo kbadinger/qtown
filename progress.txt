@@ -3266,3 +3266,8 @@
 - **Tricky Logic**: The conversion from raw worker count to actual capacity wasn't a simple 1:1 mapping; it required handling fractional availability and rounding down to the nearest integer to avoid over-provisioning.
 - **Codebase Pattern**: The repository consistently uses a dedicated `CapacityCalculator` service object for all resource math, isolating these formulas from the main controller logic to ensure testability.
 - **Correction**: Initially, I applied the scaling factor after the ceiling operation, which inflated capacity estimates; moving the factor inside the calculation before rounding fixed the discrepancy.
+
+--- Story 262: Town statistics API endpoint (attempts: 1, 2026-03-17 17:43) ---
+- **Aggregation Logic**: Initially struggled with efficiently calculating rolling averages in the stats endpoint; realized the database's window functions were underutilized compared to manual in-memory loops, leading to a refactor for better performance.
+- **Response Consistency**: Discovered a codebase convention where all statistical endpoints must return a standardized `Meta` object alongside data, including `generated_at` and `cache_ttl`, which I initially omitted.
+- **Edge Case Handling**: Mistakenly assumed `total_population` would always be present; corrected the implementation to handle `null` returns from the census table gracefully to prevent 500 errors on empty datasets.
