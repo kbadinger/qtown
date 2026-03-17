@@ -1578,3 +1578,15 @@ def check_housing_crisis(db: Session) -> int:
             npc.happiness = max(0, npc.happiness - 5)
     
     return homeless_count
+
+
+def check_market_exists(db: Session) -> bool:
+    """Check if any market building exists in the world."""
+    from engine.models import Building
+    from sqlalchemy import func
+    
+    count = db.query(func.count(Building.id)).filter(
+        Building.building_type == 'market'
+    ).scalar()
+    
+    return count > 0
