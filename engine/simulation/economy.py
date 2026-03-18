@@ -2489,3 +2489,38 @@ def allocate_budget(db: Session) -> dict:
         "defense": defense_allocation,
         "total": total_allocated
     }
+
+
+def check_food_scarcity(db: Session) -> bool:
+    """Check for food scarcity and apply price spike."""
+    from engine.models import Resource, PriceHistory, Event, WorldState
+    
+    # Sum all Food resources
+    total_food = db.query(func.sum(Resource.quantity)).filter(
+        Resource.name == "Food"
+    ).scalar() or 0
+    
+    if total_food < 20:
+        # Double all Food prices in PriceHistory
+        food_prices = db.query(PriceHistory).filter(
+            PriceHistory.resource_name == "Food"
+        ).all()
+        
+        for price_entry in food_prices:
+            price_entry.price = price_entry.price * 2.0
+        
+        # Create scarcity event
+        world_state = db.query(WorldState).first()
+        current_tick = world_state.tick if world_state else 0
+        
+        scarcity_event = Event(
+            event_type="food_scarcity",
+            description="Food shortage! Prices doubled.",
+            tick=current_tick
+        )
+        db.add(scarcity_event)
+        
+        db.commit()
+        return True
+    
+    return False

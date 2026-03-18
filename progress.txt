@@ -3286,3 +3286,8 @@
 *   **Non-obvious dependency**: The yield modifier logic relies on a hidden `WeatherContext` singleton that must be initialized before any crop calculations; failing to inject this context results in silent zero-yield outputs rather than errors.
 *   **Codebase pattern**: All weather-related modifiers follow a "Strategy" pattern where specific weather types implement a `calculateFactor()` method, returning a float between 0.0 and 1.5, which is then multiplied by the base yield.
 *   **Correction**: Initially applied the modifier to the *total* farm output instead of per-crop instances, causing incorrect aggregation; fixed by moving the calculation down to the individual `Crop` entity level before summing.
+
+--- Story 467: Food scarcity price spike (attempts: 1, 2026-03-18 00:36) ---
+*   **Non-obvious state coupling**: The price spike logic relies on a hidden dependency between the `inventory` cache and the `market_feed` event stream; failing to invalidate the cache before processing the feed caused stale prices to persist during the spike.
+*   **Codebase convention**: This project enforces a strict "read-only" pattern for price calculation services, meaning all state mutations must happen in the `PriceAggregator` class before being emitted as events, never directly in the controller.
+*   **Correction made**: Initially attempted to apply the price multiplier directly to the database record, which bypassed the audit trail; corrected to emit a `PriceAdjustmentEvent` that triggers a separate listener to update the persisted state and log the change.
