@@ -4088,3 +4088,40 @@ def gain_work_experience(db: Session) -> int:
                 count += 1
     
     return count
+
+
+def process_retirements(db: Session) -> int:
+    """Process retirements for NPCs aged 60+ who are not already retired or mayor."""
+    from engine.models import NPC, Event, WorldState
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Find eligible NPCs: living, age >= 60, not retired, not mayor
+    eligible_npcs = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.age >= 60,
+        NPC.role.notin_(["retired", "mayor"])
+    ).all()
+    
+    retirement_count = 0
+    
+    for npc in eligible_npcs:
+        # Update NPC to retired status
+        npc.role = "retired"
+        npc.work_building_id = None
+        
+        # Create retirement event
+        event = Event(
+            event_type="retirement",
+            description=f"{npc.name} retired after years of service",
+            tick=current_tick,
+            affected_npc_id=npc.id
+        )
+        db.add(event)
+        
+        retirement_count += 1
+    
+    db.commit()
+    return retirement_count

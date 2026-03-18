@@ -3421,3 +3421,8 @@
 - **Tricky Logic**: The non-obvious part was ensuring skill XP is only awarded if the NPC's current action matches the specific skill's requirements, preventing "idle" XP gain during unrelated work cycles.
 - **Codebase Patterns**: This codebase heavily relies on the `WorkContext` object to pass state between the job scheduler and the skill system, rather than accessing global NPC state directly.
 - **Correction**: Initially, I calculated XP based on the job's *maximum* potential output; I corrected this to use the *actual* output generated in the specific turn to ensure fair scaling.
+
+--- Story 494: NPC retirement system (attempts: 1, 2026-03-18 11:15) ---
+*   **Non-obvious state transitions**: The retirement logic required a strict "cool-down" period before an NPC could be marked as `retired`; skipping this caused race conditions where the NPC would immediately re-spawn in a new role.
+*   **Codebase convention**: The project enforces a "write-once" pattern for NPC data; retirement is handled by archiving the current state to a separate `history` table rather than updating the main `npcs` table, preserving audit trails.
+*   **Correction**: Initially attempted to delete retired NPCs to save memory, but realized this broke the "legacy dialogue" feature; switched to soft-deleting with a `status` flag to maintain backward compatibility.

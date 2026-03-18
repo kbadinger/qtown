@@ -427,3 +427,6 @@ Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and
 [2026-03-18 14:29:06 UTC] deploy_ok: Story 492 deployed: Healthy after 0.1s
 [2026-03-18 14:29:24 UTC] story_done: Story 492 complete: NPC mood contagion
 [2026-03-18 14:29:24 UTC] story_start: Story 493: NPC skill gain from work
+[2026-03-18 14:53:37 UTC] deploy_ok: Story 493 deployed: Healthy after 0.1s
+[2026-03-18 14:53:54 UTC] story_done: Story 493 complete: NPC skill gain from work
+[2026-03-18 14:53:54 UTC] story_start: Story 494: NPC retirement system
