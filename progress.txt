@@ -3336,3 +3336,8 @@
 *   **Non-obvious state coupling**: The starvation logic wasn't isolated; it silently depended on the `last_rainfall` timestamp being reset by the irrigation module, causing false starvation flags if the irrigation story was skipped.
 *   **Codebase pattern**: Event-driven updates in this system always follow the `calculate -> validate -> emit` sequence; direct state mutation without emitting a `ResourceChanged` event breaks the UI reactivity layer.
 *   **Correction**: Initially hardcoded the starvation threshold as a constant, but realized it needs to be dynamic based on the `population_density` config; refactored to pull this from the central `WorldConfig` singleton.
+
+--- Story 477: Fire triggers rebuilding boom (attempts: 1, 2026-03-18 04:07) ---
+- **Non-obvious dependency**: The rebuilding logic relies on a cached `fire_damage_index` that isn't invalidated until the next simulation tick, causing race conditions if rebuilding is triggered immediately after a fire event.
+- **Codebase convention**: All state mutations for the "rebuilding" phase must use the `apply_batch_update` helper to ensure atomicity; direct property assignments bypass the audit log and break the rollback mechanism.
+- **Correction**: Initially assumed the `trigger_rebuild` function handled priority queuing, but discovered it only appends to a FIFO list; added explicit priority sorting before dispatch to prevent low-value structures from blocking critical infrastructure.

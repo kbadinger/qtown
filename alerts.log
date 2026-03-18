@@ -344,3 +344,6 @@ Uploading..
 [2026-03-18 07:25:26 UTC] deploy_ok: Story 475 deployed: Healthy after 0.1s
 [2026-03-18 07:25:43 UTC] story_done: Story 475 complete: Corruption approval penalty
 [2026-03-18 07:25:43 UTC] story_start: Story 476: Drought causes starvation
+[2026-03-18 07:47:21 UTC] deploy_ok: Story 476 deployed: Healthy after 0.1s
+[2026-03-18 07:47:38 UTC] story_done: Story 476 complete: Drought causes starvation
+[2026-03-18 07:47:38 UTC] story_start: Story 477: Fire triggers rebuilding boom

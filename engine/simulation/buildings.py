@@ -1690,3 +1690,39 @@ def check_housing_pressure(db: Session) -> dict:
         "capacity": total_capacity,
         "pressure": pressure
     }
+
+
+def trigger_rebuilding_boom(db: Session) -> int:
+    """Fire triggers rebuilding boom - rebuild destroyed buildings."""
+    from engine.models import Building, Treasury, Event, WorldState
+    
+    # Find destroyed buildings (capacity == 0)
+    destroyed = db.query(Building).filter(Building.capacity == 0).all()
+    
+    rebuilt_count = 0
+    for building in destroyed:
+        # Rebuild the building
+        building.capacity = 5
+        building.level = 1
+        
+        # Deduct 30 gold from first Treasury
+        treasury = db.query(Treasury).first()
+        if treasury and treasury.gold >= 30:
+            treasury.gold -= 30
+        
+        # Get current tick from WorldState
+        world_state = db.query(WorldState).first()
+        current_tick = world_state.tick if world_state else 0
+        
+        # Create rebuilding event
+        event = Event(
+            event_type="rebuilding",
+            description=f"Rebuilt {building.name}",
+            tick=current_tick,
+            affected_building_id=building.id
+        )
+        db.add(event)
+        
+        rebuilt_count += 1
+    
+    return rebuilt_count
