@@ -3238,3 +3238,40 @@ def check_summer_festival(db: Session) -> int:
     db.add(event)
     
     return affected_count
+
+
+def roll_disaster(db: Session) -> list:
+    """Roll for disasters each tick with probability checks."""
+    from engine.models import WorldState
+    import random
+    
+    triggered_disasters = []
+    
+    # Get world state for weather and drought checks
+    world_state = db.query(WorldState).first()
+    weather = world_state.weather if world_state else "clear"
+    drought_active = world_state.drought_active if world_state else 0
+    
+    # 1% chance for drought
+    if random.random() < 0.01:
+        trigger_drought(db)
+        triggered_disasters.append("drought")
+    
+    # 1% chance for flood (doubles to 2% if weather is storm)
+    flood_chance = 0.02 if weather == "storm" else 0.01
+    if random.random() < flood_chance:
+        trigger_flood(db)
+        triggered_disasters.append("flood")
+    
+    # 0.5% chance for fire (doubles to 1% if weather is hot or drought_active==1)
+    fire_chance = 0.01 if (weather == "hot" or drought_active == 1) else 0.005
+    if random.random() < fire_chance:
+        trigger_fire(db)
+        triggered_disasters.append("fire")
+    
+    # 0.5% chance for plague
+    if random.random() < 0.005:
+        trigger_plague(db)
+        triggered_disasters.append("plague")
+    
+    return triggered_disasters

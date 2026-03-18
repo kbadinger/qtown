@@ -3391,3 +3391,8 @@
 *   **Non-obvious timing constraints**: The interconnection check logic fails silently if the target service is down during the initial handshake; the retry mechanism must explicitly handle transient network timeouts rather than just HTTP 500s.
 *   **Codebase convention for observability**: This module strictly separates "business logic" from "telemetry"; all external calls must wrap their metrics in the shared `InterconnectionMonitor` class before returning, never directly in the controller.
 *   **Correction on state management**: Initially attempted to cache the connection status in memory to reduce load, but corrected this to use a short-lived distributed cache (Redis) to prevent stale state across multiple service instances.
+
+--- Story 488: Disaster probability each tick (attempts: 1, 2026-03-18 08:50) ---
+- **Non-obvious Tick Logic**: The disaster calculation isn't a simple linear accumulation; it relies on a decaying probability state that resets only after a specific event, making the "time since last disaster" variable critical for accurate tick-by-tick simulation.
+- **Codebase Convention**: Random number generation for probability checks is consistently encapsulated in a `chance()` helper function rather than using raw `Math.random()` calls, ensuring a single source of truth for seed handling and testing.
+- **Correction on Edge Cases**: Initially failed to handle the "first tick" scenario where the decay counter was uninitialized, causing a division-by-zero error; fixed by enforcing a default initialization state before the loop begins.
