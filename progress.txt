@@ -3426,3 +3426,8 @@
 *   **Non-obvious state transitions**: The retirement logic required a strict "cool-down" period before an NPC could be marked as `retired`; skipping this caused race conditions where the NPC would immediately re-spawn in a new role.
 *   **Codebase convention**: The project enforces a "write-once" pattern for NPC data; retirement is handled by archiving the current state to a separate `history` table rather than updating the main `npcs` table, preserving audit trails.
 *   **Correction**: Initially attempted to delete retired NPCs to save memory, but realized this broke the "legacy dialogue" feature; switched to soft-deleting with a `status` flag to maintain backward compatibility.
+
+--- Story 495: NPC drunkenness from tavern (attempts: 1, 2026-03-18 11:40) ---
+- **State Persistence**: It was non-obvious that `Drunk` status must be explicitly cleared in the `EndTurn` handler; otherwise, NPCs retain the modifier indefinitely even after leaving the tavern.
+- **Event Dispatching**: The codebase relies on a centralized `EventBus` for tavern interactions rather than direct method calls, requiring all new tavern behaviors to subscribe to `TavernEvent` to trigger correctly.
+- **Correction**: Initially, I applied the drunkenness modifier to the NPC's `baseStats`, which caused permanent degradation; I corrected this by applying it only to the `currentStats` snapshot to ensure it resets on state change.

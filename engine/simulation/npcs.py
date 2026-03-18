@@ -4125,3 +4125,32 @@ def process_retirements(db: Session) -> int:
     
     db.commit()
     return retirement_count
+
+
+def apply_tavern_effects(db: Session) -> int:
+    """Apply tavern effects to nearby NPCs (happiness, energy, stumbling)."""
+    from engine.models import Building, NPC
+    
+    taverns = db.query(Building).filter(Building.building_type == 'tavern').all()
+    if not taverns:
+        return 0
+    
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    affected_count = 0
+    
+    for npc in living_npcs:
+        for tavern in taverns:
+            distance = math.hypot(npc.x - tavern.x, npc.y - tavern.y)
+            if distance <= 3:
+                npc.happiness = min(100, npc.happiness + 5)
+                npc.energy = max(0, npc.energy - 10)
+                
+                if npc.energy < 20:
+                    if random.random() < 0.30:
+                        npc.target_x = random.randint(0, 9)
+                        npc.target_y = random.randint(0, 9)
+                
+                affected_count += 1
+                break
+    
+    return affected_count
