@@ -3356,3 +3356,8 @@
 *   **Non-obvious State Coupling**: NPC mood is not a standalone flag but a derived state heavily dependent on the `Newspaper` object's `latestHeadline` property; changing the headline requires re-evaluating the entire mood calculation chain, not just updating a single variable.
 *   **Convention for Event-Driven Updates**: The codebase strictly avoids polling for mood changes; instead, it relies on the `onNewspaperUpdated` event listener to trigger the `recalculateMood()` method, ensuring the UI only re-renders when actual data changes.
 *   **Correction on Null Handling**: Initially assumed `newspaperContent` would always be present, causing a crash on first load; fixed by adding a defensive check to default the mood to `neutral` when the newspaper data is `null` or `undefined`.
+
+--- Story 481: Relationships boost work output (attempts: 1, 2026-03-18 05:44) ---
+- **Non-obvious state coupling**: The `Relationship` entity's `isActive` flag was tightly coupled to the `WorkOutput` calculation, requiring a reactive update mechanism rather than a simple getter to avoid stale data in real-time dashboards.
+- **Codebase convention**: The repository enforces a strict "Service-First" pattern where all domain logic (like output boosting) lives in dedicated service classes, keeping controllers and repositories purely for I/O and persistence.
+- **Correction**: Initially, I attempted to calculate the boost factor inside the repository query; I corrected this by moving the logic to the service layer to ensure it could be unit-tested independently and reused across different output aggregation endpoints.

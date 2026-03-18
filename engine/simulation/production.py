@@ -831,3 +831,45 @@ def weather_crop_modifier(db: Session) -> dict[str, int]:
             result[resource_name] = 0
             
     return result
+
+
+def apply_friendship_bonus(db: Session) -> dict:
+    """Apply friendship bonus to resource production."""
+    from engine.models import Resource, NPC, Relationship
+    
+    bonuses = {}
+    
+    # Find all resources with a building_id
+    resources = db.query(Resource).filter(Resource.building_id != None).all()
+    
+    for resource in resources:
+        # Skip if quantity is None
+        if resource.quantity is None:
+            continue
+            
+        # Find workers for this building
+        workers = db.query(NPC).filter(
+            NPC.work_building_id == resource.id,
+            NPC.is_dead == 0
+        ).all()
+        
+        worker_ids = [w.id for w in workers]
+        
+        # Need at least 2 workers to have relationships
+        if len(worker_ids) < 2:
+            continue
+            
+        # Count friend relationships between workers
+        friend_count = db.query(Relationship).filter(
+            Relationship.npc_id.in_(worker_ids),
+            Relationship.target_npc_id.in_(worker_ids),
+            Relationship.relationship_type == "friend"
+        ).count()
+        
+        # Apply bonus if enough friend pairs
+        if friend_count >= 2:
+            bonus_amount = int(resource.quantity * 0.10)
+            resource.quantity += bonus_amount
+            bonuses[resource.name] = bonus_amount
+            
+    return bonuses
