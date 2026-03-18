@@ -3381,3 +3381,8 @@
 - **Non-obvious state coupling**: The `energyDrain` calculation unexpectedly depends on the `seasonalMultiplier` from a separate `WeatherService` singleton, requiring manual synchronization of mock data in tests.
 - **Convention discovery**: All energy-related side effects must be wrapped in the `EnergyGuard` context manager to ensure transactional rollback on failure; direct method calls bypass this safety net.
 - **Correction**: Initially missed the `negative_energy` edge case in the validation logic, which caused a division-by-zero crash; added an explicit `max(0, ...)` clamp before the calculation.
+
+--- Story 486: Summer festival happiness (attempts: 1, 2026-03-18 07:42) ---
+- **Tricky**: Handling the concurrent state updates for the festival timer and user interactions required careful synchronization to prevent race conditions when the "happiness" counter exceeded the threshold.
+- **Patterns**: The codebase consistently uses a `useEffect` cleanup pattern for any timer-based logic, and event handlers are always wrapped in `useCallback` to maintain referential equality for memoized child components.
+- **Mistakes**: Initially forgot to reset the `isCelebrating` flag after the animation completed, causing the UI to freeze; corrected by adding a dedicated cleanup step in the `setTimeout` callback.

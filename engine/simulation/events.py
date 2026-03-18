@@ -3198,3 +3198,43 @@ def apply_newspaper_mood(db: Session) -> int:
     db.flush()
     
     return affected_count
+
+
+def check_summer_festival(db: Session) -> int:
+    """Check if summer festival conditions are met and apply effects."""
+    from engine.models import NPC, Event, WorldState
+    
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return 0
+    
+    day = world_state.day or 0
+    tick = world_state.tick or 0
+    
+    # Calculate season: 0=spring, 1=summer, 2=autumn, 3=winter
+    season = (day % 96) // 24
+    
+    # Check if summer (season==1) and mid-season day (day%24==12)
+    if season != 1 or day % 24 != 12:
+        return 0
+    
+    # Get all living NPCs (is_dead==0 per Postgres compatibility)
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    affected_count = 0
+    for npc in living_npcs:
+        # Increase happiness (max 100)
+        npc.happiness = min(100, npc.happiness + 10)
+        # Increase energy (max 100)
+        npc.energy = min(100, npc.energy + 5)
+        affected_count += 1
+    
+    # Create event
+    event = Event(
+        event_type="summer_festival",
+        description="The annual summer festival brings joy to all!",
+        tick=tick
+    )
+    db.add(event)
+    
+    return affected_count
