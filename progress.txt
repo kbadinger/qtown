@@ -3326,3 +3326,8 @@
 - **Non-obvious state propagation**: The happiness calculation depends on a derived `effective_tax_rate` that isn't stored directly; it must be recomputed from `gross_income` and `deductions` every time the policy changes, rather than cached.
 - **Convention for policy immutability**: New tax policies are always constructed as fresh objects using the `createPolicy()` factory; mutating existing policy instances breaks the audit trail and triggers silent failures in the simulation engine.
 - **Correction on edge cases**: Initially missed the handling of negative income scenarios, which caused division-by-zero errors in the marginal rate logic; fixed by adding a guard clause that defaults to a 0% rate for losses.
+
+--- Story 475: Corruption approval penalty (attempts: 1, 2026-03-18 03:24) ---
+- **Non-obvious state coupling**: The approval penalty logic relied on a hidden side effect in the `calculateEffectiveRate` function, where the penalty multiplier was inadvertently shared across concurrent requests until the transaction context was explicitly cleared.
+- **Codebase convention**: Financial adjustments in this module always require an immutable `AuditLog` entry before modifying the `AccountState`, even for internal calculations; skipping this step causes silent failures in the downstream reconciliation service.
+- **Correction made**: Initially attempted to apply the penalty directly to the cached rate, which caused race conditions; corrected by refactoring to compute the penalty against the raw base rate and applying the delta only during the final commit phase.

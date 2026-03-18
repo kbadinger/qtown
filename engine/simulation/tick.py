@@ -819,3 +819,36 @@ def generate_speed_report(db: Session) -> dict:
         "transactions": transactions,
         "complexity": complexity
     }
+
+
+def apply_corruption_penalty(db: Session) -> int:
+    """Apply corruption penalty if mayor hoarding wealth."""
+    from engine.models import NPC, Event, WorldState
+    
+    mayor = db.query(NPC).filter(NPC.role == "mayor", NPC.is_dead == 0).first()
+    if not mayor:
+        return 0
+    
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0, NPC.id != mayor.id).all()
+    if not living_npcs:
+        return 0
+    
+    avg_gold = sum(npc.gold for npc in living_npcs) / len(living_npcs)
+    
+    if mayor.gold > avg_gold * 3:
+        for npc in db.query(NPC).filter(NPC.is_dead == 0).all():
+            npc.happiness = max(0, npc.happiness - 8)
+        
+        world_state = db.query(WorldState).first()
+        tick = world_state.tick if world_state else 0
+        
+        event = Event(
+            event_type="corruption_scandal",
+            description=f"Mayor {mayor.name} hoarding wealth! Public outrage.",
+            tick=tick
+        )
+        db.add(event)
+        
+        return 1
+    
+    return 0
