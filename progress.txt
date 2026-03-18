@@ -3331,3 +3331,8 @@
 - **Non-obvious state coupling**: The approval penalty logic relied on a hidden side effect in the `calculateEffectiveRate` function, where the penalty multiplier was inadvertently shared across concurrent requests until the transaction context was explicitly cleared.
 - **Codebase convention**: Financial adjustments in this module always require an immutable `AuditLog` entry before modifying the `AccountState`, even for internal calculations; skipping this step causes silent failures in the downstream reconciliation service.
 - **Correction made**: Initially attempted to apply the penalty directly to the cached rate, which caused race conditions; corrected by refactoring to compute the penalty against the raw base rate and applying the delta only during the final commit phase.
+
+--- Story 476: Drought causes starvation (attempts: 1, 2026-03-18 03:45) ---
+*   **Non-obvious state coupling**: The starvation logic wasn't isolated; it silently depended on the `last_rainfall` timestamp being reset by the irrigation module, causing false starvation flags if the irrigation story was skipped.
+*   **Codebase pattern**: Event-driven updates in this system always follow the `calculate -> validate -> emit` sequence; direct state mutation without emitting a `ResourceChanged` event breaks the UI reactivity layer.
+*   **Correction**: Initially hardcoded the starvation threshold as a constant, but realized it needs to be dynamic based on the `population_density` config; refactored to pull this from the central `WorldConfig` singleton.

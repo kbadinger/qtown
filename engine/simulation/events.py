@@ -3102,3 +3102,30 @@ def hold_town_meeting(db: Session) -> str:
         propose_policy(db, 'food_subsidy', 'Provide food subsidies to residents')
     
     return complaint
+
+
+def apply_drought_starvation(db: Session) -> int:
+    """Apply starvation deaths during drought."""
+    from engine.models import WorldState, NPC, Event
+    
+    ws = db.query(WorldState).first()
+    if ws is None or ws.drought_active != 1:
+        return 0
+    
+    death_count = 0
+    tick = ws.tick if ws.tick else 0
+    
+    for npc in db.query(NPC).filter(NPC.is_dead == 0, NPC.hunger > 85).all():
+        if random.random() < 0.1:
+            npc.is_dead = 1
+            db.flush()
+            event = Event(
+                event_type="starvation_death",
+                description=f"{npc.name} died of starvation during drought",
+                tick=tick,
+                affected_npc_id=npc.id
+            )
+            db.add(event)
+            death_count += 1
+    
+    return death_count
