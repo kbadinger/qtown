@@ -347,3 +347,11 @@ Uploading..
 [2026-03-18 07:47:21 UTC] deploy_ok: Story 476 deployed: Healthy after 0.1s
 [2026-03-18 07:47:38 UTC] story_done: Story 476 complete: Drought causes starvation
 [2026-03-18 07:47:38 UTC] story_start: Story 477: Fire triggers rebuilding boom
+[2026-03-18 08:08:01 UTC] WARN deploy_fail: Story 477 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   5006f97..db0e40d  main -> main
+
+Indexing...
+Uploading..
+[2026-03-18 08:08:02 UTC] story_done: Story 477 complete: Fire triggers rebuilding boom
+[2026-03-18 08:08:02 UTC] story_start: Story 478: Plague overwhelms hospital

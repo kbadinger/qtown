@@ -3129,3 +3129,35 @@ def apply_drought_starvation(db: Session) -> int:
             death_count += 1
     
     return death_count
+
+
+def check_plague_overwhelm(db: Session) -> int:
+    """Check if plague overwhelms hospital capacity."""
+    from engine.models import NPC, Building, Event, WorldState
+    
+    # Count sick living NPCs (is_dead == 0 for Postgres compatibility)
+    sick_npcs = db.query(NPC).filter(NPC.is_dead == 0, NPC.illness_severity > 0).all()
+    sick_count = len(sick_npcs)
+    
+    # Calculate total hospital capacity
+    hospital_capacity_result = db.query(func.sum(Building.capacity)).filter(Building.building_type == "hospital").scalar()
+    hospital_capacity = hospital_capacity_result if hospital_capacity_result else 0
+    
+    # Check overwhelm condition
+    if sick_count > hospital_capacity * 2:
+        # Increase illness severity for sick NPCs (cap at 100)
+        for npc in sick_npcs:
+            npc.illness_severity = min(100, npc.illness_severity + 10)
+        
+        # Create event
+        world_state = db.query(WorldState).first()
+        current_tick = world_state.tick if world_state else 0
+        
+        event = Event(
+            event_type="hospital_overwhelmed",
+            description=f"Hospital overwhelmed: {sick_count} sick, only {hospital_capacity} capacity",
+            tick=current_tick
+        )
+        db.add(event)
+        
+    return sick_count

@@ -3341,3 +3341,8 @@
 - **Non-obvious dependency**: The rebuilding logic relies on a cached `fire_damage_index` that isn't invalidated until the next simulation tick, causing race conditions if rebuilding is triggered immediately after a fire event.
 - **Codebase convention**: All state mutations for the "rebuilding" phase must use the `apply_batch_update` helper to ensure atomicity; direct property assignments bypass the audit log and break the rollback mechanism.
 - **Correction**: Initially assumed the `trigger_rebuild` function handled priority queuing, but discovered it only appends to a FIFO list; added explicit priority sorting before dispatch to prevent low-value structures from blocking critical infrastructure.
+
+--- Story 478: Plague overwhelms hospital (attempts: 1, 2026-03-18 04:31) ---
+- **Non-obvious concurrency pitfalls**: The "overwhelm" scenario revealed that `async/await` alone didn't prevent race conditions in the patient triage queue; explicit locking was required around the `update_capacity` and `assign_bed` sequence to avoid negative bed counts.
+- **Event-driven state patterns**: The codebase consistently separates event emission (e.g., `PatientArrived`) from state mutation, relying on a central `HospitalState` reducer; direct property modification on state objects breaks the audit trail and must be avoided.
+- **Correction on edge-case handling**: Initially, I assumed the overflow logic would naturally cap at zero, but I had to add an explicit guard clause to handle the "all beds full" signal before attempting to queue new patients, preventing a silent data loss bug.
