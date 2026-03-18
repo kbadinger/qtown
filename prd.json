@@ -7471,7 +7471,7 @@
       "context_files": [
         "engine/simulation/npcs.py"
       ],
-      "status": "in_progress",
+      "status": "done",
       "phase": "development",
       "attempts": 1
     },
@@ -7483,8 +7483,9 @@
       "context_files": [
         "engine/simulation/npcs.py"
       ],
-      "status": "pending",
-      "phase": "development"
+      "status": "in_progress",
+      "phase": "development",
+      "attempts": 1
     },
     {
       "id": "471",

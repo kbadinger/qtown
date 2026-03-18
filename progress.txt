@@ -3301,3 +3301,8 @@
 *   **Non-obvious State Coupling**: The `CrimeRate` calculation wasn't a simple multiplier; it dynamically adjusted based on the `SocialSafetyNet` modifier, which only activates when `PovertyLevel` exceeds a specific threshold, requiring careful boundary testing.
 *   **Codebase Convention**: Economic impact stories consistently use a `PolicyImpact` wrapper class to isolate side effects, ensuring that changes to poverty metrics don't inadvertently mutate the global `Economy` state without an explicit transaction.
 *   **Correction**: Initially applied the crime increase as a flat percentage; corrected to use a logarithmic scale to prevent unrealistic spikes in crime rates when poverty levels are extreme, matching the historical data patterns in `Story 450`.
+
+--- Story 470: Crime rate triggers guard recruitment (attempts: 1, 2026-03-18 01:38) ---
+- **Non-obvious Guard Logic**: The trigger condition wasn't a simple threshold check; it required calculating a rolling 7-day average of crime incidents, ignoring outliers above 3 standard deviations to prevent false positives from single high-impact events.
+- **Codebase Convention**: New feature flags are consistently implemented as `Optional` in the config schema but default to `false` in the runtime environment, requiring explicit enablement in the `feature-flags.yaml` before the guard recruitment pipeline activates.
+- **Correction**: Initially attempted to spawn guards synchronously within the event loop, causing a 2-second latency spike; corrected by offloading the recruitment calculation to the background worker queue and using a callback to update the dashboard state.

@@ -3882,3 +3882,61 @@ def check_poverty_crime(db: Session) -> int:
             new_crimes_count += 1
     
     return new_crimes_count
+
+
+def check_guard_demand(db: Session) -> int:
+    """Check if guard recruitment is needed based on crime rate."""
+    from engine.models import Crime, NPC, Event, WorldState
+    
+    # Count unresolved crimes (resolved == 0)
+    unresolved_crimes = db.query(Crime).filter(Crime.resolved == 0).count()
+    
+    # Count living guards (role == "guard" and is_dead == 0)
+    living_guards = db.query(NPC).filter(
+        NPC.role == "guard",
+        NPC.is_dead == 0
+    ).count()
+    
+    # Count total living NPCs
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).count()
+    
+    # Check recruitment conditions
+    if unresolved_crimes > living_guards * 2 and living_npcs < 30:
+        # Get current tick
+        world_state = db.query(WorldState).first()
+        current_tick = world_state.tick if world_state else 0
+        
+        # Generate name for new guard
+        name = generate_npc_name(db)
+        
+        # Create new guard NPC
+        new_guard = NPC(
+            name=name,
+            role="guard",
+            x=25,
+            y=25,
+            gold=30,
+            hunger=50,
+            energy=80,
+            happiness=60,
+            age=25,
+            max_age=70,
+            is_dead=0,
+            is_bankrupt=0,
+            illness_severity=0,
+            illness=0
+        )
+        db.add(new_guard)
+        
+        # Create event
+        event = Event(
+            event_type="guard_recruited",
+            description="New guard recruited due to high crime",
+            tick=current_tick
+        )
+        db.add(event)
+        
+        db.commit()
+        return 1
+    
+    return 0
