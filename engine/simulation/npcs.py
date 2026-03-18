@@ -3670,9 +3670,14 @@ def mentor_apprentices(db: Session) -> int:
     return apprenticeship_count
 
 
-def apply_homesickness(db: Session) -> None:
-    """Apply homesickness effects to NPCs based on distance from home."""
+def apply_homesickness(db: Session) -> int:
+    """Apply homesickness effects to NPCs based on distance from home.
+    
+    Returns count of homesick NPCs (distance > 15).
+    """
     from engine.models import NPC, Building
+    
+    homesick_count = 0
     
     # Get all living NPCs with a home building assigned
     npcs = db.query(NPC).filter(NPC.is_dead == 0, NPC.home_building_id != None).all()
@@ -3683,24 +3688,22 @@ def apply_homesickness(db: Session) -> None:
         if not home_building:
             continue
         
-        # Calculate Euclidean distance from NPC to home building
-        dx = npc.x - home_building.x
-        dy = npc.y - home_building.y
-        distance = math.sqrt(dx * dx + dy * dy)
+        # Calculate Manhattan distance from NPC to home building (abs(x)+abs(y) diff)
+        distance = abs(npc.x - home_building.x) + abs(npc.y - home_building.y)
         
         # Apply homesickness effects based on distance
-        if distance > 10:
-            # Reduce happiness by 1 per 5 tiles of distance beyond 10
-            excess_distance = distance - 10
-            happiness_penalty = int(excess_distance / 5)
-            npc.happiness = max(0, npc.happiness - happiness_penalty)
+        if distance > 15:
+            # Homesick: reduce happiness by 3 (min 0)
+            npc.happiness = max(0, npc.happiness - 3)
+            homesick_count += 1
         elif distance <= 3:
-            # Comfort bonus when close to home
+            # Comfort bonus: increase happiness by 2 (max 100)
             npc.happiness = min(100, npc.happiness + 2)
         
         db.add(npc)
     
     db.flush()
+    return homesick_count
 
 
 def process_rivalries(db: Session) -> int:

@@ -3446,3 +3446,8 @@
 *   **Non-Obvious State Management**: The reading logic required decoupling the "book selection" event from the actual "reading action" to prevent race conditions when the NPC is interrupted by dialogue or combat, a separation not immediately obvious from the initial interface design.
 *   **Codebase Convention**: The project strictly enforces a "State-First" pattern for NPC behaviors; all actions must query the current `NPCState` enum before executing, rather than relying on boolean flags scattered across the script.
 *   **Correction**: Initially, I attempted to parse book text directly in the update loop, causing frame-rate spikes; I corrected this by moving text processing to a coroutine that yields control back to the engine between paragraphs.
+
+--- Story 499: NPC homesickness effect (attempts: 1, 2026-03-18 13:23) ---
+- **Tricky Logic**: Determining the correct scope for the homesickness decay was non-obvious; it required checking if the NPC is *currently* in a home zone versus just having a home defined, to prevent the effect from triggering while traveling.
+- **Codebase Pattern**: The project consistently uses a `StateTransition` enum for mood changes rather than direct boolean flags, ensuring that all emotional states flow through a centralized update loop.
+- **Correction**: Initially applied the homesickness modifier directly to the NPC's base stats, which caused permanent degradation; corrected by applying it as a temporary runtime multiplier that resets upon reaching the home node.

@@ -447,3 +447,6 @@ Uploading..
 [2026-03-18 16:32:19 UTC] deploy_ok: Story 497 deployed: Healthy after 0.1s
 [2026-03-18 16:32:45 UTC] story_done: Story 497 complete: NPC ambition promotion
 [2026-03-18 16:32:46 UTC] story_start: Story 498: NPC book reading intelligence
+[2026-03-18 17:01:09 UTC] deploy_ok: Story 498 deployed: Healthy after 0.1s
+[2026-03-18 17:01:26 UTC] story_done: Story 498 complete: NPC book reading intelligence
+[2026-03-18 17:01:27 UTC] story_start: Story 499: NPC homesickness effect
