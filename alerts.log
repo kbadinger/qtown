@@ -372,3 +372,11 @@ Uploading..
 [2026-03-18 09:48:11 UTC] deploy_ok: Story 481 deployed: Healthy after 0.1s
 [2026-03-18 09:48:27 UTC] story_done: Story 481 complete: Relationships boost work output
 [2026-03-18 09:48:28 UTC] story_start: Story 482: Boom and bust cycle
+[2026-03-18 10:10:08 UTC] WARN deploy_fail: Story 482 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   48cc6f0..bfc18d5  main -> main
+
+Indexing...
+Uploading..
+[2026-03-18 10:10:08 UTC] story_done: Story 482 complete: Boom and bust cycle
+[2026-03-18 10:10:08 UTC] story_start: Story 483: Wealth inequality triggers unrest

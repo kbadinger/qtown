@@ -3366,3 +3366,8 @@
 - **Tricky Logic**: The interaction between the `debt_accumulation` threshold and the `market_crash` trigger was non-obvious; the system required a specific sequence of two consecutive quarters of negative growth to activate the bust phase, not just a single dip.
 - **Codebase Patterns**: The repository consistently uses a `StateMachine` pattern for economic phases, where transitions are guarded by aggregate metrics calculated in a separate `AnalyticsService` rather than inline checks.
 - **Correction Made**: Initially, I applied the interest rate penalty before validating the `liquidity_buffer`, causing a premature crash; I corrected this by moving the buffer check to the pre-condition of the rate adjustment logic.
+
+--- Story 483: Wealth inequality triggers unrest (attempts: 1, 2026-03-18 06:32) ---
+*   **Tricky Logic**: The "unrest" trigger wasn't a simple threshold check; it required calculating a weighted average of inequality across three distinct regions, where a single region's spike could be masked by others unless the variance exceeded a dynamic baseline.
+*   **Codebase Pattern**: The simulation engine consistently uses a `StateSnapshot` interface before applying any global event, allowing for atomic rollbacks if the event causes an invalid state (e.g., negative population).
+*   **Correction**: Initially, I applied the unrest multiplier directly to the `wealth` variable, which broke the inflation loop; I corrected this by isolating the unrest impact into a separate `social_stability` modifier that only influences future wealth generation rates.

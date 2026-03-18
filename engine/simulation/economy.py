@@ -2631,3 +2631,49 @@ def check_economic_cycle(db: Session) -> str:
         db.add(event)
     
     return world_state.economic_status or "normal"
+
+
+def check_wealth_inequality(db: Session) -> bool:
+    """Check for wealth inequality and trigger unrest."""
+    from engine.models import NPC, Event, WorldState
+    
+    # Get all living NPCs (is_dead == 0 for Postgres compatibility)
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    # Check if we have enough NPCs
+    if len(living_npcs) < 5:
+        return False
+    
+    # Calculate max and min gold
+    gold_values = [npc.gold for npc in living_npcs]
+    max_gold = max(gold_values)
+    min_gold = min(gold_values)
+    
+    # Check inequality threshold
+    if max_gold > min_gold * 10:
+        # Sort NPCs by gold
+        sorted_npcs = sorted(living_npcs, key=lambda n: n.gold)
+        
+        # Find richest NPC and boost happiness (max 100)
+        richest = sorted_npcs[-1]
+        richest.happiness = min(100, richest.happiness + 10)
+        
+        # Find 3 poorest NPCs and reduce happiness (min 0)
+        for i in range(min(3, len(sorted_npcs))):
+            poorest = sorted_npcs[i]
+            poorest.happiness = max(0, poorest.happiness - 15)
+        
+        # Create event with current tick
+        world_state = db.query(WorldState).first()
+        tick = world_state.tick if world_state else 0
+        
+        event = Event(
+            event_type="wealth_inequality",
+            description="Growing wealth gap causing unrest among the poor",
+            tick=tick
+        )
+        db.add(event)
+        
+        return True
+    
+    return False
