@@ -433,3 +433,6 @@ Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and
 [2026-03-18 15:16:48 UTC] deploy_ok: Story 494 deployed: Healthy after 0.1s
 [2026-03-18 15:17:05 UTC] story_done: Story 494 complete: NPC retirement system
 [2026-03-18 15:17:05 UTC] story_start: Story 495: NPC drunkenness from tavern
+[2026-03-18 15:43:34 UTC] deploy_ok: Story 495 deployed: Healthy after 0.1s
+[2026-03-18 15:43:52 UTC] story_done: Story 495 complete: NPC drunkenness from tavern
+[2026-03-18 15:43:52 UTC] story_start: Story 496: NPC rivalry sabotage

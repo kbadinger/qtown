@@ -3431,3 +3431,8 @@
 - **State Persistence**: It was non-obvious that `Drunk` status must be explicitly cleared in the `EndTurn` handler; otherwise, NPCs retain the modifier indefinitely even after leaving the tavern.
 - **Event Dispatching**: The codebase relies on a centralized `EventBus` for tavern interactions rather than direct method calls, requiring all new tavern behaviors to subscribe to `TavernEvent` to trigger correctly.
 - **Correction**: Initially, I applied the drunkenness modifier to the NPC's `baseStats`, which caused permanent degradation; I corrected this by applying it only to the `currentStats` snapshot to ensure it resets on state change.
+
+--- Story 496: NPC rivalry sabotage (attempts: 1, 2026-03-18 12:07) ---
+- **Tricky Logic**: The non-obvious interaction between the `RivalryState` machine and the global `SabotageEvent` queue required explicit synchronization; relying on implicit event ordering caused race conditions where sabotage effects applied before the rivalry state was fully resolved.
+- **Codebase Pattern**: The project consistently uses a "Command-Query Separation" pattern for NPC actions, where state changes are strictly queued as commands and read-only status checks are handled via separate accessor methods, preventing side effects during rendering.
+- **Correction**: Initially attempted to modify the `NPCInventory` directly within the sabotage trigger, which broke the undo/redo system; corrected by wrapping all inventory mutations in a `TransactionContext` to ensure atomicity and proper logging.

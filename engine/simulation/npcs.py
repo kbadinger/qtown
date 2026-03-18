@@ -3703,53 +3703,50 @@ def apply_homesickness(db: Session) -> None:
     db.flush()
 
 
-def process_rivalries(db: Session) -> None:
-    """Process rivalry competition between NPCs."""
-    from sqlalchemy.orm import Session
-    from engine.models import Relationship, NPC, Crime
+def process_rivalries(db: Session) -> int:
+    """Process rivalry sabotage between NPCs at the same workplace."""
+    from engine.models import Relationship, NPC, Event, WorldState
+    import random
     
-    # Query all rivalry relationships
+    # Query all rivalry relationships with strength > 50
     rivalries = db.query(Relationship).filter(
-        Relationship.relationship_type == 'rival'
+        Relationship.relationship_type == 'rival',
+        Relationship.strength > 50
     ).all()
     
+    sabotage_count = 0
+    
     for relationship in rivalries:
-        npc1_id = relationship.npc_id
-        npc2_id = relationship.other_npc_id
+        npc = db.query(NPC).filter(NPC.id == relationship.npc_id).first()
+        rival = db.query(NPC).filter(NPC.id == relationship.other_npc_id).first()
         
-        # Get both NPCs
-        npc1 = db.query(NPC).filter(NPC.id == npc1_id).first()
-        npc2 = db.query(NPC).filter(NPC.id == npc2_id).first()
-        
-        if not npc1 or not npc2:
+        # Skip if either NPC doesn't exist
+        if not npc or not rival:
             continue
         
-        # Check if both NPCs are alive
-        if npc1.is_dead == 1 or npc2.is_dead == 1:
+        # Check if both NPCs are alive (is_dead == 0)
+        if npc.is_dead == 1 or rival.is_dead == 1:
             continue
         
-        # Compare gold and adjust happiness for NPC1
-        if npc1.gold < npc2.gold:
-            npc1.happiness = max(0, npc1.happiness - 3)  # jealousy
-        elif npc1.gold > npc2.gold:
-            npc1.happiness = min(100, npc1.happiness + 2)  # satisfaction
+        # Check if both NPCs work at the same building
+        if npc.work_building_id != rival.work_building_id:
+            continue
         
-        # Compare gold and adjust happiness for NPC2
-        if npc2.gold < npc1.gold:
-            npc2.happiness = max(0, npc2.happiness - 3)  # jealousy
-        elif npc2.gold > npc1.gold:
-            npc2.happiness = min(100, npc2.happiness + 2)  # satisfaction
+        # Rival loses 3 gold (min 0)
+        rival.gold = max(0, rival.gold - 3)
         
-        # Check for theft opportunity (if rivalry strength > 80)
-        if relationship.strength > 80 and random.random() < 0.1:
-            # Create theft crime record
-            crime = Crime(
-                npc_id=npc2.id,
-                victim_npc_id=npc1.id,
-                crime_type='theft',
-                severity=1
+        # 10% chance to create sabotage event
+        if random.random() < 0.1:
+            current_tick = db.query(WorldState).first().tick if db.query(WorldState).first() else 0
+            event = Event(
+                event_type="sabotage",
+                description=f"{npc.name} sabotaged {rival.name} at work",
+                tick=current_tick
             )
-            db.add(crime)
+            db.add(event)
+            sabotage_count += 1
+    
+    return sabotage_count
 
 
 def patrol_guards(db: Session) -> None:
