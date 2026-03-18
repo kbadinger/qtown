@@ -419,3 +419,8 @@ Uploading..
 [2026-03-18 13:36:24 UTC] deploy_ok: Story 490 deployed: Healthy after 0.1s
 [2026-03-18 13:36:41 UTC] story_done: Story 490 complete: Cascade chain: weather to emigration
 [2026-03-18 13:36:42 UTC] story_start: Story 491: NPC daily routine by role
+[2026-03-18 14:04:26 UTC] WARN deploy_fail: Story 491 deploy failed (non-fatal, will auto-deploy on next push): Build failed: Build timed out after 300s
+
+Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
+[2026-03-18 14:04:27 UTC] story_done: Story 491 complete: NPC daily routine by role
+[2026-03-18 14:04:27 UTC] story_start: Story 492: NPC mood contagion

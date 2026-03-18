@@ -3407,56 +3407,39 @@ def personality_decision(db: Session, npc_id: int) -> str:
     return "; ".join(decisions) if decisions else "No personality-driven decision"
 
 
-def spread_mood(db: Session) -> None:
+def spread_mood(db: Session) -> int:
     """Spread mood contagion between nearby NPCs."""
-    import math
     from engine.models import NPC
     
-    # Fetch all living NPCs
+    # Fetch all living NPCs (is_dead == 0, not == False for Postgres compatibility)
     npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
     
-    # Map for quick lookup
-    npc_map = {npc.id: npc for npc in npcs}
+    affected_count = 0
     
-    # Calculate mood deltas for each NPC
-    mood_deltas = {}
-    
-    for source_npc in npcs:
-        # Determine contagion effect
-        effect = 0
-        if source_npc.happiness > 70:
-            effect = 2
-        elif source_npc.happiness < 30:
-            effect = -1
-        
-        if effect == 0:
-            continue
-        
-        for target_npc in npcs:
-            if source_npc.id == target_npc.id:
+    for npc in npcs:
+        # Find other living NPCs within Manhattan distance 5
+        nearby_happiness = []
+        for other in npcs:
+            if other.id == npc.id:
                 continue
+            distance = abs(npc.x - other.x) + abs(npc.y - other.y)
+            if distance <= 5:
+                nearby_happiness.append(other.happiness)
+        
+        # If there are nearby NPCs, calculate average and nudge
+        if nearby_happiness:
+            avg_nearby = sum(nearby_happiness) / len(nearby_happiness)
+            old_happiness = npc.happiness
+            npc.happiness += int((avg_nearby - npc.happiness) * 0.1)
             
-            # Calculate Euclidean distance
-            dx = source_npc.x - target_npc.x
-            dy = source_npc.y - target_npc.y
-            distance = math.sqrt(dx*dx + dy*dy)
+            # Clamp to 0-100
+            npc.happiness = max(0, min(100, npc.happiness))
             
-            if distance <= 3:
-                if target_npc.id not in mood_deltas:
-                    mood_deltas[target_npc.id] = 0
-                mood_deltas[target_npc.id] += effect
+            # Count if happiness actually changed
+            if npc.happiness != old_happiness:
+                affected_count += 1
     
-    # Apply mood changes
-    for npc_id, delta in mood_deltas.items():
-        npc = npc_map.get(npc_id)
-        if npc:
-            npc.happiness += delta
-            # Cap at 100
-            if npc.happiness > 100:
-                npc.happiness = 100
-            # Floor at 0
-            if npc.happiness < 0:
-                npc.happiness = 0
+    return affected_count
 
 
 def spread_gossip(db: Session) -> None:

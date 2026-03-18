@@ -3411,3 +3411,8 @@
 - **State Persistence**: It was non-obvious that `DailyRoutine` components must explicitly sync their internal timers with the global `GameTime` manager; relying on `Update()` alone caused desynchronization during scene transitions.
 - **Role-Based Abstraction**: The codebase enforces a strict pattern where `Role` enums drive the `Schedule` selection, meaning new behaviors require extending the `Schedule` factory rather than adding conditional logic inside the routine loop.
 - **Correction**: Initially, I attempted to hardcode cooldowns per NPC instance, which broke the "shared schedule" convention; I corrected this by moving all timing logic into the centralized `RoleSchedule` singleton.
+
+--- Story 492: NPC mood contagion (attempts: 1, 2026-03-18 10:26) ---
+- **Non-obvious state coupling**: The mood propagation logic relied on a hidden dependency where `update()` order mattered; changing the iteration sequence broke the "chain reaction" effect because NPCs read stale neighbor states.
+- **Codebase convention**: This project consistently uses a "dirty flag" pattern on components (e.g., `needsMoodRecalc`) to defer expensive graph traversals until the next frame, rather than updating every tick.
+- **Correction**: Initially implemented a recursive depth-first search for contagion, which caused stack overflows on dense crowds; switched to a queue-based BFS approach with a max-iteration cap to ensure deterministic performance.
