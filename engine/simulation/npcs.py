@@ -3834,3 +3834,19 @@ def check_crime_motivation(db: Session) -> int:
                     crimes_count += 1
                     
     return crimes_count
+
+
+def apply_hunger_penalty(db: Session) -> int:
+    """Apply happiness penalty for hungry NPCs."""
+    from engine.models import NPC
+    
+    penalized_count = 0
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    for npc in living_npcs:
+        if npc.hunger > 70:
+            penalty = 20 if npc.hunger > 90 else 10
+            npc.happiness = max(0, npc.happiness - penalty)
+            penalized_count += 1
+    
+    return penalized_count

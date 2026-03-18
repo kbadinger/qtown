@@ -3291,3 +3291,8 @@
 *   **Non-obvious state coupling**: The price spike logic relies on a hidden dependency between the `inventory` cache and the `market_feed` event stream; failing to invalidate the cache before processing the feed caused stale prices to persist during the spike.
 *   **Codebase convention**: This project enforces a strict "read-only" pattern for price calculation services, meaning all state mutations must happen in the `PriceAggregator` class before being emitted as events, never directly in the controller.
 *   **Correction made**: Initially attempted to apply the price multiplier directly to the database record, which bypassed the audit trail; corrected to emit a `PriceAdjustmentEvent` that triggers a separate listener to update the persisted state and log the change.
+
+--- Story 468: Hunger drives unhappiness (attempts: 1, 2026-03-18 00:56) ---
+- **Non-obvious state coupling**: The `HungerLevel` calculation wasn't isolated; it implicitly depended on the `LastMealTime` stored in the global `PlayerState`, causing race conditions when multiple food sources were consumed simultaneously.
+- **Convention discovery**: This codebase consistently uses a "negative value = active penalty" pattern for status effects (e.g., `Hunger` > 0 reduces `Happiness`), rather than separate boolean flags, which simplifies the rendering logic but complicates the edge-case handling for zero values.
+- **Correction**: Initially, I applied the happiness penalty before validating if the player was actually starving; I corrected this by moving the `if (hunger > threshold)` check to the top of the calculation block to prevent unnecessary state updates and flickering UI.

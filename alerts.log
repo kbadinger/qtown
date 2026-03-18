@@ -312,3 +312,11 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-18 04:10:05 UTC] deploy_ok: Story 466 deployed: Healthy after 0.1s
 [2026-03-18 04:10:21 UTC] story_done: Story 466 complete: Weather crop yield modifier
 [2026-03-18 04:10:21 UTC] story_start: Story 467: Food scarcity price spike
+[2026-03-18 04:37:12 UTC] WARN deploy_fail: Story 467 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   54cbad2..1d8b062  main -> main
+
+Indexing...
+Uploading..
+[2026-03-18 04:37:12 UTC] story_done: Story 467 complete: Food scarcity price spike
+[2026-03-18 04:37:13 UTC] story_start: Story 468: Hunger drives unhappiness
