@@ -416,3 +416,6 @@ Indexing...
 Uploading..
 [2026-03-18 13:13:15 UTC] story_done: Story 489 complete: Daily interconnection summary
 [2026-03-18 13:13:16 UTC] story_start: Story 490: Cascade chain: weather to emigration
+[2026-03-18 13:36:24 UTC] deploy_ok: Story 490 deployed: Healthy after 0.1s
+[2026-03-18 13:36:41 UTC] story_done: Story 490 complete: Cascade chain: weather to emigration
+[2026-03-18 13:36:42 UTC] story_start: Story 491: NPC daily routine by role

@@ -4037,3 +4037,38 @@ def transfer_mentor_skills(db: Session) -> int:
             transfer_count += 1
     
     return transfer_count
+
+
+def assign_daily_routine(db: Session) -> int:
+    """Assign daily routine targets based on NPC role."""
+    from engine.models import NPC, Building
+    
+    count = 0
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    for npc in living_npcs:
+        target_building = None
+        
+        if npc.role == "farmer":
+            food_buildings = db.query(Building).filter(Building.building_type == "food").all()
+            if food_buildings:
+                target_building = min(food_buildings, key=lambda b: abs(npc.x - b.x) + abs(npc.y - b.y))
+        elif npc.role == "guard":
+            guard_buildings = db.query(Building).filter(Building.building_type == "guard_tower").all()
+            if guard_buildings:
+                target_building = min(guard_buildings, key=lambda b: abs(npc.x - b.x) + abs(npc.y - b.y))
+        elif npc.role == "merchant":
+            market_buildings = db.query(Building).filter(Building.building_type.in_(["market", "bank"])).all()
+            if market_buildings:
+                target_building = min(market_buildings, key=lambda b: abs(npc.x - b.x) + abs(npc.y - b.y))
+        elif npc.role == "priest":
+            church_buildings = db.query(Building).filter(Building.building_type == "church").all()
+            if church_buildings:
+                target_building = min(church_buildings, key=lambda b: abs(npc.x - b.x) + abs(npc.y - b.y))
+        
+        if target_building:
+            npc.target_x = target_building.x
+            npc.target_y = target_building.y
+            count += 1
+    
+    return count
