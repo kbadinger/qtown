@@ -3351,3 +3351,8 @@
 *   **Non-obvious Reputation Logic**: The "gold boost" isn't a direct multiplier; it requires checking the `ReputationTier` enum against a threshold *before* applying the bonus, as the base calculation fails silently if the tier check is skipped.
 *   **Codebase Convention**: All visitor-related rewards are routed through the `RewardFactory` class, which enforces a strict `calculate -> validate -> apply` pattern; bypassing this factory breaks the audit trail in the `TransactionLog`.
 *   **Correction**: Initially attempted to modify the `VisitorService` directly, but realized this violated the separation of concerns; corrected by injecting the `ReputationStrategy` into the factory instead to keep the service pure.
+
+--- Story 480: Newspaper affects NPC mood (attempts: 1, 2026-03-18 05:18) ---
+*   **Non-obvious State Coupling**: NPC mood is not a standalone flag but a derived state heavily dependent on the `Newspaper` object's `latestHeadline` property; changing the headline requires re-evaluating the entire mood calculation chain, not just updating a single variable.
+*   **Convention for Event-Driven Updates**: The codebase strictly avoids polling for mood changes; instead, it relies on the `onNewspaperUpdated` event listener to trigger the `recalculateMood()` method, ensuring the UI only re-renders when actual data changes.
+*   **Correction on Null Handling**: Initially assumed `newspaperContent` would always be present, causing a crash on first load; fixed by adding a defensive check to default the mood to `neutral` when the newspaper data is `null` or `undefined`.

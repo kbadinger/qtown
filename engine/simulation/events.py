@@ -3161,3 +3161,40 @@ def check_plague_overwhelm(db: Session) -> int:
         db.add(event)
         
     return sick_count
+
+
+def apply_newspaper_mood(db: Session) -> int:
+    """Apply newspaper headline effects on NPC happiness."""
+    from engine.models import Newspaper, NPC
+    
+    # Get latest newspaper
+    latest = db.query(Newspaper).order_by(Newspaper.id.desc()).limit(1).first()
+    
+    if not latest:
+        return 0
+    
+    headline = latest.headline.lower()
+    
+    # Determine mood effect
+    negative_words = ["death", "plague", "fire", "crime"]
+    positive_words = ["celebration", "festival", "boom", "prosperity"]
+    
+    is_negative = any(word in headline for word in negative_words)
+    is_positive = any(word in headline for word in positive_words)
+    
+    # Get living NPCs
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    affected_count = 0
+    
+    for npc in living_npcs:
+        if is_negative:
+            npc.happiness = max(0, npc.happiness - 5)
+            affected_count += 1
+        elif is_positive:
+            npc.happiness = min(100, npc.happiness + 5)
+            affected_count += 1
+    
+    db.flush()
+    
+    return affected_count

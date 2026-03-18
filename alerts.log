@@ -358,3 +358,11 @@ Uploading..
 [2026-03-18 08:33:21 UTC] deploy_ok: Story 478 deployed: Healthy after 0.1s
 [2026-03-18 08:33:38 UTC] story_done: Story 478 complete: Plague overwhelms hospital
 [2026-03-18 08:33:39 UTC] story_start: Story 479: Visitor gold boost from reputation
+[2026-03-18 08:57:28 UTC] WARN deploy_fail: Story 479 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   2e64c64..739a111  main -> main
+
+Indexing...
+Uploading..
+[2026-03-18 08:57:28 UTC] story_done: Story 479 complete: Visitor gold boost from reputation
+[2026-03-18 08:57:29 UTC] story_start: Story 480: Newspaper affects NPC mood
