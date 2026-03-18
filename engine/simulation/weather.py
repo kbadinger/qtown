@@ -57,3 +57,39 @@ def get_season(db: Session) -> str:
         return "fall"
     else:
         return "winter"
+
+
+def apply_winter_drain(db: Session) -> int:
+    """Apply winter energy drain effects on NPCs when weather is snow.
+    
+    If WorldState.weather == "snow":
+    - All living NPCs (is_dead == 0) energy -= 5 (min 0) and hunger += 5 (max 100)
+    - NPCs with home_building_id not None get half penalty (energy -2, hunger +2)
+    
+    Returns count of affected NPCs.
+    If weather is not snow, returns 0.
+    """
+    from engine.models import NPC, WorldState
+    
+    world_state = db.query(WorldState).first()
+    if not world_state or world_state.weather != "snow":
+        return 0
+    
+    # Get all living NPCs
+    npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    affected_count = 0
+    
+    for npc in npcs:
+        if npc.home_building_id is not None:
+            # Half penalty for NPCs with home
+            npc.energy = max(0, npc.energy - 2)
+            npc.hunger = min(100, npc.hunger + 2)
+        else:
+            # Full penalty for NPCs without home
+            npc.energy = max(0, npc.energy - 5)
+            npc.hunger = min(100, npc.hunger + 5)
+        affected_count += 1
+    
+    db.commit()
+    return affected_count

@@ -3376,3 +3376,8 @@
 - **Tricky Aspect**: The non-obvious requirement to handle `Mentor` death as a state transition rather than a simple entity removal, necessitating a check for active `Apprentice` bindings before triggering the skill inheritance logic.
 - **Pattern Discovered**: The codebase consistently uses a `TransferContext` object to bundle transient state (source, target, skill type) for audit logging, rather than passing individual arguments through the service layer.
 - **Correction Made**: Initially failed to validate if the `Apprentice` was already at max skill level, causing redundant database writes; fixed by adding a pre-condition check against the `SkillCap` constraint before executing the transfer.
+
+--- Story 485: Winter energy drain (attempts: 1, 2026-03-18 07:18) ---
+- **Non-obvious state coupling**: The `energyDrain` calculation unexpectedly depends on the `seasonalMultiplier` from a separate `WeatherService` singleton, requiring manual synchronization of mock data in tests.
+- **Convention discovery**: All energy-related side effects must be wrapped in the `EnergyGuard` context manager to ensure transactional rollback on failure; direct method calls bypass this safety net.
+- **Correction**: Initially missed the `negative_energy` edge case in the validation logic, which caused a division-by-zero crash; added an explicit `max(0, ...)` clamp before the calculation.
