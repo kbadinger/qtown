@@ -293,3 +293,13 @@ Uploading..
 [2026-03-17 21:42:55 UTC] deploy_ok: Story 261 deployed: Healthy after 0.1s
 [2026-03-17 21:43:13 UTC] story_done: Story 261 complete: Building capacity from worker count
 [2026-03-17 21:43:13 UTC] story_start: Story 262: Town statistics API endpoint
+[2026-03-17 21:44:54 UTC] deploy_ok: Story 262 deployed: Healthy after 0.1s
+[2026-03-17 21:45:04 UTC] story_done: Story 262 complete: Town statistics API endpoint
+[2026-03-17 21:45:04 UTC] story_start: Story 263: NPC detail API endpoint
+[2026-03-17 21:52:57 UTC] WARN story_fail: Story 263 struggling — attempt 5/12
+NPC detail API endpoint
+[2026-03-17 22:05:01 UTC] WARN story_fail: Story 263 failed after 12 attempts: NPC detail API endpoint
+[2026-03-17 22:05:01 UTC] CRITICAL critical: Story 263 failed: NPC detail API endpoint
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-18 03:40:46 UTC] start: Ralph online — 444/550 stories complete
+[2026-03-18 03:40:46 UTC] story_start: Story 264: Price history chart API

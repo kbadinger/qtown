@@ -3271,3 +3271,8 @@
 - **Aggregation Logic**: Initially struggled with efficiently calculating rolling averages in the stats endpoint; realized the database's window functions were underutilized compared to manual in-memory loops, leading to a refactor for better performance.
 - **Response Consistency**: Discovered a codebase convention where all statistical endpoints must return a standardized `Meta` object alongside data, including `generated_at` and `cache_ttl`, which I initially omitted.
 - **Edge Case Handling**: Mistakenly assumed `total_population` would always be present; corrected the implementation to handle `null` returns from the census table gracefully to prevent 500 errors on empty datasets.
+
+--- Story 264: Price history chart API (attempts: 1, 2026-03-17 23:41) ---
+- **Non-obvious time-series alignment**: Handling sparse price data required explicit interpolation logic to ensure the chart API returned consistent time intervals, rather than relying on the database's native timestamp gaps.
+- **Codebase convention for aggregation**: The project consistently uses a "fetch-then-transform" pattern where raw data is retrieved in a single query and aggregated in-memory using Lodash, avoiding complex SQL window functions for flexibility.
+- **Correction on timezone handling**: Initially returned UTC timestamps which caused misalignment with the frontend's local time display; fixed by normalizing all inputs to the user's requested timezone before aggregation.
