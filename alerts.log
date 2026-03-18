@@ -320,3 +320,6 @@ Indexing...
 Uploading..
 [2026-03-18 04:37:12 UTC] story_done: Story 467 complete: Food scarcity price spike
 [2026-03-18 04:37:13 UTC] story_start: Story 468: Hunger drives unhappiness
+[2026-03-18 04:57:33 UTC] deploy_ok: Story 468 deployed: Healthy after 0.1s
+[2026-03-18 04:57:51 UTC] story_done: Story 468 complete: Hunger drives unhappiness
+[2026-03-18 04:57:51 UTC] story_start: Story 469: Poverty drives crime

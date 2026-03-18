@@ -3850,3 +3850,35 @@ def apply_hunger_penalty(db: Session) -> int:
             penalized_count += 1
     
     return penalized_count
+
+
+def check_poverty_crime(db: Session) -> int:
+    """Check for poverty-driven crime and create Crime records."""
+    from engine.models import NPC, Crime, WorldState
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Find living NPCs with low gold and low happiness
+    poor_npcs = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.gold < 5,
+        NPC.happiness < 30
+    ).all()
+    
+    new_crimes_count = 0
+    
+    for npc in poor_npcs:
+        # 15% chance to commit crime
+        if random.random() < 0.15:
+            crime = Crime(
+                criminal_npc_id=npc.id,
+                type="theft",
+                tick=current_tick,
+                resolved=0
+            )
+            db.add(crime)
+            new_crimes_count += 1
+    
+    return new_crimes_count

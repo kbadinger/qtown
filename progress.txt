@@ -3296,3 +3296,8 @@
 - **Non-obvious state coupling**: The `HungerLevel` calculation wasn't isolated; it implicitly depended on the `LastMealTime` stored in the global `PlayerState`, causing race conditions when multiple food sources were consumed simultaneously.
 - **Convention discovery**: This codebase consistently uses a "negative value = active penalty" pattern for status effects (e.g., `Hunger` > 0 reduces `Happiness`), rather than separate boolean flags, which simplifies the rendering logic but complicates the edge-case handling for zero values.
 - **Correction**: Initially, I applied the happiness penalty before validating if the player was actually starving; I corrected this by moving the `if (hunger > threshold)` check to the top of the calculation block to prevent unnecessary state updates and flickering UI.
+
+--- Story 469: Poverty drives crime (attempts: 1, 2026-03-18 01:16) ---
+*   **Non-obvious State Coupling**: The `CrimeRate` calculation wasn't a simple multiplier; it dynamically adjusted based on the `SocialSafetyNet` modifier, which only activates when `PovertyLevel` exceeds a specific threshold, requiring careful boundary testing.
+*   **Codebase Convention**: Economic impact stories consistently use a `PolicyImpact` wrapper class to isolate side effects, ensuring that changes to poverty metrics don't inadvertently mutate the global `Economy` state without an explicit transaction.
+*   **Correction**: Initially applied the crime increase as a flat percentage; corrected to use a logarithmic scale to prevent unrealistic spikes in crime rates when poverty levels are extreme, matching the historical data patterns in `Story 450`.
