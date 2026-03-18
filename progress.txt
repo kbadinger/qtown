@@ -3321,3 +3321,8 @@
 *   **Non-obvious coupling**: The reputation score calculation implicitly relies on the `migration_history` table being pre-aggregated; failing to run the nightly aggregation job causes silent failures in the immigration eligibility check rather than throwing an error.
 *   **Codebase convention**: All domain-specific thresholds (like the reputation cutoff for visa eligibility) are stored in `config/reputation_rules.yaml` rather than hardcoded, requiring a restart of the worker service to pick up changes.
 *   **Correction**: Initially attempted to filter candidates by reputation directly in the SQL query, but realized the logic requires a multi-step validation (reputation + background check + quota availability); refactored to use the `ImmigrationService` orchestration layer instead of raw database calls.
+
+--- Story 474: Tax policy happiness effect (attempts: 1, 2026-03-18 03:02) ---
+- **Non-obvious state propagation**: The happiness calculation depends on a derived `effective_tax_rate` that isn't stored directly; it must be recomputed from `gross_income` and `deductions` every time the policy changes, rather than cached.
+- **Convention for policy immutability**: New tax policies are always constructed as fresh objects using the `createPolicy()` factory; mutating existing policy instances breaks the audit trail and triggers silent failures in the simulation engine.
+- **Correction on edge cases**: Initially missed the handling of negative income scenarios, which caused division-by-zero errors in the marginal rate logic; fixed by adding a guard clause that defaults to a 0% rate for losses.

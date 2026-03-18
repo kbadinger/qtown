@@ -2524,3 +2524,34 @@ def check_food_scarcity(db: Session) -> bool:
         return True
     
     return False
+
+
+def apply_tax_mood(db: Session) -> int:
+    """Apply tax policy happiness effect to all living NPCs."""
+    from engine.models import WorldState, NPC
+    
+    # Get current tax rate from WorldState
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return 0
+    
+    tax_rate = world_state.tax_rate
+    
+    affected_count = 0
+    
+    # Get all living NPCs (is_dead == 0 per Postgres compatibility)
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    for npc in living_npcs:
+        if tax_rate > 0.20:
+            # High taxes reduce happiness by 5 (min 0)
+            if npc.happiness > 0:
+                npc.happiness = max(0, npc.happiness - 5)
+                affected_count += 1
+        elif tax_rate < 0.05:
+            # Low taxes increase happiness by 3 (max 100)
+            if npc.happiness < 100:
+                npc.happiness = min(100, npc.happiness + 3)
+                affected_count += 1
+    
+    return affected_count

@@ -335,3 +335,6 @@ Uploading..
 [2026-03-18 06:21:59 UTC] deploy_ok: Story 472 deployed: Healthy after 0.1s
 [2026-03-18 06:22:15 UTC] story_done: Story 472 complete: Population housing pressure
 [2026-03-18 06:22:16 UTC] story_start: Story 473: Reputation drives immigration
+[2026-03-18 06:42:53 UTC] deploy_ok: Story 473 deployed: Healthy after 0.1s
+[2026-03-18 06:43:09 UTC] story_done: Story 473 complete: Reputation drives immigration
+[2026-03-18 06:43:09 UTC] story_start: Story 474: Tax policy happiness effect
