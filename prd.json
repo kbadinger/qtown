@@ -4450,7 +4450,7 @@
       "context_files": [
         "engine/routers/stats.py"
       ],
-      "status": "in_progress",
+      "status": "done",
       "phase": "development",
       "attempts": 1
     },
@@ -4462,8 +4462,9 @@
       "context_files": [
         "engine/routers/npcs.py"
       ],
-      "status": "pending",
-      "phase": "development"
+      "status": "done",
+      "phase": "development",
+      "attempts": 1
     },
     {
       "id": "264",

@@ -660,9 +660,12 @@ def test_s262_api(client):
 
 
 def test_s263_api(client):
-    """Story 263: NPC detail API endpoint."""
-    resp = client.get("/api/npcs/{npc_id}")
-    assert resp.status_code in (200, 201, 404), f"{resp.status_code}: {resp.text}"
+    """Story 263: NPC detail API endpoint (by ID)."""
+    resp = client.get("/api/npcs/")
+    if resp.status_code == 200 and resp.json():
+        npc_id = resp.json()[0]["id"]
+        detail = client.get(f"/api/npcs/{npc_id}")
+        assert detail.status_code == 200, f"{detail.status_code}: {detail.text}"
 
 
 def test_s264_api(client):
