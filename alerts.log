@@ -380,3 +380,6 @@ Indexing...
 Uploading..
 [2026-03-18 10:10:08 UTC] story_done: Story 482 complete: Boom and bust cycle
 [2026-03-18 10:10:08 UTC] story_start: Story 483: Wealth inequality triggers unrest
+[2026-03-18 10:34:27 UTC] deploy_ok: Story 483 deployed: Healthy after 0.1s
+[2026-03-18 10:34:45 UTC] story_done: Story 483 complete: Wealth inequality triggers unrest
+[2026-03-18 10:34:45 UTC] story_start: Story 484: Mentor skill transfer on death

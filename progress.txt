@@ -3371,3 +3371,8 @@
 *   **Tricky Logic**: The "unrest" trigger wasn't a simple threshold check; it required calculating a weighted average of inequality across three distinct regions, where a single region's spike could be masked by others unless the variance exceeded a dynamic baseline.
 *   **Codebase Pattern**: The simulation engine consistently uses a `StateSnapshot` interface before applying any global event, allowing for atomic rollbacks if the event causes an invalid state (e.g., negative population).
 *   **Correction**: Initially, I applied the unrest multiplier directly to the `wealth` variable, which broke the inflation loop; I corrected this by isolating the unrest impact into a separate `social_stability` modifier that only influences future wealth generation rates.
+
+--- Story 484: Mentor skill transfer on death (attempts: 1, 2026-03-18 06:56) ---
+- **Tricky Aspect**: The non-obvious requirement to handle `Mentor` death as a state transition rather than a simple entity removal, necessitating a check for active `Apprentice` bindings before triggering the skill inheritance logic.
+- **Pattern Discovered**: The codebase consistently uses a `TransferContext` object to bundle transient state (source, target, skill type) for audit logging, rather than passing individual arguments through the service layer.
+- **Correction Made**: Initially failed to validate if the `Apprentice` was already at max skill level, causing redundant database writes; fixed by adding a pre-condition check against the `SkillCap` constraint before executing the transfer.

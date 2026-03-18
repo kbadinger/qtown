@@ -3979,3 +3979,61 @@ def reputation_immigration(db: Session) -> int:
         return 1
     
     return 0
+
+
+def transfer_mentor_skills(db: Session) -> int:
+    """Transfer mentor skills from dead NPCs to living colleagues."""
+    from engine.models import NPC, Event, WorldState
+    
+    transfer_count = 0
+    
+    # Get all dead NPCs with work_building_id
+    dead_npcs = db.query(NPC).filter(NPC.is_dead == 1, NPC.work_building_id != None).all()
+    
+    for dead_npc in dead_npcs:
+        # Parse memory_events JSON list
+        memory_events = []
+        if dead_npc.memory_events:
+            try:
+                memory_events = json.loads(dead_npc.memory_events)
+                if not isinstance(memory_events, list):
+                    memory_events = []
+            except (json.JSONDecodeError, TypeError):
+                memory_events = []
+        
+        # Skip if skills already transferred
+        if "skills_transferred" in memory_events:
+            continue
+        
+        # Find living NPCs at same work building
+        colleagues = db.query(NPC).filter(
+            NPC.is_dead == 0,
+            NPC.work_building_id == dead_npc.work_building_id,
+            NPC.id != dead_npc.id
+        ).all()
+        
+        if colleagues:
+            # First colleague gets the skill boost
+            recipient = colleagues[0]
+            recipient.skill = (recipient.skill or 0) + 3
+            
+            # Get current tick from WorldState
+            world_state = db.query(WorldState).first()
+            current_tick = world_state.tick if world_state else 0
+            
+            # Create Event
+            event = Event(
+                event_type="skill_transfer",
+                description=f"{dead_npc.name} expertise passed to {recipient.name}",
+                tick=current_tick,
+                affected_npc_id=recipient.id
+            )
+            db.add(event)
+            
+            # Mark skills as transferred
+            memory_events.append("skills_transferred")
+            dead_npc.memory_events = json.dumps(memory_events)
+            
+            transfer_count += 1
+    
+    return transfer_count
