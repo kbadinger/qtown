@@ -1619,3 +1619,39 @@ def update_building_efficiency(db: Session) -> dict:
     
     db.commit()
     return result
+
+
+def apply_crime_penalty(db: Session) -> int:
+    """Apply crime penalty to buildings when crime is high."""
+    from engine.models import Crime, Building, Event, WorldState
+    
+    # Count unresolved crimes (Postgres compatibility: use == 0, not == False)
+    unresolved_crimes = db.query(Crime).filter(Crime.resolved == 0).count()
+    
+    if unresolved_crimes <= 5:
+        return 0
+    
+    # Get all buildings with level > 1
+    buildings = db.query(Building).filter(Building.level > 1).all()
+    
+    downgraded_count = 0
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    for building in buildings:
+        # 5% chance to downgrade
+        if random.random() < 0.05:
+            building.level -= 1
+            downgraded_count += 1
+            
+            # Create event for the damage
+            event = Event(
+                event_type="crime_damage",
+                description="High crime damaged building infrastructure",
+                tick=current_tick
+            )
+            db.add(event)
+    
+    return downgraded_count

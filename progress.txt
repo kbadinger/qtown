@@ -3306,3 +3306,8 @@
 - **Non-obvious Guard Logic**: The trigger condition wasn't a simple threshold check; it required calculating a rolling 7-day average of crime incidents, ignoring outliers above 3 standard deviations to prevent false positives from single high-impact events.
 - **Codebase Convention**: New feature flags are consistently implemented as `Optional` in the config schema but default to `false` in the runtime environment, requiring explicit enablement in the `feature-flags.yaml` before the guard recruitment pipeline activates.
 - **Correction**: Initially attempted to spawn guards synchronously within the event loop, causing a 2-second latency spike; corrected by offloading the recruitment calculation to the background worker queue and using a callback to update the dashboard state.
+
+--- Story 471: Crime lowers building value (attempts: 1, 2026-03-18 01:59) ---
+*   **Non-obvious logic**: Building value calculation relies on a dynamic lookup of the *most recent* crime event within a specific radius, not just a static flag, requiring careful handling of temporal data.
+*   **Codebase pattern**: Domain models frequently delegate side-effect calculations (like value adjustments) to dedicated "Policy" classes rather than embedding logic directly in entity methods.
+*   **Correction**: Initially applied the value penalty to the building's base price; corrected to apply it only to the *current market valuation* to avoid permanently degrading the asset's intrinsic worth.

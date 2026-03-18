@@ -326,3 +326,6 @@ Uploading..
 [2026-03-18 05:18:21 UTC] deploy_ok: Story 469 deployed: Healthy after 0.1s
 [2026-03-18 05:18:40 UTC] story_done: Story 469 complete: Poverty drives crime
 [2026-03-18 05:18:41 UTC] story_start: Story 470: Crime rate triggers guard recruitment
+[2026-03-18 05:39:21 UTC] deploy_ok: Story 470 deployed: Healthy after 0.1s
+[2026-03-18 05:39:38 UTC] story_done: Story 470 complete: Crime rate triggers guard recruitment
+[2026-03-18 05:39:38 UTC] story_start: Story 471: Crime lowers building value
