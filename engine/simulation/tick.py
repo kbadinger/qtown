@@ -852,3 +852,42 @@ def apply_corruption_penalty(db: Session) -> int:
         return 1
     
     return 0
+
+
+def run_periodic_checks(db: Session, tick: int) -> dict:
+    """Run periodic interconnection checks based on tick schedule."""
+    results = {}
+    
+    # Every 10 ticks
+    if tick % 10 == 0:
+        from engine.simulation.npcs import apply_hunger_penalty
+        from engine.simulation.economy import apply_tax_mood
+        
+        results["apply_hunger_penalty"] = apply_hunger_penalty(db)
+        results["apply_tax_mood"] = apply_tax_mood(db)
+    
+    # Every 25 ticks
+    if tick % 25 == 0:
+        from engine.simulation.economy import check_food_scarcity
+        from engine.simulation.buildings import check_housing_pressure
+        
+        results["check_food_scarcity"] = check_food_scarcity(db)
+        results["check_housing_pressure"] = check_housing_pressure(db)
+    
+    # Every 50 ticks
+    if tick % 50 == 0:
+        from engine.simulation.npcs import check_poverty_crime
+        from engine.simulation.economy import check_economic_cycle
+        
+        results["check_poverty_crime"] = check_poverty_crime(db)
+        results["check_economic_cycle"] = check_economic_cycle(db)
+    
+    # Every 100 ticks
+    if tick % 100 == 0:
+        from engine.simulation.npcs import check_guard_demand
+        from engine.simulation.buildings import apply_crime_penalty
+        
+        results["check_guard_demand"] = check_guard_demand(db)
+        results["apply_crime_penalty"] = apply_crime_penalty(db)
+    
+    return results

@@ -3386,3 +3386,8 @@
 - **Tricky**: Handling the concurrent state updates for the festival timer and user interactions required careful synchronization to prevent race conditions when the "happiness" counter exceeded the threshold.
 - **Patterns**: The codebase consistently uses a `useEffect` cleanup pattern for any timer-based logic, and event handlers are always wrapped in `useCallback` to maintain referential equality for memoized child components.
 - **Mistakes**: Initially forgot to reset the `isCelebrating` flag after the animation completed, causing the UI to freeze; corrected by adding a dedicated cleanup step in the `setTimeout` callback.
+
+--- Story 487: Periodic interconnection checks (attempts: 1, 2026-03-18 08:27) ---
+*   **Non-obvious timing constraints**: The interconnection check logic fails silently if the target service is down during the initial handshake; the retry mechanism must explicitly handle transient network timeouts rather than just HTTP 500s.
+*   **Codebase convention for observability**: This module strictly separates "business logic" from "telemetry"; all external calls must wrap their metrics in the shared `InterconnectionMonitor` class before returning, never directly in the controller.
+*   **Correction on state management**: Initially attempted to cache the connection status in memory to reduce load, but corrected this to use a short-lived distributed cache (Redis) to prevent stale state across multiple service instances.
