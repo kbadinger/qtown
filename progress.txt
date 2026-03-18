@@ -3441,3 +3441,8 @@
 *   **Non-obvious State Coupling**: The promotion logic wasn't isolated; it implicitly relied on the `NPC.reputation` flag being updated *before* the `ambition` check, causing silent failures when the transaction order was reversed in concurrent scenarios.
 *   **Codebase Convention**: This project heavily favors "stateless" service functions that accept the entire `GameState` object rather than individual entities, requiring careful extraction of specific NPC data to avoid passing unnecessary heavy references.
 *   **Correction Made**: Initially attempted to mutate the NPC's `level` directly within the promotion hook, which broke the undo-redo stack; corrected by returning a `PromotionAction` DTO to be applied by the central state manager instead.
+
+--- Story 498: NPC book reading intelligence (attempts: 1, 2026-03-18 12:59) ---
+*   **Non-Obvious State Management**: The reading logic required decoupling the "book selection" event from the actual "reading action" to prevent race conditions when the NPC is interrupted by dialogue or combat, a separation not immediately obvious from the initial interface design.
+*   **Codebase Convention**: The project strictly enforces a "State-First" pattern for NPC behaviors; all actions must query the current `NPCState` enum before executing, rather than relying on boolean flags scattered across the script.
+*   **Correction**: Initially, I attempted to parse book text directly in the update loop, causing frame-rate spikes; I corrected this by moving text processing to a coroutine that yields control back to the engine between paragraphs.

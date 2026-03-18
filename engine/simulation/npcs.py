@@ -4187,3 +4187,31 @@ def check_promotions(db: Session) -> int:
             promotions += 1
     
     return promotions
+
+
+def process_library_visits(db: Session) -> int:
+    """Process library visits for living NPCs within distance 5 of a library."""
+    from engine.models import Building, NPC, Resource
+    
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    libraries = db.query(Building).filter(Building.building_type == "library").all()
+    
+    count = 0
+    
+    for npc in living_npcs:
+        for lib in libraries:
+            dist = math.hypot(npc.x - lib.x, npc.y - lib.y)
+            if dist <= 5:
+                book = db.query(Resource).filter(
+                    Resource.building_id == lib.id,
+                    Resource.name == "Books",
+                    Resource.quantity > 0
+                ).first()
+                
+                if book and npc.skill < 20:
+                    npc.skill += 1
+                    book.quantity -= 1
+                    count += 1
+                    break
+                
+    return count
