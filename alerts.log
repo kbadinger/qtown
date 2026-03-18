@@ -436,3 +436,11 @@ Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and
 [2026-03-18 15:43:34 UTC] deploy_ok: Story 495 deployed: Healthy after 0.1s
 [2026-03-18 15:43:52 UTC] story_done: Story 495 complete: NPC drunkenness from tavern
 [2026-03-18 15:43:52 UTC] story_start: Story 496: NPC rivalry sabotage
+[2026-03-18 16:07:28 UTC] WARN deploy_fail: Story 496 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   ad5b77d..b814f19  main -> main
+
+Indexing...
+Uploading..
+[2026-03-18 16:07:29 UTC] story_done: Story 496 complete: NPC rivalry sabotage
+[2026-03-18 16:07:29 UTC] story_start: Story 497: NPC ambition promotion

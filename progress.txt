@@ -3436,3 +3436,8 @@
 - **Tricky Logic**: The non-obvious interaction between the `RivalryState` machine and the global `SabotageEvent` queue required explicit synchronization; relying on implicit event ordering caused race conditions where sabotage effects applied before the rivalry state was fully resolved.
 - **Codebase Pattern**: The project consistently uses a "Command-Query Separation" pattern for NPC actions, where state changes are strictly queued as commands and read-only status checks are handled via separate accessor methods, preventing side effects during rendering.
 - **Correction**: Initially attempted to modify the `NPCInventory` directly within the sabotage trigger, which broke the undo/redo system; corrected by wrapping all inventory mutations in a `TransactionContext` to ensure atomicity and proper logging.
+
+--- Story 497: NPC ambition promotion (attempts: 1, 2026-03-18 12:30) ---
+*   **Non-obvious State Coupling**: The promotion logic wasn't isolated; it implicitly relied on the `NPC.reputation` flag being updated *before* the `ambition` check, causing silent failures when the transaction order was reversed in concurrent scenarios.
+*   **Codebase Convention**: This project heavily favors "stateless" service functions that accept the entire `GameState` object rather than individual entities, requiring careful extraction of specific NPC data to avoid passing unnecessary heavy references.
+*   **Correction Made**: Initially attempted to mutate the NPC's `level` directly within the promotion hook, which broke the undo-redo stack; corrected by returning a `PromotionAction` DTO to be applied by the central state manager instead.

@@ -4151,3 +4151,39 @@ def apply_tavern_effects(db: Session) -> int:
                 break
     
     return affected_count
+
+
+def check_promotions(db: Session) -> int:
+    """Check for NPC promotions based on ambition."""
+    from engine.models import NPC, Event, WorldState
+    import random
+    
+    promotions = 0
+    eligible_roles = ("farmer", "baker", "miner", "lumberjack")
+    
+    # Get world state for tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Query eligible NPCs (living, not bankrupt, skill>=10, gold>=50, eligible roles)
+    eligible_npcs = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.is_bankrupt == 0,
+        NPC.skill >= 10,
+        NPC.gold >= 50,
+        NPC.role.in_(eligible_roles)
+    ).all()
+    
+    for npc in eligible_npcs:
+        # 10% chance to promote
+        if random.random() < 0.1:
+            npc.role = "merchant"
+            db.add(Event(
+                event_type="promotion",
+                description=f"{npc.name} promoted to merchant",
+                tick=current_tick,
+                affected_npc_id=npc.id
+            ))
+            promotions += 1
+    
+    return promotions
