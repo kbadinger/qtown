@@ -355,3 +355,6 @@ Indexing...
 Uploading..
 [2026-03-18 08:08:02 UTC] story_done: Story 477 complete: Fire triggers rebuilding boom
 [2026-03-18 08:08:02 UTC] story_start: Story 478: Plague overwhelms hospital
+[2026-03-18 08:33:21 UTC] deploy_ok: Story 478 deployed: Healthy after 0.1s
+[2026-03-18 08:33:38 UTC] story_done: Story 478 complete: Plague overwhelms hospital
+[2026-03-18 08:33:39 UTC] story_start: Story 479: Visitor gold boost from reputation

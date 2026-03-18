@@ -11,6 +11,7 @@ from typing import List
 from collections import defaultdict, Counter
 from typing import Dict
 from engine.models import Crime, Resource, Event, Building
+from engine.models import VisitorLog
 
 
 def process_work(db: Session) -> None:
@@ -2555,3 +2556,37 @@ def apply_tax_mood(db: Session) -> int:
                 affected_count += 1
     
     return affected_count
+
+
+def process_visitor_arrivals(db: Session) -> int:
+    """Process visitor arrivals based on town reputation."""
+    from engine.models import WorldState, Treasury, Event
+    
+    reputation = calculate_town_reputation(db)
+    
+    if reputation["reputation"] > 60:
+        if random.random() < 0.25:
+            # Get current tick
+            world_state = db.query(WorldState).first()
+            current_tick = (world_state.tick or 0) if world_state else 0
+            
+            # Create VisitorLog
+            visitor_log = VisitorLog(arrival_tick=current_tick)
+            db.add(visitor_log)
+            
+            # Add 50 gold to Treasury
+            treasury = db.query(Treasury).first()
+            if treasury:
+                treasury.gold_stored = (treasury.gold_stored or 0) + 50
+            
+            # Create Event
+            event = Event(
+                event_type="visitor_arrival",
+                description="A wealthy visitor arrived, boosting the economy",
+                tick=current_tick
+            )
+            db.add(event)
+            
+            return 1
+    
+    return 0

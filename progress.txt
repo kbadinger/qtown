@@ -3346,3 +3346,8 @@
 - **Non-obvious concurrency pitfalls**: The "overwhelm" scenario revealed that `async/await` alone didn't prevent race conditions in the patient triage queue; explicit locking was required around the `update_capacity` and `assign_bed` sequence to avoid negative bed counts.
 - **Event-driven state patterns**: The codebase consistently separates event emission (e.g., `PatientArrived`) from state mutation, relying on a central `HospitalState` reducer; direct property modification on state objects breaks the audit trail and must be avoided.
 - **Correction on edge-case handling**: Initially, I assumed the overflow logic would naturally cap at zero, but I had to add an explicit guard clause to handle the "all beds full" signal before attempting to queue new patients, preventing a silent data loss bug.
+
+--- Story 479: Visitor gold boost from reputation (attempts: 1, 2026-03-18 04:57) ---
+*   **Non-obvious Reputation Logic**: The "gold boost" isn't a direct multiplier; it requires checking the `ReputationTier` enum against a threshold *before* applying the bonus, as the base calculation fails silently if the tier check is skipped.
+*   **Codebase Convention**: All visitor-related rewards are routed through the `RewardFactory` class, which enforces a strict `calculate -> validate -> apply` pattern; bypassing this factory breaks the audit trail in the `TransactionLog`.
+*   **Correction**: Initially attempted to modify the `VisitorService` directly, but realized this violated the separation of concerns; corrected by injecting the `ReputationStrategy` into the factory instead to keep the service pure.
