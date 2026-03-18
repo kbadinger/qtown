@@ -3276,3 +3276,8 @@
 - **Non-obvious time-series alignment**: Handling sparse price data required explicit interpolation logic to ensure the chart API returned consistent time intervals, rather than relying on the database's native timestamp gaps.
 - **Codebase convention for aggregation**: The project consistently uses a "fetch-then-transform" pattern where raw data is retrieved in a single query and aggregated in-memory using Lodash, avoiding complex SQL window functions for flexibility.
 - **Correction on timezone handling**: Initially returned UTC timestamps which caused misalignment with the frontend's local time display; fixed by normalizing all inputs to the user's requested timezone before aggregation.
+
+--- Story 265: Event timeline API grouped by day (attempts: 1, 2026-03-17 23:43) ---
+- **Non-obvious Date Normalization**: The API required explicit truncation of timestamps to UTC midnight before grouping; relying on `new Date().toISOString()` directly caused timezone drift that split single-day events across multiple buckets.
+- **Codebase Convention**: This project consistently uses `DateFns` for all date manipulation rather than native `Date` methods, specifically leveraging `format` and `parseISO` to ensure consistent locale handling across the frontend and backend.
+- **Correction on Empty States**: Initially, the reducer skipped days with no events, breaking the continuous timeline view; I corrected this by mapping the full date range first and then merging in events, ensuring every day in the span appears in the response.

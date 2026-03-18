@@ -303,3 +303,6 @@ NPC detail API endpoint
 Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-18 03:40:46 UTC] start: Ralph online — 444/550 stories complete
 [2026-03-18 03:40:46 UTC] story_start: Story 264: Price history chart API
+[2026-03-18 03:42:44 UTC] deploy_ok: Story 264 deployed: Healthy after 0.1s
+[2026-03-18 03:43:09 UTC] story_done: Story 264 complete: Price history chart API
+[2026-03-18 03:43:10 UTC] story_start: Story 265: Event timeline API grouped by day
