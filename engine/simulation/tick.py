@@ -891,3 +891,53 @@ def run_periodic_checks(db: Session, tick: int) -> dict:
         results["apply_crime_penalty"] = apply_crime_penalty(db)
     
     return results
+
+
+def generate_daily_summary(db: Session) -> dict:
+    """Generate a daily summary of the town state."""
+    from sqlalchemy import func
+    from sqlalchemy.orm import Session
+    from engine.models import NPC, Crime, Building, WorldState, Event
+    
+    # Get WorldState
+    world_state = db.query(WorldState).first()
+    current_day = world_state.day if world_state else 0
+    current_tick = world_state.tick if world_state else 0
+    
+    # Count living NPCs (is_dead == 0)
+    living_count = db.query(NPC).filter(NPC.is_dead == 0).count()
+    
+    # Count dead NPCs (is_dead == 1)
+    dead_count = db.query(NPC).filter(NPC.is_dead == 1).count()
+    
+    # Total gold of living NPCs
+    total_gold = db.query(func.sum(NPC.gold)).filter(NPC.is_dead == 0).scalar() or 0
+    
+    # Unresolved crimes (resolved == 0)
+    unresolved_crimes = db.query(Crime).filter(Crime.resolved == 0).count()
+    
+    # Total building capacity
+    total_capacity = db.query(func.sum(Building.capacity)).scalar() or 0
+    
+    # Average happiness of living NPCs
+    avg_happiness = db.query(func.avg(NPC.happiness)).filter(NPC.is_dead == 0).scalar()
+    if avg_happiness is None:
+        avg_happiness = 0
+    
+    # Create Event
+    description = f"Day {current_day}: {living_count} alive, {dead_count} dead, {int(total_gold)}g, {unresolved_crimes} crimes, avg happiness {avg_happiness:.0f}"
+    event = Event(
+        event_type="daily_summary",
+        description=description,
+        tick=current_tick
+    )
+    db.add(event)
+    
+    return {
+        "living": living_count,
+        "dead": dead_count,
+        "gold": int(total_gold),
+        "crimes": unresolved_crimes,
+        "capacity": int(total_capacity),
+        "happiness": float(avg_happiness)
+    }

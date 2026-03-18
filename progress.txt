@@ -3396,3 +3396,8 @@
 - **Non-obvious Tick Logic**: The disaster calculation isn't a simple linear accumulation; it relies on a decaying probability state that resets only after a specific event, making the "time since last disaster" variable critical for accurate tick-by-tick simulation.
 - **Codebase Convention**: Random number generation for probability checks is consistently encapsulated in a `chance()` helper function rather than using raw `Math.random()` calls, ensuring a single source of truth for seed handling and testing.
 - **Correction on Edge Cases**: Initially failed to handle the "first tick" scenario where the decay counter was uninitialized, causing a division-by-zero error; fixed by enforcing a default initialization state before the loop begins.
+
+--- Story 489: Daily interconnection summary (attempts: 1, 2026-03-18 09:13) ---
+- **Tricky Aspect**: The interconnection logic required careful handling of race conditions when aggregating daily metrics, as the summary generation must not block real-time ingestion pipelines.
+- **Patterns Discovered**: The codebase consistently uses a "command-query separation" pattern where read-heavy summaries are materialized in a separate cache layer before being exposed via the API.
+- **Correction Made**: Initially attempted to calculate aggregates directly on the raw event stream, which caused latency spikes; corrected by switching to a pre-aggregated nightly batch job with incremental updates.
