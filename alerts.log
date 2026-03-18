@@ -424,3 +424,6 @@ Uploading..
 Could not fetch build logs: unsupported operand type(s) for +: 'NoneType' and 
 [2026-03-18 14:04:27 UTC] story_done: Story 491 complete: NPC daily routine by role
 [2026-03-18 14:04:27 UTC] story_start: Story 492: NPC mood contagion
+[2026-03-18 14:29:06 UTC] deploy_ok: Story 492 deployed: Healthy after 0.1s
+[2026-03-18 14:29:24 UTC] story_done: Story 492 complete: NPC mood contagion
+[2026-03-18 14:29:24 UTC] story_start: Story 493: NPC skill gain from work

@@ -4055,3 +4055,36 @@ def assign_daily_routine(db: Session) -> int:
             count += 1
     
     return count
+
+
+def gain_work_experience(db: Session) -> int:
+    """Increase NPC skill from working at their building."""
+    from engine.models import NPC, Building
+    
+    count = 0
+    
+    # Get all living NPCs with work assignments
+    npcs = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.work_building_id != None
+    ).all()
+    
+    for npc in npcs:
+        # Get the work building
+        building = db.query(Building).filter(Building.id == npc.work_building_id).first()
+        if building is None:
+            continue
+        
+        # Calculate Euclidean distance
+        dx = npc.x - building.x
+        dy = npc.y - building.y
+        distance = (dx * dx + dy * dy) ** 0.5
+        
+        # Check if within distance 5
+        if distance <= 5:
+            # Increase skill, cap at 20
+            if npc.skill < 20:
+                npc.skill += 1
+                count += 1
+    
+    return count

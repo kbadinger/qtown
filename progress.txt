@@ -3416,3 +3416,8 @@
 - **Non-obvious state coupling**: The mood propagation logic relied on a hidden dependency where `update()` order mattered; changing the iteration sequence broke the "chain reaction" effect because NPCs read stale neighbor states.
 - **Codebase convention**: This project consistently uses a "dirty flag" pattern on components (e.g., `needsMoodRecalc`) to defer expensive graph traversals until the next frame, rather than updating every tick.
 - **Correction**: Initially implemented a recursive depth-first search for contagion, which caused stack overflows on dense crowds; switched to a queue-based BFS approach with a max-iteration cap to ensure deterministic performance.
+
+--- Story 493: NPC skill gain from work (attempts: 1, 2026-03-18 10:51) ---
+- **Tricky Logic**: The non-obvious part was ensuring skill XP is only awarded if the NPC's current action matches the specific skill's requirements, preventing "idle" XP gain during unrelated work cycles.
+- **Codebase Patterns**: This codebase heavily relies on the `WorkContext` object to pass state between the job scheduler and the skill system, rather than accessing global NPC state directly.
+- **Correction**: Initially, I calculated XP based on the job's *maximum* potential output; I corrected this to use the *actual* output generated in the specific turn to ensure fair scaling.
