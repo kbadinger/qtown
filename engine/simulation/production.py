@@ -6,6 +6,7 @@ from engine.models import Building, Resource, PriceHistory, WorldState
 from engine.simulation.constants import DEFAULT_BASE_PRICE, DEFAULT_DEMAND
 from engine.simulation.economy import calculate_price
 import random
+import json
 
 
 def produce_resources(db: Session, weather: str = None) -> None:
@@ -781,3 +782,52 @@ def apply_skill_bonuses(db: Session) -> dict:
             bonus_dict[resource.resource_name] = 0
     
     return bonus_dict
+
+
+def weather_crop_modifier(db: Session) -> dict[str, int]:
+    """
+    Apply weather-based modifiers to Food and Wheat resource quantities.
+    
+    Modifiers:
+    - rain: +20%
+    - storm: -30%
+    - snow: -50%
+    - drought (drought_active==1): -60%
+    - clear/sunny: no change
+    
+    Returns dict of {resource_name: new_quantity}.
+    """
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return {}
+
+    weather = world_state.weather
+    drought_active = world_state.drought_active == 1
+    
+    # Determine multiplier based on weather and drought
+    multiplier = 1.0
+    
+    if drought_active:
+        multiplier = 0.40  # -60%
+    elif weather == "rain":
+        multiplier = 1.20  # +20%
+    elif weather == "storm":
+        multiplier = 0.70  # -30%
+    elif weather == "snow":
+        multiplier = 0.50  # -50%
+    # clear/sunny remains 1.0 (no change)
+
+    result = {}
+    
+    # Apply to Food and Wheat
+    for resource_name in ["Food", "Wheat"]:
+        resource = db.query(Resource).filter(Resource.name == resource_name).first()
+        if resource:
+            current_qty = resource.quantity
+            new_qty = int(current_qty * multiplier)
+            resource.quantity = new_qty
+            result[resource_name] = new_qty
+        else:
+            result[resource_name] = 0
+            
+    return result

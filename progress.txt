@@ -3281,3 +3281,8 @@
 - **Non-obvious Date Normalization**: The API required explicit truncation of timestamps to UTC midnight before grouping; relying on `new Date().toISOString()` directly caused timezone drift that split single-day events across multiple buckets.
 - **Codebase Convention**: This project consistently uses `DateFns` for all date manipulation rather than native `Date` methods, specifically leveraging `format` and `parseISO` to ensure consistent locale handling across the frontend and backend.
 - **Correction on Empty States**: Initially, the reducer skipped days with no events, breaking the continuous timeline view; I corrected this by mapping the full date range first and then merging in events, ensuring every day in the span appears in the response.
+
+--- Story 466: Weather crop yield modifier (attempts: 1, 2026-03-18 00:08) ---
+*   **Non-obvious dependency**: The yield modifier logic relies on a hidden `WeatherContext` singleton that must be initialized before any crop calculations; failing to inject this context results in silent zero-yield outputs rather than errors.
+*   **Codebase pattern**: All weather-related modifiers follow a "Strategy" pattern where specific weather types implement a `calculateFactor()` method, returning a float between 0.0 and 1.5, which is then multiplied by the base yield.
+*   **Correction**: Initially applied the modifier to the *total* farm output instead of per-crop instances, causing incorrect aggregation; fixed by moving the calculation down to the individual `Crop` entity level before summing.
