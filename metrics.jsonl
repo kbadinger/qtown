@@ -3338,3 +3338,4 @@
 {"story_id": "470", "attempt": 1, "passed": true, "duration_sec": 43.06, "error": null, "tokens_in": 6872, "tokens_out": 1144, "timestamp": "2026-03-18T01:19:30"}
 {"story_id": "471", "attempt": 1, "passed": true, "duration_sec": 47.16, "error": null, "tokens_in": 6198, "tokens_out": 1292, "timestamp": "2026-03-18T01:40:31"}
 {"story_id": "472", "attempt": 1, "passed": true, "duration_sec": 38.67, "error": null, "tokens_in": 6263, "tokens_out": 1022, "timestamp": "2026-03-18T02:01:40"}
+{"story_id": "473", "attempt": 1, "passed": true, "duration_sec": 48.04, "error": null, "tokens_in": 6928, "tokens_out": 1287, "timestamp": "2026-03-18T02:23:10"}

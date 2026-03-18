@@ -14,6 +14,7 @@ from engine.models import Dialogue, NPC, Event, WorldState
 from typing import Optional
 from engine.models import Crime
 import math
+from engine.simulation.economy import calculate_town_reputation
 
 
 
@@ -3936,6 +3937,44 @@ def check_guard_demand(db: Session) -> int:
         )
         db.add(event)
         
+        db.commit()
+        return 1
+    
+    return 0
+
+
+def reputation_immigration(db: Session) -> int:
+    """Reputation drives immigration."""
+    reputation = calculate_town_reputation(db)
+    
+    if reputation.get("reputation", 0) <= 70:
+        return 0
+    
+    living_count = db.query(NPC).filter(NPC.is_dead == 0).count()
+    if living_count >= 25:
+        return 0
+    
+    if random.random() < 0.2:
+        name = generate_npc_name(db)
+        role = random.choice(["farmer", "merchant", "baker"])
+        x = random.randint(0, 9)
+        y = random.randint(0, 9)
+        
+        new_npc = NPC(
+            name=name,
+            role=role,
+            x=x,
+            y=y,
+            gold=40,
+            hunger=50,
+            energy=80,
+            happiness=70,
+            age=random.randint(20, 40),
+            max_age=random.randint(65, 85),
+            is_dead=0,
+            is_bankrupt=0
+        )
+        db.add(new_npc)
         db.commit()
         return 1
     

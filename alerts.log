@@ -332,3 +332,6 @@ Uploading..
 [2026-03-18 06:00:20 UTC] deploy_ok: Story 471 deployed: Healthy after 0.1s
 [2026-03-18 06:00:55 UTC] story_done: Story 471 complete: Crime lowers building value
 [2026-03-18 06:00:55 UTC] story_start: Story 472: Population housing pressure
+[2026-03-18 06:21:59 UTC] deploy_ok: Story 472 deployed: Healthy after 0.1s
+[2026-03-18 06:22:15 UTC] story_done: Story 472 complete: Population housing pressure
+[2026-03-18 06:22:16 UTC] story_start: Story 473: Reputation drives immigration

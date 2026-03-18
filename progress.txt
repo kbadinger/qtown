@@ -3316,3 +3316,8 @@
 - **Non-obvious aggregation logic**: The "pressure" metric isn't a simple ratio; it requires normalizing population counts against *dynamic* housing capacity thresholds that vary by zone type, not just static totals.
 - **Codebase convention**: Complex calculations are isolated in `metric_calculators` modules with strict type hints, while raw data fetching is always delegated to the `data_layer` to ensure testability.
 - **Correction**: Initially failed to handle `NULL` values in the `housing_units` column, causing division errors; fixed by implementing a safe-division helper that returns `0` instead of crashing when capacity is missing.
+
+--- Story 473: Reputation drives immigration (attempts: 1, 2026-03-18 02:41) ---
+*   **Non-obvious coupling**: The reputation score calculation implicitly relies on the `migration_history` table being pre-aggregated; failing to run the nightly aggregation job causes silent failures in the immigration eligibility check rather than throwing an error.
+*   **Codebase convention**: All domain-specific thresholds (like the reputation cutoff for visa eligibility) are stored in `config/reputation_rules.yaml` rather than hardcoded, requiring a restart of the worker service to pick up changes.
+*   **Correction**: Initially attempted to filter candidates by reputation directly in the SQL query, but realized the logic requires a multi-step validation (reputation + background check + quota availability); refactored to use the `ImmigrationService` orchestration layer instead of raw database calls.
