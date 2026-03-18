@@ -2590,3 +2590,44 @@ def process_visitor_arrivals(db: Session) -> int:
             return 1
     
     return 0
+
+
+def check_economic_cycle(db: Session) -> str:
+    """Check and update economic cycle based on treasury gold."""
+    from engine.models import WorldState, Treasury, Event
+    
+    # Get WorldState
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return "normal"
+    
+    # Sum all Treasury.gold_stored
+    total_treasury = sum(t.gold_stored for t in db.query(Treasury).all())
+    
+    economic_status = world_state.economic_status or "normal"
+    changed = False
+    
+    # Check for boom condition
+    if total_treasury > 1000 and economic_status != "boom":
+        world_state.economic_status = "boom"
+        world_state.base_wage = (world_state.base_wage or 1.0) * 1.2
+        changed = True
+        economic_status = "boom"
+    
+    # Check for bust condition
+    elif total_treasury < 100 and economic_status != "bust":
+        world_state.economic_status = "bust"
+        world_state.base_wage = (world_state.base_wage or 1.0) * 0.8
+        changed = True
+        economic_status = "bust"
+    
+    # Create event on any change
+    if changed:
+        event = Event(
+            event_type="economic_shift",
+            description=f"Economy shifted to {economic_status}",
+            tick=world_state.tick or 0
+        )
+        db.add(event)
+    
+    return world_state.economic_status or "normal"

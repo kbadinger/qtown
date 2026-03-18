@@ -3361,3 +3361,8 @@
 - **Non-obvious state coupling**: The `Relationship` entity's `isActive` flag was tightly coupled to the `WorkOutput` calculation, requiring a reactive update mechanism rather than a simple getter to avoid stale data in real-time dashboards.
 - **Codebase convention**: The repository enforces a strict "Service-First" pattern where all domain logic (like output boosting) lives in dedicated service classes, keeping controllers and repositories purely for I/O and persistence.
 - **Correction**: Initially, I attempted to calculate the boost factor inside the repository query; I corrected this by moving the logic to the service layer to ensure it could be unit-tested independently and reused across different output aggregation endpoints.
+
+--- Story 482: Boom and bust cycle (attempts: 1, 2026-03-18 06:10) ---
+- **Tricky Logic**: The interaction between the `debt_accumulation` threshold and the `market_crash` trigger was non-obvious; the system required a specific sequence of two consecutive quarters of negative growth to activate the bust phase, not just a single dip.
+- **Codebase Patterns**: The repository consistently uses a `StateMachine` pattern for economic phases, where transitions are guarded by aggregate metrics calculated in a separate `AnalyticsService` rather than inline checks.
+- **Correction Made**: Initially, I applied the interest rate penalty before validating the `liquidity_buffer`, causing a premature crash; I corrected this by moving the buffer check to the pre-condition of the rate adjustment logic.

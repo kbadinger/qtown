@@ -369,3 +369,6 @@ Uploading..
 [2026-03-18 09:19:43 UTC] deploy_ok: Story 480 deployed: Healthy after 0.1s
 [2026-03-18 09:19:59 UTC] story_done: Story 480 complete: Newspaper affects NPC mood
 [2026-03-18 09:20:00 UTC] story_start: Story 481: Relationships boost work output
+[2026-03-18 09:48:11 UTC] deploy_ok: Story 481 deployed: Healthy after 0.1s
+[2026-03-18 09:48:27 UTC] story_done: Story 481 complete: Relationships boost work output
+[2026-03-18 09:48:28 UTC] story_start: Story 482: Boom and bust cycle
