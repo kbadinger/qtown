@@ -941,3 +941,38 @@ def generate_daily_summary(db: Session) -> dict:
         "capacity": int(total_capacity),
         "happiness": float(avg_happiness)
     }
+
+
+def check_cascade_effects(db: Session) -> dict:
+    """Cascade chain: weather to emigration."""
+    from engine.models import WorldState, NPC, Event
+    
+    world = db.query(WorldState).first()
+    weather = world.weather if world else "clear"
+    
+    # Check if harsh conditions exist
+    harsh_conditions = weather == "snow" or (world and world.drought_active == 1)
+    
+    if not harsh_conditions:
+        return {"weather": weather, "miserable": 0, "emigrated": 0}
+    
+    # Count miserable NPCs (living with happiness < 20)
+    miserable_npcs = db.query(NPC).filter(NPC.is_dead == 0, NPC.happiness < 20).all()
+    miserable_count = len(miserable_npcs)
+    
+    if miserable_count < 3:
+        return {"weather": weather, "miserable": miserable_count, "emigrated": 0}
+    
+    # Pick random miserable NPC and emigrate them
+    emigrant = random.choice(miserable_npcs)
+    emigrant.is_dead = 1
+    
+    event = Event(
+        event_type="emigration",
+        description=f"{emigrant.name} left town due to harsh conditions",
+        tick=world.tick if world else 0,
+        affected_npc_id=emigrant.id
+    )
+    db.add(event)
+    
+    return {"weather": weather, "miserable": miserable_count, "emigrated": 1}

@@ -408,3 +408,11 @@ Indexing...
 Uploading..
 [2026-03-18 12:50:23 UTC] story_done: Story 488 complete: Disaster probability each tick
 [2026-03-18 12:50:24 UTC] story_start: Story 489: Daily interconnection summary
+[2026-03-18 13:13:15 UTC] WARN deploy_fail: Story 489 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   17b9243..b831531  main -> main
+
+Indexing...
+Uploading..
+[2026-03-18 13:13:15 UTC] story_done: Story 489 complete: Daily interconnection summary
+[2026-03-18 13:13:16 UTC] story_start: Story 490: Cascade chain: weather to emigration

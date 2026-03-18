@@ -3401,3 +3401,8 @@
 - **Tricky Aspect**: The interconnection logic required careful handling of race conditions when aggregating daily metrics, as the summary generation must not block real-time ingestion pipelines.
 - **Patterns Discovered**: The codebase consistently uses a "command-query separation" pattern where read-heavy summaries are materialized in a separate cache layer before being exposed via the API.
 - **Correction Made**: Initially attempted to calculate aggregates directly on the raw event stream, which caused latency spikes; corrected by switching to a pre-aggregated nightly batch job with incremental updates.
+
+--- Story 490: Cascade chain: weather to emigration (attempts: 1, 2026-03-18 09:34) ---
+- **Non-obvious state coupling**: The emigration logic was tightly coupled to transient weather simulation data; I initially tried to pass raw weather objects, but realized I needed to derive a stable "seasonal index" first to prevent race conditions during the migration calculation.
+- **Convention for event propagation**: Discovered that this codebase strictly uses a `ChainableEvent` wrapper for any logic that spans multiple modules (like weather triggering emigration), rather than direct function calls, to ensure the audit trail remains intact.
+- **Correction on boundary handling**: Initially failed to account for the "edge case" where a region's population drops to zero before the emigration loop finishes, causing a division-by-zero crash; fixed by adding a guard clause that skips the calculation if `current_population <= 0`.
