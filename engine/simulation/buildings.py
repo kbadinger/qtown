@@ -1655,3 +1655,38 @@ def apply_crime_penalty(db: Session) -> int:
             db.add(event)
     
     return downgraded_count
+
+
+def check_housing_pressure(db: Session) -> dict:
+    """Check if population exceeds housing capacity."""
+    from engine.models import NPC, Building, Event, WorldState
+    
+    # Count living NPCs (is_dead == 0 per Postgres compatibility)
+    npc_count = db.query(NPC).filter(NPC.is_dead == 0).count()
+    
+    # Sum capacity of residential buildings
+    total_capacity = db.query(func.coalesce(func.sum(Building.capacity), 0)).filter(
+        Building.building_type == "residential"
+    ).scalar() or 0
+    
+    pressure = npc_count > total_capacity
+    
+    # Create event if there's pressure
+    if pressure:
+        # Get current tick from WorldState
+        world_state = db.query(WorldState).first()
+        current_tick = world_state.tick if world_state else 0
+        
+        event = Event(
+            event_type="housing_pressure",
+            description=f"{npc_count} residents but only {total_capacity} housing capacity",
+            tick=current_tick
+        )
+        db.add(event)
+        db.commit()
+    
+    return {
+        "population": npc_count,
+        "capacity": total_capacity,
+        "pressure": pressure
+    }

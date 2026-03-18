@@ -329,3 +329,6 @@ Uploading..
 [2026-03-18 05:39:21 UTC] deploy_ok: Story 470 deployed: Healthy after 0.1s
 [2026-03-18 05:39:38 UTC] story_done: Story 470 complete: Crime rate triggers guard recruitment
 [2026-03-18 05:39:38 UTC] story_start: Story 471: Crime lowers building value
+[2026-03-18 06:00:20 UTC] deploy_ok: Story 471 deployed: Healthy after 0.1s
+[2026-03-18 06:00:55 UTC] story_done: Story 471 complete: Crime lowers building value
+[2026-03-18 06:00:55 UTC] story_start: Story 472: Population housing pressure

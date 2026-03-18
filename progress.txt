@@ -3311,3 +3311,8 @@
 *   **Non-obvious logic**: Building value calculation relies on a dynamic lookup of the *most recent* crime event within a specific radius, not just a static flag, requiring careful handling of temporal data.
 *   **Codebase pattern**: Domain models frequently delegate side-effect calculations (like value adjustments) to dedicated "Policy" classes rather than embedding logic directly in entity methods.
 *   **Correction**: Initially applied the value penalty to the building's base price; corrected to apply it only to the *current market valuation* to avoid permanently degrading the asset's intrinsic worth.
+
+--- Story 472: Population housing pressure (attempts: 1, 2026-03-18 02:20) ---
+- **Non-obvious aggregation logic**: The "pressure" metric isn't a simple ratio; it requires normalizing population counts against *dynamic* housing capacity thresholds that vary by zone type, not just static totals.
+- **Codebase convention**: Complex calculations are isolated in `metric_calculators` modules with strict type hints, while raw data fetching is always delegated to the `data_layer` to ensure testability.
+- **Correction**: Initially failed to handle `NULL` values in the `housing_units` column, causing division errors; fixed by implementing a safe-division helper that returns `0` instead of crashing when capacity is missing.
