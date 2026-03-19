@@ -4336,3 +4336,69 @@ def spread_illness(db: Session) -> int:
                         target.illness_severity = new_severity
     
     return newly_infected_count
+
+
+def check_births(db: Session) -> int:
+    """Check for NPC births and create child NPCs."""
+    from engine.models import NPC, Relationship, Event, WorldState
+    
+    births = 0
+    
+    # Get world tick
+    world_state = db.query(WorldState).first()
+    tick = world_state.tick if world_state else 0
+    
+    # Find spouse relationships
+    spouse_relationships = db.query(Relationship).filter(
+        Relationship.relationship_type == "spouse"
+    ).all()
+    
+    for relationship in spouse_relationships:
+        # Get both NPCs
+        parent1 = db.query(NPC).filter(NPC.id == relationship.npc_id).first()
+        parent2 = db.query(NPC).filter(NPC.id == relationship.target_npc_id).first()
+        
+        if not parent1 or not parent2:
+            continue
+        
+        # Check both alive (is_dead is Integer column, use == 0)
+        if parent1.is_dead != 0 or parent2.is_dead != 0:
+            continue
+        
+        # Check age range (20-50)
+        if not (20 <= parent1.age <= 50) or not (20 <= parent2.age <= 50):
+            continue
+        
+        # 5% chance per couple
+        if random.random() < 0.05:
+            # Generate child name
+            child_name = generate_npc_name(db)
+            
+            # Create child NPC
+            child = NPC(
+                name=child_name,
+                role="child",
+                x=parent1.x,
+                y=parent1.y,
+                gold=0,
+                hunger=50,
+                energy=100,
+                happiness=80,
+                age=0,
+                max_age=random.randint(65, 85),
+                is_dead=0,
+                is_bankrupt=0
+            )
+            db.add(child)
+            
+            # Create birth event
+            event = Event(
+                event_type="birth",
+                description=f"A child was born to {parent1.name}",
+                tick=tick
+            )
+            db.add(event)
+            
+            births += 1
+    
+    return births

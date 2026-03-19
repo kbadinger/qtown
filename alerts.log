@@ -474,3 +474,11 @@ Indexing...
 Uploading..
 [2026-03-19 13:21:53 UTC] story_done: Story 503 complete: NPC gift giving
 [2026-03-19 13:21:54 UTC] story_start: Story 504: NPC illness spread
+[2026-03-19 13:49:59 UTC] WARN deploy_fail: Story 504 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   1b89ef9..777b5cc  main -> main
+
+Indexing...
+Uploading..
+[2026-03-19 13:49:59 UTC] story_done: Story 504 complete: NPC illness spread
+[2026-03-19 13:50:00 UTC] story_start: Story 505: NPC child birth
