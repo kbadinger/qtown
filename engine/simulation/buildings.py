@@ -1951,3 +1951,36 @@ def apply_memorial_effect(db: Session) -> int:
                 affected_count += 1
     
     return affected_count
+
+
+def detect_crimes_from_watchtower(db: Session) -> int:
+    """Detect and resolve crimes from watchtowers."""
+    from engine.models import Building, NPC, Crime
+    import random
+    
+    resolved_count = 0
+    
+    # Find all watchtower buildings
+    watchtowers = db.query(Building).filter(
+        Building.building_type.in_(["watchtower", "guard_tower"])
+    ).all()
+    
+    # Find all unresolved crimes
+    unresolved_crimes = db.query(Crime).filter(Crime.resolved == 0).all()
+    
+    for watchtower in watchtowers:
+        # Check if there's a guard NPC working at this watchtower
+        guard = db.query(NPC).filter(
+            NPC.work_building_id == watchtower.id,
+            NPC.is_dead == 0
+        ).first()
+        
+        if guard:
+            # 30% chance per crime to resolve it
+            for crime in unresolved_crimes:
+                if random.random() < 0.30:
+                    if crime.resolved == 0:
+                        crime.resolved = 1
+                        resolved_count += 1
+    
+    return resolved_count

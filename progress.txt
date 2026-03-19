@@ -3511,3 +3511,8 @@
 *   **Non-obvious timing dependency**: The memorial fade-out requires `requestAnimationFrame` to sync with the particle system's lifecycle; using a standard `setTimeout` caused visual tearing when the scene paused.
 *   **Codebase convention**: All particle effects in this engine inherit from `BaseEmitter` and rely on the `update(dt)` signature for delta-time calculations, rather than fixed-frame logic.
 *   **Correction**: Initially passed the `memoId` as a closure variable, causing stale references in the cleanup loop; switched to passing the ID explicitly to the removal function to ensure the correct entity was targeted.
+
+--- Story 513: Watchtower crime detection (attempts: 1, 2026-03-19 13:39) ---
+- **Tricky Aspect**: The `Watchtower` logic required handling race conditions where a crime event could be reported before the observer's state was fully initialized, necessitating a strict check for `is_active` before processing alerts.
+- **Pattern Discovered**: The codebase consistently uses a "Command-Query Separation" pattern where detection logic (queries) is strictly isolated from state mutation (commands), preventing side effects during analysis.
+- **Correction Made**: Initially, I attempted to filter crimes in the `detect` method; I corrected this by moving filtering to a dedicated `preprocess` step to ensure the detection algorithm receives a clean, normalized data stream.

@@ -518,3 +518,6 @@ Uploading..
 [2026-03-19 16:38:37 UTC] deploy_ok: Story 511 deployed: Healthy after 0.1s
 [2026-03-19 16:38:54 UTC] story_done: Story 511 complete: Prison rehabilitation
 [2026-03-19 16:38:54 UTC] story_start: Story 512: Graveyard memorial effect
+[2026-03-19 17:17:10 UTC] deploy_ok: Story 512 deployed: Healthy after 0.1s
+[2026-03-19 17:17:27 UTC] story_done: Story 512 complete: Graveyard memorial effect
+[2026-03-19 17:17:27 UTC] story_start: Story 513: Watchtower crime detection
