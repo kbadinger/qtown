@@ -1749,3 +1749,44 @@ def apply_adjacency_bonus(db: Session) -> dict:
         result[building.name] = neighbor_count
     
     return result
+
+
+def adjust_farm_output(db: Session) -> dict:
+    """Adjust farm output based on season."""
+    from engine.models import Building, Resource, WorldState
+    
+    # Get current season from WorldState
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        return {}
+    
+    day = world_state.day
+    season = (day % 96) // 24
+    
+    # Seasonal multipliers
+    multipliers = {
+        0: 1.2,  # Spring
+        1: 1.5,  # Summer
+        2: 1.0,  # Autumn
+        3: 0.5   # Winter
+    }
+    
+    multiplier = multipliers.get(season, 1.0)
+    
+    # Find all food buildings
+    food_buildings = db.query(Building).filter(Building.building_type == "food").all()
+    
+    result = {}
+    for building in food_buildings:
+        # Find Resource named "Food" at this building
+        resource = db.query(Resource).filter(
+            Resource.name == "Food",
+            Resource.building_id == building.id
+        ).first()
+        
+        if resource:
+            new_quantity = int(resource.quantity * multiplier)
+            resource.quantity = new_quantity
+            result[building.name] = new_quantity
+    
+    return result

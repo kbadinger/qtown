@@ -3481,3 +3481,8 @@
 *   **Non-obvious state coupling**: The adjacency bonus calculation relies on the `grid` being fully materialized before validation; attempting to compute bonuses during incremental tile placement caused race conditions with the `pending_moves` queue.
 *   **Convention for neighbor traversal**: The codebase consistently uses a centralized `get_neighbors` utility that handles boundary checks and wraps around edges, rather than inline index arithmetic, which I initially missed and had to refactor.
 *   **Correction on double-counting**: I initially applied the bonus to both the placed tile and its neighbor, effectively doubling the score; the fix required enforcing a strict "owner-centric" rule where only the active player's tile triggers the bonus calculation.
+
+--- Story 507: Farm seasonal output (attempts: 1, 2026-03-19 10:59) ---
+*   **Non-obvious state coupling**: The seasonal output calculation relies on a hidden `weather_modifier` flag in the `FarmState` context, not just the crop type; missing this caused incorrect yield projections for drought seasons.
+*   **Codebase convention**: Seasonal logic is consistently isolated in `SeasonalRules` strategy classes rather than scattered in controllers, enforcing a clear separation between business rules and request handling.
+*   **Correction made**: Initially attempted to hardcode month-to-season mappings in the service layer, but corrected this to use the existing `CalendarService` utility to avoid duplication and ensure consistency with the game's leap-year logic.
