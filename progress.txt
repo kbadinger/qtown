@@ -3466,3 +3466,8 @@
 - **Tricky Logic**: Determining the correct fallback behavior when an NPC has no valid gift items required careful handling of the `Inventory` null checks to prevent runtime exceptions during the gift selection loop.
 - **Codebase Patterns**: The project consistently uses a `Service` facade pattern for game state access (e.g., `GiftService`), isolating logic from the core `NPC` entity and relying heavily on dependency injection for testing.
 - **Correction**: Initially, I attempted to mutate the `Player` inventory directly within the NPC logic; I corrected this by introducing a `Transaction` object to ensure the gift transfer is atomic and can be rolled back if the player's inventory is full.
+
+--- Story 504: NPC illness spread (attempts: 1, 2026-03-19 09:49) ---
+*   **Tricky Logic**: The infection spread mechanism required careful handling of the "cooldown" state to prevent an NPC from being re-infected in the same tick, which initially caused infinite recursion in the simulation loop.
+*   **Codebase Patterns**: Health status changes are consistently managed via a centralized `StatusEffect` registry rather than direct property mutation, ensuring all side effects (like UI updates or stat penalties) are triggered atomically.
+*   **Correction**: Initially, I calculated infection probability based on the total population count, but corrected it to use the local neighborhood radius; the former caused unrealistic global spikes instead of organic cluster growth.

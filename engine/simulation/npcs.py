@@ -4296,3 +4296,43 @@ def apply_marriage_bonus(db: Session) -> int:
             npc2.happiness = min(100, npc2.happiness + 2)
     
     return count
+
+
+def spread_illness(db: Session) -> int:
+    """Spread illness from sick NPCs to nearby living NPCs."""
+    from engine.models import NPC
+    import random
+    import math
+
+    newly_infected_count = 0
+    newly_infected_ids = set()
+    
+    # Fetch all living NPCs (is_dead == 0)
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    # Identify sources (illness_severity > 30)
+    sources = [npc for npc in living_npcs if npc.illness_severity > 30]
+    
+    for source in sources:
+        for target in living_npcs:
+            if source.id == target.id:
+                continue
+            
+            # Calculate Euclidean distance
+            dx = source.x - target.x
+            dy = source.y - target.y
+            distance = math.hypot(dx, dy)
+            
+            if distance <= 3:
+                # 20% chance to contract
+                if random.random() < 0.2:
+                    # Only count as newly infected if severity increases
+                    old_severity = target.illness_severity
+                    new_severity = max(old_severity, 10)
+                    
+                    if new_severity > old_severity and target.id not in newly_infected_ids:
+                        newly_infected_ids.add(target.id)
+                        newly_infected_count += 1
+                        target.illness_severity = new_severity
+    
+    return newly_infected_count

@@ -466,3 +466,11 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-19 13:21:12 UTC] deploy_ok: Story 502 deployed: Healthy after 0.1s
 [2026-03-19 13:21:27 UTC] story_done: Story 502 complete: NPC funeral mourning
 [2026-03-19 13:21:27 UTC] story_start: Story 503: NPC gift giving
+[2026-03-19 13:21:53 UTC] WARN deploy_fail: Story 503 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   3a59bf6..1b89ef9  main -> main
+
+Indexing...
+Uploading..
+[2026-03-19 13:21:53 UTC] story_done: Story 503 complete: NPC gift giving
+[2026-03-19 13:21:54 UTC] story_start: Story 504: NPC illness spread
