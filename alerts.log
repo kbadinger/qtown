@@ -521,3 +521,6 @@ Uploading..
 [2026-03-19 17:17:10 UTC] deploy_ok: Story 512 deployed: Healthy after 0.1s
 [2026-03-19 17:17:27 UTC] story_done: Story 512 complete: Graveyard memorial effect
 [2026-03-19 17:17:27 UTC] story_start: Story 513: Watchtower crime detection
+[2026-03-19 17:41:16 UTC] deploy_ok: Story 513 deployed: Healthy after 0.1s
+[2026-03-19 17:41:36 UTC] story_done: Story 513 complete: Watchtower crime detection
+[2026-03-19 17:41:36 UTC] story_start: Story 514: Windmill grain bonus

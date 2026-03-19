@@ -1984,3 +1984,54 @@ def detect_crimes_from_watchtower(db: Session) -> int:
                         resolved_count += 1
     
     return resolved_count
+
+
+def apply_windmill_bonus(db: Session) -> int:
+    """Apply windmill grain bonus to nearby farms.
+    
+    Finds all windmill buildings, then finds all food/farm buildings within
+    distance 5. For each nearby farm, adds 3 Wheat resources (grinding bonus).
+    Returns total bonus wheat produced.
+    """
+    from engine.models import Building, Resource
+    from sqlalchemy import func
+    
+    total_bonus = 0
+    
+    # Find all windmills
+    windmills = db.query(Building).filter(Building.building_type == "windmill").all()
+    
+    for windmill in windmills:
+        # Find all food/farm buildings within distance 5
+        farms = db.query(Building).filter(
+            (Building.building_type == "food") | (Building.building_type == "farm")
+        ).all()
+        
+        for farm in farms:
+            # Calculate distance (Euclidean)
+            dx = windmill.x - farm.x
+            dy = windmill.y - farm.y
+            distance = (dx**2 + dy**2)**0.5
+            
+            if distance <= 5:
+                # Find Wheat resource at this farm
+                wheat_resource = db.query(Resource).filter(
+                    Resource.building_id == farm.id,
+                    Resource.resource_name == "Wheat"
+                ).first()
+                
+                if wheat_resource:
+                    # Add 3 wheat
+                    wheat_resource.quantity = (wheat_resource.quantity or 0) + 3
+                    total_bonus += 3
+                else:
+                    # Create new Wheat resource if it doesn't exist
+                    new_wheat = Resource(
+                        building_id=farm.id,
+                        resource_name="Wheat",
+                        quantity=3
+                    )
+                    db.add(new_wheat)
+                    total_bonus += 3
+    
+    return total_bonus

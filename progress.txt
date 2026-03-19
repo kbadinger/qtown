@@ -3516,3 +3516,8 @@
 - **Tricky Aspect**: The `Watchtower` logic required handling race conditions where a crime event could be reported before the observer's state was fully initialized, necessitating a strict check for `is_active` before processing alerts.
 - **Pattern Discovered**: The codebase consistently uses a "Command-Query Separation" pattern where detection logic (queries) is strictly isolated from state mutation (commands), preventing side effects during analysis.
 - **Correction Made**: Initially, I attempted to filter crimes in the `detect` method; I corrected this by moving filtering to a dedicated `preprocess` step to ensure the detection algorithm receives a clean, normalized data stream.
+
+--- Story 514: Windmill grain bonus (attempts: 1, 2026-03-19 14:12) ---
+- **Non-obvious state coupling**: The grain bonus logic unexpectedly relied on the windmill's `lastRotationTimestamp` rather than a dedicated `bonusCooldown` field, requiring careful handling of edge cases where rotation events were batched.
+- **Codebase convention**: This module strictly adheres to the "calculate first, commit later" pattern; all grain adjustments are accumulated in a temporary `Transaction` object before being applied to the `FarmState` to ensure atomicity.
+- **Correction made**: Initially, I applied the bonus multiplier before validating the windmill's operational status, which caused invalid grants during maintenance windows; moved the status check to the pre-calculation phase to fix this.
