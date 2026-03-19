@@ -7831,20 +7831,21 @@
       "context_files": [
         "engine/simulation/npcs.py"
       ],
-      "status": "in_progress",
+      "status": "done",
       "phase": "development",
       "attempts": 1
     },
     {
       "id": "500",
       "title": "NPC gossip reputation",
-      "description": "Create spread_gossip(db) in engine/simulation/npcs.py. Find NPCs with Crime records (query Crime, get unique criminal_npc_ids). For each criminal still alive: all living NPCs within distance 10 get Relationship with criminal weakened: if Relationship exists with relationship_type==\"friend\", strength -= 5 (min 0). Return count of relationships weakened. NPC.is_dead and NPC.is_bankrupt are Integer columns \u2014 use ==0 / ==1, never ==False/==True. Crime columns: criminal_npc_id, type, tick, resolved. Relationship columns: npc_id, target_npc_id, relationship_type, strength.",
+      "description": "Create spread_criminal_gossip(db) in engine/simulation/npcs.py. Find NPCs with Crime records (query Crime, get unique criminal_npc_ids). For each criminal still alive: all living NPCs within distance 10 get Relationship with criminal weakened: if Relationship exists with relationship_type==\"friend\", strength -= 5 (min 0). Return count of relationships weakened. NPC.is_dead and NPC.is_bankrupt are Integer columns \u2014 use ==0 / ==1, never ==False/==True. Crime columns: criminal_npc_id, type, tick, resolved. Relationship columns: npc_id, target_npc_id, relationship_type, strength.",
       "test_file": "tests/test_npcs.py",
       "context_files": [
         "engine/simulation/npcs.py"
       ],
-      "status": "pending",
-      "phase": "development"
+      "status": "done",
+      "phase": "development",
+      "attempts": 1
     },
     {
       "id": "501",

@@ -4216,5 +4216,43 @@ def process_library_visits(db: Session) -> int:
                     book.quantity -= 1
                     count += 1
                     break
-                
+
     return count
+
+
+def spread_criminal_gossip(db: Session) -> int:
+    """Weaken friendships with known criminals based on gossip."""
+    from engine.models import NPC, Crime, Relationship
+
+    # Find unique criminal NPC IDs
+    criminal_ids = set(
+        row[0] for row in db.query(Crime.criminal_npc_id).distinct().all()
+    )
+    if not criminal_ids:
+        return 0
+
+    weakened = 0
+    for cid in criminal_ids:
+        criminal = db.query(NPC).filter(NPC.id == cid, NPC.is_dead == 0).first()
+        if not criminal:
+            continue
+
+        # Find friend relationships with this criminal
+        rels = db.query(Relationship).filter(
+            ((Relationship.npc_id == cid) | (Relationship.target_npc_id == cid)),
+            Relationship.relationship_type == "friend"
+        ).all()
+
+        for rel in rels:
+            # Check if the other NPC is within distance 10
+            other_id = rel.target_npc_id if rel.npc_id == cid else rel.npc_id
+            other = db.query(NPC).filter(NPC.id == other_id, NPC.is_dead == 0).first()
+            if not other:
+                continue
+            dist = abs(other.x - criminal.x) + abs(other.y - criminal.y)
+            if dist <= 10:
+                rel.strength = max(0, rel.strength - 5)
+                weakened += 1
+
+    db.commit()
+    return weakened

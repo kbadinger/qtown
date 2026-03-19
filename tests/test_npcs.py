@@ -2823,9 +2823,9 @@ def test_s499_npc_homesickness_effect(db):
 def test_s500_npc_gossip_reputation(db):
     """NPC gossip reputation."""
     _setup_world(db)
-    from engine.simulation import spread_gossip
-    result = spread_gossip(db)
-    assert result is not None
+    from engine.simulation import spread_criminal_gossip
+    result = spread_criminal_gossip(db)
+    assert isinstance(result, int)
     db.flush()
 
 def test_s501_npc_marriage_happiness_boost(db):
