@@ -1726,3 +1726,26 @@ def trigger_rebuilding_boom(db: Session) -> int:
         rebuilt_count += 1
     
     return rebuilt_count
+
+
+def apply_adjacency_bonus(db: Session) -> dict:
+    """Calculate adjacency bonuses for all buildings.
+    
+    For each building, count other buildings within Manhattan distance 3.
+    Returns dict mapping building name to neighbor count.
+    """
+    from engine.models import Building
+    
+    buildings = db.query(Building).all()
+    result = {}
+    
+    for building in buildings:
+        neighbor_count = 0
+        for other in buildings:
+            if other.id != building.id:
+                distance = abs(building.x - other.x) + abs(building.y - other.y)
+                if distance <= 3:
+                    neighbor_count += 1
+        result[building.name] = neighbor_count
+    
+    return result

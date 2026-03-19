@@ -3476,3 +3476,8 @@
 - **Non-obvious state coupling**: The `BirthEvent` handler relies on a hidden dependency where the `FamilyRegistry` must be pre-warmed with the mother's `PregnancyCycle` data; failing to check `isCycleActive` before spawning the child causes silent failures in the population logic.
 - **Codebase convention**: Newborns are never instantiated directly; they must be created via the `EntityFactory.spawnChild()` method to ensure the `GeneticTrait` inheritance chain and `HouseholdCapacity` checks are automatically applied.
 - **Correction made**: Initially placed the `saveState` call inside the `onChildBorn` callback, which caused race conditions during concurrent tick processing; moved it to the end of the `GameTick` lifecycle to ensure atomicity across all NPC updates.
+
+--- Story 506: Building adjacency bonus (attempts: 1, 2026-03-19 10:36) ---
+*   **Non-obvious state coupling**: The adjacency bonus calculation relies on the `grid` being fully materialized before validation; attempting to compute bonuses during incremental tile placement caused race conditions with the `pending_moves` queue.
+*   **Convention for neighbor traversal**: The codebase consistently uses a centralized `get_neighbors` utility that handles boundary checks and wraps around edges, rather than inline index arithmetic, which I initially missed and had to refactor.
+*   **Correction on double-counting**: I initially applied the bonus to both the placed tile and its neighbor, effectively doubling the score; the fix required enforcing a strict "owner-centric" rule where only the active player's tile triggers the bonus calculation.
