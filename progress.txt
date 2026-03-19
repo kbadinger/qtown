@@ -3496,3 +3496,8 @@
 - **Non-obvious Cost Allocation**: The maintenance cost logic wasn't a simple flat rate; it required dynamically weighting costs based on the building's age tier and current occupancy status, which wasn't immediately clear from the schema.
 - **Convention for Financial Precision**: The codebase strictly uses `Decimal` for all currency calculations to avoid floating-point errors, with rounding applied only at the final aggregation step, not intermediate ones.
 - **Correction on Date Handling**: Initially attempted to filter by `current_date` directly, but corrected this to use the `fiscal_period_end` timestamp to ensure costs align with the correct billing cycle boundaries.
+
+--- Story 510: Library knowledge accumulation (attempts: 1, 2026-03-19 12:11) ---
+- **Tricky Aspect**: The interaction between the `KnowledgeAccumulator` and the existing `BookIndex` was non-obvious; the accumulator expects a normalized `Metadata` object, but the index returns raw `Book` entities, requiring an explicit mapping step before ingestion.
+- **Patterns Discovered**: The codebase consistently uses the **Repository Pattern** for data access, where all domain logic is isolated behind interfaces, and direct database queries are never performed in service layers.
+- **Correction Made**: Initially attempted to mutate the incoming book list in-place to save memory, which caused race conditions in concurrent test runs; corrected by creating a defensive copy before processing.

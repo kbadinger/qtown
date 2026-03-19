@@ -1852,3 +1852,42 @@ def collect_maintenance(db: Session) -> int:
                 building.level -= 1
                 
     return total_spent
+
+
+def accumulate_knowledge(db: Session) -> int:
+    """Accumulate books in all libraries.
+    
+    For each library building, find or create a Books resource and increment
+    its quantity by 1 per tick, capped at 100. Returns total books across all libraries.
+    """
+    from engine.models import Building, Resource
+    
+    total_books = 0
+    
+    # Find all library buildings
+    libraries = db.query(Building).filter(Building.building_type == "library").all()
+    
+    for library in libraries:
+        # Find existing Books resource for this library
+        books_resource = db.query(Resource).filter(
+            Resource.name == "Books",
+            Resource.building_id == library.id
+        ).first()
+        
+        if books_resource:
+            # Increment quantity, cap at 100
+            if books_resource.quantity < 100:
+                books_resource.quantity += 1
+            total_books += books_resource.quantity
+        else:
+            # Create new Books resource
+            new_books = Resource(
+                name="Books",
+                building_id=library.id,
+                quantity=1
+            )
+            db.add(new_books)
+            total_books += 1
+    
+    db.commit()
+    return total_books
