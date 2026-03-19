@@ -3461,3 +3461,8 @@
 *   **Non-obvious State Management**: The mourning timer relies on a hidden `grief_state` flag that persists across scene reloads; forgetting to reset this flag when the player leaves the area caused the NPC to remain permanently unresponsive.
 *   **Dialogue Convention**: This codebase uses a `branch_on_event` pattern where funeral-specific lines are only injected if the `is_funeral_active` global is true, rather than checking individual NPC flags, which simplifies conditional logic but requires strict global state hygiene.
 *   **Correction on Event Triggering**: Initially, I triggered the mourning animation immediately upon entering the scene, causing a jarring visual glitch; I corrected this by deferring the trigger to the `on_player_approach` hook to ensure the animation only plays when the player is actually within interaction range.
+
+--- Story 503: NPC gift giving (attempts: 1, 2026-03-19 09:21) ---
+- **Tricky Logic**: Determining the correct fallback behavior when an NPC has no valid gift items required careful handling of the `Inventory` null checks to prevent runtime exceptions during the gift selection loop.
+- **Codebase Patterns**: The project consistently uses a `Service` facade pattern for game state access (e.g., `GiftService`), isolating logic from the core `NPC` entity and relying heavily on dependency injection for testing.
+- **Correction**: Initially, I attempted to mutate the `Player` inventory directly within the NPC logic; I corrected this by introducing a `Transaction` object to ensure the gift transfer is atomic and can be rolled back if the player's inventory is full.

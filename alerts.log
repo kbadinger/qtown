@@ -463,3 +463,6 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-19 13:19:09 UTC] deploy_ok: Story 501 deployed: Healthy after 0.1s
 [2026-03-19 13:19:36 UTC] story_done: Story 501 complete: NPC marriage happiness boost
 [2026-03-19 13:19:37 UTC] story_start: Story 502: NPC funeral mourning
+[2026-03-19 13:21:12 UTC] deploy_ok: Story 502 deployed: Healthy after 0.1s
+[2026-03-19 13:21:27 UTC] story_done: Story 502 complete: NPC funeral mourning
+[2026-03-19 13:21:27 UTC] story_start: Story 503: NPC gift giving
