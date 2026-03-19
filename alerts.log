@@ -515,3 +515,6 @@ Uploading..
 [2026-03-19 16:12:34 UTC] deploy_ok: Story 510 deployed: Healthy after 0.1s
 [2026-03-19 16:13:01 UTC] story_done: Story 510 complete: Library knowledge accumulation
 [2026-03-19 16:13:02 UTC] story_start: Story 511: Prison rehabilitation
+[2026-03-19 16:38:37 UTC] deploy_ok: Story 511 deployed: Healthy after 0.1s
+[2026-03-19 16:38:54 UTC] story_done: Story 511 complete: Prison rehabilitation
+[2026-03-19 16:38:54 UTC] story_start: Story 512: Graveyard memorial effect

@@ -3506,3 +3506,8 @@
 - **Non-obvious state coupling**: The rehabilitation status logic was tightly coupled with the inmate's sentence end date; updating one without recalculating the other caused silent data inconsistencies in the release eligibility checks.
 - **Codebase convention**: This module strictly separates "state" (current status) from "history" (audit logs); all status transitions must trigger an immutable event log entry before updating the primary record.
 - **Correction**: Initially missed the edge case where a sentence reduction could retroactively invalidate a pending rehabilitation milestone; added a validation step to re-evaluate all future milestones upon any sentence modification.
+
+--- Story 512: Graveyard memorial effect (attempts: 1, 2026-03-19 13:15) ---
+*   **Non-obvious timing dependency**: The memorial fade-out requires `requestAnimationFrame` to sync with the particle system's lifecycle; using a standard `setTimeout` caused visual tearing when the scene paused.
+*   **Codebase convention**: All particle effects in this engine inherit from `BaseEmitter` and rely on the `update(dt)` signature for delta-time calculations, rather than fixed-frame logic.
+*   **Correction**: Initially passed the `memoId` as a closure variable, causing stale references in the cleanup loop; switched to passing the ID explicitly to the removal function to ensure the correct entity was targeted.

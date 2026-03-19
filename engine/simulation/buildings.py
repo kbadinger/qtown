@@ -1919,3 +1919,35 @@ def process_rehabilitation(db: Session) -> int:
                 rehabilitation_count += 1
     
     return rehabilitation_count
+
+
+def apply_memorial_effect(db: Session) -> int:
+    """Apply memorial effect from graveyards to nearby living NPCs."""
+    from engine.models import Building, NPC
+    import math
+    
+    affected_count = 0
+    
+    # Find all graveyard buildings
+    graveyards = db.query(Building).filter(Building.building_type == "graveyard").all()
+    
+    if not graveyards:
+        return 0
+    
+    # Get all living NPCs (is_dead == 0)
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    if not living_npcs:
+        return 0
+    
+    for graveyard in graveyards:
+        for npc in living_npcs:
+            # Calculate distance
+            distance = math.sqrt((graveyard.x - npc.x) ** 2 + (graveyard.y - npc.y) ** 2)
+            
+            if distance <= 8:
+                # Apply happiness bonus (max 100)
+                npc.happiness = min(npc.happiness + 2, 100)
+                affected_count += 1
+    
+    return affected_count
