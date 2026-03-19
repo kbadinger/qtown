@@ -1829,3 +1829,26 @@ def check_mine_depletion(db: Session) -> int:
                 depleted_count += 1
     
     return depleted_count
+
+
+def collect_maintenance(db: Session) -> int:
+    """Collect maintenance costs for all buildings with level > 1."""
+    from engine.models import Building, Treasury
+    
+    buildings = db.query(Building).filter(Building.level > 1).all()
+    treasury = db.query(Treasury).first()
+    
+    total_spent = 0
+    
+    for building in buildings:
+        cost = building.level * 5
+        
+        if treasury and treasury.gold_stored >= cost:
+            treasury.gold_stored -= cost
+            total_spent += cost
+        else:
+            # Cannot pay maintenance, building decays
+            if building.level > 1:
+                building.level -= 1
+                
+    return total_spent

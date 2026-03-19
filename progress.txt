@@ -3491,3 +3491,8 @@
 - **Non-obvious state coupling**: The depletion logic unexpectedly relied on a global `ResourceRegistry` singleton rather than local state, causing race conditions when multiple threads accessed the same mine simultaneously.
 - **Codebase convention**: This project consistently uses "event-driven" updates for resource changes; direct property mutation on `Mine` objects is deprecated in favor of dispatching `ResourceEvent` messages to a central dispatcher.
 - **Correction made**: Initially attempted to cache depletion rates in a static variable for performance, which caused stale data across different mine instances; corrected by moving the calculation into the instance method and removing the static cache.
+
+--- Story 509: Building maintenance cost (attempts: 1, 2026-03-19 11:46) ---
+- **Non-obvious Cost Allocation**: The maintenance cost logic wasn't a simple flat rate; it required dynamically weighting costs based on the building's age tier and current occupancy status, which wasn't immediately clear from the schema.
+- **Convention for Financial Precision**: The codebase strictly uses `Decimal` for all currency calculations to avoid floating-point errors, with rounding applied only at the final aggregation step, not intermediate ones.
+- **Correction on Date Handling**: Initially attempted to filter by `current_date` directly, but corrected this to use the `fiscal_period_end` timestamp to ensure costs align with the correct billing cycle boundaries.
