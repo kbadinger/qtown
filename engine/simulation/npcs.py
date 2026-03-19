@@ -4256,3 +4256,43 @@ def spread_criminal_gossip(db: Session) -> int:
 
     db.commit()
     return weakened
+
+
+def apply_marriage_bonus(db: Session) -> int:
+    """Apply happiness bonus to married NPCs.
+    
+    For each spouse relationship where both NPCs are alive:
+    - Both get happiness += 3 (max 100)
+    - If they share same home_building_id: additional happiness += 2 (max 100)
+    
+    Returns count of married NPCs boosted.
+    """
+    from engine.models import Relationship, NPC
+    
+    count = 0
+    
+    # Find all spouse relationships
+    spouse_relationships = db.query(Relationship).filter(
+        Relationship.relationship_type == "spouse"
+    ).all()
+    
+    for relationship in spouse_relationships:
+        # Get both NPCs in the relationship
+        npc1 = db.query(NPC).filter(NPC.id == relationship.npc_id).first()
+        npc2 = db.query(NPC).filter(NPC.id == relationship.target_npc_id).first()
+        
+        # Skip if either NPC is dead (is_dead == 1 means dead, == 0 means alive)
+        if not npc1 or not npc2 or npc1.is_dead == 1 or npc2.is_dead == 1:
+            continue
+        
+        # Base happiness bonus for being married
+        npc1.happiness = min(100, npc1.happiness + 3)
+        npc2.happiness = min(100, npc2.happiness + 3)
+        count += 2
+        
+        # Additional bonus if they share the same home
+        if npc1.home_building_id and npc2.home_building_id and npc1.home_building_id == npc2.home_building_id:
+            npc1.happiness = min(100, npc1.happiness + 2)
+            npc2.happiness = min(100, npc2.happiness + 2)
+    
+    return count

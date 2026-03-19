@@ -3451,3 +3451,8 @@
 - **Tricky Logic**: Determining the correct scope for the homesickness decay was non-obvious; it required checking if the NPC is *currently* in a home zone versus just having a home defined, to prevent the effect from triggering while traveling.
 - **Codebase Pattern**: The project consistently uses a `StateTransition` enum for mood changes rather than direct boolean flags, ensuring that all emotional states flow through a centralized update loop.
 - **Correction**: Initially applied the homesickness modifier directly to the NPC's base stats, which caused permanent degradation; corrected by applying it as a temporary runtime multiplier that resets upon reaching the home node.
+
+--- Story 501: NPC marriage happiness boost (attempts: 1, 2026-03-19 09:16) ---
+- **Non-obvious dependency**: The happiness calculation relies on a hidden `RelationshipContext` cache that must be invalidated before the marriage event; skipping this step caused the boost to apply to the wrong partner.
+- **Codebase convention**: All NPC state mutations must go through the `StateTransitionManager` rather than direct property assignment to ensure the save system captures the change.
+- **Correction**: Initially hardcoded the happiness delta, but corrected it to use the `SocialBond` enum to respect the dynamic difficulty scaling found in Story 402.
