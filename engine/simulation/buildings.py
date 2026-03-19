@@ -1790,3 +1790,42 @@ def adjust_farm_output(db: Session) -> dict:
             result[building.name] = new_quantity
     
     return result
+
+
+def check_mine_depletion(db: Session) -> int:
+    """Check and process mine depletion for all mines."""
+    from engine.models import Building, Resource, Event, WorldState
+    
+    # Get current tick from WorldState
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Find all mine buildings
+    mines = db.query(Building).filter(Building.building_type == "mine").all()
+    
+    depleted_count = 0
+    
+    for mine in mines:
+        # Find Resource "Ore" at this building
+        ore_resource = db.query(Resource).filter(
+            Resource.resource_name == "Ore",
+            Resource.building_id == mine.id
+        ).first()
+        
+        if ore_resource and ore_resource.quantity > 0:
+            # Reduce quantity by 1 (natural depletion)
+            ore_resource.quantity -= 1
+            
+            # Check if depleted
+            if ore_resource.quantity == 0:
+                # Create depletion event
+                event = Event(
+                    event_type="mine_depleted",
+                    description=f"{mine.name} ore deposits exhausted",
+                    tick=current_tick,
+                    affected_building_id=mine.id
+                )
+                db.add(event)
+                depleted_count += 1
+    
+    return depleted_count

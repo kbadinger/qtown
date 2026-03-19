@@ -3486,3 +3486,8 @@
 *   **Non-obvious state coupling**: The seasonal output calculation relies on a hidden `weather_modifier` flag in the `FarmState` context, not just the crop type; missing this caused incorrect yield projections for drought seasons.
 *   **Codebase convention**: Seasonal logic is consistently isolated in `SeasonalRules` strategy classes rather than scattered in controllers, enforcing a clear separation between business rules and request handling.
 *   **Correction made**: Initially attempted to hardcode month-to-season mappings in the service layer, but corrected this to use the existing `CalendarService` utility to avoid duplication and ensure consistency with the game's leap-year logic.
+
+--- Story 508: Mine depletion (attempts: 1, 2026-03-19 11:22) ---
+- **Non-obvious state coupling**: The depletion logic unexpectedly relied on a global `ResourceRegistry` singleton rather than local state, causing race conditions when multiple threads accessed the same mine simultaneously.
+- **Codebase convention**: This project consistently uses "event-driven" updates for resource changes; direct property mutation on `Mine` objects is deprecated in favor of dispatching `ResourceEvent` messages to a central dispatcher.
+- **Correction made**: Initially attempted to cache depletion rates in a static variable for performance, which caused stale data across different mine instances; corrected by moving the calculation into the instance method and removing the static cache.
