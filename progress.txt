@@ -3501,3 +3501,8 @@
 - **Tricky Aspect**: The interaction between the `KnowledgeAccumulator` and the existing `BookIndex` was non-obvious; the accumulator expects a normalized `Metadata` object, but the index returns raw `Book` entities, requiring an explicit mapping step before ingestion.
 - **Patterns Discovered**: The codebase consistently uses the **Repository Pattern** for data access, where all domain logic is isolated behind interfaces, and direct database queries are never performed in service layers.
 - **Correction Made**: Initially attempted to mutate the incoming book list in-place to save memory, which caused race conditions in concurrent test runs; corrected by creating a defensive copy before processing.
+
+--- Story 511: Prison rehabilitation (attempts: 1, 2026-03-19 12:34) ---
+- **Non-obvious state coupling**: The rehabilitation status logic was tightly coupled with the inmate's sentence end date; updating one without recalculating the other caused silent data inconsistencies in the release eligibility checks.
+- **Codebase convention**: This module strictly separates "state" (current status) from "history" (audit logs); all status transitions must trigger an immutable event log entry before updating the primary record.
+- **Correction**: Initially missed the edge case where a sentence reduction could retroactively invalidate a pending rehabilitation milestone; added a validation step to re-evaluate all future milestones upon any sentence modification.

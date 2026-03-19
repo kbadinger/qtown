@@ -1891,3 +1891,31 @@ def accumulate_knowledge(db: Session) -> int:
     
     db.commit()
     return total_books
+
+
+def process_rehabilitation(db: Session) -> int:
+    """Process prison rehabilitation for unresolved crimes."""
+    from engine.models import Building, Crime, Event, WorldState
+    
+    rehabilitation_count = 0
+    prisons = db.query(Building).filter(Building.building_type == "prison").all()
+    
+    for prison in prisons:
+        unresolved_crimes = db.query(Crime).filter(Crime.resolved == 0).limit(3).all()
+        
+        for crime in unresolved_crimes:
+            import random
+            if random.random() < 0.2:
+                crime.resolved = 1
+                tick = db.query(WorldState).first().tick if db.query(WorldState).first() else 0
+                
+                event = Event(
+                    event_type="rehabilitation",
+                    description=f"Criminal rehabilitated at {prison.name}",
+                    tick=tick,
+                    affected_building_id=prison.id
+                )
+                db.add(event)
+                rehabilitation_count += 1
+    
+    return rehabilitation_count
