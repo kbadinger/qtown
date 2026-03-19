@@ -460,3 +460,6 @@ NPC gossip reputation
 Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-19 12:54:50 UTC] start: Ralph online — 481/550 stories complete
 [2026-03-19 12:54:51 UTC] story_start: Story 501: NPC marriage happiness boost
+[2026-03-19 13:19:09 UTC] deploy_ok: Story 501 deployed: Healthy after 0.1s
+[2026-03-19 13:19:36 UTC] story_done: Story 501 complete: NPC marriage happiness boost
+[2026-03-19 13:19:37 UTC] story_start: Story 502: NPC funeral mourning

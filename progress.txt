@@ -3456,3 +3456,8 @@
 - **Non-obvious dependency**: The happiness calculation relies on a hidden `RelationshipContext` cache that must be invalidated before the marriage event; skipping this step caused the boost to apply to the wrong partner.
 - **Codebase convention**: All NPC state mutations must go through the `StateTransitionManager` rather than direct property assignment to ensure the save system captures the change.
 - **Correction**: Initially hardcoded the happiness delta, but corrected it to use the `SocialBond` enum to respect the dynamic difficulty scaling found in Story 402.
+
+--- Story 502: NPC funeral mourning (attempts: 1, 2026-03-19 09:19) ---
+*   **Non-obvious State Management**: The mourning timer relies on a hidden `grief_state` flag that persists across scene reloads; forgetting to reset this flag when the player leaves the area caused the NPC to remain permanently unresponsive.
+*   **Dialogue Convention**: This codebase uses a `branch_on_event` pattern where funeral-specific lines are only injected if the `is_funeral_active` global is true, rather than checking individual NPC flags, which simplifies conditional logic but requires strict global state hygiene.
+*   **Correction on Event Triggering**: Initially, I triggered the mourning animation immediately upon entering the scene, causing a jarring visual glitch; I corrected this by deferring the trigger to the `on_player_approach` hook to ensure the animation only plays when the player is actually within interaction range.
