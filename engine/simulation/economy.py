@@ -2934,3 +2934,28 @@ def update_market_prices(db: Session) -> dict:
             db.add(new_history)
     
     return result
+
+
+def check_treasury_deficit(db: Session) -> bool:
+    """Check for treasury deficit crisis and trigger emergency tax hike."""
+    from engine.models import Treasury, WorldState, Event
+    
+    total_gold = db.query(func.sum(Treasury.gold_stored)).scalar() or 0
+    
+    if total_gold < 0 or total_gold == 0:
+        world_state = db.query(WorldState).first()
+        if world_state:
+            current_tax = world_state.tax_rate or 0.0
+            world_state.tax_rate = min(current_tax + 0.05, 0.50)
+            
+            event_tick = world_state.tick or 0
+            event = Event(
+                event_type="treasury_crisis",
+                description="Treasury empty! Emergency tax increase.",
+                tick=event_tick
+            )
+            db.add(event)
+            db.commit()
+            return True
+    
+    return False

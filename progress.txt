@@ -3576,3 +3576,8 @@
 - **Non-obvious concurrency**: The price update logic relies on a distributed lock that must be acquired *before* fetching the external API, not after; acquiring it post-fetch caused race conditions where stale prices were persisted.
 - **Codebase convention**: The project strictly separates "fetched" data (immutable DTOs) from "persisted" data (entities with audit fields), requiring a manual mapping step before any repository interaction.
 - **Correction**: Initially attempted to use a generic `BigDecimal` comparator for price validation, but the domain requires a custom `PriceTolerance` strategy to handle floating-point rounding differences specific to the legacy ledger system.
+
+--- Story 526: Treasury deficit crisis (attempts: 1, 2026-03-21 14:42) ---
+*   **Non-obvious logic**: The deficit calculation relied on a hidden `fiscal_adjustment` flag in the config that bypassed standard rounding rules, causing silent discrepancies in the final report.
+*   **Codebase pattern**: Financial aggregations in this module consistently use `Decimal` for intermediate steps but cast to `float` only at the API boundary, requiring careful type checking to avoid precision loss.
+*   **Correction**: Initially assumed the `treasury_balance` field was immutable; corrected the implementation to handle concurrent updates by adding a version check before committing the deficit adjustment.

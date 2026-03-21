@@ -584,3 +584,7 @@ Uploading..
 [2026-03-21 18:02:20 UTC] deploy_ok: Story 524 deployed: Healthy after 0.1s
 [2026-03-21 18:02:35 UTC] story_done: Story 524 complete: Guild formation
 [2026-03-21 18:02:36 UTC] story_start: Story 525: Market price update
+[2026-03-21 18:21:37 UTC] WARN sprite_skip: Story 525: Sprite generation skipped — ComfyUI is not running — cannot generate assets
+[2026-03-21 18:22:49 UTC] deploy_ok: Story 525 deployed: Healthy after 0.1s
+[2026-03-21 18:23:05 UTC] story_done: Story 525 complete: Market price update
+[2026-03-21 18:23:05 UTC] story_start: Story 526: Treasury deficit crisis
