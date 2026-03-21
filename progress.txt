@@ -3546,3 +3546,8 @@
 - **Tricky**: The `Inventory` aggregate's `allocate` method required handling partial fulfillment logic; it wasn't obvious that the `Batch` entity needed to track `reserved_quantity` separately from `available_quantity` to prevent race conditions during concurrent orders.
 - **Patterns**: The codebase consistently uses a "Repository-Factory-Service" trio for domain objects, where the Service layer handles orchestration (e.g., validating farm-to-bakery transport windows) while the Repository strictly handles persistence of aggregates.
 - **Correction**: Initially, I attempted to calculate the final `delivery_cost` inside the `Order` entity constructor; I corrected this by moving the calculation to a dedicated `PricingStrategy` interface to keep the entity pure and allow for dynamic pricing rules based on distance.
+
+--- Story 520: Merchant caravan arrival (attempts: 1, 2026-03-21 12:31) ---
+*   **Non-obvious State Synchronization**: The caravan arrival logic relies on a delayed event queue rather than immediate state updates; missing the `onTick` check for the `CaravanState.Arriving` flag caused the inventory merge to skip entirely.
+*   **Codebase Convention**: All external entity interactions (like merchants) must register their data in the global `EntityRegistry` before triggering any business logic, ensuring the `World` object can resolve references without race conditions.
+*   **Correction**: Initially attempted to directly modify the player's inventory during the event trigger; corrected by using the `TransactionService` to wrap the changes in a rollback-safe block, preventing data corruption if the validation step fails.

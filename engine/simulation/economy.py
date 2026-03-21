@@ -2755,3 +2755,35 @@ def process_supply_chain(db: Session) -> int:
             conversion_count += 1
     
     return conversion_count
+
+
+def check_merchant_caravan(db: Session) -> bool:
+    """Check if a merchant caravan arrives (5% chance)."""
+    from engine.models import Treasury, Resource, Building, Event, WorldState
+    
+    # 5% chance per call
+    if random.random() >= 0.05:
+        return False
+    
+    # Add 100 gold to first Treasury.gold_stored
+    treasury = db.query(Treasury).first()
+    if treasury:
+        treasury.gold_stored = treasury.gold_stored + 100
+    
+    # Add Resource "Exotic Goods" quantity 10 to first market building (building_type in ("market","economic"))
+    market = db.query(Building).filter(Building.building_type.in_(["market", "economic"])).first()
+    if market:
+        resource = Resource(resource_name="Exotic Goods", quantity=10, building_id=market.id)
+        db.add(resource)
+    
+    # Create Event with event_type, description, tick (all NOT NULL)
+    world_state = db.query(WorldState).first()
+    tick = world_state.tick if world_state else 0
+    event = Event(
+        event_type="caravan_arrival",
+        description="A merchant caravan arrived with exotic goods and gold!",
+        tick=tick
+    )
+    db.add(event)
+    
+    return True
