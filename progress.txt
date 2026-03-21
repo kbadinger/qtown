@@ -3586,3 +3586,8 @@
 - **Non-obvious state coupling**: The recovery program's eligibility logic relied on a hidden `fiscal_year` context injected via the global config, not the user's submission date, causing edge-case failures at year boundaries.
 - **Codebase convention**: All financial calculations must use the `Decimal` wrapper from `utils/currency.py` to avoid floating-point drift; raw `float` math is strictly forbidden in the `ledger` module.
 - **Correction**: Initially attempted to batch-process refunds using a shared transaction lock, which caused deadlocks under high load; refactored to use per-user optimistic locking with retry logic.
+
+--- Story 528: Wage negotiation (attempts: 1, 2026-03-21 15:25) ---
+*   **Non-obvious scope**: Wage adjustments are tightly coupled with the `PayPeriod` lifecycle; modifying a rate mid-cycle requires recalculating prorated amounts for the current period, not just updating the base rate for future ones.
+*   **Codebase convention**: The domain layer strictly separates "negotiation intent" (draft state) from "effective compensation" (committed state); any logic touching `EmployeeSalary` must validate against the `EffectiveDate` to avoid temporal inconsistencies.
+*   **Correction**: Initially applied the new rate directly to the `current_period` entity, causing double-counting in the payroll run; corrected by ensuring the change only affects `future_periods` and generates a separate adjustment entry for the current period if applicable.

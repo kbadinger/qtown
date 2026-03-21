@@ -3018,3 +3018,41 @@ def run_economic_recovery(db: Session) -> int:
     db.add(event)
     
     return npcs_helped
+
+
+def negotiate_wages(db: Session) -> int:
+    """Negotiate base wages based on average living NPC happiness."""
+    from sqlalchemy.orm import Session
+    from engine.models import NPC, WorldState
+    
+    # Query living NPCs (is_dead == 0)
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
+    
+    if not living_npcs:
+        # No living NPCs, return current wage or default
+        world_state = db.query(WorldState).first()
+        return world_state.base_wage if world_state else 10
+    
+    # Calculate average happiness
+    total_happiness = sum(npc.happiness for npc in living_npcs)
+    avg_happiness = total_happiness / len(living_npcs)
+    
+    # Get or create WorldState
+    world_state = db.query(WorldState).first()
+    if not world_state:
+        world_state = WorldState()
+        db.add(world_state)
+        db.flush()
+    
+    new_wage = world_state.base_wage
+    
+    # Adjust wage based on happiness
+    if avg_happiness < 40:
+        new_wage += 1
+    elif avg_happiness > 80:
+        new_wage = max(1, new_wage - 1)
+    
+    world_state.base_wage = new_wage
+    db.commit()
+    
+    return new_wage
