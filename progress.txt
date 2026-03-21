@@ -3561,3 +3561,8 @@
 - **Non-obvious expiration logic**: The `spoil_date` calculation relies on the *batch creation timestamp*, not the individual item's `created_at` or `updated_at`, meaning bulk imports can accidentally pre-spoil items if the server clock drifts.
 - **Codebase convention**: Domain events (like `ResourceSpoiled`) are always emitted *after* the database transaction commits, using the `after_commit` callback pattern to ensure data consistency before triggering external notifications.
 - **Correction made**: Initially, I attempted to run the spoilage check as a synchronous background job, causing race conditions during high-volume imports; switched to a scheduled cron job that processes batches in chunks to avoid locking the main inventory table.
+
+--- Story 523: Luxury goods demand (attempts: 1, 2026-03-21 13:58) ---
+- **Non-obvious pricing logic**: The "luxury" flag triggers a dynamic margin calculation that overrides standard tiered pricing, requiring a separate validation step before applying bulk discounts.
+- **Codebase convention**: All currency conversions are handled exclusively in the `CurrencyService` layer; direct math on `Money` objects in the controller is forbidden to prevent precision loss.
+- **Correction**: Initially attempted to pass the `luxury` flag as a query parameter, but realized it must be derived from the `ProductCategory` enum to ensure consistency with the inventory service.

@@ -567,3 +567,7 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-21 17:10:29 UTC] deploy_ok: Story 521 deployed: Healthy after 0.1s
 [2026-03-21 17:10:44 UTC] story_done: Story 521 complete: Loan default consequences
 [2026-03-21 17:10:44 UTC] story_start: Story 522: Resource spoilage
+[2026-03-21 17:29:12 UTC] WARN sprite_skip: Story 522: Sprite generation skipped — ComfyUI is not running — cannot generate assets
+[2026-03-21 17:30:39 UTC] deploy_ok: Story 522 deployed: Healthy after 0.1s
+[2026-03-21 17:30:54 UTC] story_done: Story 522 complete: Resource spoilage
+[2026-03-21 17:30:54 UTC] story_start: Story 523: Luxury goods demand

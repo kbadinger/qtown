@@ -2830,3 +2830,53 @@ def process_loan_defaults(db: Session) -> int:
                 default_count += 1
     
     return default_count
+
+
+def check_luxury_demand(db: Session) -> int:
+    """Check luxury demand and process purchase if conditions are met."""
+    from engine.models import NPC, Resource, Transaction
+    import json
+
+    # Count living NPCs with gold > 80
+    # Note: is_dead is Integer, use == 0
+    rich_npcs = (
+        db.query(NPC)
+        .filter(NPC.is_dead == 0, NPC.gold > 80)
+        .all()
+    )
+
+    if len(rich_npcs) < 3:
+        return 0
+
+    # Find Resource "Art" at any building with quantity > 0
+    art_resource = (
+        db.query(Resource)
+        .filter(Resource.name == "Art", Resource.quantity > 0)
+        .first()
+    )
+
+    if not art_resource:
+        return 0
+
+    # Find the richest NPC
+    richest_npc = max(rich_npcs, key=lambda npc: npc.gold)
+
+    # Ensure NPC has enough gold for purchase
+    if richest_npc.gold < 20:
+        return 0
+
+    # Perform transaction
+    richest_npc.gold -= 20
+    art_resource.quantity -= 1
+    richest_npc.happiness = min(100, richest_npc.happiness + 10)
+
+    # Create Transaction record
+    transaction = Transaction(
+        sender_id=richest_npc.id,
+        receiver_id=richest_npc.id,
+        amount=20,
+        reason="luxury_purchase"
+    )
+    db.add(transaction)
+
+    return 1
