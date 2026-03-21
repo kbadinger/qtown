@@ -3,11 +3,20 @@
 
 def _setup_world(db):
     from engine.simulation import init_world_state, init_grid, seed_buildings, seed_npcs
+    from engine.models import Building
 
     init_world_state(db)
     init_grid(db)
     seed_buildings(db)
     seed_npcs(db)
+
+    # Add building types needed by event stories (515+)
+    extra_types = ["arena", "church", "tavern", "theater", "barracks"]
+    existing = {b.building_type for b in db.query(Building).all()}
+    for i, bt in enumerate(extra_types):
+        if bt not in existing:
+            db.add(Building(name=bt.title(), building_type=bt, x=30 + i, y=30))
+    db.commit()
 
 
 def test_s033_event_model(db):

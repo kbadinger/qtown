@@ -3275,3 +3275,52 @@ def roll_disaster(db: Session) -> list:
         triggered_disasters.append("plague")
     
     return triggered_disasters
+
+
+def hold_arena_tournament(db: Session) -> str | None:
+    """Hold an arena tournament between 2 random living NPCs."""
+    from engine.models import Building, NPC, Event, WorldState
+    
+    # Find arena building
+    arena = db.query(Building).filter(Building.building_type == "arena").first()
+    if not arena:
+        return None
+    
+    # Find 2 random living NPCs (is_dead == 0, is_bankrupt == 0)
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0, NPC.is_bankrupt == 0).all()
+    if len(living_npcs) < 2:
+        return None
+    
+    # Pick 2 random contestants
+    contestants = random.sample(living_npcs, 2)
+    npc1, npc2 = contestants[0], contestants[1]
+    
+    # Determine winner based on skill (random if tie)
+    if npc1.skill > npc2.skill:
+        winner, loser = npc1, npc2
+    elif npc2.skill > npc1.skill:
+        winner, loser = npc2, npc1
+    else:
+        winner, loser = random.sample(contestants, 2)
+    
+    # Update winner stats
+    winner.gold = winner.gold + 25
+    winner.happiness = min(winner.happiness + 15, 100)
+    
+    # Update loser stats
+    loser.happiness = max(loser.happiness - 5, 0)
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    tick = world_state.tick if world_state else 0
+    
+    # Create event
+    event = Event(
+        event_type="tournament",
+        description=f"{winner.name} won the arena tournament against {loser.name}",
+        tick=tick
+    )
+    db.add(event)
+    db.commit()
+    
+    return winner.name

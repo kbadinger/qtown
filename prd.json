@@ -8011,7 +8011,7 @@
       "context_files": [
         "engine/simulation/buildings.py"
       ],
-      "status": "in_progress",
+      "status": "done",
       "phase": "development",
       "attempts": 1
     },
@@ -8024,7 +8024,8 @@
         "engine/simulation/events.py"
       ],
       "status": "pending",
-      "phase": "development"
+      "phase": "development",
+      "attempts": 0
     },
     {
       "id": "516",

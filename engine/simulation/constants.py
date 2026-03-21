@@ -39,6 +39,8 @@ BUILDING_TYPES = [
     'economic',
     'infrastructure',
     'windmill',
+    'civic',
+    'house',
 ]
 
 

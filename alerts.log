@@ -524,3 +524,16 @@ Uploading..
 [2026-03-19 17:41:16 UTC] deploy_ok: Story 513 deployed: Healthy after 0.1s
 [2026-03-19 17:41:36 UTC] story_done: Story 513 complete: Watchtower crime detection
 [2026-03-19 17:41:36 UTC] story_start: Story 514: Windmill grain bonus
+[2026-03-19 18:13:48 UTC] deploy_ok: Story 514 deployed: Healthy after 0.1s
+[2026-03-19 18:14:05 UTC] story_done: Story 514 complete: Windmill grain bonus
+[2026-03-19 18:14:06 UTC] story_start: Story 515: Arena tournament
+[2026-03-19 18:30:22 UTC] WARN story_fail: Story 515 struggling — attempt 5/12
+Arena tournament
+[2026-03-19 18:32:01 UTC] CRITICAL loop: Story 515: same error 5x in a row — requesting help
+`tests/test_events.py::test_s515_arena_tournament FAILED                  [100%]`
+[2026-03-19 18:32:01 UTC] CRITICAL needs_help: Story 515 needs help — waiting 10min for fix
+`tests/test_events.py::test_s515_arena_tournament FAILED                  [100%]`
+[2026-03-19 18:47:39 UTC] CRITICAL critical: Story 515: still failing after help + 3 retries — stopping
+`tests/test_events.py::test_s515_arena_tournament FAILED                  [100%]`
+[2026-03-19 18:47:39 UTC] CRITICAL critical: Story 515 failed: Arena tournament
+Waiting for fix — reset story to 'pending' in prd.json when ready
