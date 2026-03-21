@@ -3541,3 +3541,8 @@
 - **Non-obvious state coupling**: The bonus calculation relies on a hidden `storage_efficiency` flag in the `Warehouse` entity, which is only updated during nightly batch jobs, not real-time inventory changes.
 - **Codebase convention**: Business logic for bonuses is consistently isolated in dedicated `*BonusStrategy` classes that implement a common `calculate()` interface, rather than being embedded in the main controller.
 - **Correction made**: Initially attempted to recalculate bonuses on every `putItem` event, causing performance degradation; corrected by deferring the calculation to the existing `endOfDay` aggregation job.
+
+--- Story 519: Supply chain farm to bakery (attempts: 1, 2026-03-21 12:09) ---
+- **Tricky**: The `Inventory` aggregate's `allocate` method required handling partial fulfillment logic; it wasn't obvious that the `Batch` entity needed to track `reserved_quantity` separately from `available_quantity` to prevent race conditions during concurrent orders.
+- **Patterns**: The codebase consistently uses a "Repository-Factory-Service" trio for domain objects, where the Service layer handles orchestration (e.g., validating farm-to-bakery transport windows) while the Repository strictly handles persistence of aggregates.
+- **Correction**: Initially, I attempted to calculate the final `delivery_cost` inside the `Order` entity constructor; I corrected this by moving the calculation to a dedicated `PricingStrategy` interface to keep the entity pure and allow for dynamic pricing rules based on distance.

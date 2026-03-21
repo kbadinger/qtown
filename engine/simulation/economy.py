@@ -2712,3 +2712,46 @@ def collect_bank_interest(db: Session) -> int:
         count += 1
     
     return count
+
+
+def process_supply_chain(db: Session) -> int:
+    """Process supply chain from farm to bakery.
+    
+    Find Resource "Wheat" at farm buildings. Find Resource "Bread" at bakery buildings.
+    For each bakery: if Wheat available at any farm (quantity>=5): transfer 5 Wheat
+    (farm quantity-=5), add 10 Bread to bakery (quantity+=10).
+    Return count of bakery conversions.
+    """
+    from engine.models import Building, Resource
+    
+    # Find all farm buildings
+    farms = db.query(Building).filter(Building.building_type == "farm").all()
+    
+    # Find all bakery buildings
+    bakeries = db.query(Building).filter(Building.building_type == "bakery").all()
+    
+    conversion_count = 0
+    
+    # For each bakery, check if there's Wheat available at any farm
+    for bakery in bakeries:
+        # Find Wheat resources at farms with quantity >= 5
+        wheat_resources = db.query(Resource).filter(
+            Resource.resource_name == "Wheat",
+            Resource.quantity >= 5
+        ).all()
+        
+        if wheat_resources:
+            # Take from the first available farm with Wheat
+            farm_wheat = wheat_resources[0]
+            farm_wheat.quantity -= 5
+            
+            # Add Bread to bakery
+            bread_resource = Resource(
+                resource_name="Bread",
+                quantity=10,
+                building_id=bakery.id
+            )
+            db.add(bread_resource)
+            conversion_count += 1
+    
+    return conversion_count
