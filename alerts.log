@@ -539,3 +539,7 @@ Arena tournament
 Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-21 14:34:36 UTC] start: Ralph online — 495/550 stories complete
 [2026-03-21 14:34:37 UTC] story_start: Story 515: Arena tournament
+[2026-03-21 14:35:02 UTC] WARN sprite_skip: Story 515: Sprite generation skipped — ComfyUI is not running — cannot generate assets
+[2026-03-21 14:36:42 UTC] deploy_ok: Story 515 deployed: Healthy after 0.1s
+[2026-03-21 14:37:11 UTC] story_done: Story 515 complete: Arena tournament
+[2026-03-21 14:37:11 UTC] story_start: Story 516: Garden food production

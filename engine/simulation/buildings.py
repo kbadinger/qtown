@@ -2035,3 +2035,53 @@ def apply_windmill_bonus(db: Session) -> int:
                     total_bonus += 3
     
     return total_bonus
+
+
+def harvest_gardens(db: Session) -> int:
+    """Harvest gardens and distribute food to nearby NPCs.
+    
+    For each garden building:
+    - Find or create a Herbs resource
+    - Add 2 quantity per garden
+    - Reduce hunger by 5 for living NPCs within distance 5
+    
+    Returns count of gardens harvested.
+    """
+    from engine.models import Building, Resource, NPC
+    from sqlalchemy import func
+    
+    # Find all garden buildings
+    gardens = db.query(Building).filter(Building.building_type == "garden").all()
+    
+    for garden in gardens:
+        # Find or create Herbs resource for this garden
+        herb_resource = db.query(Resource).filter(
+            Resource.name == "Herbs",
+            Resource.building_id == garden.id
+        ).first()
+        
+        if herb_resource is None:
+            herb_resource = Resource(
+                name="Herbs",
+                building_id=garden.id,
+                quantity=0
+            )
+            db.add(herb_resource)
+        
+        # Add 2 quantity per garden
+        herb_resource.quantity += 2
+        
+        # Find nearby living NPCs (distance <= 5)
+        nearby_npcs = db.query(NPC).filter(
+            NPC.is_dead == 0,
+            func.sqrt(
+                func.pow(NPC.x - garden.x, 2) + 
+                func.pow(NPC.y - garden.y, 2)
+            ) <= 5
+        ).all()
+        
+        # Reduce hunger for nearby NPCs (min 0)
+        for npc in nearby_npcs:
+            npc.hunger = max(0, npc.hunger - 5)
+    
+    return len(gardens)
