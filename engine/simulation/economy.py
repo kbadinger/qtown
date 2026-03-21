@@ -2677,3 +2677,38 @@ def check_wealth_inequality(db: Session) -> bool:
         return True
     
     return False
+
+
+def collect_bank_interest(db: Session) -> int:
+    """Collect interest from active loans."""
+    from engine.models import Loan, NPC
+    
+    loans = db.query(Loan).filter(
+        Loan.status == "active",
+        Loan.ticks_remaining > 0
+    ).all()
+    
+    count = 0
+    for loan in loans:
+        interest = int(loan.amount * loan.interest_rate)
+        
+        # Deduct from borrower
+        if loan.borrower_npc_id:
+            borrower = db.query(NPC).get(loan.borrower_npc_id)
+            if borrower:
+                borrower.gold = max(0, borrower.gold - interest)
+        
+        # Add to lender
+        if loan.lender_npc_id:
+            lender = db.query(NPC).get(loan.lender_npc_id)
+            if lender:
+                lender.gold += interest
+        
+        # Update loan
+        loan.ticks_remaining -= 1
+        if loan.ticks_remaining == 0:
+            loan.status = "completed"
+        
+        count += 1
+    
+    return count
