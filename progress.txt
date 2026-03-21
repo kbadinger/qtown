@@ -3536,3 +3536,8 @@
 - **Tricky Logic**: The interest calculation required handling floating-point precision carefully; using standard `float` arithmetic led to rounding errors in the final balance, necessitating a switch to integer-based cents or `Decimal` types for exact financial math.
 - **Codebase Pattern**: The repository consistently isolates all monetary operations within a dedicated `Money` value object, avoiding raw numeric types in the service layer to enforce type safety and centralized rounding rules.
 - **Correction**: Initially attempted to apply interest rates directly to the stored balance string, which caused parsing failures; corrected by extracting the numeric value, performing the calculation, and then re-serializing to the domain object before persisting.
+
+--- Story 518: Warehouse storage bonus (attempts: 1, 2026-03-21 11:47) ---
+- **Non-obvious state coupling**: The bonus calculation relies on a hidden `storage_efficiency` flag in the `Warehouse` entity, which is only updated during nightly batch jobs, not real-time inventory changes.
+- **Codebase convention**: Business logic for bonuses is consistently isolated in dedicated `*BonusStrategy` classes that implement a common `calculate()` interface, rather than being embedded in the main controller.
+- **Correction made**: Initially attempted to recalculate bonuses on every `putItem` event, causing performance degradation; corrected by deferring the calculation to the existing `endOfDay` aggregation job.

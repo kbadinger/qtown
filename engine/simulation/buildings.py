@@ -2085,3 +2085,41 @@ def harvest_gardens(db: Session) -> int:
             npc.hunger = max(0, npc.hunger - 5)
     
     return len(gardens)
+
+
+def apply_warehouse_bonus(db: Session) -> int:
+    """Apply production bonus for nearby buildings based on warehouse storage."""
+    from engine.models import Building, Resource
+    
+    total_bonus_added = 0
+    
+    # Find all warehouses
+    warehouses = db.query(Building).filter(Building.building_type == "warehouse").all()
+    
+    for warehouse in warehouses:
+        # Count resources at this warehouse
+        warehouse_resources = db.query(Resource).filter(Resource.building_id == warehouse.id).all()
+        total_quantity = sum(r.quantity for r in warehouse_resources)
+        
+        if total_quantity > 50:
+            # Find nearby buildings (distance <= 5)
+            nearby_buildings = db.query(Building).filter(
+                Building.id != warehouse.id
+            ).all()
+            
+            for building in nearby_buildings:
+                dx = building.x - warehouse.x
+                dy = building.y - warehouse.y
+                distance_sq = dx*dx + dy*dy
+                
+                if distance_sq <= 25:  # 5^2
+                    # Find resources for this building and add bonus
+                    building_resources = db.query(Resource).filter(Resource.building_id == building.id).all()
+                    for res in building_resources:
+                        bonus = int(res.quantity * 0.1)
+                        if bonus > 0:
+                            res.quantity += bonus
+                            total_bonus_added += bonus
+    
+    db.commit()
+    return total_bonus_added

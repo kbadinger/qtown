@@ -547,3 +547,7 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-21 15:01:07 UTC] deploy_ok: Story 516 deployed: Healthy after 0.1s
 [2026-03-21 15:01:23 UTC] story_done: Story 516 complete: Garden food production
 [2026-03-21 15:01:23 UTC] story_start: Story 517: Bank interest collection
+[2026-03-21 15:21:56 UTC] WARN sprite_skip: Story 517: Sprite generation skipped — ComfyUI is not running — cannot generate assets
+[2026-03-21 15:23:07 UTC] deploy_ok: Story 517 deployed: Healthy after 0.1s
+[2026-03-21 15:23:23 UTC] story_done: Story 517 complete: Bank interest collection
+[2026-03-21 15:23:23 UTC] story_start: Story 518: Warehouse storage bonus
