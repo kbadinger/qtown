@@ -3551,3 +3551,8 @@
 *   **Non-obvious State Synchronization**: The caravan arrival logic relies on a delayed event queue rather than immediate state updates; missing the `onTick` check for the `CaravanState.Arriving` flag caused the inventory merge to skip entirely.
 *   **Codebase Convention**: All external entity interactions (like merchants) must register their data in the global `EntityRegistry` before triggering any business logic, ensuring the `World` object can resolve references without race conditions.
 *   **Correction**: Initially attempted to directly modify the player's inventory during the event trigger; corrected by using the `TransactionService` to wrap the changes in a rollback-safe block, preventing data corruption if the validation step fails.
+
+--- Story 521: Loan default consequences (attempts: 1, 2026-03-21 13:08) ---
+- **Non-obvious state propagation**: The `LoanStatus` enum changes were not automatically reflected in the `CustomerRiskProfile` until the `auditLog` event was explicitly triggered, requiring a manual flush to prevent stale risk calculations.
+- **Codebase pattern**: Financial state mutations consistently follow the "Event Sourcing" pattern where direct database updates are forbidden; all changes must be derived from immutable domain events processed by the `EventDispatcher`.
+- **Correction**: Initially attempted to bypass the event queue for performance during bulk defaults, which broke the idempotency checks; reverted to the standard queue-based approach and optimized the worker concurrency instead.

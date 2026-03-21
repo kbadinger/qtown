@@ -2787,3 +2787,41 @@ def check_merchant_caravan(db: Session) -> bool:
     db.add(event)
     
     return True
+
+
+def process_loan_defaults(db: Session) -> int:
+    """Process loan defaults."""
+    from engine.models import Loan, NPC, WorldState, Event
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Find active loans with ticks_remaining <= 0
+    overdue_loans = db.query(Loan).filter(
+        Loan.status == "active",
+        Loan.ticks_remaining <= 0
+    ).all()
+    
+    default_count = 0
+    
+    for loan in overdue_loans:
+        borrower = db.query(NPC).get(loan.borrower_npc_id)
+        if borrower and borrower.is_dead == 0:
+            if borrower.gold < loan.amount:
+                # Default
+                loan.status = "defaulted"
+                borrower.is_bankrupt = 1
+                
+                # Create Event
+                event = Event(
+                    event_type="loan_default",
+                    description=f"{borrower.name} defaulted on loan",
+                    tick=current_tick,
+                    affected_npc_id=borrower.id
+                )
+                db.add(event)
+                
+                default_count += 1
+    
+    return default_count
