@@ -571,3 +571,12 @@ Waiting for fix — reset story to 'pending' in prd.json when ready
 [2026-03-21 17:30:39 UTC] deploy_ok: Story 522 deployed: Healthy after 0.1s
 [2026-03-21 17:30:54 UTC] story_done: Story 522 complete: Resource spoilage
 [2026-03-21 17:30:54 UTC] story_start: Story 523: Luxury goods demand
+[2026-03-21 17:58:33 UTC] WARN sprite_skip: Story 523: Sprite generation skipped — ComfyUI is not running — cannot generate assets
+[2026-03-21 17:59:07 UTC] WARN deploy_fail: Story 523 deploy failed (non-fatal, will auto-deploy on next push): Deploy push failed:
+To https://github.com/kbadinger/qtown.git
+   1761123..93c76df  main -> main
+
+Indexing...
+Uploading..
+[2026-03-21 17:59:07 UTC] story_done: Story 523 complete: Luxury goods demand
+[2026-03-21 17:59:08 UTC] story_start: Story 524: Guild formation

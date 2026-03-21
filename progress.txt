@@ -3566,3 +3566,8 @@
 - **Non-obvious pricing logic**: The "luxury" flag triggers a dynamic margin calculation that overrides standard tiered pricing, requiring a separate validation step before applying bulk discounts.
 - **Codebase convention**: All currency conversions are handled exclusively in the `CurrencyService` layer; direct math on `Money` objects in the controller is forbidden to prevent precision loss.
 - **Correction**: Initially attempted to pass the `luxury` flag as a query parameter, but realized it must be derived from the `ProductCategory` enum to ensure consistency with the inventory service.
+
+--- Story 524: Guild formation (attempts: 1, 2026-03-21 13:59) ---
+*   **Tricky/Non-obvious**: The `Guild` entity requires explicit state management for member capacity; simply adding a user to the list isn't enough—the `validateCapacity` guard must run before the transaction commits to prevent race conditions during concurrent joins.
+*   **Patterns/Conventions**: All domain events (like `GuildCreated`) are dispatched via the `EventBus` immediately after repository saves, ensuring the notification system and analytics pipeline stay in sync without tight coupling.
+*   **Mistakes/Corrections**: Initially omitted the `isOwner` check when allowing guild edits, which allowed any member to change the guild name; fixed by enforcing role-based permissions in the service layer before any mutation occurs.
