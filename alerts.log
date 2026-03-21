@@ -580,3 +580,7 @@ Indexing...
 Uploading..
 [2026-03-21 17:59:07 UTC] story_done: Story 523 complete: Luxury goods demand
 [2026-03-21 17:59:08 UTC] story_start: Story 524: Guild formation
+[2026-03-21 17:59:18 UTC] WARN sprite_skip: Story 524: Sprite generation skipped — ComfyUI is not running — cannot generate assets
+[2026-03-21 18:02:20 UTC] deploy_ok: Story 524 deployed: Healthy after 0.1s
+[2026-03-21 18:02:35 UTC] story_done: Story 524 complete: Guild formation
+[2026-03-21 18:02:36 UTC] story_start: Story 525: Market price update

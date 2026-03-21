@@ -2880,3 +2880,57 @@ def check_luxury_demand(db: Session) -> int:
     db.add(transaction)
 
     return 1
+
+
+def update_market_prices(db: Session) -> dict:
+    """Update market prices based on supply and demand."""
+    from engine.models import Resource, PriceHistory, WorldState, NPC
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    tick = world_state.tick if world_state else 0
+    
+    # Get all unique resource names
+    resources = db.query(Resource).all()
+    resource_names = set(r.resource_name for r in resources)
+    
+    # Calculate supply for each resource
+    supply_dict = {}
+    for name in resource_names:
+        total = db.query(func.sum(Resource.quantity)).filter(
+            Resource.resource_name == name
+        ).scalar() or 0
+        supply_dict[name] = total
+    
+    # Calculate demand (number of living NPCs // 3)
+    living_npcs = db.query(NPC).filter(NPC.is_dead == 0).count()
+    demand = max(1, living_npcs // 3)
+    
+    # Calculate prices and update PriceHistory
+    result = {}
+    for name in resource_names:
+        supply = supply_dict[name]
+        price = max(1, int(100 * demand / max(supply, 1)))
+        result[name] = price
+        
+        # Create or update PriceHistory
+        price_history = db.query(PriceHistory).filter(
+            PriceHistory.resource_name == name,
+            PriceHistory.tick == tick
+        ).first()
+        
+        if price_history:
+            price_history.price = price
+            price_history.supply = supply
+            price_history.demand = demand
+        else:
+            new_history = PriceHistory(
+                resource_name=name,
+                price=price,
+                supply=supply,
+                demand=demand,
+                tick=tick
+            )
+            db.add(new_history)
+    
+    return result

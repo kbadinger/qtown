@@ -3571,3 +3571,8 @@
 *   **Tricky/Non-obvious**: The `Guild` entity requires explicit state management for member capacity; simply adding a user to the list isn't enough—the `validateCapacity` guard must run before the transaction commits to prevent race conditions during concurrent joins.
 *   **Patterns/Conventions**: All domain events (like `GuildCreated`) are dispatched via the `EventBus` immediately after repository saves, ensuring the notification system and analytics pipeline stay in sync without tight coupling.
 *   **Mistakes/Corrections**: Initially omitted the `isOwner` check when allowing guild edits, which allowed any member to change the guild name; fixed by enforcing role-based permissions in the service layer before any mutation occurs.
+
+--- Story 525: Market price update (attempts: 1, 2026-03-21 14:21) ---
+- **Non-obvious concurrency**: The price update logic relies on a distributed lock that must be acquired *before* fetching the external API, not after; acquiring it post-fetch caused race conditions where stale prices were persisted.
+- **Codebase convention**: The project strictly separates "fetched" data (immutable DTOs) from "persisted" data (entities with audit fields), requiring a manual mapping step before any repository interaction.
+- **Correction**: Initially attempted to use a generic `BigDecimal` comparator for price validation, but the domain requires a custom `PriceTolerance` strategy to handle floating-point rounding differences specific to the legacy ledger system.
