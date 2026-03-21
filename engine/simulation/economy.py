@@ -2959,3 +2959,62 @@ def check_treasury_deficit(db: Session) -> bool:
             return True
     
     return False
+
+
+def run_economic_recovery(db: Session) -> int:
+    """Run economic recovery program during bust conditions."""
+    from engine.models import WorldState, NPC, Treasury, Event
+    
+    # Get current world state
+    world_state = db.query(WorldState).first()
+    if not world_state or world_state.economic_status != "bust":
+        return 0
+    
+    # Find all living NPCs with gold < 10 (is_dead == 0 for living)
+    needy_npcs = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.gold < 10
+    ).all()
+    
+    if not needy_npcs:
+        return 0
+    
+    # Calculate total stimulus needed
+    total_needed = len(needy_npcs) * 15
+    
+    # Get first treasury to fund the stimulus
+    treasury = db.query(Treasury).first()
+    if not treasury:
+        return 0
+    
+    # Calculate how much we can actually give
+    available = treasury.gold if treasury.gold > 0 else 0
+    amount_to_give = min(total_needed, available)
+    
+    # Calculate how many NPCs we can fully help
+    npcs_helped = amount_to_give // 15
+    
+    # Distribute stimulus to NPCs
+    for i, npc in enumerate(needy_npcs):
+        if i < npcs_helped:
+            npc.gold += 15
+        else:
+            # Partial distribution if treasury can't cover all
+            remaining = amount_to_give - (npcs_helped * 15)
+            if remaining > 0:
+                npc.gold += remaining
+                break
+    
+    # Deduct from treasury
+    treasury.gold = max(0, treasury.gold - amount_to_give)
+    
+    # Create event
+    tick = world_state.tick if world_state.tick else 0
+    event = Event(
+        event_type="stimulus",
+        description="Economic stimulus program activated",
+        tick=tick
+    )
+    db.add(event)
+    
+    return npcs_helped

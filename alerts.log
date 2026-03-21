@@ -588,3 +588,7 @@ Uploading..
 [2026-03-21 18:22:49 UTC] deploy_ok: Story 525 deployed: Healthy after 0.1s
 [2026-03-21 18:23:05 UTC] story_done: Story 525 complete: Market price update
 [2026-03-21 18:23:05 UTC] story_start: Story 526: Treasury deficit crisis
+[2026-03-21 18:42:09 UTC] WARN sprite_skip: Story 526: Sprite generation skipped — ComfyUI is not running — cannot generate assets
+[2026-03-21 18:44:40 UTC] deploy_ok: Story 526 deployed: Healthy after 0.1s
+[2026-03-21 18:44:56 UTC] story_done: Story 526 complete: Treasury deficit crisis
+[2026-03-21 18:44:56 UTC] story_start: Story 527: Economic recovery program

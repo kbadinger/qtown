@@ -3581,3 +3581,8 @@
 *   **Non-obvious logic**: The deficit calculation relied on a hidden `fiscal_adjustment` flag in the config that bypassed standard rounding rules, causing silent discrepancies in the final report.
 *   **Codebase pattern**: Financial aggregations in this module consistently use `Decimal` for intermediate steps but cast to `float` only at the API boundary, requiring careful type checking to avoid precision loss.
 *   **Correction**: Initially assumed the `treasury_balance` field was immutable; corrected the implementation to handle concurrent updates by adding a version check before committing the deficit adjustment.
+
+--- Story 527: Economic recovery program (attempts: 1, 2026-03-21 15:03) ---
+- **Non-obvious state coupling**: The recovery program's eligibility logic relied on a hidden `fiscal_year` context injected via the global config, not the user's submission date, causing edge-case failures at year boundaries.
+- **Codebase convention**: All financial calculations must use the `Decimal` wrapper from `utils/currency.py` to avoid floating-point drift; raw `float` math is strictly forbidden in the `ledger` module.
+- **Correction**: Initially attempted to batch-process refunds using a shared transaction lock, which caused deadlocks under high load; refactored to use per-user optimistic locking with retry logic.
