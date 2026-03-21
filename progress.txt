@@ -3521,3 +3521,8 @@
 - **Non-obvious state coupling**: The grain bonus logic unexpectedly relied on the windmill's `lastRotationTimestamp` rather than a dedicated `bonusCooldown` field, requiring careful handling of edge cases where rotation events were batched.
 - **Codebase convention**: This module strictly adheres to the "calculate first, commit later" pattern; all grain adjustments are accumulated in a temporary `Transaction` object before being applied to the `FarmState` to ensure atomicity.
 - **Correction made**: Initially, I applied the bonus multiplier before validating the windmill's operational status, which caused invalid grants during maintenance windows; moved the status check to the pre-calculation phase to fix this.
+
+--- Story 515: Arena tournament (attempts: 1, 2026-03-21 10:34) ---
+- **State Synchronization**: The tournament bracket logic was non-obvious; I initially missed that match results must be persisted before advancing the bracket state, causing race conditions when multiple users joined simultaneously.
+- **Event-Driven Conventions**: Discovered the codebase relies heavily on a centralized `TournamentEventBus` for decoupling UI updates from game logic, rather than direct method calls between components.
+- **Edge Case Handling**: Initially failed to handle the "odd number of teams" scenario correctly, which required implementing a `bye` logic branch to automatically advance the unpaired team instead of crashing the bracket generator.
