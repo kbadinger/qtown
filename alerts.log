@@ -596,3 +596,7 @@ Uploading..
 [2026-03-21 19:04:44 UTC] deploy_ok: Story 527 deployed: Healthy after 0.1s
 [2026-03-21 19:05:00 UTC] story_done: Story 527 complete: Economic recovery program
 [2026-03-21 19:05:00 UTC] story_start: Story 528: Wage negotiation
+[2026-03-21 19:25:32 UTC] WARN sprite_skip: Story 528: Sprite generation skipped — ComfyUI is not running — cannot generate assets
+[2026-03-21 19:26:48 UTC] deploy_ok: Story 528 deployed: Healthy after 0.1s
+[2026-03-21 19:27:03 UTC] story_done: Story 528 complete: Wage negotiation
+[2026-03-21 19:27:04 UTC] story_start: Story 529: Import export balance

@@ -3591,3 +3591,8 @@
 *   **Non-obvious scope**: Wage adjustments are tightly coupled with the `PayPeriod` lifecycle; modifying a rate mid-cycle requires recalculating prorated amounts for the current period, not just updating the base rate for future ones.
 *   **Codebase convention**: The domain layer strictly separates "negotiation intent" (draft state) from "effective compensation" (committed state); any logic touching `EmployeeSalary` must validate against the `EffectiveDate` to avoid temporal inconsistencies.
 *   **Correction**: Initially applied the new rate directly to the `current_period` entity, causing double-counting in the payroll run; corrected by ensuring the change only affects `future_periods` and generates a separate adjustment entry for the current period if applicable.
+
+--- Story 529: Import export balance (attempts: 1, 2026-03-21 15:27) ---
+- **Non-obvious currency handling**: The import/export balance calculation requires normalizing all values to a base currency *before* aggregation, as the raw transaction logs store amounts in mixed local currencies without a direct conversion rate field.
+- **Codebase convention**: Financial summaries in this module strictly use `BigDecimal` for all intermediate calculations to avoid floating-point drift, and results are rounded only at the final presentation layer using the `RoundingMode.HALF_UP` constant defined in `MoneyUtils`.
+- **Correction made**: Initially filtered transactions by `status == 'COMPLETED'`, but realized `PENDING` transactions with a `scheduled_date` in the past must also be included; corrected by adding a date-based fallback check to the query logic.
