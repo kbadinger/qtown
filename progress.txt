@@ -3556,3 +3556,8 @@
 - **Non-obvious state propagation**: The `LoanStatus` enum changes were not automatically reflected in the `CustomerRiskProfile` until the `auditLog` event was explicitly triggered, requiring a manual flush to prevent stale risk calculations.
 - **Codebase pattern**: Financial state mutations consistently follow the "Event Sourcing" pattern where direct database updates are forbidden; all changes must be derived from immutable domain events processed by the `EventDispatcher`.
 - **Correction**: Initially attempted to bypass the event queue for performance during bulk defaults, which broke the idempotency checks; reverted to the standard queue-based approach and optimized the worker concurrency instead.
+
+--- Story 522: Resource spoilage (attempts: 1, 2026-03-21 13:29) ---
+- **Non-obvious expiration logic**: The `spoil_date` calculation relies on the *batch creation timestamp*, not the individual item's `created_at` or `updated_at`, meaning bulk imports can accidentally pre-spoil items if the server clock drifts.
+- **Codebase convention**: Domain events (like `ResourceSpoiled`) are always emitted *after* the database transaction commits, using the `after_commit` callback pattern to ensure data consistency before triggering external notifications.
+- **Correction made**: Initially, I attempted to run the spoilage check as a synchronous background job, causing race conditions during high-volume imports; switched to a scheduled cron job that processes batches in chunks to avoid locking the main inventory table.

@@ -2172,42 +2172,47 @@ def calculate_town_reputation(db: Session) -> dict:
     }
 
 
-def apply_resource_spoilage(db: Session) -> None:
-    """Apply 10% spoilage to Food, Fish, and Bread resources (excluding warehouses)."""
+def apply_resource_spoilage(db: Session) -> int:
+    """Apply 10% spoilage to Food, Fish, and Herbs resources."""
     from engine.models import Resource, Building, Event, WorldState
     
-    # Get all food-type resources
-    food_resources = db.query(Resource).filter(
-        Resource.name.in_(['Food', 'Fish', 'Bread'])
+    # Get all food-type resources that can spoil
+    spoilable_resources = db.query(Resource).filter(
+        Resource.name.in_(['Food', 'Fish', 'Herbs'])
     ).all()
     
-    total_spoiled = 0
+    spoiled_count = 0
     
-    for resource in food_resources:
-        # Check if this resource is in a warehouse
+    for resource in spoilable_resources:
+        # Check if this resource is in a warehouse (warehouses preserve food)
         if resource.building_id:
             building = db.query(Building).filter(Building.id == resource.building_id).first()
             if building and building.building_type == 'warehouse':
                 continue  # Skip warehouse resources
         
-        # Apply 10% spoilage (integer division)
-        spoiled_amount = resource.quantity // 10
-        if spoiled_amount > 0:
-            resource.quantity -= spoiled_amount
-            total_spoiled += spoiled_amount
+        # Apply 10% spoilage (quantity = int(quantity * 0.9))
+        old_quantity = resource.quantity
+        new_quantity = int(resource.quantity * 0.9)
+        new_quantity = max(0, new_quantity)  # Min 0
+        
+        if new_quantity < old_quantity:
+            resource.quantity = new_quantity
+            spoiled_count += 1
     
     # Create event if there was any spoilage
-    if total_spoiled > 0:
+    if spoiled_count > 0:
         # Get current tick from WorldState
         world_state = db.query(WorldState).first()
         current_tick = world_state.tick if world_state else 0
         
         event = Event(
             event_type='spoilage',
-            description=f'{total_spoiled} units of food spoiled',
+            description=f'{spoiled_count} resources spoiled',
             tick=current_tick
         )
         db.add(event)
+    
+    return spoiled_count
 
 
 def classify_npcs(db: Session) -> dict:
