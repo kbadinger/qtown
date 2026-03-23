@@ -600,3 +600,25 @@ Uploading..
 [2026-03-21 19:26:48 UTC] deploy_ok: Story 528 deployed: Healthy after 0.1s
 [2026-03-21 19:27:03 UTC] story_done: Story 528 complete: Wage negotiation
 [2026-03-21 19:27:04 UTC] story_start: Story 529: Import export balance
+[2026-03-21 19:27:16 UTC] WARN sprite_skip: Story 529: Sprite generation skipped — ComfyUI is not running — cannot generate assets
+[2026-03-21 19:28:27 UTC] deploy_ok: Story 529 deployed: Healthy after 0.1s
+[2026-03-21 19:28:35 UTC] story_done: Story 529 complete: Import export balance
+[2026-03-21 19:28:35 UTC] story_start: Story 530: Resource discovery from exploration
+[2026-03-21 19:45:48 UTC] WARN story_fail: Story 530 struggling — attempt 5/12
+Resource discovery from exploration
+[2026-03-21 19:55:44 UTC] CRITICAL loop: Story 530: same error 5x in a row — requesting help
+`tests/test_economy.py::test_s530_resource_discovery_from_exploration FAILED [100%]`
+[2026-03-21 19:55:44 UTC] CRITICAL needs_help: Story 530 needs help — waiting 10min for fix
+`tests/test_economy.py::test_s530_resource_discovery_from_exploration FAILED [100%]`
+[2026-03-21 20:27:54 UTC] CRITICAL critical: Story 530: still failing after help + 3 retries — stopping
+`tests/test_economy.py::test_s530_resource_discovery_from_exploration FAILED [100%]`
+[2026-03-21 20:27:54 UTC] CRITICAL critical: Story 530 failed: Resource discovery from exploration
+Waiting for fix — reset story to 'pending' in prd.json when ready
+[2026-03-23 00:53:49 UTC] start: Ralph online — 510/550 stories complete
+[2026-03-23 00:53:49 UTC] story_start: Story 530: Resource discovery from exploration
+[2026-03-23 01:15:51 UTC] WARN story_fail: Story 530 struggling — attempt 5/12
+Resource discovery from exploration
+[2026-03-23 01:25:50 UTC] CRITICAL loop: Story 530: same error 5x in a row — requesting help
+`tests/test_economy.py::test_s530_resource_discovery_from_exploration FAILED [100%]`
+[2026-03-23 01:25:50 UTC] CRITICAL needs_help: Story 530 needs help — waiting 10min for fix
+`tests/test_economy.py::test_s530_resource_discovery_from_exploration FAILED [100%]`

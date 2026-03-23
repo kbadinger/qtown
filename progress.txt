@@ -3596,3 +3596,8 @@
 - **Non-obvious currency handling**: The import/export balance calculation requires normalizing all values to a base currency *before* aggregation, as the raw transaction logs store amounts in mixed local currencies without a direct conversion rate field.
 - **Codebase convention**: Financial summaries in this module strictly use `BigDecimal` for all intermediate calculations to avoid floating-point drift, and results are rounded only at the final presentation layer using the `RoundingMode.HALF_UP` constant defined in `MoneyUtils`.
 - **Correction made**: Initially filtered transactions by `status == 'COMPLETED'`, but realized `PENDING` transactions with a `scheduled_date` in the past must also be included; corrected by adding a date-based fallback check to the query logic.
+
+--- Story 530: Resource discovery from exploration (attempts: 1, 2026-03-22 21:46) ---
+*   **Tricky/Non-obvious:** The `DiscoveryService` relies on a hidden side-effect where `ResourceScanner` updates the global `ExplorationContext` before returning results; failing to check the context state first causes race conditions in concurrent exploration threads.
+*   **Patterns/Conventions:** Resource discovery always follows the `Scan -> Validate -> Enrich -> Register` pipeline, and all new resource types must implement the `IExplorable` interface to be picked up by the generic discovery loop.
+*   **Mistakes corrected:** Initially attempted to cache discovery results in memory only, which caused stale data during hot-reloads; corrected by implementing a cache invalidation hook that listens to the `ResourceUpdated` event bus.

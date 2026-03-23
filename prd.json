@@ -8203,9 +8203,9 @@
       "context_files": [
         "engine/simulation/economy.py"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "phase": "development",
-      "attempts": 0
+      "attempts": 1
     },
     {
       "id": "531",

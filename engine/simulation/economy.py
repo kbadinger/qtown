@@ -3056,3 +3056,67 @@ def negotiate_wages(db: Session) -> int:
     db.commit()
     
     return new_wage
+
+
+def explore_for_resources(db: Session) -> str | None:
+    """
+    Simulate resource discovery by explorers or miners.
+    - Counts living NPCs with role 'explorer' or 'miner'.
+    - If count > 0, 8% chance to discover a new resource.
+    - Adds Resource to a random building.
+    - Creates an Event for the discovery.
+    - Returns resource name or None.
+    """
+    from engine.models import NPC, Building, Resource, Event, WorldState
+    
+    # Count living explorers and miners
+    # Note: is_dead is Integer (0 or 1) per Postgres compatibility rules
+    explorer_miners = db.query(NPC).filter(
+        NPC.is_dead == 0,
+        NPC.role.in_(["explorer", "miner"])
+    ).count()
+    
+    if explorer_miners == 0:
+        return None
+    
+    # 8% chance to discover
+    if random.random() >= 0.08:
+        return None
+    
+    # Pick resource type
+    resource_types = ["gems", "marble", "crystal", "spices"]
+    picked_resource = random.choice(resource_types)
+    
+    # Quantity between 5 and 15
+    quantity = random.randint(5, 15)
+    
+    # Pick a random building to store the resource
+    buildings = db.query(Building).all()
+    if not buildings:
+        return None
+    target_building = random.choice(buildings)
+    
+    # Add Resource
+    new_resource = Resource(
+        name=picked_resource,
+        quantity=quantity,
+        building_id=target_building.id
+    )
+    db.add(new_resource)
+    
+    # Get current tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
+    
+    # Create Event
+    new_event = Event(
+        event_type="exploration_find",
+        description=f"Explorers discovered {picked_resource}!",
+        tick=current_tick
+    )
+    db.add(new_event)
+    
+    # Commit changes
+    db.commit()
+    
+    return picked_resource
