@@ -977,11 +977,13 @@ def test_s090_inheritance_no_family_treasury_gets_gold(db):
 def _setup_world(db):
     """Seed grid, buildings, and NPCs for tests that need a populated world."""
     from engine.simulation import init_world_state, init_grid, seed_buildings, seed_npcs
+    from tests.conftest import enrich_world
 
     init_world_state(db)
     init_grid(db)
     seed_buildings(db)
     seed_npcs(db)
+    enrich_world(db)
 
 
 # ---------------------------------------------------------------------------
@@ -2668,11 +2670,13 @@ def test_s449_record_npc_legacy(db):
 def _setup_world(db):
     """Helper: init grid + seed buildings + seed NPCs."""
     from engine.simulation import init_world_state, init_grid, seed_buildings, seed_npcs
+    from tests.conftest import enrich_world
 
     init_world_state(db)
     init_grid(db)
     seed_buildings(db)
     seed_npcs(db)
+    enrich_world(db)
 
 
 def test_s468_apply_hunger_penalty(db):

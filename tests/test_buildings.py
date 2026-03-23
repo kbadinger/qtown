@@ -958,11 +958,13 @@ def test_s209_upgrade_building_api(client, admin_headers):
 def _setup_world(db):
     """Seed grid, buildings, and NPCs for tests that need a populated world."""
     from engine.simulation import init_world_state, init_grid, seed_buildings, seed_npcs
+    from tests.conftest import enrich_world
 
     init_world_state(db)
     init_grid(db)
     seed_buildings(db)
     seed_npcs(db)
+    enrich_world(db)
 
 
 # ── Stories 257-261: Infrastructure & Buildings ─────────────────────
@@ -1404,11 +1406,13 @@ def test_s430_calculate_network_effects(db):
 def _setup_world(db):
     """Helper: init grid + seed buildings + seed NPCs."""
     from engine.simulation import init_world_state, init_grid, seed_buildings, seed_npcs
+    from tests.conftest import enrich_world
 
     init_world_state(db)
     init_grid(db)
     seed_buildings(db)
     seed_npcs(db)
+    enrich_world(db)
 
 
 def test_s471_apply_crime_penalty(db):

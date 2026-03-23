@@ -72,3 +72,39 @@ def admin_key():
 def admin_headers(admin_key):
     """Returns headers dict with admin key."""
     return {"X-Admin-Key": admin_key}
+
+
+def enrich_world(db):
+    """Add extra building types and NPC roles needed by stories 500+.
+
+    Call AFTER seed_buildings/seed_npcs so we don't duplicate the base set.
+    Idempotent — safe to call multiple times.
+    """
+    from engine.models import Building, NPC
+
+    # -- extra buildings --------------------------------------------------
+    extra_buildings = [
+        "arena", "church", "tavern", "theater", "barracks", "mine",
+        "lumber_mill", "fishing_dock", "hospital", "school", "library",
+        "bank", "blacksmith", "warehouse", "market", "prison",
+        "watchtower", "windmill", "well", "graveyard", "garden",
+    ]
+    existing_types = {b.building_type for b in db.query(Building).all()}
+    for i, bt in enumerate(extra_buildings):
+        if bt not in existing_types:
+            db.add(Building(name=bt.replace("_", " ").title(),
+                            building_type=bt, x=30 + i, y=30))
+
+    # -- extra NPCs -------------------------------------------------------
+    extra_npcs = [
+        ("Rex", "miner"), ("Elara", "explorer"), ("Gwen", "lumberjack"),
+        ("Finn", "fisherman"), ("Rosa", "artist"), ("Benny", "bard"),
+        ("Dirk", "blacksmith"), ("Nora", "builder"), ("Ivy", "journalist"),
+        ("Cal", "thief"),
+    ]
+    existing_names = {n.name for n in db.query(NPC).all()}
+    for name, role in extra_npcs:
+        if name not in existing_names:
+            db.add(NPC(name=name, role=role, x=35, y=35, gold=50))
+
+    db.commit()

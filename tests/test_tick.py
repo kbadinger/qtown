@@ -4,11 +4,13 @@
 def _setup_world(db):
     """Helper: init grid + seed buildings + seed NPCs."""
     from engine.simulation import init_world_state, init_grid, seed_buildings, seed_npcs
+    from tests.conftest import enrich_world
 
     init_world_state(db)
     init_grid(db)
     seed_buildings(db)
     seed_npcs(db)
+    enrich_world(db)
 
 
 def test_s017_tick_decay(db):
