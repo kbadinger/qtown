@@ -41,9 +41,6 @@ function renderStories(data) {
         const tags = (s.tags || []).map(t =>
             `<span class="px-1.5 py-0.5 text-xs rounded bg-gray-800 text-gray-400">${escapeHtml(t)}</span>`
         ).join(" ");
-        const commit = s.commit_url
-            ? `<a href="${s.commit_url}" target="_blank" rel="noopener" class="text-blue-400 hover:text-blue-300 font-mono text-xs">${s.commit_url.split('/').pop().slice(0,7)}</a>`
-            : `<span class="text-gray-600">&mdash;</span>`;
 
         return `<tr class="border-b border-gray-800 hover:bg-gray-800/50">
             <td class="py-2 pr-3 font-mono text-gray-500 text-sm">${escapeHtml(s.id)}</td>
@@ -51,7 +48,6 @@ function renderStories(data) {
             <td class="py-2 pr-3">${badge}</td>
             <td class="py-2 pr-3 text-center text-sm text-gray-400 font-mono">${s.attempts}</td>
             <td class="py-2 pr-3">${tags}</td>
-            <td class="py-2">${commit}</td>
         </tr>`;
     }).join("");
 
@@ -66,7 +62,6 @@ function renderStories(data) {
                     <th class="py-2 pr-3">Status</th>
                     <th class="py-2 pr-3 text-center">Attempts</th>
                     <th class="py-2 pr-3">Tags</th>
-                    <th class="py-2">Commit</th>
                 </tr>
             </thead>
             <tbody>${rows}</tbody>

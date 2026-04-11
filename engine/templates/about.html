@@ -3,79 +3,137 @@
 {% block title %}About — Qwen Town{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto px-4 py-10">
-    <h1 class="text-3xl font-bold text-amber-400 mb-2">About Qwen Town</h1>
-    <p class="text-gray-500 text-sm mb-8">A self-evolving town built entirely by a local AI</p>
+<div class="max-w-4xl mx-auto px-4 py-10">
+    <!-- Hero -->
+    <div class="mb-10">
+        <h1 class="text-3xl font-bold text-amber-400 mb-2">About Qwen Town</h1>
+        <p class="text-gray-400 text-lg">A self-evolving town simulation built entirely by a local AI</p>
+    </div>
+
+    <!-- Key Stats -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+        <div class="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+            <div class="text-2xl font-bold text-amber-400 font-mono">510</div>
+            <div class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Stories Done</div>
+        </div>
+        <div class="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+            <div class="text-2xl font-bold text-green-400 font-mono">$22</div>
+            <div class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Total Cost</div>
+        </div>
+        <div class="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+            <div class="text-2xl font-bold text-gray-100 font-mono">1,451</div>
+            <div class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Commits</div>
+        </div>
+        <div class="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+            <div class="text-2xl font-bold text-gray-100 font-mono">88%</div>
+            <div class="text-xs text-gray-500 mt-1 uppercase tracking-wide">AI-Written</div>
+        </div>
+    </div>
+
+    <!-- Cost Comparison Callout -->
+    <div class="bg-gray-800/30 border border-amber-500/20 rounded-lg p-6 mb-10">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div class="flex-1">
+                <div class="text-sm font-medium text-amber-400 mb-1">Cost comparison</div>
+                <p class="text-gray-300">
+                    510 stories for <span class="text-amber-300 font-semibold">$22.51</span> on a local GPU.
+                    The same work on Claude Opus 4 would cost <span class="text-gray-400 line-through">$916.96</span>.
+                    That's <span class="text-green-400 font-semibold">98% savings</span>.
+                </p>
+            </div>
+            <a href="/dashboard" class="text-amber-400 hover:text-amber-300 transition-colors text-sm font-medium whitespace-nowrap">
+                Full breakdown &rarr;
+            </a>
+        </div>
+    </div>
 
     <div class="space-y-8 text-gray-300 leading-relaxed">
         <section>
-            <h2 class="text-lg font-semibold text-amber-300 mb-2">What is this?</h2>
+            <h2 class="text-lg font-semibold text-amber-300 mb-3">What is this?</h2>
             <p>
                 Qwen Town is a living 2D isometric town simulation where every line of game logic
                 was written by <strong class="text-gray-100">Qwen 3.5</strong>, a 27-billion-parameter
                 open-source language model running on local hardware. No cloud APIs, no GPT, no Claude
                 writing the simulation &mdash; just a local model, a GPU, and electricity.
             </p>
+            <p class="mt-3 text-sm text-gray-400">
+                NPCs live their lives &mdash; they work, earn gold, eat, sleep, get sick, form relationships,
+                run for mayor, commit crimes, and write newspapers. The economy has supply and demand,
+                dynamic pricing, taxes, loans, and a treasury. Every 30 seconds, the simulation advances
+                one tick.
+            </p>
         </section>
 
         <section>
-            <h2 class="text-lg font-semibold text-amber-300 mb-2">How does it work?</h2>
+            <h2 class="text-lg font-semibold text-amber-300 mb-3">How Ralph works</h2>
             <p class="mb-3">
                 An orchestrator called <strong class="text-gray-100">Ralph</strong> reads a product
-                requirements document (PRD) with 350 planned features. For each story, Ralph:
+                requirements document with 550 planned features. For each story:
             </p>
-            <ol class="list-decimal list-inside space-y-1.5 text-sm text-gray-400 ml-2">
-                <li>Reads the failing test &mdash; every feature has a test written by a human first</li>
-                <li>Sends the test + context files to Qwen 3.5 via Ollama</li>
-                <li>Applies Qwen's code output as a surgical patch</li>
-                <li>Runs the test &mdash; if it passes, commits; if not, retries (up to 12 attempts)</li>
-                <li>Runs the full regression suite to make sure nothing broke</li>
-                <li>Moves on to the next story</li>
-            </ol>
+            <div class="bg-gray-800/50 rounded-lg p-4 space-y-2 text-sm">
+                <div class="flex gap-3">
+                    <span class="text-amber-500 font-mono font-bold w-5 text-right flex-shrink-0">1</span>
+                    <span class="text-gray-300">Reads the failing test &mdash; every feature has a test written by a human first</span>
+                </div>
+                <div class="flex gap-3">
+                    <span class="text-amber-500 font-mono font-bold w-5 text-right flex-shrink-0">2</span>
+                    <span class="text-gray-300">Sends the test + context files to Qwen 3.5 via Ollama</span>
+                </div>
+                <div class="flex gap-3">
+                    <span class="text-amber-500 font-mono font-bold w-5 text-right flex-shrink-0">3</span>
+                    <span class="text-gray-300">Applies Qwen's code output as a surgical patch</span>
+                </div>
+                <div class="flex gap-3">
+                    <span class="text-amber-500 font-mono font-bold w-5 text-right flex-shrink-0">4</span>
+                    <span class="text-gray-300">Runs the test &mdash; if it passes, commits. If not, retries (up to 12 attempts)</span>
+                </div>
+                <div class="flex gap-3">
+                    <span class="text-amber-500 font-mono font-bold w-5 text-right flex-shrink-0">5</span>
+                    <span class="text-gray-300">Runs the full regression suite to make sure nothing broke</span>
+                </div>
+                <div class="flex gap-3">
+                    <span class="text-amber-500 font-mono font-bold w-5 text-right flex-shrink-0">6</span>
+                    <span class="text-gray-300">Moves on to the next story</span>
+                </div>
+            </div>
             <p class="mt-3 text-sm text-gray-500">
                 The human writes only scaffolding: tests, the PRD, the renderer, and Ralph itself.
-                Everything inside <code class="text-amber-400/80">engine/simulation/</code> is Qwen's work.
+                Everything inside <code class="text-amber-400/80 bg-gray-800 px-1.5 py-0.5 rounded text-xs">engine/simulation/</code> is Qwen's work.
             </p>
         </section>
 
         <section>
-            <h2 class="text-lg font-semibold text-amber-300 mb-2">What happens in the town?</h2>
-            <p>
-                NPCs live their lives &mdash; they work jobs (farmer, merchant, guard, blacksmith, baker),
-                earn gold, eat, sleep, get sick, form relationships, get married, run for mayor, commit crimes,
-                and even write newspapers. The economy has supply and demand, dynamic pricing, taxes, loans,
-                and a treasury. Weather changes, disasters happen, and the town evolves on its own.
-            </p>
-            <p class="mt-2 text-sm text-gray-400">
-                Every 30 seconds, the simulation advances one tick (one in-game hour). 24 ticks = 1 day.
-                You're watching it live.
-            </p>
-        </section>
-
-        <section>
-            <h2 class="text-lg font-semibold text-amber-300 mb-2">Tech Stack</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1.5 text-sm mt-3">
-                <span class="text-gray-500">AI Model</span>
-                <span>Qwen 3.5 27B (via Ollama)</span>
-                <span class="text-gray-500">Backend</span>
-                <span>FastAPI + SQLAlchemy</span>
-                <span class="text-gray-500">Database</span>
-                <span>Neon Postgres (prod) / SQLite (dev)</span>
-                <span class="text-gray-500">Renderer</span>
-                <span>PixiJS isometric canvas</span>
-                <span class="text-gray-500">Sprites</span>
-                <span>ComfyUI + SDXL + rembg</span>
-                <span class="text-gray-500">Hosting</span>
-                <span>Railway</span>
-                <span class="text-gray-500">Tests</span>
-                <span>pytest (350 stories)</span>
-                <span class="text-gray-500">Orchestrator</span>
-                <span>Ralph (custom Python pipeline)</span>
+            <h2 class="text-lg font-semibold text-amber-300 mb-3">Tech stack</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="flex items-center gap-3 bg-gray-800/30 rounded-lg px-4 py-3">
+                    <span class="text-xs text-gray-500 uppercase tracking-wide w-20 flex-shrink-0">AI Model</span>
+                    <span class="text-sm text-gray-200">Qwen 3.5 27B (via Ollama)</span>
+                </div>
+                <div class="flex items-center gap-3 bg-gray-800/30 rounded-lg px-4 py-3">
+                    <span class="text-xs text-gray-500 uppercase tracking-wide w-20 flex-shrink-0">Backend</span>
+                    <span class="text-sm text-gray-200">FastAPI + SQLAlchemy</span>
+                </div>
+                <div class="flex items-center gap-3 bg-gray-800/30 rounded-lg px-4 py-3">
+                    <span class="text-xs text-gray-500 uppercase tracking-wide w-20 flex-shrink-0">Database</span>
+                    <span class="text-sm text-gray-200">Neon Postgres (prod) / SQLite (dev)</span>
+                </div>
+                <div class="flex items-center gap-3 bg-gray-800/30 rounded-lg px-4 py-3">
+                    <span class="text-xs text-gray-500 uppercase tracking-wide w-20 flex-shrink-0">Renderer</span>
+                    <span class="text-sm text-gray-200">PixiJS isometric canvas</span>
+                </div>
+                <div class="flex items-center gap-3 bg-gray-800/30 rounded-lg px-4 py-3">
+                    <span class="text-xs text-gray-500 uppercase tracking-wide w-20 flex-shrink-0">Sprites</span>
+                    <span class="text-sm text-gray-200">ComfyUI + SDXL + rembg</span>
+                </div>
+                <div class="flex items-center gap-3 bg-gray-800/30 rounded-lg px-4 py-3">
+                    <span class="text-xs text-gray-500 uppercase tracking-wide w-20 flex-shrink-0">Hosting</span>
+                    <span class="text-sm text-gray-200">Railway</span>
+                </div>
             </div>
         </section>
 
         <section>
-            <h2 class="text-lg font-semibold text-amber-300 mb-2">Why?</h2>
+            <h2 class="text-lg font-semibold text-amber-300 mb-3">Why?</h2>
             <p>
                 To prove that a local open-source model can build complex, working software &mdash;
                 not just snippets, but a full simulation with an economy, politics, relationships,
@@ -85,14 +143,11 @@
 
         <section class="border-t border-gray-700 pt-6">
             <div class="flex flex-wrap gap-4 sm:gap-6 text-sm">
+                <a href="/" class="text-amber-400 hover:text-amber-300 transition-colors">Watch it live &rarr;</a>
+                <a href="/stories" class="text-amber-400 hover:text-amber-300 transition-colors">Story progress &rarr;</a>
+                <a href="/dashboard" class="text-amber-400 hover:text-amber-300 transition-colors">Dashboard &rarr;</a>
                 <a href="https://github.com/kbadinger/qtown" target="_blank" rel="noopener"
                    class="text-amber-400 hover:text-amber-300 transition-colors">GitHub &rarr;</a>
-                <a href="/stories"
-                   class="text-amber-400 hover:text-amber-300 transition-colors">Story Progress &rarr;</a>
-                <a href="/dashboard"
-                   class="text-amber-400 hover:text-amber-300 transition-colors">Dashboard &rarr;</a>
-                <a href="/features"
-                   class="text-amber-400 hover:text-amber-300 transition-colors">Vote on Features &rarr;</a>
             </div>
         </section>
     </div>

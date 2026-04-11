@@ -70,75 +70,74 @@ function renderDashboard(d) {
     <section class="mb-8">
         <h2 class="text-lg font-semibold text-gray-200 mb-3">Story Progress</h2>
         <div class="flex items-center gap-4 mb-2">
-            <span class="text-3xl font-bold text-amber-400">${done}</span>
-            <span class="text-gray-400 text-lg">/ ${total} stories</span>
-            ${inProgress ? `<span class="text-blue-400 text-sm">(${inProgress} in progress)</span>` : ''}
+            <span class="text-4xl font-bold text-amber-400">${done}</span>
+            <div class="flex flex-col">
+                <span class="text-gray-400 text-lg">/ ${total} stories</span>
+                ${inProgress ? `<span class="text-blue-400 text-xs">${inProgress} in progress</span>` : ''}
+            </div>
         </div>
-        <div class="w-full h-6 bg-gray-800 rounded-full overflow-hidden flex">
-            <div class="bg-green-600 h-full transition-all" style="width:${donePct}%" title="${done} done"></div>
-            <div class="bg-red-600 h-full transition-all" style="width:${failedPct}%" title="${failed} failed"></div>
-            <div class="bg-gray-600 h-full transition-all" style="width:${pendingPct}%" title="${pending} pending"></div>
+        <div class="w-full h-3 bg-gray-800 rounded-full overflow-hidden flex">
+            <div class="bg-green-500 h-full transition-all" style="width:${donePct}%" title="${done} done"></div>
+            <div class="bg-red-500 h-full transition-all" style="width:${failedPct}%" title="${failed} failed"></div>
         </div>
-        <div class="flex gap-4 mt-2 text-xs text-gray-400">
-            <span><span class="inline-block w-3 h-3 bg-green-600 rounded mr-1"></span>Done (${done})</span>
-            <span><span class="inline-block w-3 h-3 bg-red-600 rounded mr-1"></span>Failed (${failed})</span>
-            <span><span class="inline-block w-3 h-3 bg-gray-600 rounded mr-1"></span>Pending (${pending})</span>
+        <div class="flex gap-4 mt-2 text-xs text-gray-500">
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 bg-green-500 rounded-full"></span>Done ${done}</span>
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 bg-red-500 rounded-full"></span>Failed ${failed}</span>
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 bg-gray-600 rounded-full"></span>Pending ${pending}</span>
         </div>
     </section>
 
     <!-- Cost Tracker -->
     <section class="mb-8">
         <h2 class="text-lg font-semibold text-gray-200 mb-3">Cost Tracker</h2>
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead>
-                    <tr class="border-b border-gray-700 text-gray-400">
-                        <th class="text-left py-2 pr-4">Provider</th>
-                        <th class="text-right py-2 px-4">Est. Cost</th>
-                        <th class="text-right py-2 pl-4">Savings</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="border-b border-gray-800">
-                        <td class="py-2 pr-4 text-amber-400 font-medium">Qwen 3.5 (local)</td>
-                        <td class="text-right py-2 px-4 text-amber-300 font-mono">$${qwenCost}</td>
-                        <td class="text-right py-2 pl-4 text-green-400">baseline</td>
-                    </tr>
-                    <tr class="border-b border-gray-800">
-                        <td class="py-2 pr-4 text-gray-300">Claude Opus 4</td>
-                        <td class="text-right py-2 px-4 text-gray-300 font-mono">$${opusCost}</td>
-                        <td class="text-right py-2 pl-4 text-green-400">${savings}%</td>
-                    </tr>
-                    <tr class="border-b border-gray-800">
-                        <td class="py-2 pr-4 text-gray-300">Claude Opus 4.6</td>
-                        <td class="text-right py-2 px-4 text-gray-300 font-mono">$${opus46Cost}</td>
-                        <td class="text-right py-2 pl-4 text-green-400">${opus46Cost > 0 ? Math.round((1 - qwenCost / opus46Cost) * 100) : 0}%</td>
-                    </tr>
-                    <tr class="border-b border-gray-800">
-                        <td class="py-2 pr-4 text-gray-300">GPT-4o</td>
-                        <td class="text-right py-2 px-4 text-gray-300 font-mono">$${gpt4oCost}</td>
-                        <td class="text-right py-2 pl-4 text-green-400">${gpt4oCost > 0 ? Math.round((1 - qwenCost / gpt4oCost) * 100) : 0}%</td>
-                    </tr>
-                    <tr>
-                        <td class="py-2 pr-4 text-gray-300">Claude Sonnet 4.5</td>
-                        <td class="text-right py-2 px-4 text-gray-300 font-mono">$${sonnetCost}</td>
-                        <td class="text-right py-2 pl-4 text-green-400">${sonnetCost > 0 ? Math.round((1 - qwenCost / sonnetCost) * 100) : 0}%</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="bg-gray-800/40 rounded-lg border border-gray-700/50 overflow-hidden">
+            <div class="grid grid-cols-3 text-xs text-gray-500 font-medium uppercase tracking-wider px-4 py-2.5 border-b border-gray-700/50">
+                <span>Provider</span>
+                <span class="text-right">Est. Cost</span>
+                <span class="text-right">Savings</span>
+            </div>
+            <div class="divide-y divide-gray-700/30">
+                <div class="grid grid-cols-3 items-center px-4 py-3 bg-amber-500/5">
+                    <span class="text-amber-400 font-medium text-sm">Qwen 3.5 (local)</span>
+                    <span class="text-right text-amber-300 font-mono text-sm">$${qwenCost}</span>
+                    <span class="text-right text-gray-500 text-sm">baseline</span>
+                </div>
+                <div class="grid grid-cols-3 items-center px-4 py-3">
+                    <span class="text-gray-300 text-sm">Claude Opus 4</span>
+                    <span class="text-right text-gray-300 font-mono text-sm">$${opusCost}</span>
+                    <span class="text-right text-green-400 font-mono text-sm">${savings}%</span>
+                </div>
+                <div class="grid grid-cols-3 items-center px-4 py-3">
+                    <span class="text-gray-300 text-sm">Claude Opus 4.6</span>
+                    <span class="text-right text-gray-300 font-mono text-sm">$${opus46Cost}</span>
+                    <span class="text-right text-green-400 font-mono text-sm">${opus46Cost > 0 ? Math.round((1 - qwenCost / opus46Cost) * 100) : 0}%</span>
+                </div>
+                <div class="grid grid-cols-3 items-center px-4 py-3">
+                    <span class="text-gray-300 text-sm">GPT-4o</span>
+                    <span class="text-right text-gray-300 font-mono text-sm">$${gpt4oCost}</span>
+                    <span class="text-right text-green-400 font-mono text-sm">${gpt4oCost > 0 ? Math.round((1 - qwenCost / gpt4oCost) * 100) : 0}%</span>
+                </div>
+                <div class="grid grid-cols-3 items-center px-4 py-3">
+                    <span class="text-gray-300 text-sm">Claude Sonnet 4.5</span>
+                    <span class="text-right text-gray-300 font-mono text-sm">$${sonnetCost}</span>
+                    <span class="text-right text-green-400 font-mono text-sm">${sonnetCost > 0 ? Math.round((1 - qwenCost / sonnetCost) * 100) : 0}%</span>
+                </div>
+            </div>
         </div>
     </section>
 
     <!-- Latest Snapshot -->
     <section class="mb-8">
         <h2 class="text-lg font-semibold text-gray-200 mb-3">Latest Snapshot</h2>
-        ${snapHtml}
+        <div class="max-w-2xl">
+            ${snapHtml}
+        </div>
     </section>
 
     <!-- Recent Learnings -->
     <section class="mb-8">
         <h2 class="text-lg font-semibold text-gray-200 mb-3">Recent Learnings</h2>
-        <div class="bg-gray-800/50 rounded-lg p-4">
+        <div class="bg-gray-800/40 rounded-lg border border-gray-700/50 p-4">
             ${learnHtml}
         </div>
     </section>
@@ -146,7 +145,7 @@ function renderDashboard(d) {
     <!-- Alerts -->
     <section class="mb-8">
         <h2 class="text-lg font-semibold text-gray-200 mb-3">Alerts</h2>
-        <div class="bg-gray-800/50 rounded-lg p-4 max-h-64 overflow-y-auto">
+        <div class="bg-gray-800/40 rounded-lg border border-gray-700/50 p-4 max-h-64 overflow-y-auto">
             ${alertHtml}
         </div>
     </section>
