@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qtown — Autonomous AI-Driven Town Simulation</title>
+  <meta name="description" content="A polyglot microservices simulation where NPCs live, work, trade, and make decisions across 9 neighborhoods, 12 languages, and 420 files. 88% written by an AI developer.">
+  <meta property="og:title" content="Qtown — Autonomous AI-Driven Town Simulation">
+  <meta property="og:description" content="9 neighborhoods. 12 languages. 194 stories. 88% AI-written code. A polyglot microservices architecture that proves distributed systems work.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./base.css">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header" id="header">
+    <div class="header-inner">
+      <a href="#" class="logo" aria-label="Qtown home">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <rect x="2" y="2" width="28" height="28" rx="4" stroke="currentColor" stroke-width="2"/>
+          <rect x="7" y="14" width="6" height="12" fill="var(--color-accent)"/>
+          <rect x="16" y="8" width="6" height="18" fill="var(--color-accent)" opacity="0.7"/>
+          <rect x="25" y="11" width="2" height="15" fill="var(--color-accent)" opacity="0.4"/>
+          <circle cx="10" cy="10" r="2" fill="var(--color-accent)"/>
+        </svg>
+        <span>Qtown</span>
+      </a>
+      <nav class="header-nav">
+        <a href="#live">Live</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#neighborhoods">Neighborhoods</a>
+        <a href="#ralph">Ralph</a>
+        <a href="https://github.com/kbadinger/qtown" target="_blank" rel="noopener noreferrer" class="btn btn-sm">GitHub</a>
+      </nav>
+      <button class="mobile-menu-btn" aria-label="Toggle menu" id="menuToggle">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Nav -->
+  <div class="mobile-nav" id="mobileNav">
+    <a href="#live">Live</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#neighborhoods">Neighborhoods</a>
+    <a href="#ralph">Ralph</a>
+    <a href="https://github.com/kbadinger/qtown" target="_blank" rel="noopener noreferrer">GitHub →</a>
+  </div>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-badge">Polyglot Microservices · 12 Languages · AI-Written</div>
+        <h1>An autonomous town<br>where NPCs run<br>the economy.</h1>
+        <p class="hero-sub">9 neighborhoods. 420 files. 194 stories. 88% of the code written by Ralph, an AI developer running local models. Each neighborhood proves a different technology actually works.</p>
+        <div class="hero-actions">
+          <a href="https://github.com/kbadinger/qtown" target="_blank" rel="noopener noreferrer" class="btn btn-primary">View on GitHub</a>
+          <a href="#live" class="btn btn-ghost">See it live ↓</a>
+        </div>
+        <div class="hero-stats" id="heroStats">
+          <div class="stat">
+            <span class="stat-value" data-count="194">194</span>
+            <span class="stat-label">Stories shipped</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" data-count="420">420</span>
+            <span class="stat-label">Files</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">12</span>
+            <span class="stat-label">Languages</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">88%</span>
+            <span class="stat-label">AI-written</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Live Dashboard -->
+    <section class="section" id="live">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Live Data</span>
+          <h2>The simulation is running right now.</h2>
+          <p class="section-desc">Pulling real-time data from the Qtown API. Every 30 seconds the tick loop fires — NPCs process needs, make decisions, and interact.</p>
+        </div>
+
+        <div class="live-dashboard">
+          <div class="dash-top">
+            <div class="kpi">
+              <span class="kpi-label">Tick</span>
+              <span class="kpi-value" id="kpiTick">—</span>
+            </div>
+            <div class="kpi">
+              <span class="kpi-label">Day</span>
+              <span class="kpi-value" id="kpiDay">—</span>
+            </div>
+            <div class="kpi">
+              <span class="kpi-label">Weather</span>
+              <span class="kpi-value" id="kpiWeather">—</span>
+            </div>
+            <div class="kpi">
+              <span class="kpi-label">Time</span>
+              <span class="kpi-value" id="kpiTime">—</span>
+            </div>
+            <div class="kpi">
+              <span class="kpi-label">Total Gold</span>
+              <span class="kpi-value" id="kpiGold">—</span>
+            </div>
+            <div class="kpi">
+              <span class="kpi-label">Population</span>
+              <span class="kpi-value" id="kpiPop">—</span>
+            </div>
+          </div>
+
+          <!-- Tile Map -->
+          <div class="map-container">
+            <div class="map-label">50×50 World Map — Terrain</div>
+            <canvas id="worldMap" width="500" height="500"></canvas>
+          </div>
+
+          <!-- NPC Table -->
+          <div class="npc-table-container">
+            <div class="map-label">Active NPCs</div>
+            <table class="npc-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Role</th>
+                  <th>Gold</th>
+                  <th>Hunger</th>
+                  <th>Energy</th>
+                  <th>Happy</th>
+                  <th>Age</th>
+                </tr>
+              </thead>
+              <tbody id="npcBody">
+                <tr><td colspan="7" class="loading-cell">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="api-hint">
+            Data from <code>qtown.ai/api/world</code> · Refreshes every 30s
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Architecture -->
+    <section class="section section-alt" id="architecture">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Architecture</span>
+          <h2>Polyglot microservices.<br>Each service earns its stack.</h2>
+          <p class="section-desc">No technology chosen for show. Go for the order book because concurrency matters. Rust for the fortress because correctness matters. Python for AI agents because the ecosystem matters.</p>
+        </div>
+
+        <div class="arch-diagram">
+          <pre><code>┌───────────────────────────────────────────────────────┐
+│                  Dashboard (Nuxt 3)                   │
+│            qtown.ai — PixiJS + Chart.js               │
+└────────────────────────┬──────────────────────────────┘
+                         │ GraphQL
+┌────────────────────────┴──────────────────────────────┐
+│            Cartographer (GraphQL Gateway)              │
+│                 Apollo Server + TS                     │
+└──┬──────┬──────┬──────┬──────┬──────┬──────┬─────────┘
+   │      │      │      │      │      │      │
+   ▼      ▼      ▼      ▼      ▼      ▼      ▼
+┌─────┐┌─────┐┌─────┐┌─────┐┌─────┐┌─────┐┌─────┐
+│Town ││ Mkt ││Fort-││Acad-││Tav- ││Lib- ││Asset│
+│Core ││Dist ││ress ││emy  ││ern  ││rary ││Pipe │
+│ Py  ││ Go  ││Rust ││ Py  ││ TS  ││ Py  ││ Py  │
+└──┬──┘└──┬──┘└──┬──┘└──┬──┘└──┬──┘└──┬──┘└──┬──┘
+   └──────┴──────┴──────┴──────┴──────┴──────┘
+                      Kafka
+            ┌─────────────────────┐
+            │    Infrastructure    │
+            │ Postgres · Redis     │
+            │ Kafka · ES · Jaeger  │
+            └─────────────────────┘</code></pre>
+        </div>
+
+        <div class="tech-grid">
+          <div class="tech-card">
+            <div class="tech-icon">gRPC</div>
+            <div class="tech-detail">
+              <strong>Service-to-service</strong>
+              <span>Protobuf definitions, type-safe contracts</span>
+            </div>
+          </div>
+          <div class="tech-card">
+            <div class="tech-icon">Kafka</div>
+            <div class="tech-detail">
+              <strong>27 topics</strong>
+              <span>Event backbone, npc_id partitioning</span>
+            </div>
+          </div>
+          <div class="tech-card">
+            <div class="tech-icon">GraphQL</div>
+            <div class="tech-detail">
+              <strong>Client gateway</strong>
+              <span>Single query fans out to 5 services</span>
+            </div>
+          </div>
+          <div class="tech-card">
+            <div class="tech-icon">Postgres</div>
+            <div class="tech-detail">
+              <strong>Shared database</strong>
+              <span>Per-service schemas, pgvector for RAG</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Neighborhoods -->
+    <section class="section" id="neighborhoods">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Neighborhoods</span>
+          <h2>9 districts. Each one proves<br>a technology works.</h2>
+        </div>
+
+        <div class="hood-grid">
+          <div class="hood-card">
+            <div class="hood-lang">Python</div>
+            <h3>Town Core</h3>
+            <p>Simulation engine. 30-second tick loop. 50+ NPCs making autonomous decisions based on needs, goals, and social relationships.</p>
+            <span class="hood-tech">FastAPI · SQLAlchemy · Postgres</span>
+          </div>
+          <div class="hood-card">
+            <div class="hood-lang">Go</div>
+            <h3>Market District</h3>
+            <p>Concurrent order book with real-time trade settlement. Goroutines handle parallel bid/ask matching. &lt;5ms p99 at 10K orders/sec.</p>
+            <span class="hood-tech">gRPC · goroutines · channel-based</span>
+          </div>
+          <div class="hood-card">
+            <div class="hood-lang">Rust</div>
+            <h3>Fortress</h3>
+            <p>Event validation with zero unsafe code. Every Kafka event passes through type-level guards before it can modify game state.</p>
+            <span class="hood-tech">Actix · serde · zero-copy deserialization</span>
+          </div>
+          <div class="hood-card">
+            <div class="hood-lang">Python</div>
+            <h3>Academy</h3>
+            <p>Local AI agents via Ollama. NPCs learn skills, take courses, and generate knowledge. RAG pipeline over the town's history.</p>
+            <span class="hood-tech">Ollama · pgvector · LangChain</span>
+          </div>
+          <div class="hood-card">
+            <div class="hood-lang">TypeScript</div>
+            <h3>Tavern</h3>
+            <p>Social hub. Real-time WebSocket connections for NPC gossip propagation. Rumors spread across the social graph with decay.</p>
+            <span class="hood-tech">Fastify · WebSocket · social graph</span>
+          </div>
+          <div class="hood-card">
+            <div class="hood-lang">Python</div>
+            <h3>Library</h3>
+            <p>Vector-based knowledge retrieval. Town lore indexed with pgvector embeddings. NPCs query their own history.</p>
+            <span class="hood-tech">pgvector · embeddings · semantic search</span>
+          </div>
+          <div class="hood-card">
+            <div class="hood-lang">TypeScript</div>
+            <h3>Cartographer</h3>
+            <p>GraphQL gateway. Single entry point for the dashboard — one query fans out to up to five services via schema stitching.</p>
+            <span class="hood-tech">Apollo Server · schema stitching</span>
+          </div>
+          <div class="hood-card">
+            <div class="hood-lang">Python</div>
+            <h3>Asset Pipeline</h3>
+            <p>Background job processing with Celery. Sprite generation, map rendering, NPC portrait creation — all async.</p>
+            <span class="hood-tech">Celery · Redis · image processing</span>
+          </div>
+          <div class="hood-card">
+            <div class="hood-lang">Vue/Nuxt</div>
+            <h3>Dashboard</h3>
+            <p>Real-time visualization. PixiJS isometric renderer, Chart.js analytics, live NPC tracking. The window into the town.</p>
+            <span class="hood-tech">Nuxt 3 · PixiJS · Chart.js</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ralph -->
+    <section class="section section-alt" id="ralph">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">The AI Developer</span>
+          <h2>Ralph wrote 88% of this.</h2>
+          <p class="section-desc">An autonomous AI developer running local models via Ollama. No cloud APIs. No pair programming. Hand it a spec, come back to review the PR.</p>
+        </div>
+
+        <div class="ralph-grid">
+          <div class="ralph-card ralph-card-main">
+            <h3>The Loop</h3>
+            <div class="ralph-code">
+              <pre><code><span class="code-comment">// Ralph's core loop — simple by design</span>
+<span class="code-keyword">while</span> stories_remaining:
+    story = worklist.next()
+    code  = model.generate(story.spec)
+    result = test_runner.run(code)
+    
+    <span class="code-keyword">if</span> result.passed:
+        git.commit(story.id)
+        worklist.complete(story)
+    <span class="code-keyword">else</span>:
+        code = model.fix(result.errors)
+        <span class="code-comment">// retry until green or limit</span></code></pre>
+            </div>
+          </div>
+          <div class="ralph-stats-col">
+            <div class="ralph-stat">
+              <span class="ralph-stat-num">1,451</span>
+              <span class="ralph-stat-label">Commits in v1</span>
+            </div>
+            <div class="ralph-stat">
+              <span class="ralph-stat-num">510</span>
+              <span class="ralph-stat-label">Stories completed</span>
+            </div>
+            <div class="ralph-stat">
+              <span class="ralph-stat-num">2.5/day</span>
+              <span class="ralph-stat-label">Average velocity</span>
+            </div>
+            <div class="ralph-stat">
+              <span class="ralph-stat-num">$0</span>
+              <span class="ralph-stat-label">Cloud LLM cost</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="model-table-container">
+          <h3>v2 Model Lineup</h3>
+          <table class="model-table">
+            <thead>
+              <tr>
+                <th>Tier</th>
+                <th>Model</th>
+                <th>Use Case</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="tier tier-primary">Primary</span></td>
+                <td>Qwen3-Coder-Next</td>
+                <td>Day-to-day code generation across all services</td>
+              </tr>
+              <tr>
+                <td><span class="tier tier-heavy">Heavy</span></td>
+                <td>Qwen 3.5:27b</td>
+                <td>Complex multi-file changes, architecture decisions</td>
+              </tr>
+              <tr>
+                <td><span class="tier tier-debug">Debug</span></td>
+                <td>DeepSeek R1:14b</td>
+                <td>Error diagnosis, test failure analysis</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section section-cta">
+      <div class="container">
+        <h2>The code is open.</h2>
+        <p>420 files. 12 languages. 27 Kafka topics. 37 test files. Every commit has a story ID.</p>
+        <div class="cta-actions">
+          <a href="https://github.com/kbadinger/qtown" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">View on GitHub</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>Qtown — Built by <a href="https://github.com/kbadinger" target="_blank" rel="noopener noreferrer">Kevin Badinger</a></span>
+      <span>MIT License</span>
+    </div>
+  </footer>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>
