@@ -1,0 +1,36 @@
+[package]
+name = "fortress"
+version = "0.1.0"
+edition = "2021"
+description = "Qtown v2 Fortress — high-throughput validation engine with WASM sandbox"
+
+[dependencies]
+# gRPC server
+tonic = "0.12"
+# Protobuf serialization
+prost = "0.13"
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+# Serialization / deserialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# Parallel validation (rayon-based batch processing)
+rayon = "1.10"
+# WASM sandbox for user-submitted policy execution
+wasmtime = "21"
+# Structured logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+# Kafka consumer for live event ingestion
+rdkafka = { version = "0.36", features = ["cmake-build"] }
+
+[build-dependencies]
+# gRPC stub generation
+tonic-build = "0.12"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "validation"
+harness = false

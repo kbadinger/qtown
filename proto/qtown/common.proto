@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package qtown;
+
+option go_package = "qtown/proto/qtown;qtown";
+
+// ─── Shared types used across all Qtown services ───
+
+message Timestamp {
+  int64 seconds = 1;
+  int32 nanos   = 2;
+}
+
+message Coordinates {
+  float x = 1;
+  float y = 2;
+}
+
+// Neighborhood identifiers — each maps to a service
+enum Neighborhood {
+  NEIGHBORHOOD_UNSPECIFIED = 0;
+  TOWN_CORE               = 1;
+  MARKET_DISTRICT         = 2;
+  FORTRESS                = 3;
+  ACADEMY                 = 4;
+  TAVERN                  = 5;
+  LIBRARY                 = 6;
+  TOWN_HALL               = 7;
+  CARTOGRAPHER            = 8;
+  COURIER_NETWORK         = 9;
+}
+
+// NPC state snapshot — the canonical representation of an NPC
+// passed between services during travel
+message NPCState {
+  int64         id            = 1;
+  string        name          = 2;
+  float         gold          = 3;
+  float         happiness     = 4;
+  float         health        = 5;
+  float         hunger        = 6;
+  string        occupation    = 7;
+  Neighborhood  neighborhood  = 8;
+  Coordinates   location      = 9;
+  repeated string inventory   = 10;
+  map<string, string> traits  = 11;
+}
+
+// Generic event envelope for Kafka messages
+message TownEvent {
+  string        id            = 1;
+  string        event_type    = 2;
+  int64         tick          = 3;
+  Timestamp     timestamp     = 4;
+  Neighborhood  source        = 5;
+  int64         npc_id        = 6;
+  string        description   = 7;
+  bytes         payload       = 8;  // service-specific protobuf bytes
+}
+
+// Health check — every service implements this
+message HealthRequest {}
+
+message HealthResponse {
+  string status  = 1;  // "ok" | "degraded" | "down"
+  string service = 2;
+  string version = 3;
+  map<string, string> details = 4;
+}
+
+// Travel request — NPC moving between neighborhoods
+message TravelRequest {
+  int64         npc_id        = 1;
+  Neighborhood  from          = 2;
+  Neighborhood  to            = 3;
+  NPCState      npc_state     = 4;
+}
+
+message TravelResponse {
+  bool    accepted    = 1;
+  string  reason      = 2;  // rejection reason if not accepted
+  int64   eta_ticks   = 3;  // estimated ticks until arrival
+}

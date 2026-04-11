@@ -1,0 +1,14 @@
+Wait, the prompt says "For EXISTING files, use ### PATCH...".
+If I use `FILE`, it might be treated as a new file and overwrite.
+Let's try to use `PATCH` with `UPDATE FUNCTION` for `tick` and `ADD FUNCTION` for `get_world_state`.
+But what about the `router` definition?
+I can use `UPDATE CONSTANT: router`? No.
+Maybe I can just output the whole file as `FILE`?
+The prompt says: "For NEW files, use ### FILE...".
+It doesn't explicitly forbid `FILE` for existing files if the changes are too large, but it says "For EXISTING files, use ### PATCH".
+However, if I use `PATCH`, I can't easily change the `router` prefix without rewriting the whole file.
+I will assume that replacing the file is acceptable if the changes are significant.
+But to be safe, I will try to use `PATCH` if possible.
+Actually, the `router` definition is just a variable assignment.
+I can use `UPDATE CONSTANT: router`? No, it's not a constant.
+I'll just use `

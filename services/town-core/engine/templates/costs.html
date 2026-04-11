@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Cost Comparison{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6">Cost Comparison</h1>
+    
+    <div id="cost-table-container" 
+         hx-get="/api/costs" 
+         hx-trigger="load"
+         hx-swap="innerHTML"
+         class="overflow-x-auto bg-white shadow rounded-lg">
+        <!-- Loading state -->
+        <div class="p-4 text-center text-gray-500">Loading costs...</div>
+    </div>
+</div>
+{% endblock %}

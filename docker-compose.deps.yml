@@ -1,0 +1,109 @@
+# Qtown v2 — Infrastructure Dependencies
+# Usage: docker compose -f docker-compose.deps.yml up -d
+#
+# Starts all shared infrastructure that services depend on.
+# Services themselves are NOT included here — they have their own Dockerfiles
+# and are started separately (or via the main docker-compose.yml).
+
+services:
+  # ─── Kafka (KRaft mode — no Zookeeper) ───
+  kafka:
+    image: apache/kafka:3.7.0
+    container_name: qtown-kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_NUM_PARTITIONS: 6
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      CLUSTER_ID: "qtown-v2-kraft-cluster-001"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Kafka UI (optional, dev only) ───
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: qtown-kafka-ui
+    ports:
+      - "8088:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: qtown-local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  # ─── PostgreSQL ───
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: qtown-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: qtown
+      POSTGRES_PASSWORD: qtown_dev
+      POSTGRES_DB: qtown
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/init-db.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qtown"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ─── Redis ───
+  redis:
+    image: redis:7.2-alpine
+    container_name: qtown-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ─── Elasticsearch ───
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.0
+    container_name: qtown-elasticsearch
+    ports:
+      - "9200:9200"
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      cluster.name: qtown-cluster
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  kafka_data:
+  postgres_data:
+  redis_data:
+  es_data:

@@ -1,0 +1,29 @@
+{
+  "name": "@qtown/tavern",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "lint": "eslint src/",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "ws": "^8.17.0",
+    "ioredis": "^5.4.0",
+    "kafkajs": "^2.2.4",
+    "@grpc/grpc-js": "^1.10.0",
+    "@grpc/proto-loader": "^0.7.0",
+    "pino": "^9.0.0",
+    "fastify": "^4.28.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "tsx": "^4.16.0",
+    "@types/ws": "^8.5.0",
+    "@types/node": "^20.14.0",
+    "vitest": "^1.6.0",
+    "eslint": "^9.0.0"
+  }
+}

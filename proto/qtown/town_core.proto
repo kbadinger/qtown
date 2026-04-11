@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package qtown;
+
+option go_package = "qtown/proto/qtown;qtown";
+
+import "qtown/common.proto";
+
+// ─── Town Core Service ───
+// The original Python simulation engine. State of record for NPCs,
+// buildings, tick loop, and world state.
+
+service TownCore {
+  // Health
+  rpc Health(HealthRequest) returns (HealthResponse);
+
+  // NPC operations
+  rpc GetNPC(GetNPCRequest)           returns (NPCState);
+  rpc ListNPCs(ListNPCsRequest)       returns (ListNPCsResponse);
+  rpc UpdateNPCState(UpdateNPCRequest) returns (UpdateNPCResponse);
+
+  // Travel — NPC departing/arriving
+  rpc NPCDepart(TravelRequest)        returns (TravelResponse);
+  rpc NPCArrive(TravelRequest)        returns (TravelResponse);
+
+  // Tick
+  rpc GetTick(GetTickRequest)         returns (TickState);
+
+  // World state
+  rpc GetWorldState(WorldStateRequest) returns (WorldStateResponse);
+}
+
+message GetNPCRequest {
+  int64 npc_id = 1;
+}
+
+message ListNPCsRequest {
+  int32 limit       = 1;
+  int32 offset      = 2;
+  Neighborhood filter_neighborhood = 3;
+}
+
+message ListNPCsResponse {
+  repeated NPCState npcs = 1;
+  int32 total             = 2;
+}
+
+message UpdateNPCRequest {
+  int64   npc_id    = 1;
+  float   gold      = 2;
+  float   happiness = 3;
+  float   health    = 4;
+  float   hunger    = 5;
+  Neighborhood neighborhood = 6;
+}
+
+message UpdateNPCResponse {
+  bool   success = 1;
+  string message = 2;
+}
+
+message GetTickRequest {}
+
+message TickState {
+  int64     current_tick = 1;
+  Timestamp last_tick_at = 2;
+  float     tick_duration_ms = 3;
+  int32     active_npcs  = 4;
+}
+
+message WorldStateRequest {}
+
+message WorldStateResponse {
+  int64  tick          = 1;
+  int32  population    = 2;
+  float  treasury      = 3;
+  float  avg_happiness = 4;
+  int32  building_count = 5;
+  repeated NPCState npcs = 6;
+}

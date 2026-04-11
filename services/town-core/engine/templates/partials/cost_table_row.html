@@ -1,0 +1,8 @@
+<tr class="hover:bg-gray-50">
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ cost.story_id }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ cost.model }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ cost.tokens_in }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ cost.tokens_out }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${{ "%.4f"|format(cost.cost) }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ cost.duration }}</td>
+</tr>

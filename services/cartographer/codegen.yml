@@ -1,0 +1,48 @@
+overwrite: true
+
+schema:
+  # Point codegen at the SDL exported from schema.ts.
+  # `tsx` is used so codegen can parse the TypeScript source directly.
+  - "./src/schema.ts"
+
+generates:
+  # ── TypeScript base types ───────────────────────────────────────────────────
+  src/types.ts:
+    plugins:
+      - "typescript"
+    config:
+      # Use `null` instead of `undefined` for nullable fields (matches GraphQL semantics)
+      maybeValue: "T | null"
+      # Emit enums as TypeScript string union types
+      enumsAsTypes: true
+      # Avoids importing scalars from graphql-js; keeps the file self-contained
+      scalars:
+        ID: string
+        String: string
+        Boolean: boolean
+        Int: number
+        Float: number
+
+  # ── Resolver type signatures ────────────────────────────────────────────────
+  src/__generated__/resolvers.ts:
+    plugins:
+      - "typescript"
+      - "typescript-resolvers"
+    config:
+      maybeValue: "T | null"
+      enumsAsTypes: true
+      # Map the context type used across all resolvers
+      contextType: "../resolvers#ResolverContext"
+      # Mapper overrides: map GraphQL types to internal domain types
+      mappers:
+        NPC: "../types#NPC"
+        Order: "../types#Order"
+        Trade: "../types#Trade"
+        LeaderboardEntry: "../types#LeaderboardEntry"
+        TownEvent: "../types#TownEvent"
+      scalars:
+        ID: string
+        String: string
+        Boolean: boolean
+        Int: number
+        Float: number

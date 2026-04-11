@@ -1,0 +1,111 @@
+syntax = "proto3";
+
+package qtown;
+
+option go_package = "qtown/proto/qtown;qtown";
+
+import "qtown/common.proto";
+
+// ─── Fortress Service (Rust) ───
+// Validation engine with WASM sandbox for user-defined policies.
+// Proves: Rust ownership, zero unsafe, rayon parallelism, wasmtime.
+
+service Fortress {
+  // Health
+  rpc Health(HealthRequest) returns (HealthResponse);
+
+  // Validation
+  rpc ValidateEvent(ValidateEventRequest)     returns (ValidationResponse);
+  rpc ValidateBatch(ValidateBatchRequest)      returns (ValidateBatchResponse);
+
+  // Rule management
+  rpc ListRules(ListRulesRequest)              returns (ListRulesResponse);
+
+  // WASM sandbox — user-defined policy execution
+  rpc ExecutePolicy(ExecutePolicyRequest)      returns (ExecutePolicyResponse);
+  rpc UploadPolicy(UploadPolicyRequest)        returns (UploadPolicyResponse);
+
+  // NPC travel
+  rpc NPCArrive(TravelRequest) returns (TravelResponse);
+  rpc NPCDepart(TravelRequest) returns (TravelResponse);
+
+  // Benchmark
+  rpc RunBenchmark(BenchmarkRequest)           returns (BenchmarkResult);
+}
+
+message ValidateEventRequest {
+  TownEvent event = 1;
+}
+
+message ValidationResponse {
+  bool   valid     = 1;
+  string rule_name = 2;
+  string message   = 3;
+}
+
+message ValidateBatchRequest {
+  repeated TownEvent events = 1;
+}
+
+message ValidateBatchResponse {
+  repeated ValidationResponse results = 1;
+  int32  total_valid   = 2;
+  int32  total_invalid = 3;
+  float  elapsed_us    = 4;
+}
+
+message ListRulesRequest {}
+
+message ListRulesResponse {
+  repeated RuleInfo rules = 1;
+}
+
+message RuleInfo {
+  string name        = 1;
+  string description = 2;
+  bool   enabled     = 3;
+  int64  violations  = 4;  // total violations since startup
+}
+
+message ExecutePolicyRequest {
+  bytes     wasm_bytes = 1;
+  TownEvent event      = 2;
+  int64     fuel_limit = 3;  // execution budget (wasmtime fuel)
+  int64     memory_limit_bytes = 4;
+}
+
+message ExecutePolicyResponse {
+  bool   allowed        = 1;
+  string reason         = 2;
+  int64  fuel_consumed  = 3;
+  int64  memory_used    = 4;
+  float  elapsed_us     = 5;
+}
+
+message UploadPolicyRequest {
+  string name       = 1;
+  bytes  wasm_bytes = 2;
+  string description = 3;
+}
+
+message UploadPolicyResponse {
+  string policy_id = 1;
+  bool   accepted  = 2;
+  string message   = 3;
+}
+
+message BenchmarkRequest {
+  int32 num_events = 1;
+  int32 num_rules  = 2;
+}
+
+message BenchmarkResult {
+  int32 total_events     = 1;
+  int32 total_valid      = 2;
+  int32 total_invalid    = 3;
+  float elapsed_ms       = 4;
+  float events_per_sec   = 5;
+  float p50_latency_ns   = 6;
+  float p99_latency_ns   = 7;
+  int32 unsafe_count     = 8;  // should always be 0
+}

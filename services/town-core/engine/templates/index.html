@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/favicon-192.png">
+    <title>Qwen Town</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0e17; }
+        #game-canvas { width: 100vw; height: 100vh; display: block; }
+        .hud-label { cursor: pointer; border-bottom: 1px dotted #4b5563; transition: color 0.15s; }
+        .hud-label:hover, .hud-label.active { color: #fbbf24; }
+
+        /* Bottom sheet */
+        #mobile-sheet {
+            transform: translateY(calc(100% - 3.25rem));
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 60vh;
+        }
+        #mobile-sheet.expanded {
+            transform: translateY(0);
+        }
+        #mobile-sheet .sheet-tab.active {
+            color: #fbbf24;
+            border-color: #fbbf24;
+        }
+        /* Hide desktop panels on mobile */
+        @media (max-width: 767px) {
+            #hud, #stats-panel, #activity-feed { display: none !important; }
+            #mobile-nav { display: flex !important; }
+        }
+        /* Hide mobile elements on desktop */
+        @media (min-width: 768px) {
+            #mobile-sheet, #mobile-nav { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <!-- PixiJS Canvas -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Mobile top nav bar -->
+    <div id="mobile-nav" class="fixed top-0 left-0 right-0 z-50 hidden items-center justify-between px-3 py-2 bg-gray-900/90 backdrop-blur-sm border-b border-amber-500/20">
+        <span class="text-amber-400 font-bold text-sm tracking-wide">Qwen Town</span>
+        <div class="flex items-center gap-1.5 text-xs font-mono">
+            <span class="text-gray-400">Pop</span>
+            <span id="m-pop" class="text-gray-200">0</span>
+            <span class="text-gray-500 mx-0.5">|</span>
+            <span class="text-gray-400">Gold</span>
+            <span id="m-gold" class="text-amber-300">0</span>
+            <span class="text-gray-500 mx-0.5">|</span>
+            <span class="text-gray-400">Day</span>
+            <span id="m-day" class="text-gray-200">1</span>
+        </div>
+        <!-- Mobile hamburger -->
+        <button id="m-nav-toggle" class="text-gray-400 hover:text-amber-400" aria-label="Menu">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+        </button>
+    </div>
+    <!-- Mobile nav dropdown -->
+    <div id="m-nav-menu" class="fixed top-10 right-2 z-[60] hidden bg-gray-800/95 backdrop-blur-sm border border-gray-700 rounded-lg shadow-xl py-2 min-w-[140px]">
+        <a href="/" class="block px-4 py-1.5 text-sm text-amber-400">Game</a>
+        <a href="/about" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-amber-400">About</a>
+        <a href="/dashboard" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-amber-400">Dashboard</a>
+        <a href="/stories" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-amber-400">Stories</a>
+        <a href="/timeline" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-amber-400">Timeline</a>
+        <a href="/features" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-amber-400">Features</a>
+    </div>
+
+    <!-- ===== DESKTOP PANELS (hidden on mobile via CSS) ===== -->
+
+    <!-- HUD Overlay (desktop) -->
+    <div id="hud" class="fixed top-4 left-4 z-50 select-none">
+        <div class="bg-gray-900/80 backdrop-blur-sm border border-amber-500/30 rounded-lg px-5 py-4 shadow-xl shadow-amber-900/10">
+            <div class="flex items-center justify-between mb-1">
+                <h1 class="text-amber-400 font-bold text-lg tracking-wide">Qwen Town</h1>
+                <div class="flex gap-3 ml-6 pointer-events-auto">
+                    <a href="/about" class="text-xs text-gray-400 hover:text-amber-400 transition-colors">About</a>
+                    <a href="/timeline" class="text-xs text-gray-400 hover:text-amber-400 transition-colors">Timeline</a>
+                    <a href="/dashboard" class="text-xs text-gray-400 hover:text-amber-400 transition-colors">Dashboard</a>
+                    <a href="/stories" class="text-xs text-gray-400 hover:text-amber-400 transition-colors">Stories</a>
+                    <a href="/features" class="text-xs text-gray-400 hover:text-amber-400 transition-colors">Features</a>
+                </div>
+            </div>
+            <p class="text-gray-500 text-xs mb-3">A self-evolving town built entirely by a local AI</p>
+            <div class="grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm pointer-events-auto">
+                <span class="text-gray-400 hud-label" data-info="In-game hours elapsed. Each tick = 1 hour. NPCs move, work, eat, and trade every tick.">Tick</span>
+                <span id="hud-tick" class="text-gray-200 font-mono tabular-nums">0</span>
+                <span class="text-gray-400 hud-label" data-info="In-game day (24 ticks = 1 day). Controls day/night cycles and daily events.">Day</span>
+                <span id="hud-day" class="text-gray-200 font-mono tabular-nums">1</span>
+                <span class="text-gray-400 hud-label" data-info="Number of NPCs living in town. New residents arrive as the town grows.">Population</span>
+                <span id="hud-pop" class="text-gray-200 font-mono tabular-nums">0</span>
+                <span class="text-gray-400 hud-label" data-info="Total gold across all NPCs. Earned through work, spent at shops and markets.">Gold</span>
+                <span id="hud-gold" class="text-amber-300 font-mono tabular-nums">0</span>
+            </div>
+            <!-- Progress bar -->
+            <div class="mt-3 pt-2 border-t border-gray-700">
+                <div class="flex items-center justify-between text-xs mb-1">
+                    <span class="text-gray-400">Stories</span>
+                    <span id="hud-stories" class="text-amber-300 font-mono tabular-nums">{{ stories_done|default(0) }}/{{ stories_total|default(265) }}</span>
+                </div>
+                <div class="w-full bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                    <div id="hud-progress-bar" class="bg-amber-500 h-1.5 rounded-full transition-all duration-500"
+                         style="width: {{ (stories_done|default(0) / stories_total|default(265) * 100) | round(1) }}%;"></div>
+                </div>
+            </div>
+            <div id="hud-info" class="hidden mt-2 text-xs text-gray-400 border-t border-gray-700 pt-2 leading-relaxed"></div>
+        </div>
+    </div>
+
+    <!-- Stats Panel (desktop, top-right) -->
+    <div id="stats-panel" class="fixed top-4 right-4 z-50 select-none">
+        <div class="bg-gray-900/80 backdrop-blur-sm border border-amber-500/30 rounded-lg px-5 py-4 shadow-xl shadow-amber-900/10 min-w-[200px]">
+            <h2 class="text-amber-400 font-bold text-sm tracking-wide mb-2">Town Stats</h2>
+            <div class="space-y-1.5 text-xs">
+                <div class="flex justify-between"><span class="text-gray-400">Weather</span><span id="stat-weather" class="text-gray-200">--</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Time</span><span id="stat-time" class="text-gray-200">--</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Economy</span><span id="stat-economy" class="text-gray-200">--</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Treasury</span><span id="stat-treasury" class="text-amber-300 font-mono">0g</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Tax Rate</span><span id="stat-tax" class="text-gray-200 font-mono">10%</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Avg Happy</span><span id="stat-happiness" class="text-gray-200 font-mono">--</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Avg Age</span><span id="stat-age" class="text-gray-200 font-mono">--</span></div>
+                <div class="border-t border-gray-700 pt-1.5 mt-1.5">
+                    <div class="text-gray-500 mb-1">Resources</div>
+                    <div id="stat-resources" class="space-y-0.5 text-gray-300"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Feed (desktop, bottom-right) -->
+    <div id="activity-feed" class="fixed bottom-4 right-4 z-50 select-none">
+        <div class="bg-gray-900/80 backdrop-blur-sm border border-amber-500/30 rounded-lg px-4 py-3 shadow-xl shadow-amber-900/10 w-[320px]">
+            <h2 class="text-amber-400 font-bold text-xs tracking-wide mb-2">Activity</h2>
+            <div id="activity-list" class="space-y-1 max-h-[200px] overflow-y-auto text-xs scrollbar-thin">
+                <div class="text-gray-500 italic">Waiting for events...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MOBILE BOTTOM SHEET (hidden on desktop via CSS) ===== -->
+    <div id="mobile-sheet" class="fixed bottom-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-sm border-t border-amber-500/30 rounded-t-xl">
+        <!-- Drag handle + peek bar -->
+        <div id="sheet-handle" class="flex items-center justify-between px-4 py-2.5 cursor-pointer select-none">
+            <div class="flex items-center gap-3 text-xs font-mono">
+                <span class="text-gray-400">Tick</span><span id="ms-tick" class="text-gray-200">0</span>
+                <span class="text-gray-500">|</span>
+                <span class="text-gray-400">Weather</span><span id="ms-weather" class="text-gray-200">--</span>
+                <span class="text-gray-500">|</span>
+                <span id="ms-stories" class="text-amber-300">{{ stories_done|default(0) }}/{{ stories_total|default(265) }}</span>
+            </div>
+            <!-- Chevron -->
+            <svg id="sheet-chevron" class="w-5 h-5 text-gray-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+            </svg>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex border-b border-gray-700 px-4 gap-4">
+            <button class="sheet-tab active text-xs font-medium pb-2 border-b-2 border-transparent text-gray-400 transition-colors" data-tab="stats">Stats</button>
+            <button class="sheet-tab text-xs font-medium pb-2 border-b-2 border-transparent text-gray-400 transition-colors" data-tab="activity">Activity</button>
+            <button class="sheet-tab text-xs font-medium pb-2 border-b-2 border-transparent text-gray-400 transition-colors" data-tab="info">Info</button>
+        </div>
+
+        <!-- Tab content -->
+        <div class="overflow-y-auto" style="max-height: calc(60vh - 5.5rem);">
+            <!-- Stats tab -->
+            <div id="tab-stats" class="sheet-content px-4 py-3">
+                <div class="grid grid-cols-2 gap-x-6 gap-y-1.5 text-xs">
+                    <span class="text-gray-400">Weather</span><span id="ms-weather2" class="text-gray-200">--</span>
+                    <span class="text-gray-400">Time</span><span id="ms-time" class="text-gray-200">--</span>
+                    <span class="text-gray-400">Economy</span><span id="ms-economy" class="text-gray-200">--</span>
+                    <span class="text-gray-400">Treasury</span><span id="ms-treasury" class="text-amber-300 font-mono">0g</span>
+                    <span class="text-gray-400">Tax Rate</span><span id="ms-tax" class="text-gray-200 font-mono">10%</span>
+                    <span class="text-gray-400">Avg Happy</span><span id="ms-happiness" class="text-gray-200 font-mono">--</span>
+                    <span class="text-gray-400">Avg Age</span><span id="ms-age" class="text-gray-200 font-mono">--</span>
+                </div>
+                <div class="border-t border-gray-700 pt-2 mt-2">
+                    <div class="text-gray-500 text-xs mb-1">Resources</div>
+                    <div id="ms-resources" class="space-y-0.5 text-xs text-gray-300"></div>
+                </div>
+            </div>
+            <!-- Activity tab -->
+            <div id="tab-activity" class="sheet-content px-4 py-3 hidden">
+                <div id="ms-activity-list" class="space-y-1 text-xs">
+                    <div class="text-gray-500 italic">Waiting for events...</div>
+                </div>
+            </div>
+            <!-- Info tab -->
+            <div id="tab-info" class="sheet-content px-4 py-3 hidden">
+                <div class="grid grid-cols-2 gap-x-6 gap-y-1.5 text-xs mb-3">
+                    <span class="text-gray-400">Tick</span><span id="ms-tick2" class="text-gray-200 font-mono">0</span>
+                    <span class="text-gray-400">Day</span><span id="ms-day" class="text-gray-200 font-mono">1</span>
+                    <span class="text-gray-400">Population</span><span id="ms-pop" class="text-gray-200 font-mono">0</span>
+                    <span class="text-gray-400">Gold</span><span id="ms-gold2" class="text-amber-300 font-mono">0</span>
+                </div>
+                <!-- Progress bar -->
+                <div class="border-t border-gray-700 pt-2">
+                    <div class="flex items-center justify-between text-xs mb-1">
+                        <span class="text-gray-400">Stories</span>
+                        <span id="ms-stories2" class="text-amber-300 font-mono">{{ stories_done|default(0) }}/{{ stories_total|default(265) }}</span>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                        <div id="ms-progress-bar" class="bg-amber-500 h-1.5 rounded-full transition-all duration-500"
+                             style="width: {{ (stories_done|default(0) / stories_total|default(265) * 100) | round(1) }}%;"></div>
+                    </div>
+                </div>
+                <div class="mt-3 pt-2 border-t border-gray-700">
+                    <p class="text-gray-500 text-xs">A self-evolving town built entirely by a local AI</p>
+                    <div class="flex gap-3 mt-2">
+                        <a href="/about" class="text-xs text-amber-400 hover:text-amber-300">About</a>
+                        <a href="/dashboard" class="text-xs text-amber-400 hover:text-amber-300">Dashboard</a>
+                        <a href="/stories" class="text-xs text-amber-400 hover:text-amber-300">Stories</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tooltip (desktop only) -->
+    <div id="tooltip" class="fixed z-50 pointer-events-none hidden md:block">
+        <div class="bg-gray-900/95 backdrop-blur-sm border border-gray-600 rounded-md px-3 py-2 shadow-lg text-sm max-w-xs">
+            <div id="tooltip-content" class="text-gray-200"></div>
+        </div>
+    </div>
+
+    <!-- HUD info toggle (desktop) -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Desktop HUD info labels
+        var infoBox = document.getElementById("hud-info");
+        document.querySelectorAll(".hud-label").forEach(function(el) {
+            el.addEventListener("click", function() {
+                var wasActive = el.classList.contains("active");
+                document.querySelectorAll(".hud-label").forEach(function(l) { l.classList.remove("active"); });
+                if (wasActive) {
+                    infoBox.classList.add("hidden");
+                } else {
+                    el.classList.add("active");
+                    infoBox.textContent = el.dataset.info;
+                    infoBox.classList.remove("hidden");
+                }
+            });
+        });
+
+        // Mobile nav toggle
+        var mNavBtn = document.getElementById("m-nav-toggle");
+        var mNavMenu = document.getElementById("m-nav-menu");
+        if (mNavBtn && mNavMenu) {
+            mNavBtn.addEventListener("click", function(e) {
+                e.stopPropagation();
+                mNavMenu.classList.toggle("hidden");
+            });
+            document.addEventListener("click", function() {
+                mNavMenu.classList.add("hidden");
+            });
+        }
+
+        // Mobile bottom sheet
+        var sheet = document.getElementById("mobile-sheet");
+        var handle = document.getElementById("sheet-handle");
+        var chevron = document.getElementById("sheet-chevron");
+        if (handle && sheet) {
+            handle.addEventListener("click", function() {
+                sheet.classList.toggle("expanded");
+                chevron.style.transform = sheet.classList.contains("expanded") ? "rotate(180deg)" : "";
+            });
+        }
+
+        // Mobile sheet tabs
+        document.querySelectorAll(".sheet-tab").forEach(function(tab) {
+            tab.addEventListener("click", function() {
+                document.querySelectorAll(".sheet-tab").forEach(function(t) { t.classList.remove("active"); });
+                tab.classList.add("active");
+                document.querySelectorAll(".sheet-content").forEach(function(c) { c.classList.add("hidden"); });
+                var target = document.getElementById("tab-" + tab.dataset.tab);
+                if (target) target.classList.remove("hidden");
+            });
+        });
+    });
+
+    // Hook into town.js world data updates to populate mobile elements
+    window._updateMobileHUD = function(data) {
+        var w = data.world_state || {};
+        var stats = data.stats || {};
+
+        // Top bar
+        var popEl = document.getElementById("m-pop");
+        var goldEl = document.getElementById("m-gold");
+        var dayEl = document.getElementById("m-day");
+        if (popEl) popEl.textContent = stats.population || 0;
+        if (goldEl) goldEl.textContent = stats.total_gold || 0;
+        if (dayEl) dayEl.textContent = w.day || 1;
+
+        // Sheet peek bar
+        var msTick = document.getElementById("ms-tick");
+        var msWeather = document.getElementById("ms-weather");
+        if (msTick) msTick.textContent = w.tick || 0;
+        if (msWeather) msWeather.textContent = w.weather || "--";
+
+        // Stats tab
+        var ids = {
+            "ms-weather2": w.weather || "--",
+            "ms-time": w.time_of_day || "--",
+            "ms-economy": w.economic_status || "--",
+            "ms-treasury": (stats.treasury_gold || 0) + "g",
+            "ms-tax": Math.round((w.tax_rate || 0.1) * 100) + "%",
+            "ms-happiness": stats.avg_happiness != null ? Math.round(stats.avg_happiness) : "--",
+            "ms-age": stats.avg_age != null ? Math.round(stats.avg_age) : "--",
+        };
+        for (var id in ids) {
+            var el = document.getElementById(id);
+            if (el) el.textContent = ids[id];
+        }
+
+        // Resources
+        var msRes = document.getElementById("ms-resources");
+        if (msRes && stats.resources) {
+            var html = "";
+            for (var name in stats.resources) {
+                html += '<div class="flex justify-between"><span class="text-gray-400">' + name + '</span><span class="font-mono">' + stats.resources[name] + '</span></div>';
+            }
+            msRes.innerHTML = html || '<span class="text-gray-500">None</span>';
+        }
+
+        // Info tab
+        var infoIds = {
+            "ms-tick2": w.tick || 0,
+            "ms-day": w.day || 1,
+            "ms-pop": stats.population || 0,
+            "ms-gold2": stats.total_gold || 0,
+        };
+        for (var iid in infoIds) {
+            var iel = document.getElementById(iid);
+            if (iel) iel.textContent = infoIds[iid];
+        }
+    };
+
+    // Hook for activity feed
+    window._updateMobileActivity = function(events) {
+        var list = document.getElementById("ms-activity-list");
+        if (!list || !events || !events.length) return;
+        var html = "";
+        for (var i = 0; i < Math.min(events.length, 20); i++) {
+            var e = events[i];
+            html += '<div class="text-gray-300 py-0.5">' + (e.description || e.event_type || "Event") + '</div>';
+        }
+        list.innerHTML = html;
+    };
+    </script>
+
+    <!-- PixiJS from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+    <!-- Town renderer -->
+    <script src="/static/js/town.js?v=25"></script>
+</body>
+</html>

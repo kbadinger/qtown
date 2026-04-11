@@ -1,0 +1,29 @@
+<table class="min-w-full divide-y divide-gray-200">
+    <thead class="bg-gray-50">
+        <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Story ID</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Model</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tokens In</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tokens Out</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cost ($)</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration (s)</th>
+        </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200">
+        {% for cost in costs %}
+        <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ cost.story_id }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ cost.model }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ cost.tokens_in }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ cost.tokens_out }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${{ "%.4f"|format(cost.cost) }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ cost.duration }}</td>
+        </tr>
+        {% endfor %}
+        {% if not costs %}
+        <tr>
+            <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">No cost data available.</td>
+        </tr>
+        {% endif %}
+    </tbody>
+</table>

@@ -1,0 +1,30 @@
+version: v2
+managed:
+  enabled: true
+  override:
+    - file_option: go_package_prefix
+      value: qtown/proto
+plugins:
+  # ─── Go ───
+  - remote: buf.build/protocolbuffers/go
+    out: ../gen/go
+    opt: paths=source_relative
+
+  - remote: buf.build/grpc/go
+    out: ../gen/go
+    opt: paths=source_relative
+
+  # ─── Python ───
+  - remote: buf.build/protocolbuffers/python
+    out: ../gen/python
+
+  - remote: buf.build/grpc/python
+    out: ../gen/python
+
+  # ─── TypeScript ───
+  - remote: buf.build/community/timostamm-protobuf-ts
+    out: ../gen/ts
+
+  # ─── Rust (prost) ───
+  # Rust codegen handled by tonic-build in build.rs
+  # This entry is a placeholder — remove if using tonic-build exclusively

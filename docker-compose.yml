@@ -1,0 +1,168 @@
+# Qtown v2 — Full Stack
+# Usage: docker compose up -d
+#
+# Starts all services + infrastructure dependencies.
+# For infrastructure only, use: docker compose -f docker-compose.deps.yml up -d
+
+include:
+  - docker-compose.deps.yml
+
+services:
+  # ─── Town Core (Python/FastAPI) ───
+  town-core:
+    build: services/town-core
+    container_name: qtown-town-core
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://qtown:qtown_dev@postgres:5432/qtown
+      KAFKA_BROKERS: kafka:9092
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Market District (Go) ───
+  market-district:
+    build: services/market-district
+    container_name: qtown-market-district
+    ports:
+      - "50051:50051"
+      - "6060:6060"
+    environment:
+      KAFKA_BROKERS: kafka:9092
+      DATABASE_URL: postgresql://qtown:qtown_dev@postgres:5432/qtown
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:6060/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Fortress (Rust) ───
+  fortress:
+    build: services/fortress
+    container_name: qtown-fortress
+    ports:
+      - "50052:50052"
+      - "8080:8080"
+    environment:
+      KAFKA_BROKERS: kafka:9092
+      DATABASE_URL: postgresql://qtown:qtown_dev@postgres:5432/qtown
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Academy (Python) ───
+  academy:
+    build: services/academy
+    container_name: qtown-academy
+    ports:
+      - "8001:8001"
+      - "50053:50053"
+    environment:
+      DATABASE_URL: postgresql://qtown:qtown_dev@postgres:5432/qtown
+      KAFKA_BROKERS: kafka:9092
+      OLLAMA_HOST: ${OLLAMA_HOST:-http://host.docker.internal:11434}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Tavern (Node/TypeScript) ───
+  tavern:
+    build: services/tavern
+    container_name: qtown-tavern
+    ports:
+      - "3001:3001"
+    environment:
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:9092
+    depends_on:
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Cartographer (GraphQL/TypeScript) ───
+  cartographer:
+    build: services/cartographer
+    container_name: qtown-cartographer
+    ports:
+      - "4000:4000"
+    environment:
+      TOWN_CORE_HOST: town-core:50050
+      MARKET_HOST: market-district:50051
+      FORTRESS_HOST: fortress:50052
+      TAVERN_HOST: tavern:3001
+    depends_on:
+      town-core:
+        condition: service_healthy
+      market-district:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Kafka Topic Init (run-once) ───
+  kafka-init:
+    image: apache/kafka:3.7.0
+    container_name: qtown-kafka-init
+    depends_on:
+      kafka:
+        condition: service_healthy
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        echo "Creating Kafka topics..."
+        for topic in \
+          qtown.npc.travel:6 \
+          qtown.npc.travel.complete:6 \
+          qtown.npc.travel.failed:3 \
+          qtown.economy.trade:12 \
+          qtown.economy.trade.settled:12 \
+          qtown.economy.price.update:6 \
+          qtown.events.broadcast:6 \
+          qtown.validation.request:6 \
+          qtown.validation.result:6 \
+          qtown.ai.request:6 \
+          qtown.ai.response:6 \
+          qtown.ai.content.generated:3; do
+          IFS=':' read -r name partitions <<< "$$topic"
+          /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 \
+            --create --if-not-exists \
+            --topic "$$name" --partitions "$$partitions" --replication-factor 1
+        done
+        echo "All topics created."
+    restart: "no"
