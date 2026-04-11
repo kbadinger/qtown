@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "qtown.fullname" . }}-shared
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "qtown.labels" . | nindent 4 }}
+data:
+  {{- /* Explicit shared config from values.configMap */ }}
+  {{- range $key, $val := .Values.configMap }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}
+  {{- /* Derived from global section */ }}
+  KAFKA_BOOTSTRAP_SERVERS: {{ .Values.global.kafka.bootstrapServers | quote }}
+  OTLP_ENDPOINT: {{ .Values.global.otlpEndpoint | quote }}
+  ELASTICSEARCH_URL: {{ .Values.global.elasticsearch.url | quote }}
+  POSTGRES_HOST: {{ .Values.global.postgres.host | quote }}
+  POSTGRES_PORT: {{ .Values.global.postgres.port | quote }}
+  POSTGRES_DB: {{ .Values.global.postgres.database | quote }}
+  REDIS_HOST: {{ .Values.global.redis.host | quote }}
+  REDIS_PORT: {{ .Values.global.redis.port | quote }}
+  S3_BUCKET: {{ .Values.global.s3.bucket | quote }}
+  S3_REGION: {{ .Values.global.s3.region | quote }}
+  {{- if .Values.global.s3.endpointUrl }}
+  S3_ENDPOINT_URL: {{ .Values.global.s3.endpointUrl | quote }}
+  {{- end }}
+  {{- if .Values.global.s3.cdnBaseUrl }}
+  CDN_BASE_URL: {{ .Values.global.s3.cdnBaseUrl | quote }}
+  {{- end }}
+  ENVIRONMENT: {{ .Values.global.environment | quote }}

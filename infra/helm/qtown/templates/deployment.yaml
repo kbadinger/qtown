@@ -1,0 +1,150 @@
+{{- /*
+Generic Deployment template iterated over .Values.services.
+Each entry in the services map produces one Deployment.
+*/ -}}
+{{- range $name, $svc := .Values.services }}
+{{- if $svc.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "qtown.fullname" $ }}-{{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "qtown.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $name }}
+  annotations:
+    meta.helm.sh/release-name: {{ $.Release.Name }}
+    meta.helm.sh/release-namespace: {{ $.Release.Namespace }}
+spec:
+  replicas: {{ $svc.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "qtown.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: {{ $name }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        {{- include "qtown.selectorLabels" $ | nindent 8 }}
+        app.kubernetes.io/component: {{ $name }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ $svc.metricsPort | default 9000 | quote }}
+        prometheus.io/path: "/metrics"
+        checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") $ | sha256sum }}
+    spec:
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "qtown.serviceAccountName" $ }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: {{ $name }}
+          image: "{{ $.Values.global.imageRegistry | default "" }}{{ if $.Values.global.imageRegistry }}/{{ end }}{{ $svc.image.repository }}:{{ $svc.image.tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ $svc.image.pullPolicy | default "IfNotPresent" }}
+          ports:
+            - name: http
+              containerPort: {{ $svc.port }}
+              protocol: TCP
+            {{- if $svc.metricsPort }}
+            - name: metrics
+              containerPort: {{ $svc.metricsPort }}
+              protocol: TCP
+            {{- end }}
+            {{- if $svc.httpPort }}
+            - name: http-extra
+              containerPort: {{ $svc.httpPort }}
+              protocol: TCP
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "qtown.fullname" $ }}-shared
+          env:
+            {{- /* Service-specific env vars from values.yaml */ -}}
+            {{- range $key, $val := $svc.env }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+            {{- end }}
+            {{- /* Global environment tag */ }}
+            - name: ENVIRONMENT
+              value: {{ $.Values.global.environment | quote }}
+            {{- /* Inject secrets */ }}
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.postgres.credentialsSecret }}
+                  key: POSTGRES_USER
+                  optional: true
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.postgres.credentialsSecret }}
+                  key: POSTGRES_PASSWORD
+                  optional: true
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.redis.credentialsSecret }}
+                  key: REDIS_PASSWORD
+                  optional: true
+            - name: ELASTICSEARCH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.elasticsearch.credentialsSecret }}
+                  key: ELASTICSEARCH_USERNAME
+                  optional: true
+            - name: ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.elasticsearch.credentialsSecret }}
+                  key: ELASTICSEARCH_PASSWORD
+                  optional: true
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.s3.credentialsSecret }}
+                  key: AWS_ACCESS_KEY_ID
+                  optional: true
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.s3.credentialsSecret }}
+                  key: AWS_SECRET_ACCESS_KEY
+                  optional: true
+          {{- with $svc.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $svc.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml $svc.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/component: {{ $name }}
+                topologyKey: kubernetes.io/hostname
+{{- end }}
+{{- end }}

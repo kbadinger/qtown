@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-primary: #0d0d1a;
+    --bg-surface: #1a1a2e;
+    --bg-card: #16213e;
+    --border-color: #2a2a4a;
+    --accent: #e94560;
+    --gold: #f5a623;
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+  }
+
+  html {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  body {
+    background-color: #0d0d1a;
+    min-height: 100vh;
+  }
+
+  * {
+    border-color: #2a2a4a;
+    box-sizing: border-box;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #1a1a2e;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #2a2a4a;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #4a4e69;
+  }
+}
+
+@layer components {
+  .qtown-card {
+    @apply bg-qtown-card border border-qtown-border rounded-lg p-4 shadow-card;
+  }
+
+  .qtown-btn {
+    @apply px-4 py-2 rounded font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-qtown-accent focus:ring-offset-2 focus:ring-offset-qtown-surface;
+  }
+
+  .qtown-btn-primary {
+    @apply qtown-btn bg-qtown-accent text-white hover:bg-qtown-crimson;
+  }
+
+  .qtown-btn-ghost {
+    @apply qtown-btn bg-transparent text-qtown-text-secondary hover:text-qtown-text-primary hover:bg-qtown-border;
+  }
+
+  .qtown-badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
+  }
+
+  .qtown-input {
+    @apply bg-qtown-surface border border-qtown-border rounded px-3 py-2 text-qtown-text-primary placeholder-qtown-text-dim focus:outline-none focus:ring-1 focus:ring-qtown-accent focus:border-qtown-accent transition-colors;
+  }
+
+  .stat-number {
+    @apply font-mono text-2xl font-bold text-qtown-gold;
+  }
+
+  .section-title {
+    @apply text-qtown-text-secondary text-xs font-semibold uppercase tracking-widest;
+  }
+}
+
+@layer utilities {
+  .text-gold {
+    color: #f5a623;
+  }
+
+  .text-accent {
+    color: #e94560;
+  }
+
+  .border-gold {
+    border-color: #f5a623;
+  }
+
+  .bg-medieval {
+    background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%);
+  }
+
+  /* Glow utilities */
+  .glow-gold {
+    box-shadow: 0 0 20px rgba(245, 166, 35, 0.3);
+  }
+
+  .glow-accent {
+    box-shadow: 0 0 20px rgba(233, 69, 96, 0.3);
+  }
+}

@@ -1,147 +1,186 @@
 import { gql } from "graphql-tag";
 
 export const typeDefs = gql`
-  # -------------------------------------------------------------------------
-  # Scalars
-  # -------------------------------------------------------------------------
+  # ============================================================================
+  # Enums
+  # ============================================================================
 
-  scalar JSON
-  scalar DateTime
+  enum NPCStatus {
+    ACTIVE
+    TRAVELING
+    SLEEPING
+    WORKING
+  }
 
-  # -------------------------------------------------------------------------
-  # Core domain types
-  # -------------------------------------------------------------------------
+  enum OrderSide {
+    BUY
+    SELL
+  }
+
+  enum OrderStatus {
+    OPEN
+    FILLED
+    PARTIAL
+    CANCELLED
+  }
+
+  enum LeaderboardType {
+    GOLD
+    HAPPINESS
+    CRIMES
+  }
+
+  enum DocType {
+    EVENT
+    DIALOGUE
+    NEWSPAPER
+    TRANSACTION
+  }
+
+  # ============================================================================
+  # Core types
+  # ============================================================================
 
   type NPC {
     id: ID!
     name: String!
-    district: String!
+    role: String!
     gold: Float!
-    occupation: String
-    mood: String
-    """ Live orders this NPC has open in the Market District. """
-    orders: [Order!]!
-    """ Recent dialogue lines from Academy. """
-    dialogues: [Dialogue!]!
-    """ Leaderboard rank for a given metric (e.g. "wealth", "reputation"). """
-    leaderboardRank(metric: String!): LeaderboardEntry
+    hunger: Float!
+    energy: Float!
+    happiness: Float!
+    neighborhood: String
+    status: NPCStatus!
+    recentEvents(limit: Int): [Event!]!
+    orders(limit: Int): [Order!]!
+    dialogues(limit: Int): [Dialogue!]!
+    leaderboardRanks: LeaderboardRanks!
+    decisionTrace(tick: Int): DecisionTrace
   }
 
-  type Building {
-    id: ID!
-    name: String!
-    district: String!
-    type: String!
-    owner: NPC
-    coordinates: Coordinates!
-  }
-
-  type Coordinates {
-    x: Float!
-    y: Float!
+  type LeaderboardRanks {
+    gold: Int
+    happiness: Int
+    crimes: Int
   }
 
   type WorldState {
     tick: Int!
-    timestamp: DateTime!
-    totalNpcs: Int!
-    totalBuildings: Int!
-    economyIndex: Float!
-    activeDistricts: [String!]!
+    day: Int!
+    population: Int!
+    totalGold: Float!
+    activeEvents: Int!
+    timestamp: String!
   }
 
   type Order {
     id: ID!
     npcId: ID!
-    resource: String!
     side: OrderSide!
+    resource: String!
     price: Float!
-    quantity: Float!
-    timestamp: DateTime!
+    quantity: Int!
+    status: OrderStatus!
+    createdAt: String!
   }
 
-  enum OrderSide {
-    BID
-    ASK
+  type OrderBook {
+    bids: [Order!]!
+    asks: [Order!]!
+    spread: Float
+    lastPrice: Float
   }
 
-  type Dialogue {
-    id: ID!
-    npcId: ID!
-    speaker: String!
-    text: String!
-    timestamp: DateTime!
-    context: JSON
+  type Newspaper {
+    day: Int!
+    headline: String!
+    lead: String!
+    body: String!
+    editorial: String!
+    generatedAt: String!
   }
 
   type LeaderboardEntry {
-    metric: String!
     npcId: ID!
     npcName: String!
     score: Float!
     rank: Int!
   }
 
-  type OrderBook {
-    resource: String!
-    bids: [Order!]!
-    asks: [Order!]!
-    lastTradePrice: Float
-    spread: Float
+  type SearchResults {
+    total: Int!
+    results: [SearchResult!]!
   }
 
   type SearchResult {
+    docType: DocType!
+    docId: ID!
+    content: String!
+    score: Float!
+    highlight: String
+  }
+
+  type DecisionTrace {
+    npcId: ID!
+    tick: Int!
+    nodes: [TraceNode!]!
+    finalDecision: String!
+    totalDurationMs: Float!
+  }
+
+  type TraceNode {
+    name: String!
+    durationMs: Float!
+    inputSummary: String!
+    outputSummary: String!
+  }
+
+  type Dialogue {
+    id: ID!
+    npcId: ID!
+    text: String!
+    context: String
+    generatedAt: String!
+  }
+
+  type Event {
     id: ID!
     type: String!
-    title: String!
-    snippet: String!
-    similarity: Float!
+    description: String!
+    tick: Int!
+    timestamp: String!
   }
 
-  type SearchResults {
-    query: String!
-    results: [SearchResult!]!
-    totalCount: Int!
+  type PriceUpdate {
+    resource: String!
+    price: Float!
+    volume: Int!
+    timestamp: String!
   }
 
-  # -------------------------------------------------------------------------
-  # Queries
-  # -------------------------------------------------------------------------
+  # ============================================================================
+  # Query
+  # ============================================================================
 
   type Query {
-    """ Fetch a single NPC by ID. """
     npc(id: ID!): NPC
-
-    """ Fetch multiple NPCs with optional filters. """
-    npcs(
-      district: String
-      occupation: String
-      limit: Int = 20
-      offset: Int = 0
-    ): [NPC!]!
-
-    """ Current global world state snapshot. """
+    npcs(limit: Int, offset: Int, neighborhood: String): [NPC!]!
     worldState: WorldState!
-
-    """ Semantic search through town history (events, dialogues, newspapers). """
-    searchHistory(query: String!, k: Int = 10): SearchResults!
-
-    """ Order book for a specific resource. """
     orderBook(resource: String!): OrderBook!
-
-    """ Top-N leaderboard for a given metric. """
-    leaderboard(metric: String!, limit: Int = 10): [LeaderboardEntry!]!
+    orders(npcId: ID): [Order!]!
+    newspaper(day: Int): Newspaper
+    newspapers(limit: Int): [Newspaper!]!
+    leaderboard(type: LeaderboardType!, limit: Int): [LeaderboardEntry!]!
+    searchHistory(query: String!, types: [DocType]): SearchResults!
+    npcDecisionTrace(npcId: ID!, tick: Int): DecisionTrace
   }
 
-  # -------------------------------------------------------------------------
-  # Subscriptions
-  # -------------------------------------------------------------------------
+  # ============================================================================
+  # Subscription
+  # ============================================================================
 
   type Subscription {
-    """ Stream of all town events (filtered by optional type list). """
-    eventStream(types: [String!]): JSON!
-
-    """ Real-time price updates for a resource's order book. """
-    priceUpdates(resource: String!): OrderBook!
+    eventStream(channels: [String!]): Event!
+    priceUpdates(resource: String): PriceUpdate!
   }
 `;

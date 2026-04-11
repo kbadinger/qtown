@@ -1,247 +1,212 @@
-import http from "http";
-import { WebSocketServer, WebSocket } from "ws";
-import { Kafka } from "kafkajs";
-import { getRedisClient } from "./redis.js";
-import { LeaderboardManager } from "./leaderboard.js";
+import Fastify from "fastify";
+import type { FastifyInstance } from "fastify";
+import { createServer } from "http";
+import pino from "pino";
+import { RedisClient } from "./redis.js";
+import { RedisPubSub } from "./redis-pubsub.js";
+import { WebSocketManager } from "./websocket.js";
+import { KafkaConsumerService } from "./kafka-consumer.js";
+import { Leaderboard } from "./leaderboard.js";
+import { NPCPresenceTracker } from "./npc-presence.js";
+import type { LeaderboardType } from "./types.js";
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-interface SubscribeMessage {
-  type: "subscribe";
-  channels: string[];
-}
-
-interface UnsubscribeMessage {
-  type: "unsubscribe";
-  channels: string[];
-}
-
-interface PublishMessage {
-  type: "publish";
-  channel: string;
-  data: unknown;
-}
-
-type ClientMessage = SubscribeMessage | UnsubscribeMessage | PublishMessage;
-
-interface ConnectedClient {
-  ws: WebSocket;
-  subscriptions: Set<string>;
-}
-
-// ---------------------------------------------------------------------------
+// ============================================================================
 // Config
-// ---------------------------------------------------------------------------
+// ============================================================================
 
-const WS_PORT = parseInt(process.env["WS_PORT"] ?? "8002", 10);
-const HTTP_PORT = parseInt(process.env["HTTP_PORT"] ?? "8082", 10);
+const logger = pino({ name: "tavern-server" });
+
+const PORT = parseInt(process.env["PORT"] ?? "3001", 10);
+const REDIS_URL = process.env["REDIS_URL"] ?? "redis://localhost:6379";
 const KAFKA_BROKERS = (process.env["KAFKA_BROKERS"] ?? "localhost:9092").split(",");
-const KAFKA_TOPIC = process.env["KAFKA_TOPIC"] ?? "qtown.events";
 
-// ---------------------------------------------------------------------------
-// State
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Bootstrap
+// ============================================================================
 
-const clients = new Map<WebSocket, ConnectedClient>();
-/** channel → set of connected clients */
-const channelIndex = new Map<string, Set<ConnectedClient>>();
+export async function buildServer(): Promise<{
+  fastify: FastifyInstance;
+  wsManager: WebSocketManager;
+  kafkaConsumer: KafkaConsumerService;
+  redisPubSub: RedisPubSub;
+  redis: RedisClient;
+  redisPublisher: RedisClient;
+}> {
+  // --------------------------------------------------------------------------
+  // Redis clients
+  // --------------------------------------------------------------------------
+  // Two separate clients: one for commands, one for publishing.
+  // The pub/sub subscriber is internal to RedisPubSub.
+  const redis = new RedisClient({ url: REDIS_URL });
+  const redisPublisher = new RedisClient({ url: REDIS_URL });
 
-// ---------------------------------------------------------------------------
-// Channel subscription helpers
-// ---------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
+  // Fastify + raw HTTP server
+  // --------------------------------------------------------------------------
+  const fastify = Fastify({ loggerInstance: logger });
+  const httpServer = createServer(fastify.server);
 
-function subscribe(client: ConnectedClient, channels: string[]): void {
-  for (const channel of channels) {
-    client.subscriptions.add(channel);
-    if (!channelIndex.has(channel)) {
-      channelIndex.set(channel, new Set());
-    }
-    channelIndex.get(channel)!.add(client);
-  }
-}
+  // --------------------------------------------------------------------------
+  // WebSocket manager (attaches to the HTTP server)
+  // --------------------------------------------------------------------------
+  const wsManager = new WebSocketManager(httpServer);
 
-function unsubscribe(client: ConnectedClient, channels: string[]): void {
-  for (const channel of channels) {
-    client.subscriptions.delete(channel);
-    channelIndex.get(channel)?.delete(client);
-  }
-}
+  // --------------------------------------------------------------------------
+  // Services
+  // --------------------------------------------------------------------------
+  const leaderboard = new Leaderboard(redis);
+  const presence = new NPCPresenceTracker(redis);
+  const redisPubSub = new RedisPubSub(REDIS_URL);
 
-function removeClient(ws: WebSocket): void {
-  const client = clients.get(ws);
-  if (!client) return;
-  unsubscribe(client, [...client.subscriptions]);
-  clients.delete(ws);
-}
+  const kafkaConsumer = new KafkaConsumerService(
+    {
+      clientId: "tavern",
+      brokers: KAFKA_BROKERS,
+      retry: { retries: 5 },
+    },
+    redis,
+    wsManager
+  );
 
-/**
- * Broadcast a payload to every client subscribed to the given channel.
- * Clients that have disconnected are cleaned up lazily.
- */
-export function broadcast(channel: string, data: unknown): void {
-  const subscribers = channelIndex.get(channel);
-  if (!subscribers || subscribers.size === 0) return;
+  // --------------------------------------------------------------------------
+  // Routes
+  // --------------------------------------------------------------------------
 
-  const payload = JSON.stringify({ channel, data });
-
-  for (const client of subscribers) {
-    if (client.ws.readyState === WebSocket.OPEN) {
-      client.ws.send(payload);
-    } else {
-      // Lazy cleanup of stale references.
-      unsubscribe(client, [channel]);
-    }
-  }
-}
-
-// ---------------------------------------------------------------------------
-// WebSocket server
-// ---------------------------------------------------------------------------
-
-const wss = new WebSocketServer({ port: WS_PORT });
-
-wss.on("listening", () => {
-  console.log(`[tavern] WebSocket server listening on ws://0.0.0.0:${WS_PORT}`);
-});
-
-wss.on("connection", (ws: WebSocket) => {
-  const client: ConnectedClient = { ws, subscriptions: new Set() };
-  clients.set(ws, client);
-
-  ws.on("message", (raw) => {
-    let msg: ClientMessage;
-    try {
-      msg = JSON.parse(raw.toString()) as ClientMessage;
-    } catch {
-      ws.send(JSON.stringify({ error: "invalid JSON" }));
-      return;
-    }
-
-    switch (msg.type) {
-      case "subscribe":
-        subscribe(client, msg.channels);
-        ws.send(JSON.stringify({ type: "subscribed", channels: msg.channels }));
-        break;
-
-      case "unsubscribe":
-        unsubscribe(client, msg.channels);
-        ws.send(JSON.stringify({ type: "unsubscribed", channels: msg.channels }));
-        break;
-
-      case "publish":
-        // Allow clients to publish to channels they are subscribed to.
-        if (client.subscriptions.has(msg.channel)) {
-          broadcast(msg.channel, msg.data);
-        } else {
-          ws.send(JSON.stringify({ error: `not subscribed to channel: ${msg.channel}` }));
-        }
-        break;
-
-      default:
-        ws.send(JSON.stringify({ error: "unknown message type" }));
-    }
+  // Health
+  fastify.get("/health", async (_req, _reply) => {
+    const metrics = wsManager.getMetrics();
+    return {
+      status: "ok",
+      service: "tavern",
+      connections: metrics.totalConnections,
+      messagesPerSecond: metrics.messagesPerSecond,
+      activeChannels: metrics.activeChannels,
+    };
   });
 
-  ws.on("close", () => removeClient(ws));
-  ws.on("error", (err) => {
-    console.error("[tavern] ws error:", err.message);
-    removeClient(ws);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// HTTP health check server
-// ---------------------------------------------------------------------------
-
-const healthServer = http.createServer((req, res) => {
-  if (req.url === "/health" && req.method === "GET") {
-    res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(
-      JSON.stringify({
-        status: "ok",
-        service: "tavern",
-        clients: clients.size,
-        channels: channelIndex.size,
-      })
-    );
-    return;
-  }
-  res.writeHead(404);
-  res.end();
-});
-
-healthServer.listen(HTTP_PORT, () => {
-  console.log(`[tavern] HTTP health server listening on http://0.0.0.0:${HTTP_PORT}`);
-});
-
-// ---------------------------------------------------------------------------
-// Kafka consumer (placeholder)
-// ---------------------------------------------------------------------------
-
-async function startKafkaConsumer(): Promise<void> {
-  const kafka = new Kafka({
-    clientId: "qtown-tavern",
-    brokers: KAFKA_BROKERS,
+  // WebSocket metrics
+  fastify.get("/metrics", async (_req, _reply) => {
+    return wsManager.getMetrics();
   });
 
-  const consumer = kafka.consumer({ groupId: "tavern-consumer-group" });
+  // Leaderboard REST endpoint
+  fastify.get<{
+    Params: { type: string };
+    Querystring: { limit?: string; offset?: string };
+  }>("/leaderboard/:type", async (req, reply) => {
+    const type = req.params.type as LeaderboardType;
+    if (!["gold", "happiness", "crimes"].includes(type)) {
+      return reply.status(400).send({ error: "Invalid leaderboard type" });
+    }
+    const limit = Math.min(parseInt(req.query.limit ?? "10", 10), 100);
+    const offset = parseInt(req.query.offset ?? "0", 10);
+    const entries = await leaderboard.getLeaderboard(type, offset, limit);
+    return { type, entries };
+  });
+
+  // NPC presence
+  fastify.get<{ Params: { id: string } }>(
+    "/npc/:id/presence",
+    async (req, reply) => {
+      const p = await presence.getPresence(req.params.id);
+      if (!p) return reply.status(404).send({ error: "NPC not found" });
+      return p;
+    }
+  );
+
+  fastify.get("/presence", async (_req, _reply) => {
+    const all = await presence.getAllPresence();
+    return { count: all.length, presence: all };
+  });
+
+  // WebSocket upgrade — the WebSocketManager handles the actual upgrade via
+  // the 'ws' library listening on the same HTTP server as Fastify.
+  // Fastify's server is passed to WebSocketManager constructor above.
+  // We also expose a redirect hint at /ws for documentation purposes.
+  fastify.get("/ws", async (_req, reply) => {
+    return reply.status(426).send({
+      error: "Upgrade Required",
+      message: "Connect via WebSocket at ws://<host>/ws",
+    });
+  });
+
+  return {
+    fastify,
+    wsManager,
+    kafkaConsumer,
+    redisPubSub,
+    redis,
+    redisPublisher,
+  };
+}
+
+// ============================================================================
+// Main entry point
+// ============================================================================
+
+export async function start(): Promise<void> {
+  const { fastify, wsManager, kafkaConsumer, redisPubSub, redis, redisPublisher } =
+    await buildServer();
 
   try {
-    await consumer.connect();
-    await consumer.subscribe({ topic: KAFKA_TOPIC, fromBeginning: false });
+    await fastify.ready();
 
-    console.log(`[tavern] Kafka consumer connected — topic: ${KAFKA_TOPIC}`);
-
-    await consumer.run({
-      eachMessage: async ({ topic, partition, message }) => {
-        const value = message.value?.toString();
-        if (!value) return;
-
-        // TODO: parse and route real event types.
-        // For now broadcast raw JSON to an 'events' channel.
-        try {
-          const parsed: unknown = JSON.parse(value);
-          broadcast("events", parsed);
-        } catch {
-          console.warn(
-            `[tavern] kafka unparseable message at ${topic}[${partition}]:`,
-            value
-          );
-        }
-      },
+    await new Promise<void>((resolve, reject) => {
+      fastify.server.listen({ port: PORT, host: "0.0.0.0" }, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
     });
+
+    logger.info({ port: PORT }, "Tavern HTTP server listening");
+
+    // Start Redis pub/sub: forward published messages to WebSocket clients
+    await redisPubSub.start((channel, data) => {
+      wsManager.broadcast(channel, data);
+    });
+
+    // Start Kafka consumer (non-blocking; retries internally)
+    kafkaConsumer.start().catch((err: unknown) => {
+      logger.error({ err }, "Kafka consumer fatal error");
+    });
+
+    logger.info("Tavern service fully started");
   } catch (err) {
-    console.warn("[tavern] Kafka unavailable, consumer not started:", err);
+    logger.fatal({ err }, "Failed to start Tavern");
+    process.exit(1);
   }
+
+  // --------------------------------------------------------------------------
+  // Graceful shutdown
+  // --------------------------------------------------------------------------
+
+  async function shutdown(signal: string): Promise<void> {
+    logger.info({ signal }, "Shutdown signal received");
+    try {
+      await kafkaConsumer.shutdown();
+      await redisPubSub.shutdown();
+      await wsManager.shutdown();
+      redis.disconnect();
+      redisPublisher.disconnect();
+      await fastify.close();
+      logger.info("Tavern shut down cleanly");
+      process.exit(0);
+    } catch (err) {
+      logger.error({ err }, "Error during shutdown");
+      process.exit(1);
+    }
+  }
+
+  process.on("SIGTERM", () => {
+    shutdown("SIGTERM").catch((err) => {
+      logger.error({ err }, "Shutdown failed");
+      process.exit(1);
+    });
+  });
+  process.on("SIGINT", () => {
+    shutdown("SIGINT").catch((err) => {
+      logger.error({ err }, "Shutdown failed");
+      process.exit(1);
+    });
+  });
 }
-
-// ---------------------------------------------------------------------------
-// Redis + Leaderboard
-// ---------------------------------------------------------------------------
-
-const redis = getRedisClient();
-export const leaderboard = new LeaderboardManager(redis);
-
-// ---------------------------------------------------------------------------
-// Startup
-// ---------------------------------------------------------------------------
-
-startKafkaConsumer().catch((err) => {
-  console.warn("[tavern] kafka consumer error:", err);
-});
-
-// Graceful shutdown
-process.on("SIGINT", shutdown);
-process.on("SIGTERM", shutdown);
-
-function shutdown(): void {
-  console.log("[tavern] shutting down…");
-  wss.close(() => console.log("[tavern] WebSocket server closed"));
-  healthServer.close(() => console.log("[tavern] HTTP server closed"));
-  redis.quit().catch(() => undefined);
-  process.exit(0);
-}
-
-console.log("[tavern] startup complete");

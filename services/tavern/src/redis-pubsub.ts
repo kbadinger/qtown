@@ -1,84 +1,116 @@
 import Redis from "ioredis";
 import pino from "pino";
-import type { WebSocketManager } from "./websocket.js";
-import type { TownEvent } from "./types.js";
 
 const logger = pino({ name: "redis-pubsub" });
 
-const LIVE_CHANNEL = "events:live";
+// Channels that map to WebSocket channels
+const EXACT_CHANNELS = ["events", "market", "content", "leaderboard"] as const;
+const NPC_PATTERN = "npc:*";
+
+// ============================================================================
+// RedisPubSub
+// ============================================================================
 
 /**
- * RedisPubSub subscribes to the Redis `events:live` channel and forwards every
- * message to the WebSocket manager for real-time fan-out to browser clients.
+ * Manages a dedicated Redis subscriber connection (ioredis requirement: a
+ * subscribed client cannot issue normal commands).
  *
- * Redis requires a **dedicated** connection for pub/sub — a subscribed client
- * cannot issue regular commands.  We therefore accept a separate `Redis`
- * instance configured identically to the main client.
+ * Supports both exact channel subscriptions and pattern subscriptions for
+ * the npc:{id} namespace.
+ *
+ * The broadcast function is injected so that this module remains decoupled
+ * from the WebSocket implementation.
  */
 export class RedisPubSub {
   private readonly subscriber: Redis;
-  private wsManager: WebSocketManager | null = null;
+  private broadcastFn: ((channel: string, data: unknown) => void) | null = null;
+  private started = false;
 
-  constructor(redisOptions: ConstructorParameters<typeof Redis>[0]) {
-    // Separate connection — never shared with the main command client
-    this.subscriber = new Redis(redisOptions as ConstructorParameters<typeof Redis>[0]);
-
-    this.subscriber.on("error", (err) => {
-      logger.error({ err }, "Redis subscriber error");
+  constructor(redisUrl: string) {
+    this.subscriber = new Redis(redisUrl, {
+      maxRetriesPerRequest: null,
+      enableReadyCheck: true,
+      retryStrategy: (times: number): number | null => {
+        if (times > 15) return null;
+        return Math.min(500 * times, 10_000);
+      },
     });
 
-    this.subscriber.on("connect", () => {
-      logger.info("Redis subscriber connected");
-    });
+    this.subscriber.on("error", (err: Error) =>
+      logger.error({ err }, "Redis subscriber error")
+    );
+    this.subscriber.on("connect", () =>
+      logger.info("Redis subscriber connected")
+    );
+    this.subscriber.on("reconnecting", () =>
+      logger.warn("Redis subscriber reconnecting")
+    );
   }
 
-  /**
-   * Attaches the WebSocket manager and begins listening for messages.
-   */
-  async start(wsManager: WebSocketManager): Promise<void> {
-    this.wsManager = wsManager;
+  // --------------------------------------------------------------------------
+  // Start
+  // --------------------------------------------------------------------------
 
-    await this.subscriber.subscribe(LIVE_CHANNEL, (err, count) => {
-      if (err) {
-        logger.error({ err }, "Failed to subscribe to Redis channel");
-        return;
+  async start(
+    broadcastFn: (channel: string, data: unknown) => void
+  ): Promise<void> {
+    if (this.started) return;
+    this.started = true;
+    this.broadcastFn = broadcastFn;
+
+    // Subscribe to exact channels
+    await this.subscriber.subscribe(...EXACT_CHANNELS);
+    logger.info({ channels: EXACT_CHANNELS }, "Subscribed to Redis channels");
+
+    // Pattern subscribe for npc:* channels
+    await this.subscriber.psubscribe(NPC_PATTERN);
+    logger.info({ pattern: NPC_PATTERN }, "Pattern-subscribed to Redis npc channels");
+
+    // Exact channel messages
+    this.subscriber.on("message", (channel: string, message: string) => {
+      this.handleMessage(channel, message);
+    });
+
+    // Pattern channel messages (npc:*)
+    this.subscriber.on(
+      "pmessage",
+      (_pattern: string, channel: string, message: string) => {
+        this.handleMessage(channel, message);
       }
-      logger.info({ channel: LIVE_CHANNEL, count }, "Subscribed to Redis channel");
-    });
-
-    this.subscriber.on("message", (channel, message) => {
-      if (channel !== LIVE_CHANNEL) return;
-      this.handleMessage(message);
-    });
+    );
   }
 
-  private handleMessage(raw: string): void {
-    let event: TownEvent;
+  // --------------------------------------------------------------------------
+  // Message handling
+  // --------------------------------------------------------------------------
+
+  private handleMessage(channel: string, raw: string): void {
+    if (!this.broadcastFn) return;
+
+    let data: unknown;
     try {
-      event = JSON.parse(raw) as TownEvent;
+      data = JSON.parse(raw) as unknown;
     } catch (err) {
-      logger.warn({ err }, "Failed to parse pub/sub message");
+      logger.warn({ channel, err }, "Failed to parse Redis pub/sub message");
       return;
     }
 
-    if (!this.wsManager) return;
-
-    // Fan out to all connected WebSocket clients on the appropriate channel
-    const channel = `events:${event.type}`;
-    this.wsManager.broadcast(channel, event);
-    // Also broadcast on the catch-all channel
-    this.wsManager.broadcast("events:live", event);
-
-    logger.debug({ type: event.type, channel }, "Forwarded pub/sub message to WebSocket clients");
+    logger.debug({ channel }, "Forwarding Redis pub/sub message to WebSocket");
+    this.broadcastFn(channel, data);
   }
+
+  // --------------------------------------------------------------------------
+  // Shutdown
+  // --------------------------------------------------------------------------
 
   async shutdown(): Promise<void> {
     try {
-      await this.subscriber.unsubscribe(LIVE_CHANNEL);
+      await this.subscriber.unsubscribe(...EXACT_CHANNELS);
+      await this.subscriber.punsubscribe(NPC_PATTERN);
       this.subscriber.disconnect();
-      logger.info("Redis subscriber shut down");
+      logger.info("Redis pub/sub subscriber shut down");
     } catch (err) {
-      logger.error({ err }, "Error shutting down Redis subscriber");
+      logger.error({ err }, "Error shutting down Redis pub/sub subscriber");
     }
   }
 }

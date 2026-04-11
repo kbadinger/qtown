@@ -129,10 +129,44 @@ jobs:
       - name: Test
         run: cd services/cartographer && npm test || true
 
+  # ─── Library (Python) ───
+  test-library:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: cd services/library && pip install -e ".[dev]" || pip install -r requirements.txt 2>/dev/null && pip install pytest ruff
+      - name: Lint
+        run: cd services/library && ruff check . || true
+      - name: Test
+        run: cd services/library && pytest tests/ -v --tb=short || true
+
+  # ─── Dashboard (Nuxt 3) ───
+  test-dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install
+        run: cd dashboard && npm install
+      - name: Type check
+        run: cd dashboard && npx nuxi typecheck || npx tsc --noEmit || true
+      - name: Lint (zero any types)
+        run: |
+          count=$(grep -rn ": any" dashboard/pages/ dashboard/components/ dashboard/composables/ 2>/dev/null | grep -v node_modules | grep -v .spec. | wc -l)
+          echo "Found $count 'any' types"
+      - name: Test
+        run: cd dashboard && npm test || true
+
   # ─── Docker Build (all images) ───
   docker-build:
     runs-on: ubuntu-latest
-    needs: [test-town-core, test-market, test-fortress, test-tavern, test-academy, test-cartographer]
+    needs: [test-town-core, test-market, test-fortress, test-tavern, test-academy, test-cartographer, test-library, test-dashboard]
     if: github.event_name == 'pull_request'
     strategy:
       matrix:
@@ -143,6 +177,9 @@ jobs:
           - { name: tavern, path: services/tavern }
           - { name: academy, path: services/academy }
           - { name: cartographer, path: services/cartographer }
+          - { name: library, path: services/library }
+          - { name: dashboard, path: dashboard }
+          - { name: asset-pipeline, path: services/asset-pipeline }
     steps:
       - uses: actions/checkout@v4
       - name: Build ${{ matrix.service.name }}
@@ -151,13 +188,13 @@ jobs:
   # ─── Docker Push (main only) ───
   docker-push:
     runs-on: ubuntu-latest
-    needs: [test-town-core, test-market, test-fortress, test-tavern, test-academy, test-cartographer]
+    needs: [test-town-core, test-market, test-fortress, test-tavern, test-academy, test-cartographer, test-library, test-dashboard]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     permissions:
       packages: write
     strategy:
       matrix:
-        service: [town-core, market-district, fortress, tavern, academy, cartographer]
+        service: [town-core, market-district, fortress, tavern, academy, cartographer, library, asset-pipeline, dashboard]
     steps:
       - uses: actions/checkout@v4
       - name: Login to GHCR

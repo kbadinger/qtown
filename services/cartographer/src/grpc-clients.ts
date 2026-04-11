@@ -6,11 +6,9 @@ import pino from "pino";
 
 const logger = pino({ name: "grpc-clients" });
 
-// ---------------------------------------------------------------------------
+// ============================================================================
 // Proto loading
-// ---------------------------------------------------------------------------
-// Proto files should live in /protos relative to the project root.
-// Paths are resolved relative to this file.
+// ============================================================================
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROTO_BASE = path.resolve(__dirname, "../../protos");
@@ -23,18 +21,26 @@ const LOADER_OPTIONS: protoLoader.Options = {
   oneofs: true,
 };
 
-function loadPackage(protoFile: string): grpc.GrpcObject {
-  const definition = protoLoader.loadSync(path.join(PROTO_BASE, protoFile), LOADER_OPTIONS);
-  return grpc.loadPackageDefinition(definition);
+function tryLoadPackage(protoFile: string): grpc.GrpcObject | null {
+  try {
+    const definition = protoLoader.loadSync(
+      path.join(PROTO_BASE, protoFile),
+      LOADER_OPTIONS
+    );
+    return grpc.loadPackageDefinition(definition);
+  } catch {
+    logger.warn({ protoFile }, "Proto file not found — using generic stub");
+    return null;
+  }
 }
 
-// ---------------------------------------------------------------------------
-// Client factory helpers
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Channel options
+// ============================================================================
 
 /**
- * Creates a gRPC channel with sensible defaults and exponential back-off.
- * Returns the underlying `grpc.Channel` options that can be shared across stubs.
+ * Shared channel options: keepalive, retry policy with 2-attempt limit
+ * and 5 s deadline propagated per call via metadata/deadline argument.
  */
 function makeChannelOptions(): grpc.ChannelOptions {
   return {
@@ -46,10 +52,11 @@ function makeChannelOptions(): grpc.ChannelOptions {
       methodConfig: [
         {
           name: [{}],
+          timeout: "5s",
           retryPolicy: {
-            maxAttempts: 5,
+            maxAttempts: 3,
             initialBackoff: "0.5s",
-            maxBackoff: "30s",
+            maxBackoff: "10s",
             backoffMultiplier: 2,
             retryableStatusCodes: ["UNAVAILABLE", "RESOURCE_EXHAUSTED"],
           },
@@ -59,78 +66,137 @@ function makeChannelOptions(): grpc.ChannelOptions {
   };
 }
 
-// ---------------------------------------------------------------------------
-// Exported client constructors
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Generic client factory
+// ============================================================================
 
-/**
- * town-core — NPC state, neighbourhood data.
- * gRPC endpoint: localhost:50050
- */
-export function createTownCoreClient(): grpc.Client {
-  const pkg = loadPackage("town_core.proto");
+function makeClient(
+  protoFile: string,
+  servicePath: string,
+  address: string
+): grpc.Client {
+  const pkg = tryLoadPackage(protoFile);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const TownCore = (pkg as any).qtown?.TownCoreService as typeof grpc.Client;
+  const ServiceCtor = pkg ? (pkg as any)[servicePath] as typeof grpc.Client | undefined : undefined;
 
-  if (!TownCore) {
-    logger.warn("town_core.proto not found — returning a generic channel stub");
-    return new grpc.Client("localhost:50050", grpc.credentials.createInsecure(), makeChannelOptions());
+  if (!ServiceCtor) {
+    logger.warn(
+      { protoFile, servicePath, address },
+      "Service constructor not found — using generic channel client"
+    );
+    return new grpc.Client(
+      address,
+      grpc.credentials.createInsecure(),
+      makeChannelOptions()
+    );
   }
 
-  const client = new TownCore(
-    "localhost:50050",
+  const client = new ServiceCtor(
+    address,
     grpc.credentials.createInsecure(),
     makeChannelOptions()
   );
-
-  logger.info("TownCore gRPC client created (localhost:50050)");
+  logger.info({ address, service: servicePath }, "gRPC client created");
   return client;
 }
 
+// ============================================================================
+// Exported client constructors
+// ============================================================================
+
 /**
- * market-district — Order book, trade history.
+ * town-core — NPC state, neighbourhood data, world state.
  * gRPC endpoint: localhost:50051
  */
-export function createMarketClient(): grpc.Client {
-  const pkg = loadPackage("market_district.proto");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const Market = (pkg as any).qtown?.MarketService as typeof grpc.Client;
-
-  if (!Market) {
-    logger.warn("market_district.proto not found — returning a generic channel stub");
-    return new grpc.Client("localhost:50051", grpc.credentials.createInsecure(), makeChannelOptions());
-  }
-
-  const client = new Market(
-    "localhost:50051",
-    grpc.credentials.createInsecure(),
-    makeChannelOptions()
+export function createTownCoreClient(): grpc.Client {
+  return makeClient(
+    "town_core.proto",
+    "qtown.TownCoreService",
+    process.env["TOWN_CORE_ADDR"] ?? "localhost:50051"
   );
-
-  logger.info("Market gRPC client created (localhost:50051)");
-  return client;
 }
 
 /**
- * fortress — Validation, governance, and rules engine.
+ * market-district — Order book, trade history, price updates.
  * gRPC endpoint: localhost:50052
  */
-export function createFortressClient(): grpc.Client {
-  const pkg = loadPackage("fortress.proto");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const Fortress = (pkg as any).qtown?.FortressService as typeof grpc.Client;
-
-  if (!Fortress) {
-    logger.warn("fortress.proto not found — returning a generic channel stub");
-    return new grpc.Client("localhost:50052", grpc.credentials.createInsecure(), makeChannelOptions());
-  }
-
-  const client = new Fortress(
-    "localhost:50052",
-    grpc.credentials.createInsecure(),
-    makeChannelOptions()
+export function createMarketDistrictClient(): grpc.Client {
+  return makeClient(
+    "market_district.proto",
+    "qtown.MarketDistrictService",
+    process.env["MARKET_DISTRICT_ADDR"] ?? "localhost:50052"
   );
+}
 
-  logger.info("Fortress gRPC client created (localhost:50052)");
-  return client;
+/**
+ * academy — Newspaper generation, NPC decision traces.
+ * gRPC endpoint: localhost:50053
+ */
+export function createAcademyClient(): grpc.Client {
+  return makeClient(
+    "academy.proto",
+    "qtown.AcademyService",
+    process.env["ACADEMY_ADDR"] ?? "localhost:50053"
+  );
+}
+
+/**
+ * fortress — Governance, validation, crime records.
+ * gRPC endpoint: localhost:50054
+ */
+export function createFortressClient(): grpc.Client {
+  return makeClient(
+    "fortress.proto",
+    "qtown.FortressService",
+    process.env["FORTRESS_ADDR"] ?? "localhost:50054"
+  );
+}
+
+// ============================================================================
+// gRPC unary call helper
+// ============================================================================
+
+/**
+ * Wraps a gRPC unary call in a Promise.
+ * Injects a 5 s deadline on every call.
+ */
+export function grpcUnary<TRequest, TResponse>(
+  client: grpc.Client,
+  method: string,
+  request: TRequest
+): Promise<TResponse> {
+  return new Promise((resolve, reject) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const fn = (client as any)[method] as
+      | ((
+          req: TRequest,
+          meta: grpc.Metadata,
+          opts: grpc.CallOptions,
+          cb: (err: grpc.ServiceError | null, res: TResponse) => void
+        ) => void)
+      | undefined;
+
+    if (typeof fn !== "function") {
+      reject(new Error(`gRPC method "${method}" not found on client`));
+      return;
+    }
+
+    const meta = new grpc.Metadata();
+    const deadline = new Date(Date.now() + 5_000);
+
+    fn.call(
+      client,
+      request,
+      meta,
+      { deadline },
+      (err: grpc.ServiceError | null, response: TResponse) => {
+        if (err) {
+          logger.warn({ method, code: err.code, message: err.message }, "gRPC call error");
+          reject(err);
+        } else {
+          resolve(response);
+        }
+      }
+    );
+  });
 }

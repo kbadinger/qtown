@@ -1,0 +1,126 @@
+import type { Config } from 'tailwindcss'
+
+export default {
+  content: [
+    './components/**/*.{js,vue,ts}',
+    './layouts/**/*.vue',
+    './pages/**/*.vue',
+    './plugins/**/*.{js,ts}',
+    './app.vue',
+    './error.vue',
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        // Medieval Qtown palette
+        qtown: {
+          bg: '#0d0d1a',
+          surface: '#1a1a2e',
+          card: '#16213e',
+          border: '#2a2a4a',
+          accent: '#e94560',
+          gold: '#f5a623',
+          'gold-dark': '#c47d0e',
+          silver: '#a8b2c1',
+          forest: '#2d6a4f',
+          'forest-light': '#40916c',
+          crimson: '#c1121f',
+          'crimson-dark': '#780000',
+          stone: '#4a4e69',
+          'stone-light': '#9a8c98',
+          parchment: '#f2e8cf',
+          'parchment-dark': '#d4c5a9',
+          muted: '#64748b',
+          'text-primary': '#e2e8f0',
+          'text-secondary': '#94a3b8',
+          'text-dim': '#475569',
+        },
+        // Semantic aliases
+        stone: {
+          50: '#fafaf9',
+          100: '#f5f5f4',
+          200: '#e7e5e4',
+          300: '#d6d3d1',
+          400: '#a8a29e',
+          500: '#78716c',
+          600: '#57534e',
+          700: '#44403c',
+          800: '#292524',
+          900: '#1c1917',
+          950: '#0c0a09',
+        },
+      },
+      fontFamily: {
+        sans: [
+          'ui-sans-serif',
+          'system-ui',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"Segoe UI"',
+          'Roboto',
+          '"Helvetica Neue"',
+          'Arial',
+          'sans-serif',
+        ],
+        mono: [
+          'ui-monospace',
+          'SFMono-Regular',
+          '"SF Mono"',
+          'Menlo',
+          'Monaco',
+          'Consolas',
+          '"Liberation Mono"',
+          '"Courier New"',
+          'monospace',
+        ],
+        serif: [
+          'ui-serif',
+          'Georgia',
+          'Cambria',
+          '"Times New Roman"',
+          'Times',
+          'serif',
+        ],
+      },
+      backgroundImage: {
+        'medieval-gradient': 'linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%)',
+        'gold-gradient': 'linear-gradient(135deg, #f5a623 0%, #c47d0e 100%)',
+        'crimson-gradient': 'linear-gradient(135deg, #e94560 0%, #c1121f 100%)',
+        'forest-gradient': 'linear-gradient(135deg, #2d6a4f 0%, #40916c 100%)',
+      },
+      boxShadow: {
+        'glow-gold': '0 0 20px rgba(245, 166, 35, 0.3)',
+        'glow-accent': '0 0 20px rgba(233, 69, 96, 0.3)',
+        'glow-forest': '0 0 20px rgba(64, 145, 108, 0.3)',
+        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3)',
+        'card-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4)',
+      },
+      borderColor: {
+        DEFAULT: '#2a2a4a',
+      },
+      animation: {
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'spin-slow': 'spin 3s linear infinite',
+        'fade-in': 'fadeIn 0.3s ease-in-out',
+        'slide-up': 'slideUp 0.3s ease-out',
+        'slide-in-right': 'slideInRight 0.3s ease-out',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideInRight: {
+          '0%': { transform: 'translateX(-10px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+      },
+    },
+  },
+  plugins: [],
+} satisfies Config

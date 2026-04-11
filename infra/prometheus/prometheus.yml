@@ -1,0 +1,165 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+  external_labels:
+    cluster: qtown
+    environment: ${ENVIRONMENT:-development}
+
+alerting:
+  alertmanagers: []
+
+rule_files: []
+
+scrape_configs:
+  # ---------------------------------------------------------------------------
+  # Prometheus self-scrape
+  # ---------------------------------------------------------------------------
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - localhost:9090
+    relabel_configs:
+      - target_label: service
+        replacement: prometheus
+
+  # ---------------------------------------------------------------------------
+  # town-core (Python / FastAPI)
+  # Port 9100 — init_telemetry() calls prometheus_client.start_http_server(9100)
+  # ---------------------------------------------------------------------------
+  - job_name: town-core
+    static_configs:
+      - targets:
+          - town-core:9100
+    metrics_path: /metrics
+    relabel_configs:
+      - target_label: service
+        replacement: town-core
+
+  # ---------------------------------------------------------------------------
+  # market-district (Go / gRPC)
+  # Port 9201 — Prometheus HTTP server in telemetry.go
+  # ---------------------------------------------------------------------------
+  - job_name: market-district
+    static_configs:
+      - targets:
+          - market-district:9201
+    metrics_path: /metrics
+    relabel_configs:
+      - target_label: service
+        replacement: market-district
+
+  # ---------------------------------------------------------------------------
+  # fortress (Rust)
+  # Port 9202 — serve_metrics() in telemetry.rs
+  # ---------------------------------------------------------------------------
+  - job_name: fortress
+    static_configs:
+      - targets:
+          - fortress:9202
+    metrics_path: /metrics
+    relabel_configs:
+      - target_label: service
+        replacement: fortress
+
+  # ---------------------------------------------------------------------------
+  # academy (Python / FastAPI)
+  # Port 9103
+  # ---------------------------------------------------------------------------
+  - job_name: academy
+    static_configs:
+      - targets:
+          - academy:9103
+    metrics_path: /metrics
+    relabel_configs:
+      - target_label: service
+        replacement: academy
+
+  # ---------------------------------------------------------------------------
+  # tavern (Node / TypeScript)
+  # Port 9104
+  # ---------------------------------------------------------------------------
+  - job_name: tavern
+    static_configs:
+      - targets:
+          - tavern:9104
+    metrics_path: /metrics
+    relabel_configs:
+      - target_label: service
+        replacement: tavern
+
+  # ---------------------------------------------------------------------------
+  # cartographer (Node / TypeScript / GraphQL)
+  # Port 9105
+  # ---------------------------------------------------------------------------
+  - job_name: cartographer
+    static_configs:
+      - targets:
+          - cartographer:9105
+    metrics_path: /metrics
+    relabel_configs:
+      - target_label: service
+        replacement: cartographer
+
+  # ---------------------------------------------------------------------------
+  # library (Python / FastAPI)
+  # Port 9106
+  # ---------------------------------------------------------------------------
+  - job_name: library
+    static_configs:
+      - targets:
+          - library:9106
+    metrics_path: /metrics
+    relabel_configs:
+      - target_label: service
+        replacement: library
+
+  # ---------------------------------------------------------------------------
+  # asset-pipeline (Python / FastAPI)
+  # Port 9107
+  # ---------------------------------------------------------------------------
+  - job_name: asset-pipeline
+    static_configs:
+      - targets:
+          - asset-pipeline:9107
+    metrics_path: /metrics
+    relabel_configs:
+      - target_label: service
+        replacement: asset-pipeline
+
+  # ---------------------------------------------------------------------------
+  # Kafka JMX exporter
+  # Assumes kafka-jmx-exporter sidecar/separate container on port 9308
+  # ---------------------------------------------------------------------------
+  - job_name: kafka
+    static_configs:
+      - targets:
+          - kafka:9308
+    metrics_path: /metrics
+    relabel_configs:
+      - target_label: service
+        replacement: kafka
+
+  # ---------------------------------------------------------------------------
+  # Jaeger internal metrics
+  # ---------------------------------------------------------------------------
+  - job_name: jaeger
+    static_configs:
+      - targets:
+          - jaeger:14269
+    metrics_path: /metrics
+    relabel_configs:
+      - target_label: service
+        replacement: jaeger
+
+  # ---------------------------------------------------------------------------
+  # Loki internal metrics
+  # ---------------------------------------------------------------------------
+  - job_name: loki
+    static_configs:
+      - targets:
+          - loki:3100
+    metrics_path: /metrics
+    relabel_configs:
+      - target_label: service
+        replacement: loki

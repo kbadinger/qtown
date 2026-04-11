@@ -1,196 +1,130 @@
-import DataLoader from "dataloader";
-import type { IResolvers } from "@graphql-tools/utils";
+import pino from "pino";
+import type { NPC, Order, Dialogue, DecisionTrace, Event, LeaderboardRanks } from "../types.js";
+import type { ResolverContext } from "../context.js";
+import { grpcUnary } from "../grpc-clients.js";
+import { cacheGet, cacheSet } from "../cache.js";
 
-// ---------------------------------------------------------------------------
-// Types (local approximations until gRPC stubs are generated)
-// ---------------------------------------------------------------------------
+const logger = pino({ name: "npc-resolvers" });
 
-export interface NPCRecord {
-  id: string;
-  name: string;
-  district: string;
-  gold: number;
-  occupation?: string;
-  mood?: string;
-}
+// ============================================================================
+// NPC field resolvers
+// ============================================================================
+// These resolvers are invoked per-NPC parent when the corresponding fields
+// are requested. DataLoader is used to batch gRPC calls and prevent N+1.
 
-export interface OrderRecord {
-  id: string;
-  npcId: string;
-  resource: string;
-  side: "BID" | "ASK";
-  price: number;
-  quantity: number;
-  timestamp: string;
-}
+export const NpcFieldResolvers = {
+  /**
+   * NPC.recentEvents — fetches events for this NPC from town-core.
+   * DataLoader not applied here as events are fetched per-NPC;
+   * an event loader could be added if this becomes a hotspot.
+   */
+  async recentEvents(
+    parent: NPC,
+    args: { limit?: number | null },
+    ctx: ResolverContext
+  ): Promise<Event[]> {
+    const limit = args.limit ?? 10;
+    logger.debug({ npcId: parent.id, limit }, "NPC.recentEvents");
 
-export interface DialogueRecord {
-  id: string;
-  npcId: string;
-  speaker: string;
-  text: string;
-  timestamp: string;
-  context?: Record<string, unknown>;
-}
-
-export interface LeaderboardEntryRecord {
-  metric: string;
-  npcId: string;
-  npcName: string;
-  score: number;
-  rank: number;
-}
-
-// ---------------------------------------------------------------------------
-// gRPC client stubs (replace with real generated stubs)
-// ---------------------------------------------------------------------------
-
-/**
- * Placeholder — fetches NPC records from the NPC gRPC service.
- * Replace with a real tonic/grpc-js channel call.
- */
-async function fetchNPCsFromGRPC(ids: readonly string[]): Promise<NPCRecord[]> {
-  // TODO: implement gRPC call to npc-service:50054
-  // const channel = grpc.credentials.createInsecure();
-  // const client = new NPCServiceClient("npc-service:50054", channel);
-  // return client.batchGetNPCs({ ids });
-  return ids.map((id) => ({
-    id,
-    name: `NPC-${id}`,
-    district: "market",
-    gold: 100,
-    occupation: "merchant",
-    mood: "content",
-  }));
-}
-
-/**
- * Placeholder — fetches open orders for a list of NPC IDs from Market District.
- */
-async function fetchOrdersForNPCs(npcIds: readonly string[]): Promise<Map<string, OrderRecord[]>> {
-  // TODO: implement gRPC call to market-district:50051
-  const result = new Map<string, OrderRecord[]>();
-  for (const npcId of npcIds) {
-    result.set(npcId, []);
-  }
-  return result;
-}
-
-/**
- * Placeholder — fetches recent dialogues for a list of NPC IDs from Academy.
- */
-async function fetchDialoguesForNPCs(npcIds: readonly string[]): Promise<Map<string, DialogueRecord[]>> {
-  // TODO: implement gRPC call to academy:50053
-  const result = new Map<string, DialogueRecord[]>();
-  for (const npcId of npcIds) {
-    result.set(npcId, []);
-  }
-  return result;
-}
-
-/**
- * Placeholder — fetches leaderboard rank from Redis (via Tavern service or directly).
- */
-async function fetchLeaderboardRank(
-  npcId: string,
-  metric: string
-): Promise<LeaderboardEntryRecord | null> {
-  // TODO: connect to Redis and use ZREVRANK + ZSCORE on lb:<metric>
-  return null;
-}
-
-// ---------------------------------------------------------------------------
-// DataLoaders
-// ---------------------------------------------------------------------------
-
-/**
- * Batch-loads NPC records by ID.  One gRPC call per batch rather than N.
- */
-export function createNPCLoader(): DataLoader<string, NPCRecord | null> {
-  return new DataLoader<string, NPCRecord | null>(async (ids) => {
-    const records = await fetchNPCsFromGRPC(ids);
-    const byId = new Map(records.map((r) => [r.id, r]));
-    return ids.map((id) => byId.get(id) ?? null);
-  });
-}
-
-/**
- * Batch-loads all open orders grouped by NPC ID.
- */
-export function createOrdersLoader(): DataLoader<string, OrderRecord[]> {
-  return new DataLoader<string, OrderRecord[]>(async (npcIds) => {
-    const map = await fetchOrdersForNPCs(npcIds);
-    return npcIds.map((id) => map.get(id) ?? []);
-  });
-}
-
-/**
- * Batch-loads dialogue history grouped by NPC ID.
- */
-export function createDialoguesLoader(): DataLoader<string, DialogueRecord[]> {
-  return new DataLoader<string, DialogueRecord[]>(async (npcIds) => {
-    const map = await fetchDialoguesForNPCs(npcIds);
-    return npcIds.map((id) => map.get(id) ?? []);
-  });
-}
-
-// ---------------------------------------------------------------------------
-// Resolver context type
-// ---------------------------------------------------------------------------
-
-export interface ResolverContext {
-  loaders: {
-    npc: DataLoader<string, NPCRecord | null>;
-    orders: DataLoader<string, OrderRecord[]>;
-    dialogues: DataLoader<string, DialogueRecord[]>;
-  };
-}
-
-export function createLoaders(): ResolverContext["loaders"] {
-  return {
-    npc: createNPCLoader(),
-    orders: createOrdersLoader(),
-    dialogues: createDialoguesLoader(),
-  };
-}
-
-// ---------------------------------------------------------------------------
-// NPC resolvers
-// ---------------------------------------------------------------------------
-
-export const npcResolvers: IResolvers<unknown, ResolverContext> = {
-  Query: {
-    npc: async (_parent, args: { id: string }, ctx) => {
-      return ctx.loaders.npc.load(args.id);
-    },
-
-    npcs: async (
-      _parent,
-      args: { district?: string; occupation?: string; limit?: number; offset?: number },
-      _ctx
-    ) => {
-      // TODO: delegate to npc-service gRPC with filter args.
-      const { limit = 20, offset = 0 } = args;
-      console.log("[cartographer] npcs query", { ...args, limit, offset });
+    try {
+      const response = await grpcUnary<
+        { npc_id: string; limit: number },
+        { events: Event[] }
+      >(ctx.townCoreClient, "GetNPCEvents", { npc_id: parent.id, limit });
+      return response.events ?? [];
+    } catch (err) {
+      logger.warn({ err, npcId: parent.id }, "NPC.recentEvents gRPC failed");
       return [];
-    },
+    }
   },
 
-  NPC: {
-    orders: async (parent: NPCRecord, _args, ctx) => {
-      return ctx.loaders.orders.load(parent.id);
-    },
+  /**
+   * NPC.orders — uses DataLoader to batch by npc_id.
+   * Complexity cost: 10 per NPC field.
+   */
+  async orders(
+    parent: NPC,
+    args: { limit?: number | null },
+    ctx: ResolverContext
+  ): Promise<Order[]> {
+    const limit = args.limit ?? 20;
+    logger.debug({ npcId: parent.id, limit }, "NPC.orders (via DataLoader)");
 
-    dialogues: async (parent: NPCRecord, _args, ctx) => {
-      return ctx.loaders.dialogues.load(parent.id);
-    },
+    const orders = await ctx.dataLoaders.orderLoader.load(parent.id);
+    return orders.slice(0, limit);
+  },
 
-    leaderboardRank: async (
-      parent: NPCRecord,
-      args: { metric: string },
-      _ctx
-    ) => {
-      return fetchLeaderboardRank(parent.id, args.metric);
-    },
+  /**
+   * NPC.dialogues — uses DataLoader to batch by npc_id.
+   * Complexity cost: 10 per NPC field.
+   */
+  async dialogues(
+    parent: NPC,
+    args: { limit?: number | null },
+    ctx: ResolverContext
+  ): Promise<Dialogue[]> {
+    const limit = args.limit ?? 10;
+    logger.debug({ npcId: parent.id, limit }, "NPC.dialogues (via DataLoader)");
+
+    const dialogues = await ctx.dataLoaders.dialogueLoader.load(parent.id);
+    return dialogues.slice(0, limit);
+  },
+
+  /**
+   * NPC.leaderboardRanks — fetches all three ranks via HTTP to Tavern's
+   * leaderboard endpoint (cached for 10 s).
+   */
+  async leaderboardRanks(
+    parent: NPC,
+    _args: Record<string, never>,
+    ctx: ResolverContext
+  ): Promise<LeaderboardRanks> {
+    const cacheKey = `leaderboard_ranks:${parent.id}`;
+    const cached = await cacheGet<LeaderboardRanks>(ctx.redisCache, cacheKey);
+    if (cached !== null) return cached;
+
+    try {
+      const response = await grpcUnary<
+        { npc_id: string },
+        { gold: number | null; happiness: number | null; crimes: number | null }
+      >(ctx.townCoreClient, "GetNPCRanks", { npc_id: parent.id });
+
+      const ranks: LeaderboardRanks = {
+        gold: response.gold ?? null,
+        happiness: response.happiness ?? null,
+        crimes: response.crimes ?? null,
+      };
+
+      await cacheSet(ctx.redisCache, cacheKey, ranks, 10);
+      return ranks;
+    } catch (err) {
+      logger.warn({ err, npcId: parent.id }, "NPC.leaderboardRanks failed");
+      return { gold: null, happiness: null, crimes: null };
+    }
+  },
+
+  /**
+   * NPC.decisionTrace — fetches from academy service.
+   */
+  async decisionTrace(
+    parent: NPC,
+    args: { tick?: number | null },
+    ctx: ResolverContext
+  ): Promise<DecisionTrace | null> {
+    logger.debug({ npcId: parent.id, tick: args.tick }, "NPC.decisionTrace");
+
+    try {
+      const response = await grpcUnary<
+        { npc_id: string; tick?: number },
+        { trace: DecisionTrace | null }
+      >(ctx.academyClient, "GetDecisionTrace", {
+        npc_id: parent.id,
+        ...(args.tick !== null && args.tick !== undefined ? { tick: args.tick } : {}),
+      });
+      return response.trace ?? null;
+    } catch (err) {
+      logger.warn({ err, npcId: parent.id }, "NPC.decisionTrace gRPC failed");
+      return null;
+    }
   },
 };

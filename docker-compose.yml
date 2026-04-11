@@ -135,6 +135,67 @@ services:
       timeout: 5s
       retries: 5
 
+  # ─── Dashboard (Nuxt 3) ───
+  dashboard:
+    build: dashboard
+    container_name: qtown-dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      NUXT_PUBLIC_API_BASE: http://town-core:8000
+      NUXT_PUBLIC_GRAPHQL_URL: http://cartographer:4000/graphql
+      NUXT_PUBLIC_WS_URL: ws://tavern:3001
+    depends_on:
+      town-core:
+        condition: service_healthy
+      cartographer:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Library (Elasticsearch gateway) ───
+  library:
+    build: services/library
+    container_name: qtown-library
+    ports:
+      - "8004:8004"
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8004/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Asset Pipeline (ComfyUI + S3) ───
+  asset-pipeline:
+    build: services/asset-pipeline
+    container_name: qtown-asset-pipeline
+    ports:
+      - "8005:8005"
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      COMFYUI_URL: http://comfyui:8188
+      S3_BUCKET: ${S3_BUCKET:-qtown-assets}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+    depends_on:
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8005/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # ─── Kafka Topic Init (run-once) ───
   kafka-init:
     image: apache/kafka:3.7.0
@@ -158,7 +219,12 @@ services:
           qtown.validation.result:6 \
           qtown.ai.request:6 \
           qtown.ai.response:6 \
-          qtown.ai.content.generated:3; do
+          qtown.ai.content.generated:3 \
+          qtown.npc.decision.request:6 \
+          qtown.npc.decision.result:6 \
+          qtown.npc.dialogue:6 \
+          qtown.assets.generate:3 \
+          qtown.assets.generated:3; do
           IFS=':' read -r name partitions <<< "$$topic"
           /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 \
             --create --if-not-exists \

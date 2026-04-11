@@ -1,0 +1,41 @@
+{{- /*
+Service template — one ClusterIP Service per enabled service.
+*/ -}}
+{{- range $name, $svc := .Values.services }}
+{{- if $svc.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "qtown.fullname" $ }}-{{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "qtown.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $name }}
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: {{ $svc.metricsPort | default 9000 | quote }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "qtown.selectorLabels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $name }}
+  ports:
+    - name: http
+      port: {{ $svc.port }}
+      targetPort: http
+      protocol: TCP
+    {{- if $svc.metricsPort }}
+    - name: metrics
+      port: {{ $svc.metricsPort }}
+      targetPort: metrics
+      protocol: TCP
+    {{- end }}
+    {{- if $svc.httpPort }}
+    - name: http-extra
+      port: {{ $svc.httpPort }}
+      targetPort: http-extra
+      protocol: TCP
+    {{- end }}
+{{- end }}
+{{- end }}

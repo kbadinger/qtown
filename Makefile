@@ -4,10 +4,10 @@
 
 .PHONY: help deps deps-down proto build test lint \
         build-town-core build-market build-fortress build-tavern \
-        build-academy build-cartographer \
+        build-academy build-cartographer build-library build-dashboard build-asset-pipeline \
         test-town-core test-market test-fortress test-tavern \
-        test-academy test-cartographer \
-        docker-build docker-up docker-down clean
+        test-academy test-cartographer test-library test-dashboard \
+        docker-build docker-up docker-down clean observability
 
 # ─── Help ───
 help: ## Show this help
@@ -54,7 +54,16 @@ build-academy: ## Build Academy (Python)
 build-cartographer: ## Build Cartographer (GraphQL/TS)
 	cd services/cartographer && npm install && npm run build
 
-build: build-town-core build-market build-fortress build-tavern build-academy build-cartographer ## Build all services
+build-library: ## Build Library (Python)
+	cd services/library && pip install -e ".[dev]" 2>/dev/null || pip install -r requirements.txt
+
+build-dashboard: ## Build Dashboard (Nuxt 3)
+	cd dashboard && npm install && npx nuxt build
+
+build-asset-pipeline: ## Build Asset Pipeline (Python)
+	cd services/asset-pipeline && pip install -e ".[dev]" 2>/dev/null || pip install -r requirements.txt
+
+build: build-town-core build-market build-fortress build-tavern build-academy build-cartographer build-library build-dashboard build-asset-pipeline ## Build all services
 
 # ─── Test (per-service) ───
 test-town-core: ## Test Town Core
@@ -75,7 +84,13 @@ test-academy: ## Test Academy
 test-cartographer: ## Test Cartographer
 	cd services/cartographer && npm test
 
-test: test-town-core test-market test-fortress test-tavern test-academy test-cartographer ## Test all services
+test-library: ## Test Library
+	cd services/library && python -m pytest tests/ -v
+
+test-dashboard: ## Test Dashboard
+	cd dashboard && npm test
+
+test: test-town-core test-market test-fortress test-tavern test-academy test-cartographer test-library test-dashboard ## Test all services
 
 # ─── Lint (per-service) ───
 lint-market: ## Lint Market District
@@ -129,6 +144,9 @@ docker-build: ## Build all service Docker images
 	docker build -t qtown/tavern:dev       services/tavern/
 	docker build -t qtown/academy:dev      services/academy/
 	docker build -t qtown/cartographer:dev services/cartographer/
+	docker build -t qtown/library:dev      services/library/
+	docker build -t qtown/dashboard:dev    dashboard/
+	docker build -t qtown/asset-pipeline:dev services/asset-pipeline/
 
 docker-up: deps ## Start all services + deps
 	docker compose up -d
@@ -136,6 +154,27 @@ docker-up: deps ## Start all services + deps
 docker-down: ## Stop everything
 	docker compose down
 	docker compose -f docker-compose.deps.yml down
+
+# ─── Observability ───
+observability: ## Start observability stack (Jaeger, Prometheus, Grafana, Loki)
+	docker compose -f infra/docker-compose.observability.yml up -d
+
+observability-down: ## Stop observability stack
+	docker compose -f infra/docker-compose.observability.yml down
+
+# ─── Helm ───
+helm-install: ## Install Qtown to K8s via Helm
+	helm upgrade --install qtown infra/helm/qtown --atomic
+
+helm-uninstall: ## Uninstall Qtown from K8s
+	helm uninstall qtown
+
+# ─── Terraform ───
+tf-plan: ## Terraform plan
+	cd infra/terraform && terraform plan
+
+tf-apply: ## Terraform apply
+	cd infra/terraform && terraform apply
 
 # ─── Clean ───
 clean: ## Clean all build artifacts
@@ -145,4 +184,7 @@ clean: ## Clean all build artifacts
 	cd services/tavern && rm -rf dist/ node_modules/
 	cd services/academy && rm -rf __pycache__ .ruff_cache .mypy_cache
 	cd services/cartographer && rm -rf dist/ node_modules/
+	cd services/library && rm -rf __pycache__ .ruff_cache
+	cd dashboard && rm -rf .nuxt .output node_modules/
+	cd services/asset-pipeline && rm -rf __pycache__
 	@echo "Cleaned."

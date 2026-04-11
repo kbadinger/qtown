@@ -1,0 +1,66 @@
+apiVersion: 1
+
+datasources:
+  # ---------------------------------------------------------------------------
+  # Prometheus
+  # ---------------------------------------------------------------------------
+  - name: Prometheus
+    type: prometheus
+    uid: qtown-prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    jsonData:
+      httpMethod: POST
+      timeInterval: "15s"
+      exemplarTraceIdDestinations:
+        - name: traceID
+          datasourceUid: qtown-jaeger
+
+  # ---------------------------------------------------------------------------
+  # Jaeger
+  # ---------------------------------------------------------------------------
+  - name: Jaeger
+    type: jaeger
+    uid: qtown-jaeger
+    access: proxy
+    url: http://jaeger:16686
+    editable: false
+    jsonData:
+      tracesToLogsV2:
+        datasourceUid: qtown-loki
+        spanStartTimeShift: "-1m"
+        spanEndTimeShift: "1m"
+        filterByTraceID: true
+        filterBySpanID: false
+        customQuery: false
+      tracesToMetrics:
+        datasourceUid: qtown-prometheus
+        queries:
+          - name: Request rate
+            query: "rate(grpc_request_total{service=\"$service\"}[5m])"
+          - name: Error rate
+            query: "rate(error_total{service=\"$service\"}[5m])"
+      nodeGraph:
+        enabled: true
+      serviceMap:
+        datasourceUid: qtown-prometheus
+
+  # ---------------------------------------------------------------------------
+  # Loki
+  # ---------------------------------------------------------------------------
+  - name: Loki
+    type: loki
+    uid: qtown-loki
+    access: proxy
+    url: http://loki:3100
+    editable: false
+    jsonData:
+      maxLines: 1000
+      derivedFields:
+        - datasourceUid: qtown-jaeger
+          matcherRegex: '"trace_id":"([a-zA-Z0-9]+)"'
+          name: TraceID
+          url: "${__value.raw}"
+          urlDisplayLabel: "View trace in Jaeger"

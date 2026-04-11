@@ -1,0 +1,370 @@
+## ---------------------------------------------------------------------------
+## Qtown Helm Chart — Default Values
+## ---------------------------------------------------------------------------
+
+## Global settings shared across all services
+global:
+  imageRegistry: ""               # Override to use a private registry (e.g. 123456789.dkr.ecr.us-east-1.amazonaws.com)
+  imagePullSecrets: []            # List of image pull secret names
+  environment: production
+  kafka:
+    bootstrapServers: "kafka:9092"
+  postgres:
+    host: postgres
+    port: 5432
+    database: qtown
+    credentialsSecret: qtown-postgres-credentials  # Secret with POSTGRES_USER / POSTGRES_PASSWORD
+  redis:
+    host: redis
+    port: 6379
+    credentialsSecret: qtown-redis-credentials
+  elasticsearch:
+    url: "http://elasticsearch:9200"
+    credentialsSecret: qtown-elasticsearch-credentials
+  otlpEndpoint: "http://jaeger:4317"
+  s3:
+    bucket: qtown-assets
+    region: us-east-1
+    endpointUrl: ""               # Leave blank for AWS, set for R2/MinIO
+    cdnBaseUrl: ""
+    credentialsSecret: qtown-s3-credentials
+
+## ---------------------------------------------------------------------------
+## Per-service configuration
+## Each service entry controls: image, replicas, resources, env vars, probes
+## ---------------------------------------------------------------------------
+
+services:
+  ## -------------------------------------------------------------------------
+  ## town-core (Python / FastAPI)
+  ## -------------------------------------------------------------------------
+  town-core:
+    enabled: true
+    image:
+      repository: qtown/town-core
+      tag: "0.1.0"
+      pullPolicy: IfNotPresent
+    replicaCount: 1
+    port: 8000
+    metricsPort: 9100
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+      limits:
+        cpu: "1000m"
+        memory: "1Gi"
+    env:
+      LOG_LEVEL: INFO
+      TICK_INTERVAL_SECONDS: "5"
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 8000
+      initialDelaySeconds: 20
+      periodSeconds: 15
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: 8000
+      initialDelaySeconds: 10
+      periodSeconds: 10
+
+  ## -------------------------------------------------------------------------
+  ## market-district (Go / gRPC)
+  ## -------------------------------------------------------------------------
+  market-district:
+    enabled: true
+    image:
+      repository: qtown/market-district
+      tag: "0.1.0"
+      pullPolicy: IfNotPresent
+    replicaCount: 2
+    port: 50051
+    httpPort: 8001
+    metricsPort: 9201
+    resources:
+      requests:
+        cpu: "200m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+    env:
+      LOG_LEVEL: info
+    livenessProbe:
+      httpGet:
+        path: /healthz
+        port: 8001
+      initialDelaySeconds: 15
+      periodSeconds: 15
+    readinessProbe:
+      httpGet:
+        path: /readyz
+        port: 8001
+      initialDelaySeconds: 10
+      periodSeconds: 10
+
+  ## -------------------------------------------------------------------------
+  ## fortress (Rust / Axum)
+  ## -------------------------------------------------------------------------
+  fortress:
+    enabled: true
+    image:
+      repository: qtown/fortress
+      tag: "0.1.0"
+      pullPolicy: IfNotPresent
+    replicaCount: 2
+    port: 8002
+    metricsPort: 9202
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "64Mi"
+      limits:
+        cpu: "500m"
+        memory: "256Mi"
+    env:
+      RUST_LOG: info
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 8002
+      initialDelaySeconds: 10
+      periodSeconds: 15
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: 8002
+      initialDelaySeconds: 5
+      periodSeconds: 10
+
+  ## -------------------------------------------------------------------------
+  ## academy (Python / FastAPI)
+  ## -------------------------------------------------------------------------
+  academy:
+    enabled: true
+    image:
+      repository: qtown/academy
+      tag: "0.1.0"
+      pullPolicy: IfNotPresent
+    replicaCount: 1
+    port: 8003
+    metricsPort: 9103
+    resources:
+      requests:
+        cpu: "500m"
+        memory: "2Gi"
+      limits:
+        cpu: "4000m"
+        memory: "8Gi"
+    env:
+      LOG_LEVEL: INFO
+      MODEL_NAME: llama3
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 8003
+      initialDelaySeconds: 60
+      periodSeconds: 30
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: 8003
+      initialDelaySeconds: 30
+      periodSeconds: 15
+
+  ## -------------------------------------------------------------------------
+  ## tavern (Node / TypeScript / WebSocket)
+  ## -------------------------------------------------------------------------
+  tavern:
+    enabled: true
+    image:
+      repository: qtown/tavern
+      tag: "0.1.0"
+      pullPolicy: IfNotPresent
+    replicaCount: 2
+    port: 3001
+    metricsPort: 9104
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+    env:
+      NODE_ENV: production
+      LOG_LEVEL: info
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 3001
+      initialDelaySeconds: 15
+      periodSeconds: 15
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: 3001
+      initialDelaySeconds: 10
+      periodSeconds: 10
+
+  ## -------------------------------------------------------------------------
+  ## cartographer (Node / TypeScript / GraphQL)
+  ## -------------------------------------------------------------------------
+  cartographer:
+    enabled: true
+    image:
+      repository: qtown/cartographer
+      tag: "0.1.0"
+      pullPolicy: IfNotPresent
+    replicaCount: 2
+    port: 4000
+    metricsPort: 9105
+    resources:
+      requests:
+        cpu: "200m"
+        memory: "256Mi"
+      limits:
+        cpu: "1000m"
+        memory: "1Gi"
+    env:
+      NODE_ENV: production
+      LOG_LEVEL: info
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 4000
+      initialDelaySeconds: 20
+      periodSeconds: 15
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: 4000
+      initialDelaySeconds: 10
+      periodSeconds: 10
+
+  ## -------------------------------------------------------------------------
+  ## library (Python / FastAPI / Elasticsearch)
+  ## -------------------------------------------------------------------------
+  library:
+    enabled: true
+    image:
+      repository: qtown/library
+      tag: "0.1.0"
+      pullPolicy: IfNotPresent
+    replicaCount: 1
+    port: 8004
+    metricsPort: 9106
+    resources:
+      requests:
+        cpu: "200m"
+        memory: "256Mi"
+      limits:
+        cpu: "1000m"
+        memory: "1Gi"
+    env:
+      LOG_LEVEL: INFO
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 8004
+      initialDelaySeconds: 30
+      periodSeconds: 15
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: 8004
+      initialDelaySeconds: 15
+      periodSeconds: 10
+
+  ## -------------------------------------------------------------------------
+  ## asset-pipeline (Python / FastAPI / ComfyUI)
+  ## -------------------------------------------------------------------------
+  asset-pipeline:
+    enabled: true
+    image:
+      repository: qtown/asset-pipeline
+      tag: "0.1.0"
+      pullPolicy: IfNotPresent
+    replicaCount: 1
+    port: 8005
+    metricsPort: 9107
+    resources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "2000m"
+        memory: "4Gi"
+    env:
+      LOG_LEVEL: INFO
+      COMFYUI_URL: "http://comfyui:8188"
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 8005
+      initialDelaySeconds: 30
+      periodSeconds: 30
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: 8005
+      initialDelaySeconds: 15
+      periodSeconds: 15
+
+## ---------------------------------------------------------------------------
+## Ingress
+## ---------------------------------------------------------------------------
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+  hosts:
+    - host: qtown.example.com
+      paths:
+        - path: /api/library
+          pathType: Prefix
+          serviceName: library
+          servicePort: 8004
+        - path: /api/assets
+          pathType: Prefix
+          serviceName: asset-pipeline
+          servicePort: 8005
+        - path: /graphql
+          pathType: Prefix
+          serviceName: cartographer
+          servicePort: 4000
+        - path: /ws
+          pathType: Prefix
+          serviceName: tavern
+          servicePort: 3001
+    - host: dashboard.qtown.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+          serviceName: cartographer
+          servicePort: 4000
+  tls:
+    - secretName: qtown-tls
+      hosts:
+        - qtown.example.com
+        - dashboard.qtown.example.com
+
+## ---------------------------------------------------------------------------
+## Shared ConfigMap values (overridden per environment via --set or -f overlay)
+## ---------------------------------------------------------------------------
+
+configMap:
+  KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+  OTLP_ENDPOINT: "http://jaeger:4317"
+  ELASTICSEARCH_URL: "http://elasticsearch:9200"
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: qtown
+  REDIS_HOST: redis
+  REDIS_PORT: "6379"

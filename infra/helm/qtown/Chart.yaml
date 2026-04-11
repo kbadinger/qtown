@@ -1,0 +1,21 @@
+apiVersion: v2
+name: qtown
+description: |
+  Qtown v2 umbrella Helm chart.
+  Deploys all eight microservices: town-core, market-district, fortress,
+  academy, tavern, cartographer, library, and asset-pipeline.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+home: https://github.com/example/qtown
+sources:
+  - https://github.com/example/qtown
+maintainers:
+  - name: Qtown Team
+    email: team@qtown.example.com
+keywords:
+  - simulation
+  - game
+  - microservices
+annotations:
+  category: simulation

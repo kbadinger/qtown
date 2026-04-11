@@ -1,80 +1,212 @@
-/**
- * Placeholder for generated GraphQL types.
- *
- * Run `npm run codegen` to regenerate this file from schema.ts using
- * @graphql-codegen/typescript and @graphql-codegen/typescript-resolvers.
- * The generated output will be written here by the codegen config (codegen.yml).
- *
- * Manual types below are used until codegen is run for the first time.
- */
+// ============================================================================
+// Scalar helpers
+// ============================================================================
 
-export type Maybe<T> = T | null;
+export type Maybe<T> = T | null | undefined;
+
+// ============================================================================
+// Enums
+// ============================================================================
+
+export type NPCStatus = "ACTIVE" | "TRAVELING" | "SLEEPING" | "WORKING";
+export type OrderSide = "BUY" | "SELL";
+export type OrderStatus = "OPEN" | "FILLED" | "PARTIAL" | "CANCELLED";
+export type LeaderboardType = "GOLD" | "HAPPINESS" | "CRIMES";
+export type DocType = "EVENT" | "DIALOGUE" | "NEWSPAPER" | "TRANSACTION";
+
+// ============================================================================
+// NPC types
+// ============================================================================
 
 export interface NPC {
   id: string;
   name: string;
+  role: string;
   gold: number;
+  hunger: number;
+  energy: number;
   happiness: number;
-  neighborhood: string;
-  location?: Location | null;
+  neighborhood: Maybe<string>;
+  status: NPCStatus;
 }
 
-export interface Location {
-  x: number;
-  y: number;
+export interface LeaderboardRanks {
+  gold: Maybe<number>;
+  happiness: Maybe<number>;
+  crimes: Maybe<number>;
 }
+
+// ============================================================================
+// World State
+// ============================================================================
+
+export interface WorldState {
+  tick: number;
+  day: number;
+  population: number;
+  totalGold: number;
+  activeEvents: number;
+  timestamp: string;
+}
+
+// ============================================================================
+// Orders & Order Book
+// ============================================================================
 
 export interface Order {
   id: string;
   npcId: string;
-  resource: string;
-  side: "BID" | "ASK";
-  price: number;
-  quantity: number;
-}
-
-export interface Trade {
-  id: string;
-  buyOrderId: string;
-  sellOrderId: string;
+  side: OrderSide;
   resource: string;
   price: number;
   quantity: number;
-  timestamp: string;
+  status: OrderStatus;
+  createdAt: string;
 }
 
-export interface ValidationResult {
-  valid: boolean;
-  ruleName: string;
-  message?: string | null;
+export interface OrderBook {
+  bids: Order[];
+  asks: Order[];
+  spread: Maybe<number>;
+  lastPrice: Maybe<number>;
 }
+
+// ============================================================================
+// Newspaper
+// ============================================================================
+
+export interface Newspaper {
+  day: number;
+  headline: string;
+  lead: string;
+  body: string;
+  editorial: string;
+  generatedAt: string;
+}
+
+// ============================================================================
+// Leaderboard
+// ============================================================================
 
 export interface LeaderboardEntry {
   npcId: string;
+  npcName: string;
   score: number;
   rank: number;
 }
 
-export interface TownEvent {
+// ============================================================================
+// Search
+// ============================================================================
+
+export interface SearchResult {
+  docType: DocType;
+  docId: string;
+  content: string;
+  score: number;
+  highlight: Maybe<string>;
+}
+
+export interface SearchResults {
+  total: number;
+  results: SearchResult[];
+}
+
+// ============================================================================
+// Decision Trace
+// ============================================================================
+
+export interface TraceNode {
+  name: string;
+  durationMs: number;
+  inputSummary: string;
+  outputSummary: string;
+}
+
+export interface DecisionTrace {
+  npcId: string;
+  tick: number;
+  nodes: TraceNode[];
+  finalDecision: string;
+  totalDurationMs: number;
+}
+
+// ============================================================================
+// Events & Subscriptions
+// ============================================================================
+
+export interface Event {
   id: string;
   type: string;
   description: string;
+  tick: number;
   timestamp: string;
-  npcId?: string | null;
 }
 
-// ---------------------------------------------------------------------------
-// gRPC stub response shapes (used before proto codegen)
-// ---------------------------------------------------------------------------
+export interface PriceUpdate {
+  resource: string;
+  price: number;
+  volume: number;
+  timestamp: string;
+}
+
+// ============================================================================
+// Dialogue
+// ============================================================================
+
+export interface Dialogue {
+  id: string;
+  npcId: string;
+  text: string;
+  context: Maybe<string>;
+  generatedAt: string;
+}
+
+// ============================================================================
+// gRPC response envelope types
+// ============================================================================
 
 export interface GrpcNPCResponse {
-  npcs: NPC[];
+  npc: NPC;
 }
 
-export interface GrpcOrderResponse {
+export interface GrpcNPCsResponse {
+  npcs: NPC[];
+  total: number;
+}
+
+export interface GrpcWorldStateResponse {
+  worldState: WorldState;
+}
+
+export interface GrpcOrderBookResponse {
+  bids: Order[];
+  asks: Order[];
+  lastPrice: number | null;
+}
+
+export interface GrpcOrdersResponse {
   orders: Order[];
 }
 
-export interface GrpcLeaderboardResponse {
-  entries: LeaderboardEntry[];
+export interface GrpcNewspaperResponse {
+  newspaper: Newspaper;
+}
+
+export interface GrpcDialoguesResponse {
+  dialogues: Dialogue[];
+}
+
+export interface GrpcDecisionTraceResponse {
+  trace: DecisionTrace;
+}
+
+// ============================================================================
+// DataLoaders context
+// ============================================================================
+
+export interface DataLoaders {
+  npcLoader: import("dataloader")<string, NPC | null>;
+  orderLoader: import("dataloader")<string, Order[]>;
+  dialogueLoader: import("dataloader")<string, Dialogue[]>;
 }
