@@ -33,12 +33,7 @@ def get_costs(db: Session = Depends(get_db)):
 @router.get("/page")
 def costs_page(request: Request, db: Session = Depends(get_db)):
     """Render the cost comparison page."""
-    return templates.TemplateResponse("costs.html", {"request": request})
-
-
-@router_page.get("")
-def cost_page(request: Request, db: Session = Depends(get_db)):
-    return templates.TemplateResponse("costs.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="costs.html")
 
 
 class StoryProposal(BaseModel):

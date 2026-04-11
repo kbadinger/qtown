@@ -56,10 +56,10 @@ def index(request: Request, db: Session = Depends(get_db)):
         total_count = 200
 
     return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
+        request=request,
+        name="index.html",
+        context={
             "stories_done": completed_count,
-            "stories_total": total_count
-        }
+            "stories_total": total_count,
+        },
     )

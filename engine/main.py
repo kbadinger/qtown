@@ -492,11 +492,14 @@ def index(request: Request):
             stories_done = sum(1 for s in prd.get("stories", []) if s.get("status") == "done")
         except Exception:
             pass
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "stories_done": stories_done,
-        "stories_total": stories_total,
-    })
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        context={
+            "stories_done": stories_done,
+            "stories_total": stories_total,
+        },
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -506,7 +509,7 @@ def index(request: Request):
 
 @app.get("/dashboard", response_class=HTMLResponse)
 def dashboard(request: Request):
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="dashboard.html")
 
 
 @app.get("/api/dashboard-data")
@@ -635,17 +638,17 @@ def world_state(db: Session = Depends(get_db)):
 
 @app.get("/about", response_class=HTMLResponse)
 def about_page(request: Request):
-    return templates.TemplateResponse("about.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="about.html")
 
 
 @app.get("/features", response_class=HTMLResponse)
 def features_page(request: Request):
-    return templates.TemplateResponse("features.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="features.html")
 
 
 @app.get("/stories", response_class=HTMLResponse)
 def stories_page(request: Request):
-    return templates.TemplateResponse("stories.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="stories.html")
 
 
 @app.get("/api/stories-data")
@@ -702,7 +705,7 @@ def stories_data():
 
 @app.get("/timeline", response_class=HTMLResponse)
 def timeline(request: Request):
-    return templates.TemplateResponse("timeline.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="timeline.html")
 
 
 @app.get("/api/timeline-data")
