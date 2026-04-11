@@ -5,6 +5,8 @@ pub mod types;
 pub mod validation;
 pub mod rules;
 pub mod wasm_sandbox;
+pub mod wasm;
 pub mod audit;
 pub mod grpc_service;
 pub mod kafka_consumer;
+pub mod crime;
