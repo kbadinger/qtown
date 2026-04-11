@@ -29,12 +29,12 @@ def get_dashboard_data(db: Session = Depends(get_db)):
     prd_data = _load_prd_json()
     stories = prd_data.get("stories", [])
     
-    completed_count = sum(1 for s in stories if s.get("status") == "completed")
+    completed_count = sum(1 for s in stories if s.get("status") == "done")
     total_count = len(stories)
     
     # Fallback to 200 if prd.json is missing or empty, as per story description
     if total_count == 0:
-        total_count = 200
+        total_count = 550
         
     return {
         "stories": {
@@ -49,11 +49,11 @@ def index(request: Request, db: Session = Depends(get_db)):
     prd_data = _load_prd_json()
     stories = prd_data.get("stories", [])
     
-    completed_count = sum(1 for s in stories if s.get("status") == "completed")
+    completed_count = sum(1 for s in stories if s.get("status") == "done")
     total_count = len(stories)
     
     if total_count == 0:
-        total_count = 200
+        total_count = 550
 
     return templates.TemplateResponse(
         request=request,

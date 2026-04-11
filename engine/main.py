@@ -728,6 +728,9 @@ def timeline_data():
     entries = []
     if snapshots_dir.is_dir():
         for f in sorted(snapshots_dir.glob("*_live.png")):
+            # Skip broken screenshots (error pages are typically < 50KB)
+            if f.stat().st_size < 50_000:
+                continue
             story_id = f.stem.replace("_live", "")
             entry = {
                 "story_id": story_id,

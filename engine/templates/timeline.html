@@ -26,11 +26,7 @@ document.addEventListener("htmx:beforeSwap", function(evt) {
 });
 
 function renderTimeline(d) {
-    // Filter out error screenshots (500 errors, stack traces, error pages)
-    const snaps = (d.snapshots || []).filter(s => {
-        const title = (s.title || '').toLowerCase();
-        return !title.includes('500') && !title.includes('error') && !title.includes('internal server') && !title.includes('traceback');
-    });
+    const snaps = d.snapshots || [];
 
     if (!snaps.length) {
         return `

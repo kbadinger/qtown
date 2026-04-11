@@ -100,11 +100,11 @@
             <div class="mt-3 pt-2 border-t border-gray-700">
                 <div class="flex items-center justify-between text-xs mb-1">
                     <span class="text-gray-400">Stories</span>
-                    <span id="hud-stories" class="text-amber-300 font-mono tabular-nums">{{ stories_done|default(0) }}/{{ stories_total|default(265) }}</span>
+                    <span id="hud-stories" class="text-amber-300 font-mono tabular-nums">{{ stories_done|default(0) }}/{{ stories_total|default(550) }}</span>
                 </div>
                 <div class="w-full bg-gray-700 rounded-full h-1.5 overflow-hidden">
                     <div id="hud-progress-bar" class="bg-amber-500 h-1.5 rounded-full transition-all duration-500"
-                         style="width: {{ (stories_done|default(0) / stories_total|default(265) * 100) | round(1) }}%;"></div>
+                         style="width: {{ (stories_done|default(0) / stories_total|default(550) * 100) | round(1) }}%;"></div>
                 </div>
             </div>
             <div id="hud-info" class="hidden mt-2 text-xs text-gray-400 border-t border-gray-700 pt-2 leading-relaxed"></div>
@@ -150,7 +150,7 @@
                 <span class="text-gray-500">|</span>
                 <span class="text-gray-400">Weather</span><span id="ms-weather" class="text-gray-200">--</span>
                 <span class="text-gray-500">|</span>
-                <span id="ms-stories" class="text-amber-300">{{ stories_done|default(0) }}/{{ stories_total|default(265) }}</span>
+                <span id="ms-stories" class="text-amber-300">{{ stories_done|default(0) }}/{{ stories_total|default(550) }}</span>
             </div>
             <!-- Chevron -->
             <svg id="sheet-chevron" class="w-5 h-5 text-gray-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -201,11 +201,11 @@
                 <div class="border-t border-gray-700 pt-2">
                     <div class="flex items-center justify-between text-xs mb-1">
                         <span class="text-gray-400">Stories</span>
-                        <span id="ms-stories2" class="text-amber-300 font-mono">{{ stories_done|default(0) }}/{{ stories_total|default(265) }}</span>
+                        <span id="ms-stories2" class="text-amber-300 font-mono">{{ stories_done|default(0) }}/{{ stories_total|default(550) }}</span>
                     </div>
                     <div class="w-full bg-gray-700 rounded-full h-1.5 overflow-hidden">
                         <div id="ms-progress-bar" class="bg-amber-500 h-1.5 rounded-full transition-all duration-500"
-                             style="width: {{ (stories_done|default(0) / stories_total|default(265) * 100) | round(1) }}%;"></div>
+                             style="width: {{ (stories_done|default(0) / stories_total|default(550) * 100) | round(1) }}%;"></div>
                     </div>
                 </div>
                 <div class="mt-3 pt-2 border-t border-gray-700">
