@@ -1,0 +1,106 @@
+apiVersion: linkerd.io/v1alpha2
+kind: ServiceProfile
+metadata:
+  name: asset-pipeline.qtown.svc.cluster.local
+  namespace: qtown
+spec:
+  routes:
+    # gRPC — Asset generation and retrieval
+    - name: "POST /assets.GenerationService/GenerateAsset"
+      condition:
+        method: POST
+        pathRegex: /assets\.GenerationService/GenerateAsset
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 30s   # image generation is slow
+      # No retries — generation is expensive and not idempotent
+
+    - name: "POST /assets.GenerationService/GetAssetStatus"
+      condition:
+        method: POST
+        pathRegex: /assets\.GenerationService/GetAssetStatus
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 2s
+      retries:
+        budget:
+          retryRatio: 0.3
+          minRetriesPerSecond: 10
+          ttl: 10s
+
+    - name: "POST /assets.StorageService/GetAsset"
+      condition:
+        method: POST
+        pathRegex: /assets\.StorageService/GetAsset
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 5s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 10
+          ttl: 10s
+
+    - name: "POST /assets.StorageService/ListAssets"
+      condition:
+        method: POST
+        pathRegex: /assets\.StorageService/ListAssets
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 5s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 5
+          ttl: 10s
+
+    # HTTP
+    - name: "GET /health"
+      condition:
+        method: GET
+        pathRegex: /health
+      timeout: 1s
+
+    - name: "POST /api/generate"
+      condition:
+        method: POST
+        pathRegex: /api/generate
+      timeout: 35s
+
+    - name: "GET /api/assets"
+      condition:
+        method: GET
+        pathRegex: /api/assets(/.*)?
+      timeout: 5s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 10
+          ttl: 10s
+
+    - name: "GET /api/assets/status"
+      condition:
+        method: GET
+        pathRegex: /api/assets/status(/.*)?
+      timeout: 3s
+      retries:
+        budget:
+          retryRatio: 0.3
+          minRetriesPerSecond: 10
+          ttl: 10s

@@ -224,7 +224,17 @@ services:
           qtown.npc.decision.result:6 \
           qtown.npc.dialogue:6 \
           qtown.assets.generate:3 \
-          qtown.assets.generated:3; do
+          qtown.assets.generated:3 \
+          qtown.npc.memory.consolidate:6 \
+          qtown.npc.memory.consolidated:6 \
+          qtown.npc.gossip:6 \
+          qtown.economy.scarcity.alert:3 \
+          qtown.crime.report:6 \
+          qtown.crime.investigation:3 \
+          qtown.crime.verdict:3 \
+          qtown.tournament.started:1 \
+          qtown.tournament.tick:3 \
+          qtown.tournament.ended:1; do
           IFS=':' read -r name partitions <<< "$$topic"
           /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 \
             --create --if-not-exists \

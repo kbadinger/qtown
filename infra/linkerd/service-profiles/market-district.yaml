@@ -1,0 +1,77 @@
+apiVersion: linkerd.io/v1alpha2
+kind: ServiceProfile
+metadata:
+  name: market-district.qtown.svc.cluster.local
+  namespace: qtown
+spec:
+  routes:
+    # gRPC — Price feed
+    - name: "POST /market.PriceService/GetPrice"
+      condition:
+        method: POST
+        pathRegex: /market\.PriceService/GetPrice
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 1s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 20
+          ttl: 10s
+        backoff:
+          minMs: 10
+          maxMs: 100
+          jitterRatio: 0.3
+
+    - name: "POST /market.PriceService/UpdatePrice"
+      condition:
+        method: POST
+        pathRegex: /market\.PriceService/UpdatePrice
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 2s
+      # No retries for writes to avoid double-apply
+
+    - name: "POST /market.TradeService/ExecuteTrade"
+      condition:
+        method: POST
+        pathRegex: /market\.TradeService/ExecuteTrade
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 3s
+
+    # HTTP
+    - name: "GET /health"
+      condition:
+        method: GET
+        pathRegex: /health
+      timeout: 1s
+
+    - name: "GET /api/prices"
+      condition:
+        method: GET
+        pathRegex: /api/prices(/.*)?
+      timeout: 2s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 10
+          ttl: 10s
+
+    - name: "POST /api/trade"
+      condition:
+        method: POST
+        pathRegex: /api/trade
+      timeout: 4s

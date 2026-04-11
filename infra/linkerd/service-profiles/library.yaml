@@ -1,0 +1,99 @@
+apiVersion: linkerd.io/v1alpha2
+kind: ServiceProfile
+metadata:
+  name: library.qtown.svc.cluster.local
+  namespace: qtown
+spec:
+  routes:
+    # gRPC — Knowledge store
+    - name: "POST /library.KnowledgeService/GetFact"
+      condition:
+        method: POST
+        pathRegex: /library\.KnowledgeService/GetFact
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 2s
+      retries:
+        budget:
+          retryRatio: 0.3
+          minRetriesPerSecond: 15
+          ttl: 10s
+
+    - name: "POST /library.KnowledgeService/SearchFacts"
+      condition:
+        method: POST
+        pathRegex: /library\.KnowledgeService/SearchFacts
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 4s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 5
+          ttl: 10s
+
+    - name: "POST /library.KnowledgeService/StoreFact"
+      condition:
+        method: POST
+        pathRegex: /library\.KnowledgeService/StoreFact
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 2s
+
+    - name: "POST /library.LoreService/GetLore"
+      condition:
+        method: POST
+        pathRegex: /library\.LoreService/GetLore
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 3s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 10
+          ttl: 10s
+
+    # HTTP
+    - name: "GET /health"
+      condition:
+        method: GET
+        pathRegex: /health
+      timeout: 1s
+
+    - name: "GET /api/facts"
+      condition:
+        method: GET
+        pathRegex: /api/facts(/.*)?
+      timeout: 3s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 10
+          ttl: 10s
+
+    - name: "GET /api/lore"
+      condition:
+        method: GET
+        pathRegex: /api/lore(/.*)?
+      timeout: 3s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 5
+          ttl: 10s

@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 /// Events arrive from Kafka (`qtown.town-events`) or directly via gRPC.
 /// The `amount` field carries the quantity of the resource being transacted
 /// (gold, lumber, stone, etc.). Negative amounts signal debits.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TownEvent {
     /// Discriminator: "trade", "purchase", "harvest", "taxation", …
     pub event_type: String,

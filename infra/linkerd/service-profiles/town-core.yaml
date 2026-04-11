@@ -1,0 +1,86 @@
+apiVersion: linkerd.io/v1alpha2
+kind: ServiceProfile
+metadata:
+  name: town-core.qtown.svc.cluster.local
+  namespace: qtown
+spec:
+  routes:
+    # gRPC — NPC management
+    - name: "POST /towncore.NPCService/GetNPC"
+      condition:
+        method: POST
+        pathRegex: /towncore\.NPCService/GetNPC
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 2s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 10
+          ttl: 10s
+        backoff:
+          minMs: 25
+          maxMs: 250
+          jitterRatio: 0.25
+
+    - name: "POST /towncore.NPCService/MoveNPC"
+      condition:
+        method: POST
+        pathRegex: /towncore\.NPCService/MoveNPC
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 1s
+
+    - name: "POST /towncore.NPCService/ListNPCs"
+      condition:
+        method: POST
+        pathRegex: /towncore\.NPCService/ListNPCs
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 3s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 5
+          ttl: 10s
+
+    # HTTP — REST endpoints
+    - name: "GET /health"
+      condition:
+        method: GET
+        pathRegex: /health
+      timeout: 1s
+
+    - name: "GET /api/npc"
+      condition:
+        method: GET
+        pathRegex: /api/npc(/.*)?
+      timeout: 2s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 10
+          ttl: 10s
+
+    - name: "POST /api/npc/decision"
+      condition:
+        method: POST
+        pathRegex: /api/npc/decision
+      timeout: 5s
+      retries:
+        budget:
+          retryRatio: 0.1
+          minRetriesPerSecond: 5
+          ttl: 10s

@@ -1,0 +1,82 @@
+apiVersion: linkerd.io/v1alpha2
+kind: ServiceProfile
+metadata:
+  name: academy.qtown.svc.cluster.local
+  namespace: qtown
+spec:
+  routes:
+    # gRPC — NPC AI decision engine
+    - name: "POST /academy.DecisionService/Decide"
+      condition:
+        method: POST
+        pathRegex: /academy\.DecisionService/Decide
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 5s    # AI calls can be slow
+      retries:
+        budget:
+          retryRatio: 0.1
+          minRetriesPerSecond: 5
+          ttl: 10s
+        backoff:
+          minMs: 100
+          maxMs: 1000
+          jitterRatio: 0.3
+
+    - name: "POST /academy.DecisionService/BatchDecide"
+      condition:
+        method: POST
+        pathRegex: /academy\.DecisionService/BatchDecide
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 15s
+      # No retries for batch — too expensive
+
+    - name: "POST /academy.ModelService/RouteModel"
+      condition:
+        method: POST
+        pathRegex: /academy\.ModelService/RouteModel
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 3s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 10
+          ttl: 10s
+
+    # HTTP
+    - name: "GET /health"
+      condition:
+        method: GET
+        pathRegex: /health
+      timeout: 1s
+
+    - name: "POST /api/decide"
+      condition:
+        method: POST
+        pathRegex: /api/decide
+      timeout: 6s
+      retries:
+        budget:
+          retryRatio: 0.1
+          minRetriesPerSecond: 5
+          ttl: 10s
+
+    - name: "GET /api/models"
+      condition:
+        method: GET
+        pathRegex: /api/models
+      timeout: 2s

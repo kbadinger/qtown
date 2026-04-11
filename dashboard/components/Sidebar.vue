@@ -21,6 +21,18 @@ const navItems = [
     description: 'Citizens & residents',
   },
   {
+    label: 'Tournaments',
+    href: '/tournaments',
+    icon: 'trophy',
+    description: 'NPC trading competitions',
+  },
+  {
+    label: 'SLA',
+    href: '/sla',
+    icon: 'sla',
+    description: 'Performance budget compliance',
+  },
+  {
     label: 'Market',
     href: '/market',
     icon: 'market',
@@ -43,6 +55,24 @@ const navItems = [
     href: '/fortress',
     icon: 'fortress',
     description: 'Validation & audit',
+  },
+  {
+    label: 'Policies',
+    href: '/policies',
+    icon: 'policies',
+    description: 'WASM policy editor',
+  },
+  {
+    label: 'Docs',
+    href: '/docs',
+    icon: 'docs',
+    description: 'Architecture & API reference',
+  },
+  {
+    label: 'Visitor',
+    href: '/visitor',
+    icon: 'visitor',
+    description: 'Public visitor mode',
   },
 ]
 
@@ -119,6 +149,27 @@ const isActive = (href: string) => route.path === href || (href !== '/' && route
           <svg v-else-if="item.icon === 'fortress'" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
             <path fill-rule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 7l2.55 2.4A1 1 0 0116 11H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clip-rule="evenodd" />
           </svg>
+          <!-- Trophy icon -->
+          <svg v-else-if="item.icon === 'trophy'" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1h2a1 1 0 011 1v2c0 2.21-1.79 4-4 4S6 9.21 6 7V5a1 1 0 011-1h2V3a1 1 0 011-1zm-3 3v2a3 3 0 006 0V5H7zm3 6a1 1 0 011 1v1h1a1 1 0 110 2H8a1 1 0 110-2h1v-1a1 1 0 011-1zM4 5a1 1 0 00-1 1v1a3 3 0 002 2.83V11H4a1 1 0 000 2h1a1 1 0 001-1V9.83A3 3 0 008 7V6H5V5H4zm12 0h-1v1h-3v1a3 3 0 002 2.83V11h1a1 1 0 010 2h-1a1 1 0 01-1-1V9.83A3 3 0 0015 7V6h-3V5a1 1 0 00-1-1h1a1 1 0 001 1z" clip-rule="evenodd" />
+          </svg>
+          <!-- SLA icon -->
+          <svg v-else-if="item.icon === 'sla'" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+            <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11 4a1 1 0 10-2 0v4a1 1 0 102 0V7zm-3 1a1 1 0 10-2 0v3a1 1 0 102 0V8zM8 9a1 1 0 00-2 0v2a1 1 0 102 0V9z" clip-rule="evenodd" />
+          </svg>
+          <!-- Policies icon -->
+          <svg v-else-if="item.icon === 'policies'" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" />
+          </svg>
+          <!-- Docs icon -->
+          <svg v-else-if="item.icon === 'docs'" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+          </svg>
+          <!-- Visitor icon -->
+          <svg v-else-if="item.icon === 'visitor'" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+          </svg>
         </span>
 
         <!-- Label -->
@@ -137,7 +188,7 @@ const isActive = (href: string) => route.path === href || (href !== '/' && route
       class="border-t border-qtown-border px-3 py-3"
     >
       <p class="text-qtown-text-dim text-xs font-mono">Qtown v2</p>
-      <p class="text-qtown-text-dim text-xs">Phase 3 Dashboard</p>
+      <p class="text-qtown-text-dim text-xs">Phase 5 Dashboard</p>
     </div>
   </aside>
 </template>

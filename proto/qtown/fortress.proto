@@ -24,6 +24,10 @@ service Fortress {
   // WASM sandbox — user-defined policy execution
   rpc ExecutePolicy(ExecutePolicyRequest)      returns (ExecutePolicyResponse);
   rpc UploadPolicy(UploadPolicyRequest)        returns (UploadPolicyResponse);
+  rpc CompilePolicy(CompilePolicyRequest)      returns (CompilePolicyResponse);
+  rpc RegisterPolicy(RegisterPolicyRequest)    returns (RegisterPolicyResponse);
+  rpc ListPolicies(ListPoliciesRequest)        returns (ListPoliciesResponse);
+  rpc UnregisterPolicy(UnregisterPolicyRequest) returns (UnregisterPolicyResponse);
 
   // NPC travel
   rpc NPCArrive(TravelRequest) returns (TravelResponse);
@@ -92,6 +96,58 @@ message UploadPolicyResponse {
   string policy_id = 1;
   bool   accepted  = 2;
   string message   = 3;
+}
+
+// ─── Phase 5: WASM compilation + policy management ───
+
+message CompilePolicyRequest {
+  string rust_source = 1;
+}
+
+message CompilePolicyResponse {
+  bool   success    = 1;
+  bytes  wasm_bytes = 2;
+  string error      = 3;  // compilation error if any
+}
+
+message RegisterPolicyRequest {
+  string name        = 1;
+  bytes  wasm_bytes  = 2;
+  string description = 3;
+  string author      = 4;
+}
+
+message RegisterPolicyResponse {
+  string policy_id = 1;
+  bool   success   = 2;
+  string message   = 3;
+}
+
+message ListPoliciesRequest {}
+
+message ListPoliciesResponse {
+  repeated PolicySummary policies = 1;
+}
+
+message PolicySummary {
+  string policy_id        = 1;
+  string name             = 2;
+  string description      = 3;
+  string author           = 4;
+  uint32 version          = 5;
+  int64  invocation_count = 6;
+  float  avg_duration_ms  = 7;
+  string last_error       = 8;
+  string created_at       = 9;
+}
+
+message UnregisterPolicyRequest {
+  string name = 1;
+}
+
+message UnregisterPolicyResponse {
+  bool   success = 1;
+  string message = 2;
 }
 
 message BenchmarkRequest {

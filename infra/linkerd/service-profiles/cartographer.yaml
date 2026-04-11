@@ -1,0 +1,103 @@
+apiVersion: linkerd.io/v1alpha2
+kind: ServiceProfile
+metadata:
+  name: cartographer.qtown.svc.cluster.local
+  namespace: qtown
+spec:
+  routes:
+    # gRPC — Map and pathfinding
+    - name: "POST /cartographer.MapService/GetTile"
+      condition:
+        method: POST
+        pathRegex: /cartographer\.MapService/GetTile
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 1s
+      retries:
+        budget:
+          retryRatio: 0.3
+          minRetriesPerSecond: 20
+          ttl: 10s
+        backoff:
+          minMs: 10
+          maxMs: 100
+          jitterRatio: 0.2
+
+    - name: "POST /cartographer.MapService/GetRegion"
+      condition:
+        method: POST
+        pathRegex: /cartographer\.MapService/GetRegion
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 2s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 10
+          ttl: 10s
+
+    - name: "POST /cartographer.PathService/FindPath"
+      condition:
+        method: POST
+        pathRegex: /cartographer\.PathService/FindPath
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 3s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 10
+          ttl: 10s
+
+    - name: "POST /cartographer.MapService/UpdateTile"
+      condition:
+        method: POST
+        pathRegex: /cartographer\.MapService/UpdateTile
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 2s
+
+    # HTTP
+    - name: "GET /health"
+      condition:
+        method: GET
+        pathRegex: /health
+      timeout: 1s
+
+    - name: "GET /api/map"
+      condition:
+        method: GET
+        pathRegex: /api/map(/.*)?
+      timeout: 2s
+      retries:
+        budget:
+          retryRatio: 0.3
+          minRetriesPerSecond: 15
+          ttl: 10s
+
+    - name: "GET /api/pathfind"
+      condition:
+        method: GET
+        pathRegex: /api/pathfind
+      timeout: 4s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 5
+          ttl: 10s

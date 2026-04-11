@@ -1,0 +1,78 @@
+apiVersion: linkerd.io/v1alpha2
+kind: ServiceProfile
+metadata:
+  name: fortress.qtown.svc.cluster.local
+  namespace: qtown
+spec:
+  routes:
+    # gRPC — Combat and patrol
+    - name: "POST /fortress.GuardService/GetPatrolRoute"
+      condition:
+        method: POST
+        pathRegex: /fortress\.GuardService/GetPatrolRoute
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 2s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 10
+          ttl: 10s
+
+    - name: "POST /fortress.CombatService/StartCombat"
+      condition:
+        method: POST
+        pathRegex: /fortress\.CombatService/StartCombat
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 3s
+
+    - name: "POST /fortress.CombatService/EndCombat"
+      condition:
+        method: POST
+        pathRegex: /fortress\.CombatService/EndCombat
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 2s
+
+    - name: "POST /fortress.GuardService/ReportIncident"
+      condition:
+        method: POST
+        pathRegex: /fortress\.GuardService/ReportIncident
+      timeout: 2s
+
+    # HTTP
+    - name: "GET /health"
+      condition:
+        method: GET
+        pathRegex: /health
+      timeout: 1s
+
+    - name: "GET /api/guards"
+      condition:
+        method: GET
+        pathRegex: /api/guards(/.*)?
+      timeout: 2s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 5
+          ttl: 10s
+
+    - name: "POST /api/combat"
+      condition:
+        method: POST
+        pathRegex: /api/combat
+      timeout: 5s

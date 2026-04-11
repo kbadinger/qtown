@@ -1,0 +1,77 @@
+apiVersion: linkerd.io/v1alpha2
+kind: ServiceProfile
+metadata:
+  name: tavern.qtown.svc.cluster.local
+  namespace: qtown
+spec:
+  routes:
+    # gRPC — Social interactions
+    - name: "POST /tavern.SocialService/GetNPCRelationships"
+      condition:
+        method: POST
+        pathRegex: /tavern\.SocialService/GetNPCRelationships
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 2s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 10
+          ttl: 10s
+
+    - name: "POST /tavern.SocialService/RecordInteraction"
+      condition:
+        method: POST
+        pathRegex: /tavern\.SocialService/RecordInteraction
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 1s
+
+    - name: "POST /tavern.SessionService/GetSession"
+      condition:
+        method: POST
+        pathRegex: /tavern\.SessionService/GetSession
+      responseClasses:
+        - condition:
+            status:
+              min: 500
+              max: 599
+          isFailure: true
+      timeout: 1s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 20
+          ttl: 10s
+
+    # HTTP
+    - name: "GET /health"
+      condition:
+        method: GET
+        pathRegex: /health
+      timeout: 1s
+
+    - name: "GET /api/social"
+      condition:
+        method: GET
+        pathRegex: /api/social(/.*)?
+      timeout: 2s
+      retries:
+        budget:
+          retryRatio: 0.2
+          minRetriesPerSecond: 10
+          ttl: 10s
+
+    - name: "POST /api/social/interact"
+      condition:
+        method: POST
+        pathRegex: /api/social/interact
+      timeout: 3s

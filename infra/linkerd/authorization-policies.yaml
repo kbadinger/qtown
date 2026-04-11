@@ -1,0 +1,426 @@
+---
+# authorization-policies.yaml — Linkerd mTLS authorization policies for Qtown
+#
+# Topology:
+#   town-core      → market-district, fortress, academy
+#   cartographer   → all services
+#   dashboard      → cartographer, town-core
+#   tavern         → redis (external, via EgressPolicy)
+#   Default: deny all unlisted service-to-service calls
+
+apiVersion: policy.linkerd.io/v1beta3
+kind: MeshTLSAuthentication
+metadata:
+  name: qtown-mesh-auth
+  namespace: qtown
+spec:
+  identities:
+    - "*.qtown.serviceaccount.identity.linkerd.cluster.local"
+
+---
+# ────────────────────────────────────────────────────────────────────────────
+# town-core service account identity
+# ────────────────────────────────────────────────────────────────────────────
+apiVersion: policy.linkerd.io/v1beta3
+kind: MeshTLSAuthentication
+metadata:
+  name: town-core-auth
+  namespace: qtown
+spec:
+  identities:
+    - "town-core.qtown.serviceaccount.identity.linkerd.cluster.local"
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: MeshTLSAuthentication
+metadata:
+  name: cartographer-auth
+  namespace: qtown
+spec:
+  identities:
+    - "cartographer.qtown.serviceaccount.identity.linkerd.cluster.local"
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: MeshTLSAuthentication
+metadata:
+  name: dashboard-auth
+  namespace: qtown
+spec:
+  identities:
+    - "dashboard.qtown.serviceaccount.identity.linkerd.cluster.local"
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: MeshTLSAuthentication
+metadata:
+  name: tavern-auth
+  namespace: qtown
+spec:
+  identities:
+    - "tavern.qtown.serviceaccount.identity.linkerd.cluster.local"
+
+---
+# ────────────────────────────────────────────────────────────────────────────
+# Network authentication for Redis (external, non-mesh)
+# ────────────────────────────────────────────────────────────────────────────
+apiVersion: policy.linkerd.io/v1beta3
+kind: NetworkAuthentication
+metadata:
+  name: redis-network-auth
+  namespace: qtown
+spec:
+  networks:
+    - cidr: "0.0.0.0/0"  # Redis is external; restrict via SecurityGroup
+
+---
+# ────────────────────────────────────────────────────────────────────────────
+# Server declarations — one per service × port
+# ────────────────────────────────────────────────────────────────────────────
+apiVersion: policy.linkerd.io/v1beta3
+kind: Server
+metadata:
+  name: town-core-grpc
+  namespace: qtown
+spec:
+  podSelector:
+    matchLabels:
+      app: town-core
+  port: 50051
+  proxyProtocol: gRPC
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: Server
+metadata:
+  name: town-core-http
+  namespace: qtown
+spec:
+  podSelector:
+    matchLabels:
+      app: town-core
+  port: 8080
+  proxyProtocol: HTTP/2
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: Server
+metadata:
+  name: market-district-grpc
+  namespace: qtown
+spec:
+  podSelector:
+    matchLabels:
+      app: market-district
+  port: 50052
+  proxyProtocol: gRPC
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: Server
+metadata:
+  name: fortress-grpc
+  namespace: qtown
+spec:
+  podSelector:
+    matchLabels:
+      app: fortress
+  port: 50053
+  proxyProtocol: gRPC
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: Server
+metadata:
+  name: academy-grpc
+  namespace: qtown
+spec:
+  podSelector:
+    matchLabels:
+      app: academy
+  port: 50054
+  proxyProtocol: gRPC
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: Server
+metadata:
+  name: tavern-grpc
+  namespace: qtown
+spec:
+  podSelector:
+    matchLabels:
+      app: tavern
+  port: 50055
+  proxyProtocol: gRPC
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: Server
+metadata:
+  name: cartographer-grpc
+  namespace: qtown
+spec:
+  podSelector:
+    matchLabels:
+      app: cartographer
+  port: 50056
+  proxyProtocol: gRPC
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: Server
+metadata:
+  name: library-grpc
+  namespace: qtown
+spec:
+  podSelector:
+    matchLabels:
+      app: library
+  port: 50057
+  proxyProtocol: gRPC
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: Server
+metadata:
+  name: asset-pipeline-grpc
+  namespace: qtown
+spec:
+  podSelector:
+    matchLabels:
+      app: asset-pipeline
+  port: 50058
+  proxyProtocol: gRPC
+
+---
+# ────────────────────────────────────────────────────────────────────────────
+# AuthorizationPolicies
+#
+# Rule: town-core can call market-district, fortress, academy
+# ────────────────────────────────────────────────────────────────────────────
+apiVersion: policy.linkerd.io/v1beta3
+kind: AuthorizationPolicy
+metadata:
+  name: market-district-allow-town-core
+  namespace: qtown
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: market-district-grpc
+  requiredAuthenticationRefs:
+    - name: town-core-auth
+      kind: MeshTLSAuthentication
+      group: policy.linkerd.io
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: AuthorizationPolicy
+metadata:
+  name: fortress-allow-town-core
+  namespace: qtown
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: fortress-grpc
+  requiredAuthenticationRefs:
+    - name: town-core-auth
+      kind: MeshTLSAuthentication
+      group: policy.linkerd.io
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: AuthorizationPolicy
+metadata:
+  name: academy-allow-town-core
+  namespace: qtown
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: academy-grpc
+  requiredAuthenticationRefs:
+    - name: town-core-auth
+      kind: MeshTLSAuthentication
+      group: policy.linkerd.io
+
+---
+# Rule: cartographer can call ALL services
+apiVersion: policy.linkerd.io/v1beta3
+kind: AuthorizationPolicy
+metadata:
+  name: town-core-allow-cartographer
+  namespace: qtown
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: town-core-grpc
+  requiredAuthenticationRefs:
+    - name: cartographer-auth
+      kind: MeshTLSAuthentication
+      group: policy.linkerd.io
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: AuthorizationPolicy
+metadata:
+  name: market-district-allow-cartographer
+  namespace: qtown
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: market-district-grpc
+  requiredAuthenticationRefs:
+    - name: cartographer-auth
+      kind: MeshTLSAuthentication
+      group: policy.linkerd.io
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: AuthorizationPolicy
+metadata:
+  name: fortress-allow-cartographer
+  namespace: qtown
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: fortress-grpc
+  requiredAuthenticationRefs:
+    - name: cartographer-auth
+      kind: MeshTLSAuthentication
+      group: policy.linkerd.io
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: AuthorizationPolicy
+metadata:
+  name: academy-allow-cartographer
+  namespace: qtown
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: academy-grpc
+  requiredAuthenticationRefs:
+    - name: cartographer-auth
+      kind: MeshTLSAuthentication
+      group: policy.linkerd.io
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: AuthorizationPolicy
+metadata:
+  name: tavern-allow-cartographer
+  namespace: qtown
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: tavern-grpc
+  requiredAuthenticationRefs:
+    - name: cartographer-auth
+      kind: MeshTLSAuthentication
+      group: policy.linkerd.io
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: AuthorizationPolicy
+metadata:
+  name: library-allow-cartographer
+  namespace: qtown
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: library-grpc
+  requiredAuthenticationRefs:
+    - name: cartographer-auth
+      kind: MeshTLSAuthentication
+      group: policy.linkerd.io
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: AuthorizationPolicy
+metadata:
+  name: asset-pipeline-allow-cartographer
+  namespace: qtown
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: asset-pipeline-grpc
+  requiredAuthenticationRefs:
+    - name: cartographer-auth
+      kind: MeshTLSAuthentication
+      group: policy.linkerd.io
+
+---
+# Rule: dashboard can call cartographer and town-core
+apiVersion: policy.linkerd.io/v1beta3
+kind: AuthorizationPolicy
+metadata:
+  name: cartographer-allow-dashboard
+  namespace: qtown
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: cartographer-grpc
+  requiredAuthenticationRefs:
+    - name: dashboard-auth
+      kind: MeshTLSAuthentication
+      group: policy.linkerd.io
+
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: AuthorizationPolicy
+metadata:
+  name: town-core-allow-dashboard
+  namespace: qtown
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: town-core-http
+  requiredAuthenticationRefs:
+    - name: dashboard-auth
+      kind: MeshTLSAuthentication
+      group: policy.linkerd.io
+
+---
+# Rule: tavern → redis (external NetworkAuthentication)
+# Redis is not mesh-enrolled; tavern uses TCP egress
+apiVersion: policy.linkerd.io/v1beta3
+kind: AuthorizationPolicy
+metadata:
+  name: tavern-allow-redis-egress
+  namespace: qtown
+  annotations:
+    qtown.io/note: "Redis is an external service; restrict via SecurityGroup/NACLs in addition to this policy"
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: tavern-grpc
+  requiredAuthenticationRefs:
+    - name: tavern-auth
+      kind: MeshTLSAuthentication
+      group: policy.linkerd.io
+
+---
+# ────────────────────────────────────────────────────────────────────────────
+# Default deny — NetworkAuthentication that matches nothing,
+# referenced as a catch-all "deny" by Linkerd's default-deny mode.
+#
+# Linkerd enforces default-deny per-Server when no matching
+# AuthorizationPolicy exists.  The Server resources above plus explicit
+# allow policies implement the full topology.  Any call not covered by
+# an AuthorizationPolicy above will be rejected with a 403.
+# ────────────────────────────────────────────────────────────────────────────
+# (No additional resource required — Linkerd's default is deny when Servers
+# are declared without a matching policy.)
