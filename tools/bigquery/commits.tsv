@@ -1,0 +1,1082 @@
+commit_hash	author_name	author_email	committed_at	is_ralph	subject	files_changed	lines_added	lines_deleted
+695845145c4593118d9eb3c46ba78e7c63663a78	kbadinger	kbadinger@resolventtech.com	2026-03-12T21:37:36-04:00	true	[Ralph] Snapshot: Story 419	2	112	112
+6881e4d69c5720e777bdb2f5d0e4cbba49c772e7	kbadinger	kbadinger@resolventtech.com	2026-03-12T21:34:50-04:00	true	[Ralph] Story 419: Building decoration	5	118	14
+eeb984563a4ba65606703b9f846866214437705f	kbadinger	kbadinger@resolventtech.com	2026-03-12T20:27:27-04:00	false	Fix missing expire_old_policies + stage files immediately after regression pass	2	30	0
+d6a5e2db9425a563b05ae4741eac8d54e7dbc7b2	kbadinger	kbadinger@resolventtech.com	2026-03-12T19:37:06-04:00	true	[Ralph] Story 419: Building decoration	6	363	24
+d6100f43698d4eababa95b019d69a724167497de	kbadinger	kbadinger@resolventtech.com	2026-03-12T13:19:12-04:00	true	[Ralph] Snapshot: Story 419	2	72	72
+471fddb0f70c76052dca58a87fae7d31f3f04718	kbadinger	kbadinger@resolventtech.com	2026-03-12T13:16:54-04:00	true	[Ralph] Snapshot: Story 419	4	12931	0
+1a8f8370abbda6662ac9d9e01d713014b4a5c6dd	kbadinger	kbadinger@resolventtech.com	2026-03-12T13:15:52-04:00	true	[Ralph] Story 419: Building decoration	6	49	33
+ae6d15d6e7da490e737eafbae90e3d819d5b9c77	kbadinger	kbadinger@resolventtech.com	2026-03-12T13:15:04-04:00	true	[Ralph] Story 419: Building decoration	2	12	7
+3f2c2f760bf1bf64cd6547458c42afd54bef6809	kbadinger	kbadinger@resolventtech.com	2026-03-12T13:14:59-04:00	true	[Ralph] Story 419: Building decoration	2	11	6
+8ee415c1555008931646690925001a632ef8e09a	kbadinger	kbadinger@resolventtech.com	2026-03-12T13:14:55-04:00	true	[Ralph] Story 419: Building decoration	6	103	14
+92a693a4d12aa8215428e320dbd58a9c365892b8	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:54:46-04:00	true	[Ralph] Snapshot: Story 418	2	90	90
+8421e9efd8aff207eab100ac59b59bb0838c2aa4	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:53:01-04:00	true	[Ralph] Story 418: Building efficiency rating	5	48	15
+e610c5a66f9fe924fa2c5d170a216a6d1326771c	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:31:17-04:00	true	[Ralph] Snapshot: Story 418	3	83	83
+dcf9ff9c76703960fd90f4104488fc8043bb32c1	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:30:28-04:00	true	[Ralph] Snapshot: Story 416	3	109	109
+dd2a02f0c85aff216a253fa47afbbd788527876f	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:29:22-04:00	true	[Ralph] Snapshot: Story 418	2	65	65
+7dd581c50e3410f3e6a2c5be62ed31c0320d6942	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:28:53-04:00	true	[Ralph] Story 418: Building efficiency rating	2	11	6
+4f9d842bd57ec596b7168effd3a3c9677fcd6ef4	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:28:48-04:00	true	[Ralph] Story 416: Building repair system	5	22	12
+0069b15476125a67bbd22064561439ce4b9c05e0	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:28:10-04:00	true	[Ralph] Snapshot: Story 418	2	84	84
+208f83805c368eacbd00a4d9e7c88c9336341411	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:27:57-04:00	true	[Ralph] Story 418: Building efficiency rating	6	35	17
+0333a1797d31eded2d0af5b1560d9dfa45eb2289	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:27:12-04:00	true	[Ralph] Snapshot: Story 418	4	12931	0
+e5b28be4c8580eee671d228d894c4522f3b16c90	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:26:19-04:00	true	[Ralph] Story 418: Building efficiency rating	4	23	20
+b3e700cde546a1f86e2d39db90a147e997eb5269	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:25:10-04:00	true	[Ralph] Story 418: Building efficiency rating	6	86	17
+91c7d6d0188194856c6261c1844739ffed3a640d	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:19:27-04:00	true	[Ralph] Snapshot: Story 417	4	12931	0
+45801de6c1dcb382678e5ebb3c30a6dd46e43b01	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:19:26-04:00	true	[Ralph] Story 417: Building upgrade cost	4	18	9
+aa59e89a67576bf69aba42448fec458c517b4c74	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:19:15-04:00	true	[Ralph] Snapshot: Story 416	2	64	64
+7ddb3ca1d6c7a15be5dcc2743985142aa82ddcdb	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:18:05-04:00	true	[Ralph] Story 417: Building upgrade cost	3	15	9
+f306655d6347c4da2d737f76160467f96b684932	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:17:42-04:00	true	[Ralph] Story 417: Building upgrade cost	4	16	9
+1918e5e13fcd767cc8e0f3be29f048f2a2ba0c97	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:17:31-04:00	true	[Ralph] Snapshot: Story 416	2	64	64
+ec4af561d5427e34a8780a24b75ebf6aa32360c5	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:17:25-04:00	true	[Ralph] Story 416: Building repair system	3	13	7
+811386dadf7023fcf7ea9f5f44517cde09d1b6cb	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:17:21-04:00	true	[Ralph] Story 416: Building repair system	4	50	14
+ff45636895427bd48e13f668f4968d9e12794fe5	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:16:14-04:00	true	[Ralph] Story 416: Building repair system	2	12	7
+4050d3c3b8e3293d979c5d644a8cc6aff5e1feed	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:16:10-04:00	true	[Ralph] Story 416: Building repair system	6	38	18
+20de826689cfe43b182e248f4b57908e8bc7e26a	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:15:40-04:00	true	[Ralph] Snapshot: Story 416	4	12931	0
+7aa1e2b9edc85ed6ceed7d36b5a2fcd460b8f58b	kbadinger	kbadinger@resolventtech.com	2026-03-12T12:13:22-04:00	true	[Ralph] Story 416: Building repair system	6	100	14
+c050d03749d313067fec90a1ffab1e177ea1aaf0	kbadinger	kbadinger@resolventtech.com	2026-03-12T11:52:25-04:00	true	[Ralph] Story 414: Policy sunset	5	77	19
+ec130749cdab22e2755b09164d3600ad6611e64a	kbadinger	kbadinger@resolventtech.com	2026-03-12T11:28:45-04:00	true	[Ralph] Snapshot: Story 415	4	12931	0
+0eea6a8a94c815f4b807e343883b697f82f18dc9	kbadinger	kbadinger@resolventtech.com	2026-03-12T11:27:17-04:00	true	[Ralph] Story 415: Emergency tax	2	13	8
+3af5f2106e2a5410a062a0ccf955d4e18d90d669	kbadinger	kbadinger@resolventtech.com	2026-03-12T11:27:12-04:00	true	[Ralph] Story 415: Emergency tax	2	13	8
+5521a34baaee78978954b8452aeffee99e596a16	kbadinger	kbadinger@resolventtech.com	2026-03-12T11:27:07-04:00	true	[Ralph] Story 414: Policy sunset	6	27	17
+b458f25ba8914f0563147a80b02e864093469876	kbadinger	kbadinger@resolventtech.com	2026-03-12T11:13:25-04:00	true	[Ralph] Snapshot: Story 414	2	98	98
+ebafbe28d5ab596fa239e31e3a5712800db43cb2	kbadinger	kbadinger@resolventtech.com	2026-03-12T11:12:04-04:00	true	[Ralph] Story 414: Policy sunset	6	85	16
+7c5ecc5ac4888cfb23266f03b871b5f723e3034e	kbadinger	kbadinger@resolventtech.com	2026-03-12T11:05:14-04:00	true	[Ralph] Snapshot: Story 414	4	12931	0
+e891a8cbb1ded5348b55b0b1da0d3126c78f29dd	kbadinger	kbadinger@resolventtech.com	2026-03-12T11:03:43-04:00	true	[Ralph] Story 414: Policy sunset	5	66	15
+385855159fc3cf2da15766f2ab9327e11d3128c7	kbadinger	kbadinger@resolventtech.com	2026-03-12T10:38:10-04:00	true	[Ralph] Snapshot: Story 412	3	106	106
+368d46adccee67628d1419f517608735d10302bd	kbadinger	kbadinger@resolventtech.com	2026-03-12T10:36:38-04:00	true	[Ralph] Story 412: Public holiday declaration	5	58	14
+127dfd6d40e68209d161f14d48862075aa2c3c4c	kbadinger	kbadinger@resolventtech.com	2026-03-12T10:06:52-04:00	true	[Ralph] Snapshot: Story 413	2	108	108
+d72fafed75943e1dc9b4e3337900680505d8dae2	kbadinger	kbadinger@resolventtech.com	2026-03-12T10:05:06-04:00	true	[Ralph] Story 413: Recall election	5	36	14
+4c6e0812658f628a87c48a82a412e5736accf7db	kbadinger	kbadinger@resolventtech.com	2026-03-12T09:48:57-04:00	true	[Ralph] Snapshot: Story 413	2	80	80
+43e551308698da87946aadf17e45ecce58e22053	kbadinger	kbadinger@resolventtech.com	2026-03-12T09:48:00-04:00	true	[Ralph] Snapshot: Story 413	2	97	97
+da183f930845ac4fbc046eb50b84f17901caea6f	kbadinger	kbadinger@resolventtech.com	2026-03-12T09:46:49-04:00	true	[Ralph] Snapshot: Story 413	4	12931	0
+3a5fa90f2a39906d55f8eddf4c8eae18ab021138	kbadinger	kbadinger@resolventtech.com	2026-03-12T09:46:48-04:00	true	[Ralph] Story 413: Recall election	4	30	14
+8d8ae1417e3bfce86cd760c4cb345cb58a8f58df	kbadinger	kbadinger@resolventtech.com	2026-03-12T09:46:36-04:00	true	[Ralph] Snapshot: Story 412	2	85	85
+6801c427c63c4a0c44ffb25badbd2c19358ae78c	kbadinger	kbadinger@resolventtech.com	2026-03-12T09:46:30-04:00	true	[Ralph] Story 413: Recall election	4	19	11
+781fe6faaca3e099f2d22164510f9e97978058a3	kbadinger	kbadinger@resolventtech.com	2026-03-12T09:45:16-04:00	true	[Ralph] Story 413: Recall election	2	12	7
+e7264dfda807de67912fe327f0e581b006b51e8a	kbadinger	kbadinger@resolventtech.com	2026-03-12T09:45:12-04:00	true	[Ralph] Story 413: Recall election	5	27	13
+944d87307fd53b84be07ff9b016ffbd073c905ef	kbadinger	kbadinger@resolventtech.com	2026-03-12T09:44:32-04:00	true	[Ralph] Snapshot: Story 412	2	95	95
+4d3e936a988f684ca89c227903c98d4695d13e9e	kbadinger	kbadinger@resolventtech.com	2026-03-12T09:44:11-04:00	true	[Ralph] Snapshot: Story 412	3	104	104
+139e74b32b96dea9e3811e152785876f43ef00aa	kbadinger	kbadinger@resolventtech.com	2026-03-12T09:43:19-04:00	true	[Ralph] Story 412: Public holiday declaration	4	48	9
+fd506e136eea65f6d213f4819dbc0118d6555ca1	kbadinger	kbadinger@resolventtech.com	2026-03-12T09:42:41-04:00	true	[Ralph] Story 412: Public holiday declaration	2	13	8
+d08b977c7bcea19a37d95891a036c8590bc1ee84	kbadinger	kbadinger@resolventtech.com	2026-03-12T09:42:37-04:00	true	[Ralph] Story 412: Public holiday declaration	6	25	15
+7fa6be17bebd741400c43efc581b091451eddc5d	kbadinger	kbadinger@resolventtech.com	2026-03-12T09:40:20-04:00	true	[Ralph] Snapshot: Story 410	3	94	94
+0b8a75dbd3289457ea3ed693cbfd77c3313e65f7	kbadinger	kbadinger@resolventtech.com	2026-03-12T09:38:54-04:00	true	[Ralph] Story 410: Town expansion vote	6	62	18
+ec001f56a5b42e6345825ea7fc1f836579788a52	kbadinger	kbadinger@resolventtech.com	2026-03-12T09:29:10-04:00	true	[Ralph] Snapshot: Story 412	4	12931	0
+d8fbffa11578efcd65d600fe7764afb51f94c603	kbadinger	kbadinger@resolventtech.com	2026-03-12T09:27:38-04:00	true	[Ralph] Story 412: Public holiday declaration	6	66	14
+ce8cc1636a7ce75029e597c9c081fa612f6da132	kbadinger	kbadinger@resolventtech.com	2026-03-12T09:01:08-04:00	true	[Ralph] Story 410: Town expansion vote	6	60	16
+5e6ee4e846ce5e5f9453afb9685c6b9f2997a861	kbadinger	kbadinger@resolventtech.com	2026-03-12T08:39:19-04:00	true	[Ralph] Snapshot: Story 411	2	82	82
+3e0746ee4aa6ba34bb766a15d0756b5e8b503ecf	kbadinger	kbadinger@resolventtech.com	2026-03-12T08:38:49-04:00	true	[Ralph] Snapshot: Story 411	2	110	110
+9ab2d36575151b259b421ac4c1060b6a7eb76ab4	kbadinger	kbadinger@resolventtech.com	2026-03-12T08:36:53-04:00	true	[Ralph] Story 411: Tax exemption	3	16	10
+6427abe0266925926a699c12320ce05db4189cc7	kbadinger	kbadinger@resolventtech.com	2026-03-12T08:36:16-04:00	true	[Ralph] Story 411: Tax exemption	5	29	14
+74dc83b672e0406efffe4c5101af3aeadc257cb2	kbadinger	kbadinger@resolventtech.com	2026-03-12T08:26:13-04:00	true	[Ralph] Snapshot: Story 411	2	90	90
+673d138fe6352d9795a1fd8e01616f83bbb76176	kbadinger	kbadinger@resolventtech.com	2026-03-12T08:24:54-04:00	true	[Ralph] Story 411: Tax exemption	6	22	14
+5c42f35b2fcab03f35ffb86b4e79eb8f90235835	kbadinger	kbadinger@resolventtech.com	2026-03-12T08:24:21-04:00	true	[Ralph] Snapshot: Story 411	4	12931	0
+9bc85df588988efa3129b898ff3b4ba12369bbc2	kbadinger	kbadinger@resolventtech.com	2026-03-12T08:22:54-04:00	true	[Ralph] Story 411: Tax exemption	6	32	17
+8e6a2613edb282f958e930b52ade4cdffa7cc3dc	kbadinger	kbadinger@resolventtech.com	2026-03-12T08:10:25-04:00	true	[Ralph] Snapshot: Story 410	2	71	71
+1242c82ba2403f61baba35bc246474135d06dc3b	kbadinger	kbadinger@resolventtech.com	2026-03-12T08:08:52-04:00	true	[Ralph] Story 410: Town expansion vote	6	55	13
+740694e2ae7928ce7de8cd404993da5cb0692257	kbadinger	kbadinger@resolventtech.com	2026-03-12T08:08:23-04:00	true	[Ralph] Snapshot: Story 410	2	108	108
+6c70c56bb0ff318104abb975fd3874f7f04ef0d5	kbadinger	kbadinger@resolventtech.com	2026-03-12T08:06:58-04:00	true	[Ralph] Story 410: Town expansion vote	5	31	15
+aea0bfd4d0bb5d31e4f069a3e1335243dad87a33	kbadinger	kbadinger@resolventtech.com	2026-03-12T08:01:07-04:00	true	[Ralph] Story 410: Town expansion vote	5	22	13
+26e6b4ab48c5a7a66759d83f64b50cc29c8f14cf	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:51:20-04:00	true	[Ralph] Snapshot: Story 410	4	12931	0
+59cafd5507cbb552201b78079431ff6e5f5d4e22	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:49:53-04:00	true	[Ralph] Story 410: Town expansion vote	6	28	15
+ed6c1e74affbdf69ba235849c1a83a0c925abfb1	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:42:30-04:00	true	[Ralph] Snapshot: Story 409	2	107	107
+ca20d02d4449e8dde7fab3f59d5ba0f4d962fb65	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:41:04-04:00	true	[Ralph] Story 409: War council	6	61	14
+8d87ae0dd6f8ef1f795172ab274f5ff85600d8cd	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:28:17-04:00	true	[Ralph] Story 409: War council	5	31	13
+2f3a46994225b62854da11e95fdb2e8766fe5598	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:27:14-04:00	true	[Ralph] Snapshot: Story 409	2	104	104
+a1f3eafe94e07ffb92a10d8da6cdb1d723c63e25	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:24:39-04:00	true	[Ralph] Story 409: War council	2	13	8
+4c7091f1bd681c57fc8e434777fa9f6276625200	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:24:34-04:00	true	[Ralph] Story 409: War council	5	27	12
+63d911d63219cb693c15e1ff5ca63f509a35d268	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:17:23-04:00	true	[Ralph] Snapshot: Story 409	2	85	85
+1a43672c275b18dbc072a2d837871bf05ddcbca3	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:16:29-04:00	true	[Ralph] Snapshot: Story 409	4	12931	0
+e137a1a3922591135703077bcd7bd5917aff8911	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:15:53-04:00	true	[Ralph] Snapshot: Story 406	2	96	96
+be87fbf2ccbf123765b99b387f9e2d8076414a67	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:14:43-04:00	true	[Ralph] Story 409: War council	2	13	8
+be2fcf771ea7aa7af504bb32f850905d2bb6aa6f	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:14:39-04:00	true	[Ralph] Story 409: War council	2	12	7
+6f35b09394eab70dadb88eda3599abd5c63ec226	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:14:34-04:00	true	[Ralph] Story 406: Policy effectiveness review	6	43	24
+cf26e272c07909f7fe13e6cd9b9b83b5782e5f55	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:10:23-04:00	true	[Ralph] Snapshot: Story 406	2	88	88
+0b78d0081deed3dbcd2812fa785d9df8fa5b4c29	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:07:29-04:00	true	[Ralph] Story 406: Policy effectiveness review	6	61	14
+6b1281e423e329165bf7c89b09dd3a09848fd616	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:04:31-04:00	true	[Ralph] Snapshot: Story 406	2	99	99
+22edeff3c8c15c583e48ec75085945ac61a3daeb	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:02:49-04:00	true	[Ralph] Story 406: Policy effectiveness review	4	31	19
+06f117ffb5e1087e885794b47e3e6d8db74027f2	kbadinger	kbadinger@resolventtech.com	2026-03-12T07:01:55-04:00	true	[Ralph] Story 406: Policy effectiveness review	5	32	15
+8e7d1154f2a6ed85506bb93992297ab3227c14ea	kbadinger	kbadinger@resolventtech.com	2026-03-12T06:47:48-04:00	true	[Ralph] Snapshot: Story 406	2	69	69
+79ba9493e9d1c17a82aec8d1174d6e7da37accb0	kbadinger	kbadinger@resolventtech.com	2026-03-12T06:46:58-04:00	true	[Ralph] Snapshot: Story 406	3	126	126
+b03d7711fcd8d6982c7e7b0cf3e25b7cf8fc0f99	kbadinger	kbadinger@resolventtech.com	2026-03-12T06:45:33-04:00	true	[Ralph] Story 406: Policy effectiveness review	2	13	8
+34c9bb979ef8f24c2210735dedd9d1fd65cbb170	kbadinger	kbadinger@resolventtech.com	2026-03-12T06:45:29-04:00	true	[Ralph] Story 406: Policy effectiveness review	5	29	13
+0852c5058761cc17fe1d679a158116416c6ae2d7	kbadinger	kbadinger@resolventtech.com	2026-03-12T06:37:59-04:00	true	[Ralph] Story 407: Town budget allocation	6	64	14
+99e1a5dea8c05ca3137b9e3f6d436dcaad6cbde4	kbadinger	kbadinger@resolventtech.com	2026-03-12T06:37:30-04:00	true	[Ralph] Snapshot: Story 407	3	110	108
+e254ac3881958df8d54c0aa78c822c2b4afaa5c1	kbadinger	kbadinger@resolventtech.com	2026-03-12T06:35:52-04:00	true	[Ralph] Story 407: Town budget allocation	5	27	14
+91c33a1238128fb3a4684c67ef6435be0011d709	kbadinger	kbadinger@resolventtech.com	2026-03-12T06:32:18-04:00	true	[Ralph] Snapshot: Story 407	2	71	71
+08f7a0c50cfa7ae2276cffc03643b441219ef5bc	kbadinger	kbadinger@resolventtech.com	2026-03-12T06:31:00-04:00	true	[Ralph] Story 407: Town budget allocation	6	31	16
+5b0c84cdedb2b1b9667c5af14c001575e597d685	kbadinger	kbadinger@resolventtech.com	2026-03-12T06:30:18-04:00	true	[Ralph] Snapshot: Story 407	2	87	87
+f97f675e74ad2a5399a759a8ff88b9964dc0093a	kbadinger	kbadinger@resolventtech.com	2026-03-12T06:28:49-04:00	true	[Ralph] Snapshot: Story 407	3	117	117
+369b01a71bce1afdecbff177206c6f250d172f8c	kbadinger	kbadinger@resolventtech.com	2026-03-12T06:27:52-04:00	true	[Ralph] Story 407: Town budget allocation	5	21	12
+e22e2f9504474ab0c9e2474f609234d821e04f68	kbadinger	kbadinger@resolventtech.com	2026-03-12T06:27:21-04:00	true	[Ralph] Story 407: Town budget allocation	5	24	13
+631cd9cc61bbc7c50d6dcfcdb09f77f05e65fbc8	kbadinger	kbadinger@resolventtech.com	2026-03-12T06:19:52-04:00	true	[Ralph] Snapshot: Story 408	2	113	113
+0cab9fc21b1e3fcc410c873cf8b1d4f16f59721e	kbadinger	kbadinger@resolventtech.com	2026-03-12T06:18:16-04:00	true	[Ralph] Story 408: Diplomatic gift	6	74	15
+e3f6b615fea7c4dc3f141990ac70f519402ed677	kbadinger	kbadinger@resolventtech.com	2026-03-12T05:56:31-04:00	true	[Ralph] Snapshot: Story 408	4	12931	0
+61d8548a4fce4e5ec1f6e7f20c7d4678d147e2d7	kbadinger	kbadinger@resolventtech.com	2026-03-12T05:54:01-04:00	true	[Ralph] Story 408: Diplomatic gift	5	37	13
+c2bf328ac781802ed33266ee2b775970899f357e	kbadinger	kbadinger@resolventtech.com	2026-03-12T05:46:51-04:00	true	[Ralph] Story 408: Diplomatic gift	2	11	6
+43a3f1440f758a0c7ad7c38c4f99b0d1f1c34886	kbadinger	kbadinger@resolventtech.com	2026-03-12T05:46:46-04:00	true	[Ralph] Story 408: Diplomatic gift	5	36	14
+ded06f5bb5df327585339666acbf8bee494ba40f	kbadinger	kbadinger@resolventtech.com	2026-03-12T05:44:22-04:00	true	[Ralph] Story 406: Policy effectiveness review	7	118	19
+dbd94bd541df3d554417d9dd13a5684110758b58	kbadinger	kbadinger@resolventtech.com	2026-03-12T03:37:25-04:00	true	[Ralph] Snapshot: Story 406	3	106	106
+12bfe36e8f92613a18b08b1c1cec1874c1fd90ee	kbadinger	kbadinger@resolventtech.com	2026-03-12T03:36:07-04:00	true	[Ralph] Story 406: Policy effectiveness review	5	24	13
+a0b36d07ce9b3932436db5062ff3245722633dcd	kbadinger	kbadinger@resolventtech.com	2026-03-12T03:32:12-04:00	true	[Ralph] Snapshot: Story 407	4	12931	0
+bf9a7f4a80c9c1d77f82d34939ee7f2552aabb8a	kbadinger	kbadinger@resolventtech.com	2026-03-12T03:30:14-04:00	true	[Ralph] Story 407: Town budget allocation	5	64	15
+ab740377eeff2ad2e2abf1162bc0bc064fb9cd4d	kbadinger	kbadinger@resolventtech.com	2026-03-12T03:02:14-04:00	true	[Ralph] Story 407: Town budget allocation	5	112	16
+782b73b21f6beab01e0388375fcd0ef4df2f711a	kbadinger	kbadinger@resolventtech.com	2026-03-12T01:29:54-04:00	true	[Ralph] Snapshot: Story 406	2	88	88
+a6b3268dc3d4dfd213060f8c0b7d8a3a75c7b210	kbadinger	kbadinger@resolventtech.com	2026-03-12T01:28:12-04:00	true	[Ralph] Story 406: Policy effectiveness review	5	37	15
+a8cabefcaf297fa56c1c090f28ea2bfcec75348d	kbadinger	kbadinger@resolventtech.com	2026-03-12T01:11:31-04:00	true	[Ralph] Snapshot: Story 406	2	83	83
+a436e7b009664820c8c3ef656a7dfa914ac9bba8	kbadinger	kbadinger@resolventtech.com	2026-03-12T01:10:02-04:00	true	[Ralph] Story 406: Policy effectiveness review	5	42	16
+07e053708a18063a952e04c0e6b9e2a436e231b0	kbadinger	kbadinger@resolventtech.com	2026-03-12T00:48:34-04:00	true	[Ralph] Snapshot: Story 406	4	12931	0
+1ef71010bead21e1ba6904e1593d6bb8edc7e2fe	kbadinger	kbadinger@resolventtech.com	2026-03-12T00:47:06-04:00	true	[Ralph] Story 406: Policy effectiveness review	5	44	15
+e3804f8b3c931dd2b0c034b0a35eff306a719579	kbadinger	kbadinger@resolventtech.com	2026-03-12T00:13:45-04:00	true	[Ralph] Snapshot: Story 405	2	92	92
+10aee6e4743d57602bf29d846a7aa9ab0c1d5072	kbadinger	kbadinger@resolventtech.com	2026-03-12T00:12:04-04:00	true	[Ralph] Story 405: Opposition leader	5	45	16
+46bfff11470a12f858f2fc970b663a6f47ac82ee	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:49:12-04:00	true	[Ralph] Snapshot: Story 405	2	74	74
+f9147603b92360ec13963c1d1410f2b111db1232	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:48:26-04:00	true	[Ralph] Snapshot: Story 405	2	80	80
+5a4368da8306df435402eb9227a0fdb919eca08c	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:47:51-04:00	true	[Ralph] Snapshot: Story 405	4	12931	0
+f839ed14ff4dbfe09e2cf68dbc24c3b642f82cef	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:47:38-04:00	true	[Ralph] Story 405: Opposition leader	4	19	11
+841a1462d30d30a93eea064fada23d582da76b3d	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:47:28-04:00	true	[Ralph] Snapshot: Story 404	2	109	109
+6d802383ee4a16c2ae2b2e16c4a0be8d27c5e87a	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:47:08-04:00	true	[Ralph] Story 405: Opposition leader	4	20	11
+175a452f661d1839edb4c6a2d25d9a6b8db6b0af	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:46:21-04:00	true	[Ralph] Story 405: Opposition leader	2	13	8
+38f06e52048554e4652e2779f64fe335ae42d9bd	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:46:17-04:00	true	[Ralph] Story 405: Opposition leader	2	12	7
+f1802b7c3ade4e2a61feb167f63f2e2e83415218	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:46:12-04:00	true	[Ralph] Story 405: Opposition leader	2	14	9
+e3f9cce11c9319392b3787da648ee443b326fcce	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:46:08-04:00	true	[Ralph] Story 404: Public speech	5	28	15
+2a8507640b2862fa01737d187ec5c94d6ba079a8	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:42:34-04:00	true	[Ralph] Snapshot: Story 404	2	101	101
+8bcfe5e038b3897b5310172a660a082fd1f6a239	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:40:51-04:00	true	[Ralph] Story 404: Public speech	6	75	16
+523ba75737be134ca9b52c3eb174b4b4bc9ea98c	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:29:21-04:00	true	[Ralph] Snapshot: Story 404	2	89	89
+dc6f3f1dca21728d09073717f92c27b110229b0c	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:27:51-04:00	true	[Ralph] Snapshot: Story 404	2	95	95
+d72d12b9503d838c82514b1861825881a126edcb	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:27:17-04:00	true	[Ralph] Snapshot: Story 404	1	0	0
+829d8032d326d0e83f0635a59dbaaa06c025ab36	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:26:47-04:00	true	[Ralph] Snapshot: Story 404	4	12931	0
+08d0b1a0137b99505cca399f44cb9a13fe01634b	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:26:42-04:00	true	[Ralph] Story 404: Public speech	4	14	7
+c3a2591fb14258d005c931fbf50daf9ad7a3d754	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:26:31-04:00	true	[Ralph] Story 404: Public speech	4	21	13
+0f4bc42437bc6950cacf44a720195ecd4b2a5b9d	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:25:26-04:00	true	[Ralph] Story 404: Public speech	2	13	8
+41789aea4f85b4e8ccf430fc3a854fedfc57263b	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:25:21-04:00	true	[Ralph] Story 404: Public speech	5	27	14
+cd051b56c4d3202696bd46c3be18dc2cb2c15f88	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:19:34-04:00	true	[Ralph] Snapshot: Story 403	2	109	109
+86c2c26130a6573b779bf05fcd959b9d80e7d218	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:18:05-04:00	true	[Ralph] Story 403: Town curfew	6	79	14
+595a9c6c0b8b92b00800d9c9bc5023ee49501e2e	kbadinger	kbadinger@resolventtech.com	2026-03-11T23:13:30-04:00	true	[Ralph] Story 402: Corruption detection	6	47	27
+d6f909f5f4f68b77a183dd8a32b0a2d6622f3760	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:48:14-04:00	true	[Ralph] Story 403: Town curfew	2	13	8
+90eb0f4c999f245ce1147d236979130ea1c02c8a	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:48:08-04:00	true	[Ralph] Story 403: Town curfew	4	40	14
+9d111d8f482e06e6e4fb90ec4cdab33d461be872	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:39:01-04:00	true	[Ralph] Snapshot: Story 403	4	12931	0
+c043a6c3837fd12d48a029d63639fef67117d5c0	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:38:19-04:00	true	[Ralph] Snapshot: Story 401	3	107	107
+73348e8aa2000305e1d6bbc61b156df605180710	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:36:39-04:00	true	[Ralph] Story 403: Town curfew	2	13	8
+33ddd4dbd3a5325b301ee12877ed56ea58860019	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:36:34-04:00	true	[Ralph] Story 403: Town curfew	5	16	9
+c978ba8b53742abec95e9134f67bdc288dca1d91	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:36:11-04:00	true	[Ralph] Story 401: Political approval rating	6	59	15
+f68d61062eb370ba296d8d23e0a535ffd51cd7d3	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:36:04-04:00	true	[Ralph] Snapshot: Story 402	2	91	91
+924b41cfaf41b15b97b6f59df565c5d6ca9fe549	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:34:41-04:00	true	[Ralph] Snapshot: Story 402	4	12931	0
+4899a652b3534808e3321235c0b400e573339e27	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:34:34-04:00	true	[Ralph] Story 402: Corruption detection	6	32	17
+80bd31194bfcd6e35dbf1a94045810a2efd7455c	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:33:13-04:00	true	[Ralph] Story 402: Corruption detection	2	11	6
+a583b1f329a5770bf541401e12eed1f512fc97f6	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:33:08-04:00	true	[Ralph] Story 402: Corruption detection	2	12	7
+ccadfdf58fb8babfc0c78749e50f168f69e08052	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:33:04-04:00	true	[Ralph] Story 402: Corruption detection	5	26	13
+5f9b365324dfee262744e7b79a378833172b6be5	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:32:06-04:00	true	[Ralph] Snapshot: Story 401	2	61	61
+f7280a4ff2e77f41be1f3c1bc07fc85078a29536	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:30:53-04:00	true	[Ralph] Snapshot: Story 401	2	59	59
+7c9830ff0eb2538c079d1b18efbbb143a8840a3a	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:30:33-04:00	true	[Ralph] Story 401: Political approval rating	6	68	13
+28c1203ab1791d60318e092fbf9d753aa48ab602	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:30:18-04:00	true	[Ralph] Snapshot: Story 401	2	43	43
+3f6dd241379d5417c28e2017b4210f325cab4d41	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:29:39-04:00	true	[Ralph] Snapshot: Story 401	4	12931	0
+8c157c024bce0507f1744e0b9b34ec6aeae0f147	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:29:02-04:00	true	[Ralph] Story 401: Political approval rating	2	11	6
+19e7477b5ba3f97d14182a471da2ef1e47e0d20a	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:28:59-04:00	true	[Ralph] Story 401: Political approval rating	4	32	24
+bed43575a927d801c79f8ba03ccef6ac65f0ef3e	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:28:25-04:00	true	[Ralph] Story 401: Political approval rating	2	11	6
+5df15bf100de5b26dd32b10715f71fa34a19e8e5	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:28:19-04:00	true	[Ralph] Story 401: Political approval rating	6	37	26
+959c6a34845dc88438388626b1ab9343c3320768	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:28:09-04:00	true	[Ralph] Snapshot: Story 399	2	110	110
+38312eaf4b92a8da69b624301ef228d6b7c24f18	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:26:50-04:00	true	[Ralph] Story 399: Spring bloom	6	54	13
+face48fad41fff6aa8c66ae4da92c55ac25d97d6	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:24:32-04:00	true	[Ralph] Snapshot: Story 399	2	94	94
+bfe9f2be1f48a81a50ce27cd6c1d0de94dd3862c	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:23:02-04:00	true	[Ralph] Story 399: Spring bloom	5	34	14
+09803aaf6c4b68db93c5f3f9b94fa14fc31efc54	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:08:01-04:00	true	[Ralph] Snapshot: Story 399	2	96	96
+51e551973dbbb64001e2f259fa89810d8e94467b	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:08:00-04:00	true	[Ralph] Story 399: Spring bloom	6	27	15
+0af5980a683233d856cf5317037254bd21482f0a	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:06:48-04:00	true	[Ralph] Snapshot: Story 399	2	69	69
+813b8317706c1f61d70034c155d5653d377669a3	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:06:38-04:00	true	[Ralph] Story 399: Spring bloom	5	26	13
+0b95d55e8794d3ea7c5bbf05d9911d96587e0f1a	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:06:07-04:00	true	[Ralph] Snapshot: Story 399	3	105	105
+35b2e8f80046289a114a2d0417d5069f91199d31	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:05:27-04:00	true	[Ralph] Story 399: Spring bloom	4	20	14
+4a6bdbe5c5a50da0022a21c517500ad9d5ea46a4	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:04:45-04:00	true	[Ralph] Story 399: Spring bloom	7	37	23
+2d681a1319a5b5dd9090744dc19690f613a84879	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:02:33-04:00	true	[Ralph] Snapshot: Story 400	3	106	106
+699684a28810fc81be0d4a8ebfab6ed11c4b77be	kbadinger	kbadinger@resolventtech.com	2026-03-11T22:01:05-04:00	true	[Ralph] Story 400: Drought relief	6	54	14
+fe3b33423687bfa90dead02e628d5963e86bccd0	kbadinger	kbadinger@resolventtech.com	2026-03-11T21:55:04-04:00	true	[Ralph] Story 396: Miracle event	5	36	15
+dab5a5344ecfa26fe97e1629675945cc1cdfe4cb	kbadinger	kbadinger@resolventtech.com	2026-03-11T21:46:24-04:00	true	[Ralph] Snapshot: Story 396	3	114	114
+9d49f1d2b2fe2204ee409605b48b6559e8d2b1d3	kbadinger	kbadinger@resolventtech.com	2026-03-11T21:45:55-04:00	true	[Ralph] Snapshot: Story 400	2	104	104
+c7f86fdbbea460d687a9ee1049962224c5d96a7e	kbadinger	kbadinger@resolventtech.com	2026-03-11T21:44:47-04:00	true	[Ralph] Story 396: Miracle event	4	24	10
+3a4f0a9064a83d85faa82b328bbc97be506cba61	kbadinger	kbadinger@resolventtech.com	2026-03-11T21:44:42-04:00	true	[Ralph] Story 400: Drought relief	2	13	8
+129d00e31b6c5a36ae2d5fc8c525139b7d78c6c9	kbadinger	kbadinger@resolventtech.com	2026-03-11T21:44:38-04:00	true	[Ralph] Story 396: Miracle event	2	13	8
+7f1cdcc1328648693d9acec543730ae3b327e08a	kbadinger	kbadinger@resolventtech.com	2026-03-11T21:44:33-04:00	true	[Ralph] Story 400: Drought relief	5	28	13
+e36db5448deaed2f8f5aeb5055d0de163ea6d7c8	kbadinger	kbadinger@resolventtech.com	2026-03-11T21:44:27-04:00	true	[Ralph] Snapshot: Story 400	2	96	96
+833b8874b8c0a0b19dcb87f7e6dc12f7b4299140	kbadinger	kbadinger@resolventtech.com	2026-03-11T21:43:06-04:00	true	[Ralph] Story 400: Drought relief	6	34	13
+299e759a3e48b7e0a80e50a806d4a8f579cd5991	kbadinger	kbadinger@resolventtech.com	2026-03-11T21:42:23-04:00	true	[Ralph] Story 400: Drought relief	6	40	32
+74fdd0522dcaa42843f616da5fa5a5652e6f4d7e	kbadinger	kbadinger@resolventtech.com	2026-03-11T21:40:01-04:00	true	[Ralph] Snapshot: Story 400	4	12931	0
+5b02ed7d7442f09e7c259621d69d2fae372a4664	kbadinger	kbadinger@resolventtech.com	2026-03-11T21:37:57-04:00	true	[Ralph] Story 400: Drought relief	6	170	19
+0f4e9b65e943975c8e017f8637fd5e0a7639e2a5	kbadinger	kbadinger@resolventtech.com	2026-03-11T20:14:39-04:00	true	[Ralph] Snapshot: Story 399	4	12931	0
+1a0abeeac01a7602e2911de8481faec06f9b243a	kbadinger	kbadinger@resolventtech.com	2026-03-11T20:12:07-04:00	true	[Ralph] Story 399: Spring bloom	5	164	17
+d9b1955961661f82e1e1b0f23f4795b5074eefe5	kbadinger	kbadinger@resolventtech.com	2026-03-11T18:39:37-04:00	true	[Ralph] Snapshot: Story 397	3	92	92
+4a87af4f73cbeea2e06c902320a3f032210560b0	kbadinger	kbadinger@resolventtech.com	2026-03-11T18:38:14-04:00	true	[Ralph] Snapshot: Story 398	4	12931	0
+93b98a986ece1d0935f3703bf65d01b1b46a446a	kbadinger	kbadinger@resolventtech.com	2026-03-11T18:36:56-04:00	true	[Ralph] Story 397: Comet sighting	2	11	6
+4e6fab3f01f8e3a7a092b005468e1f45cf62e4f9	kbadinger	kbadinger@resolventtech.com	2026-03-11T18:36:51-04:00	true	[Ralph] Story 398: Building collapse	2	13	8
+20acfc2d648cf0beb3279e6f3a66f0da8a5bc072	kbadinger	kbadinger@resolventtech.com	2026-03-11T18:36:46-04:00	true	[Ralph] Story 398: Building collapse	2	14	9
+95b1d7685b608643bc737b893edfb57098869161	kbadinger	kbadinger@resolventtech.com	2026-03-11T18:36:42-04:00	true	[Ralph] Story 398: Building collapse	2	13	8
+06138c76db6fef2b00fee6dae34aaf6fb2fa61fb	kbadinger	kbadinger@resolventtech.com	2026-03-11T18:36:37-04:00	true	[Ralph] Story 398: Building collapse	5	25	14
+dd497e66a0b5dc5d3617a7b36529c1c69c4f4548	kbadinger	kbadinger@resolventtech.com	2026-03-11T18:32:39-04:00	true	[Ralph] Snapshot: Story 397	3	111	111
+a6b71257f117e8662cf1862f7e61539085497dfc	kbadinger	kbadinger@resolventtech.com	2026-03-11T18:30:54-04:00	true	[Ralph] Story 397: Comet sighting	5	28	14
+a219eee873483a57a0fc004de5b3aa4ce0ac7dd5	kbadinger	kbadinger@resolventtech.com	2026-03-11T18:29:29-04:00	true	[Ralph] Story 397: Comet sighting	5	27	13
+0dac83200e3723efe3939ee670f2df85eeeb6d57	kbadinger	kbadinger@resolventtech.com	2026-03-11T18:19:30-04:00	true	[Ralph] Snapshot: Story 396	2	81	81
+73c199ac46229441dcedf3bcead94445fadeab21	kbadinger	kbadinger@resolventtech.com	2026-03-11T18:17:51-04:00	true	[Ralph] Story 396: Miracle event	6	108	16
+79413f75ce94503070a1efc329e245d52289f808	kbadinger	kbadinger@resolventtech.com	2026-03-11T18:13:05-04:00	true	[Ralph] Snapshot: Story 396	3	96	96
+0f7a7b0b7ce60205db3dd46210ef187702926367	kbadinger	kbadinger@resolventtech.com	2026-03-11T18:11:28-04:00	true	[Ralph] Story 396: Miracle event	6	116	15
+77687f4dc04eb2868e9991bcd94d7ad393f3e523	kbadinger	kbadinger@resolventtech.com	2026-03-11T17:23:50-04:00	true	[Ralph] Snapshot: Story 397	2	104	104
+5accbbea1045629e87aae5fd3ac3b667133bda1e	kbadinger	kbadinger@resolventtech.com	2026-03-11T17:21:42-04:00	true	[Ralph] Story 397: Comet sighting	5	40	15
+f29057623877b4e8870b7a6852a945cc85eed0ce	kbadinger	kbadinger@resolventtech.com	2026-03-11T16:57:12-04:00	true	[Ralph] Snapshot: Story 397	4	12931	0
+f8d55f2532886adeefbd92403ce6bb4a32dc6339	kbadinger	kbadinger@resolventtech.com	2026-03-11T16:55:07-04:00	true	[Ralph] Story 397: Comet sighting	5	68	16
+79113ecbf703790e08be7781244e9ee9c09a7608	kbadinger	kbadinger@resolventtech.com	2026-03-11T15:59:58-04:00	true	[Ralph] Story 396: Miracle event	5	34	16
+9dc8942a810f3f2ee32906ec0d335a2229e2c14f	kbadinger	kbadinger@resolventtech.com	2026-03-11T15:39:27-04:00	true	[Ralph] Snapshot: Story 396	4	12931	0
+d0ea1ad6ed7ce3c65fa60abf9afd52d59ae06fd1	kbadinger	kbadinger@resolventtech.com	2026-03-11T15:37:35-04:00	true	[Ralph] Story 396: Miracle event	5	54	14
+5997f8f9642c8a8ebc98c52929ddc12f16940c05	kbadinger	kbadinger@resolventtech.com	2026-03-11T15:16:48-04:00	true	[Ralph] Snapshot: Story 393	4	12931	0
+698e601f06e6f04f5a449ff6e255bd0b905b8c61	kbadinger	kbadinger@resolventtech.com	2026-03-11T15:14:37-04:00	true	[Ralph] Story 393: Talent show event	5	45	15
+08200ade70f2d627bc49c027a58f6e739213fbe3	kbadinger	kbadinger@resolventtech.com	2026-03-11T14:54:20-04:00	true	[Ralph] Snapshot: Story 395	3	83	83
+601079427c36fccfa17e450d168b0c474355eba4	kbadinger	kbadinger@resolventtech.com	2026-03-11T14:52:29-04:00	true	[Ralph] Story 395: Bandit raid	5	24	13
+66cbe6d52c4a72649cebb0719e71169a2f9ac977	kbadinger	kbadinger@resolventtech.com	2026-03-11T14:52:25-04:00	true	[Ralph] Snapshot: Story 394	2	91	91
+4e5652d5cf9e55fdb1645d80583bca08970d9869	kbadinger	kbadinger@resolventtech.com	2026-03-11T14:50:22-04:00	true	[Ralph] Story 394: Trade caravan arrival	5	36	17
+28ac621dc1ec3028886eb7ded67a6ff5a64f6987	kbadinger	kbadinger@resolventtech.com	2026-03-11T14:37:16-04:00	true	[Ralph] Snapshot: Story 394	3	88	88
+87528af71bd543779357ccfc6fe1f18b56a3dae4	kbadinger	kbadinger@resolventtech.com	2026-03-11T14:36:35-04:00	true	[Ralph] Snapshot: Story 395	2	45	45
+ebb611248f8deb64f7a5af76a8b4b45d777b37ad	kbadinger	kbadinger@resolventtech.com	2026-03-11T14:35:49-04:00	true	[Ralph] Snapshot: Story 395	4	12931	0
+efba67bbc77d869c81929bb6a8b4f14d2514a228	kbadinger	kbadinger@resolventtech.com	2026-03-11T14:34:32-04:00	true	[Ralph] Story 394: Trade caravan arrival	4	21	14
+ae67a3dcabf72d8672074210c5237df9f63c57af	kbadinger	kbadinger@resolventtech.com	2026-03-11T14:33:38-04:00	true	[Ralph] Story 395: Bandit raid	2	13	8
+e2ac1b6f3aa8ac018fe88c3752715edf25822eba	kbadinger	kbadinger@resolventtech.com	2026-03-11T14:33:33-04:00	true	[Ralph] Story 395: Bandit raid	5	37	12
+6df0ec3fccfc91242dd92988fa8f3e088e465e32	kbadinger	kbadinger@resolventtech.com	2026-03-11T14:26:41-04:00	true	[Ralph] Snapshot: Story 394	4	12931	0
+24532b3c68833eabc9693588ca811e149ae43802	kbadinger	kbadinger@resolventtech.com	2026-03-11T14:24:36-04:00	true	[Ralph] Story 394: Trade caravan arrival	3	13	7
+84faa73a0e2f4516578cb0df433ad69e93e54a93	kbadinger	kbadinger@resolventtech.com	2026-03-11T14:24:31-04:00	true	[Ralph] Story 393: Talent show event	4	38	22
+b9bbee92bbb2617dbaa0735529f09e917f352882	kbadinger	kbadinger@resolventtech.com	2026-03-11T14:23:07-04:00	true	[Ralph] Story 394: Trade caravan arrival	6	105	15
+331ff6f8116372870e850353b0a132c4b7fb1408	kbadinger	kbadinger@resolventtech.com	2026-03-11T14:00:23-04:00	true	[Ralph] Story 394: Trade caravan arrival	6	91	21
+1bff14337345f4b5dac6006e5f9a4b173a8b74be	kbadinger	kbadinger@resolventtech.com	2026-03-11T13:09:21-04:00	true	[Ralph] Story 393: Talent show event	5	120	15
+cd69ada307bb5c59e7c56b54e0f930d1230320a9	kbadinger	kbadinger@resolventtech.com	2026-03-11T12:01:30-04:00	true	[Ralph] Snapshot: Story 392	2	96	96
+0299f7be00f68bcc153b3329e393b3b4704168b6	kbadinger	kbadinger@resolventtech.com	2026-03-11T11:57:02-04:00	true	[Ralph] Story 392: Wedding festival	6	75	14
+822b70e51f812398f5c39051d00c9ab6a40fe80f	kbadinger	kbadinger@resolventtech.com	2026-03-11T11:56:00-04:00	true	[Ralph] Snapshot: Story 392	2	68	68
+54d37aaea7dc08b9cb6dff2192493522f29333d4	kbadinger	kbadinger@resolventtech.com	2026-03-11T11:54:07-04:00	true	[Ralph] Story 392: Wedding festival	5	23	13
+a98c8d09b0e01ea1854ced77f600f60741caf409	kbadinger	kbadinger@resolventtech.com	2026-03-11T11:53:33-04:00	true	[Ralph] Snapshot: Story 392	2	104	104
+f8366e834fd28b29172be6cdfcf720da4de44b69	kbadinger	kbadinger@resolventtech.com	2026-03-11T11:52:11-04:00	true	[Ralph] Story 392: Wedding festival	5	31	16
+8b769919e1066ee5b88a0f7cc822b05889d9aadc	kbadinger	kbadinger@resolventtech.com	2026-03-11T11:47:55-04:00	true	[Ralph] Snapshot: Story 392	4	12931	0
+f809fdfab36dd255d73076f1ea899355609fa95d	kbadinger	kbadinger@resolventtech.com	2026-03-11T11:46:56-04:00	true	[Ralph] Snapshot: Story 391	2	98	98
+321ee1dc14e15d96b7d084467f4b5a1d0d7f1e2c	kbadinger	kbadinger@resolventtech.com	2026-03-11T11:44:19-04:00	true	[Ralph] Story 392: Wedding festival	2	12	7
+0f61177524e9d97f74451677f415310b4d711c27	kbadinger	kbadinger@resolventtech.com	2026-03-11T11:44:14-04:00	true	[Ralph] Story 391: Flood event	6	40	21
+edcf377d25e9e1630c9d6042e2bb9c740068245f	kbadinger	kbadinger@resolventtech.com	2026-03-11T11:20:23-04:00	true	[Ralph] Story 392: Wedding festival	5	29	15
+3898b9ffc2fdf6033ded93cf44b1568c0c3f6b03	kbadinger	kbadinger@resolventtech.com	2026-03-11T11:17:22-04:00	true	[Ralph] Snapshot: Story 391	1	0	0
+c1e98287abc97bd2bc4657c0ffbd9ed278c27f03	kbadinger	kbadinger@resolventtech.com	2026-03-11T11:17:03-04:00	true	[Ralph] Snapshot: Story 391	4	12931	0
+14abde49e3e71381ba170ca80e12a45d6d47979b	kbadinger	kbadinger@resolventtech.com	2026-03-11T11:15:38-04:00	true	[Ralph] Story 391: Flood event	4	56	11
+858480091af92f3d95d5e06cbaee9d11494b0f2e	kbadinger	kbadinger@resolventtech.com	2026-03-11T11:15:17-04:00	true	[Ralph] Story 391: Flood event	5	36	14
+5db9018d0912f18930da6d6569c34b0b6c70c564	kbadinger	kbadinger@resolventtech.com	2026-03-11T10:59:19-04:00	true	[Ralph] Story 391: Flood event	5	38	14
+955bdfad264bc8b12fb599f8c309793a92c29c4b	kbadinger	kbadinger@resolventtech.com	2026-03-11T10:58:55-04:00	true	[Ralph] Story 391: Flood event	2	12	7
+76dbf32128271cfc7ff4778887c614f92884868c	kbadinger	kbadinger@resolventtech.com	2026-03-11T10:58:50-04:00	true	[Ralph] Story 391: Flood event	6	36	14
+fca33929f3d0a8cd02b7aa531cc75a799b8e710a	kbadinger	kbadinger@resolventtech.com	2026-03-11T10:46:20-04:00	true	[Ralph] Snapshot: Story 389	2	66	66
+9751ecad310d153516502f22baacb6fd4a895137	kbadinger	kbadinger@resolventtech.com	2026-03-11T10:44:56-04:00	true	[Ralph] Snapshot: Story 389	2	68	68
+04de95b25f87b13d1c6190249ab6a55f242ee69d	kbadinger	kbadinger@resolventtech.com	2026-03-11T10:43:59-04:00	true	[Ralph] Snapshot: Story 389	2	83	83
+a77fd56f1acc26e04a06f58d5206b08319adb55e	kbadinger	kbadinger@resolventtech.com	2026-03-11T10:43:49-04:00	true	[Ralph] Story 389: Harvest festival	2	13	8
+ff91f9fc12d06a9f959c7fd77b2c18772d9ccbcc	kbadinger	kbadinger@resolventtech.com	2026-03-11T10:43:44-04:00	true	[Ralph] Story 389: Harvest festival	4	21	10
+db4e1c9920daf2712b02bdd8d849d1f07745d985	kbadinger	kbadinger@resolventtech.com	2026-03-11T10:41:28-04:00	true	[Ralph] Story 389: Harvest festival	2	12	7
+ce4b951b207b54e6d37d44def4414b6d1d9fab05	kbadinger	kbadinger@resolventtech.com	2026-03-11T10:41:24-04:00	true	[Ralph] Story 389: Harvest festival	5	28	13
+d3ce7d6986efcdf437739229cdc8d1844451683f	kbadinger	kbadinger@resolventtech.com	2026-03-11T10:39:21-04:00	true	[Ralph] Snapshot: Story 389	4	12931	0
+2b10f45191b10de4b6595ccae10a06869ebb84b2	kbadinger	kbadinger@resolventtech.com	2026-03-11T10:38:00-04:00	true	[Ralph] Story 389: Harvest festival	7	47	30
+9aa66f6f937115ec4554cf31d0ae43a12e035f0c	kbadinger	kbadinger@resolventtech.com	2026-03-11T10:36:58-04:00	true	[Ralph] Snapshot: Story 390	4	12931	0
+0d2859d644f4537ad1bebf451795372070c53960	kbadinger	kbadinger@resolventtech.com	2026-03-11T10:34:37-04:00	true	[Ralph] Story 390: Fire event	6	291	24
+dfba432eb53168f00b68018fe7c09bca85e6c9d5	kbadinger	kbadinger@resolventtech.com	2026-03-11T10:25:31-04:00	false	Story 389: harvest festival doubles food/grain resources	2	14	7
+4c6ac449a7fdb7f8b57d0645fffe5c2b127789af	kbadinger	kbadinger@resolventtech.com	2026-03-11T10:02:55-04:00	false	Increase regression retry to 3 attempts for flaky SQLite tests	1	7	5
+e6478c1f5d801c1fac2a269b4f2efe0e8dbe257b	kbadinger	kbadinger@resolventtech.com	2026-03-11T09:51:12-04:00	false	Add regression test retry for flaky tests (SQLite locking)	1	5	1
+2f83c9bfbee7a14e6468e756e7bb1aeef729488f	kbadinger	kbadinger@resolventtech.com	2026-03-11T09:14:30-04:00	false	Fix story 115 test: earthquake now reduces level, not capacity	1	8	6
+bd42a2d0fcdb1110d121d13dc1a48555d6ebdc21	kbadinger	kbadinger@resolventtech.com	2026-03-11T09:01:50-04:00	false	Fix test conflicts: stories 218/389-391/395 extend existing functions instead of rewriting	3	48	38
+f87fc9b9ea017247ab038ca6d8f63cee4dbf2583	kbadinger	kbadinger@resolventtech.com	2026-03-11T08:14:04-04:00	false	Ralph waits for fix instead of dying, add auto-fixer	2	230	18
+12459e5d2ed685aca0b6a377fa0ca53817661adf	kbadinger	kbadinger@resolventtech.com	2026-03-10T20:25:52-04:00	true	[Ralph] Story 388: Plague outbreak	6	102	17
+5de1992cf33e15b1fd986ba691d2c54b15b1b0b6	kbadinger	kbadinger@resolventtech.com	2026-03-10T20:04:29-04:00	false	Skip failed stories instead of stopping Ralph	3	71	13
+6135354e1c839fb89ae9a75175cc2b63246ba983	kbadinger	kbadinger@resolventtech.com	2026-03-10T13:44:34-04:00	false	Fix story 386: earthquake counts all damaged buildings, not just level>1	2	25	19
+3e1265b9ff4a2960860f40137018dbd2c237d45d	kbadinger	kbadinger@resolventtech.com	2026-03-10T12:11:01-04:00	false	Regenerate all NPC sprites as single figures, add gendered names	19	30	10
+03768e8e00aaf86f8b4c40d4baf2f9e5afbba913	kbadinger	kbadinger@resolventtech.com	2026-03-10T11:58:45-04:00	false	Fix NPC spawn: skill is Integer not String, add error logging	1	5	1
+69d8e58e35be53a8a599901196cc19eb137c1e12	kbadinger	kbadinger@resolventtech.com	2026-03-10T11:52:59-04:00	false	Ensure minimum population of 11 NPCs on startup	1	28	0
+b0dd9d80ccaf2a60cb0151efe26209ccb9c3fe5f	kbadinger	kbadinger@resolventtech.com	2026-03-10T11:49:43-04:00	false	Bias NPC wander toward work buildings (40%) for better gold earning	1	8	8
+22878821f2621cb258cdcbfac4bb7c4b0e76bd93	kbadinger	kbadinger@resolventtech.com	2026-03-10T11:45:57-04:00	false	Fix gold economy: proximity wages + startup gold floor	2	2	1
+dfd56c3e6bf34cc5ed69000238688f000ef8f20f	kbadinger	kbadinger@resolventtech.com	2026-03-10T11:40:40-04:00	false	Fix NPC sprites + population growth + age death loop	4	6	6
+ac8353cc5cbdb5d60961fa6a73ecd9797306f6d9	kbadinger	kbadinger@resolventtech.com	2026-03-10T10:56:32-04:00	true	[Ralph] Story 385: Economic stimulus	6	93	15
+4c06f6170bca71297f1d02516d68a81093f3a0e3	kbadinger	kbadinger@resolventtech.com	2026-03-10T10:28:13-04:00	true	[Ralph] Story 384: Wage disparity tracking	6	60	14
+db4a8479ddc8cc2c7d18fd5dea6faf7cafba9320	kbadinger	kbadinger@resolventtech.com	2026-03-10T10:11:07-04:00	true	[Ralph] Story 383: Auction system	6	69	14
+46c570a1985bf794bb30efe90b465a9c3da84b8a	kbadinger	kbadinger@resolventtech.com	2026-03-10T09:54:51-04:00	true	[Ralph] Snapshot: Story 382	4	12841	0
+cc0ef07c3a9002f10652407131895863e0db3445	kbadinger	kbadinger@resolventtech.com	2026-03-10T09:53:09-04:00	true	[Ralph] Story 382: Resource spoilage	6	49	14
+eb0c8741b556393967fe51a34d27a67ba207ff5f	kbadinger	kbadinger@resolventtech.com	2026-03-10T09:37:59-04:00	true	[Ralph] Snapshot: Story 381	4	12841	0
+ad269d96723baddbc5f9297f519e236f0f359267	kbadinger	kbadinger@resolventtech.com	2026-03-10T09:36:05-04:00	true	[Ralph] Story 381: Economic advisor	6	63	14
+2989f88ffdfe165e7815a6ff8e6796da3575bd13	kbadinger	kbadinger@resolventtech.com	2026-03-10T09:14:51-04:00	true	[Ralph] Story 380: Luxury goods system	6	87	14
+f045821b624aad99598fe69e6a5f13f118e5cd0d	kbadinger	kbadinger@resolventtech.com	2026-03-10T08:55:21-04:00	false	Fix story 379 (trade embargo), harden NPC survival on startup	4	56	26
+9f33c05892dfbdea579ce6c32a2df2295042e17b	kbadinger	kbadinger@resolventtech.com	2026-03-10T01:51:39-04:00	true	[Ralph] Story 378: Bankruptcy recovery program	6	77	14
+0a7a17ee13b60d0026c4753af22ca1b4f2a1856e	kbadinger	kbadinger@resolventtech.com	2026-03-10T01:37:05-04:00	true	[Ralph] Story 377: Savings interest	6	54	15
+e60c2e29f532e0e86e7403ef6f34842e14351c15	kbadinger	kbadinger@resolventtech.com	2026-03-10T01:20:37-04:00	true	[Ralph] Snapshot: Story 376	4	12841	0
+3759deadfdc9d98660d0fca9d1d3e0e53a0890c4	kbadinger	kbadinger@resolventtech.com	2026-03-10T01:19:10-04:00	true	[Ralph] Story 376: Cooperative formation	6	68	14
+2a0792c4120d169d88f5d62f714d3bd5ab98b7c8	kbadinger	kbadinger@resolventtech.com	2026-03-10T00:48:10-04:00	true	[Ralph] Snapshot: Story 375	4	12841	0
+e1153731d6a49aec3fa103d68d61a9da83e26668	kbadinger	kbadinger@resolventtech.com	2026-03-10T00:46:28-04:00	true	[Ralph] Story 375: Market crash simulation	6	88	14
+8d01e8333b1331c2dda272277695548acaf782d6	kbadinger	kbadinger@resolventtech.com	2026-03-10T00:31:34-04:00	true	[Ralph] Story 374: Economic bubble detection	6	56	15
+2b4df5c571d0490c5ca2a86d187e2e87bf6ab083	kbadinger	kbadinger@resolventtech.com	2026-03-10T00:16:23-04:00	true	[Ralph] Snapshot: Story 373	4	12841	0
+2a4e906d8f287df03c44d2daf344ec23e062aa42	kbadinger	kbadinger@resolventtech.com	2026-03-10T00:13:54-04:00	true	[Ralph] Story 373: Insurance payout	6	82	13
+37dc490e0988a3670ee271db789f76e0edd56569	kbadinger	kbadinger@resolventtech.com	2026-03-10T00:05:20-04:00	false	Debug: dump NPC is_dead values on startup, force fix all	1	20	30
+5857eabd28442d0f49165f00974c05a3d6e376f3	kbadinger	kbadinger@resolventtech.com	2026-03-09T23:58:32-04:00	true	[Ralph] Snapshot: Story 372	4	12841	0
+2fbfe806fe3b30fbf0ce4d636da39f9a5bf12373	kbadinger	kbadinger@resolventtech.com	2026-03-09T23:58:09-04:00	false	Debug: detailed wander logging per NPC	1	6	0
+4d28bd264d71e676834fe8f970782c66e725d6aa	kbadinger	kbadinger@resolventtech.com	2026-03-09T23:57:04-04:00	true	[Ralph] Story 372: Black market system	6	69	14
+a098cf802d4e0da42d153d4e31af272d6038ebe1	kbadinger	kbadinger@resolventtech.com	2026-03-09T23:52:27-04:00	false	Fix NULL columns via ORM instead of raw SQL, add print to confirm	1	30	9
+88686d9220dc9b9aa531eb35b146c98c8ce57ba9	kbadinger	kbadinger@resolventtech.com	2026-03-09T23:46:40-04:00	false	Fix NULL is_dead: NPCs had NULL not 0, so is_dead==0 query returned 0 rows. Add startup migration.	3	15	10
+eeea4963d2b7ba95a209cbe1a3a93c78e3f2cfc8	kbadinger	kbadinger@resolventtech.com	2026-03-09T23:42:15-04:00	false	Debug: add tick+wander trace logging	1	4	0
+b76fa8073971c6d53c85c41c427a08f24834f23f	kbadinger	kbadinger@resolventtech.com	2026-03-09T23:38:47-04:00	true	[Ralph] Snapshot: Story 371	4	12841	0
+a25bcfe9068d7f8944571c4271b2d06419741d0e	kbadinger	kbadinger@resolventtech.com	2026-03-09T23:38:07-04:00	false	Debug: add wander log line	1	5	0
+4416cdc90685a729c84bd0376737d748a5a709d7	kbadinger	kbadinger@resolventtech.com	2026-03-09T23:37:24-04:00	true	[Ralph] Story 371: Merchant reputation	6	56	13
+dcaf4544f7917ea0d283fc517248d18fbb6f125b	kbadinger	kbadinger@resolventtech.com	2026-03-09T23:32:42-04:00	false	Fix wander: re-query NPCs fresh before wander+move to avoid expired session state	1	2	0
+68357640f907e3b28dc3efd54ff8642e30d23d48	kbadinger	kbadinger@resolventtech.com	2026-03-09T23:22:32-04:00	true	[Ralph] Snapshot: Story 370	4	12841	0
+5d519622d231f356907714400f76b784ba4553ca	kbadinger	kbadinger@resolventtech.com	2026-03-09T23:20:50-04:00	true	[Ralph] Story 370: NPC goal system	5	38	15
+f227deab5cb9c9c4ee805220c3a9890479ab3d52	kbadinger	kbadinger@resolventtech.com	2026-03-09T23:18:40-04:00	false	Fix wander: flush target changes immediately so other commits dont expire them	1	34	0
+7424475c7f105175075831f18f46ef5c2a13a770	kbadinger	kbadinger@resolventtech.com	2026-03-09T23:14:42-04:00	false	Force redeploy with wander + population growth	0	0	0
+6bb7ce010826b0115892aa2e1b9b4a6da0c9724b	kbadinger	kbadinger@resolventtech.com	2026-03-09T22:40:02-04:00	true	[Ralph] Snapshot: Story 369	4	12841	0
+3bf42967750ff6a915e609375840d361592e8638	kbadinger	kbadinger@resolventtech.com	2026-03-09T22:38:34-04:00	true	[Ralph] Story 369: NPC fear system	6	59	14
+69a521099f8e109211259cc1c8fcdd5a52fcdfee	kbadinger	kbadinger@resolventtech.com	2026-03-09T22:37:02-04:00	false	Add verbose Ollama logging: thinking preview, response preview, error lines	1	19	1
+872d941c97c5a882fb95f43e55d5a93e488c0b85	kbadinger	kbadinger@resolventtech.com	2026-03-09T22:19:07-04:00	true	[Ralph] Snapshot: Story 368	4	12841	0
+03e1d89704fc2ca28fd35c3103fe84d87c223f13	kbadinger	kbadinger@resolventtech.com	2026-03-09T22:17:42-04:00	true	[Ralph] Story 368: NPC work ethic	6	46	14
+b677b68cc3bb4bdee0cd6752464767e33997800c	kbadinger	kbadinger@resolventtech.com	2026-03-09T22:01:56-04:00	true	[Ralph] Snapshot: Story 367	4	12841	0
+b4d179ab1707f45c6bc18b52abb18b6e22039589	kbadinger	kbadinger@resolventtech.com	2026-03-09T22:00:08-04:00	true	[Ralph] Story 367: NPC loneliness detection	5	34	15
+41a2270c360acfbedae30754263679d062e85f7c	kbadinger	kbadinger@resolventtech.com	2026-03-09T21:59:23-04:00	false	Add NPC wander + faster population growth (every 25 ticks, 40% chance, cap 30, more names/roles)	1	69	9
+5a646a2ae5da8dce32dbc0997cf462435789e009	kbadinger	kbadinger@resolventtech.com	2026-03-09T21:41:39-04:00	false	Add NPC wander system: idle NPCs walk to home, work, or random buildings	2	48	3
+4caae83c69d86d1af89c180f56a80d5e49145e43	kbadinger	kbadinger@resolventtech.com	2026-03-09T21:29:17-04:00	true	[Ralph] Snapshot: Story 366	4	12841	0
+8ffc55bb7c1d4a3cf51942e6354633cd647efb55	kbadinger	kbadinger@resolventtech.com	2026-03-09T21:27:27-04:00	true	[Ralph] Story 366: NPC social circles	6	63	15
+2928533bf9092a523e0f8fd887506f01d243f304	kbadinger	kbadinger@resolventtech.com	2026-03-09T20:46:01-04:00	true	[Ralph] Story 365: NPC talent discovery	6	61	14
+54c6b249fc9391a6b64d04ffb6013dcfa85aa08f	kbadinger	kbadinger@resolventtech.com	2026-03-09T20:21:19-04:00	true	[Ralph] Snapshot: Story 364	4	12841	0
+af1e1c09f5de201816b246d3bbef497589d009d9	kbadinger	kbadinger@resolventtech.com	2026-03-09T20:19:52-04:00	true	[Ralph] Story 364: NPC forgiveness	6	55	14
+b587fa4fcc1fff6d69cdd88fccf3e48dc9a16ea2	kbadinger	kbadinger@resolventtech.com	2026-03-09T20:04:25-04:00	true	[Ralph] Snapshot: Story 363	4	12841	0
+c3c62d0aad0e1b71bb01f4cc5224dd03c8ee8127	kbadinger	kbadinger@resolventtech.com	2026-03-09T20:02:58-04:00	true	[Ralph] Story 363: NPC rivalry escalation	6	65	14
+dae9d893ab1ba4f5d2e3aa7a1d0b1b04acbb84d1	kbadinger	kbadinger@resolventtech.com	2026-03-09T19:47:03-04:00	true	[Ralph] Story 362: NPC addiction system	6	71	13
+770f0bf3cc6f45d7b28a5cd2f08f52ff24abc33f	kbadinger	kbadinger@resolventtech.com	2026-03-09T19:31:45-04:00	true	[Ralph] Snapshot: Story 361	4	12841	0
+71a44c6dd3406866c158ddfaea3a31b00d213273	kbadinger	kbadinger@resolventtech.com	2026-03-09T19:28:51-04:00	true	[Ralph] Story 361: NPC birthday celebration	6	74	14
+b31bee46ef95a7a333a2ebf14919d4fd0a9191a8	kbadinger	kbadinger@resolventtech.com	2026-03-09T19:07:43-04:00	true	[Ralph] Story 360: NPC pet ownership	6	63	15
+2460ab3695a8c7d39c4d68f2b34b90da93e37465	kbadinger	kbadinger@resolventtech.com	2026-03-09T18:44:55-04:00	true	[Ralph] Story 359: NPC daily routine	6	65	13
+3305ceee9baa931da62ac2f939d4d61d6e54f812	kbadinger	kbadinger@resolventtech.com	2026-03-09T18:24:26-04:00	true	[Ralph] Story 358: NPC homesickness	6	65	14
+c0a1189f25ca178a3e3ad2a419fa743475943a80	kbadinger	kbadinger@resolventtech.com	2026-03-09T18:03:33-04:00	true	[Ralph] Story 357: NPC mentorship	6	82	14
+f6bb5761896052fbd417c285a350b80d2be37faa	kbadinger	kbadinger@resolventtech.com	2026-03-09T17:35:07-04:00	true	[Ralph] Story 356: NPC grudge system	6	155	14
+ffcacdaf699aa0ea774b77dce5a81a8ec40284a3	kbadinger	kbadinger@resolventtech.com	2026-03-09T17:11:38-04:00	false	Fix story 355: Transaction model uses sender_id/receiver_id not npc_id, fix tip Transaction too	3	59	6
+4b34024493ca4e1ce9975c22b12647f8ec8879a7	kbadinger	kbadinger@resolventtech.com	2026-03-09T16:11:47-04:00	true	[Ralph] Snapshot: Story 354	4	12841	0
+1e024825e1df6e0ca12f442ec9e1d9f41491f401	kbadinger	kbadinger@resolventtech.com	2026-03-09T16:07:38-04:00	true	[Ralph] Story 354: NPC trust system	6	78	14
+dfa8e13de439130cd4090a9da06527471e97fa49	kbadinger	kbadinger@resolventtech.com	2026-03-09T15:53:56-04:00	true	[Ralph] Snapshot: Story 353	4	12841	0
+5be01e46b745eea13897400fc6ca7560c8ed9d8d	kbadinger	kbadinger@resolventtech.com	2026-03-09T15:51:57-04:00	true	[Ralph] Story 353: NPC gossip propagation	6	87	13
+a99207cd9e7306f6dd20fbb9652a45b1a6a477e3	kbadinger	kbadinger@resolventtech.com	2026-03-09T15:38:01-04:00	true	[Ralph] Story 352: NPC hobby selection	6	71	14
+212e4f7aba638e0bc624ec3ce01bb3802ebe8eef	kbadinger	kbadinger@resolventtech.com	2026-03-09T15:24:23-04:00	true	[Ralph] Story 351: NPC stress system	6	47	14
+298551a53f08f06fd18b2b1805ae54ca21e13410	kbadinger	kbadinger@resolventtech.com	2026-03-09T15:10:54-04:00	true	[Ralph] Snapshot: Story 350	4	12841	0
+3d6b85628c35932411ada14013863a0d363d8a39	kbadinger	kbadinger@resolventtech.com	2026-03-09T15:08:54-04:00	true	[Ralph] Story 350: End-of-day report	6	70	13
+829f849b1a96a3188091cc84ea48ffe5d93dbaf3	kbadinger	kbadinger@resolventtech.com	2026-03-09T14:55:21-04:00	true	[Ralph] Snapshot: Story 349	4	12841	0
+27ad5fd6a7c0e5290a75d35ce633b9c0d0eae209	kbadinger	kbadinger@resolventtech.com	2026-03-09T14:53:09-04:00	true	[Ralph] Story 349: Town population cap	6	48	13
+b0e16dbff2cb0202d2dea1e80cbb920e1d292f1d	kbadinger	kbadinger@resolventtech.com	2026-03-09T14:39:48-04:00	true	[Ralph] Snapshot: Story 348	4	12841	0
+1b5176269b9b0196aa9db476f0cce3a27bf440cb	kbadinger	kbadinger@resolventtech.com	2026-03-09T14:38:05-04:00	true	[Ralph] Story 348: Auto-assign unemployed NPCs	6	82	14
+e0a70533ee839f91d7b0e090681c9410023ffc72	kbadinger	kbadinger@resolventtech.com	2026-03-09T14:24:32-04:00	true	[Ralph] Snapshot: Story 347	4	12841	0
+fe0798472e32e7398fdd8814687d1e35b9dd24e5	kbadinger	kbadinger@resolventtech.com	2026-03-09T14:22:48-04:00	true	[Ralph] Story 347: Auto-assign homeless NPCs	6	64	14
+19e7cc1772a7bf51ea8ff7eb4bdb53a8729ec6c1	kbadinger	kbadinger@resolventtech.com	2026-03-09T14:08:59-04:00	true	[Ralph] Snapshot: Story 346	4	12841	0
+d6cb3e13d7ed433033a0a2303a1557c2f03b5190	kbadinger	kbadinger@resolventtech.com	2026-03-09T14:07:18-04:00	true	[Ralph] Story 346: NPC compatibility score	6	75	14
+a055a17daba03f4318be053378d5993db1eae1b6	kbadinger	kbadinger@resolventtech.com	2026-03-09T13:52:08-04:00	true	[Ralph] Snapshot: Story 345	4	12841	0
+dab4e28d6da70e13403ae9f887b60fce13764137	kbadinger	kbadinger@resolventtech.com	2026-03-09T13:49:01-04:00	true	[Ralph] Story 345: Danger score per tile	6	71	13
+45bf04b47630c7f5297694a9fef59028d12e5a59	kbadinger	kbadinger@resolventtech.com	2026-03-09T13:33:44-04:00	true	[Ralph] Snapshot: Story 344	4	12841	0
+fe03835c515b9736dd7d40929050e71563e14d80	kbadinger	kbadinger@resolventtech.com	2026-03-09T13:30:36-04:00	true	[Ralph] Story 344: Prosperity score	6	70	13
+df41d41d28016f73725d02eb1751ed752ba6f76d	kbadinger	kbadinger@resolventtech.com	2026-03-09T13:17:23-04:00	true	[Ralph] Snapshot: Story 343	4	12841	0
+8f84f6170b1dbbc62defec779199a8ce35c07b13	kbadinger	kbadinger@resolventtech.com	2026-03-09T13:12:30-04:00	true	[Ralph] Story 343: Daily digest	6	141	15
+5f9eaa267ec235d19c178debd4cfdc8c88041712	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:56:16-04:00	true	[Ralph] Story 342: Building description generator	6	163	13
+5a5fcadaa97095ad213261d201d9139904ce634a	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:41:05-04:00	true	[Ralph] Snapshot: Story 341	4	12841	0
+a3218a30d1c1291be3d748e062820886c9f7c04a	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:38:19-04:00	true	[Ralph] Story 341: NPC name generator	6	61	14
+bd730330c60bd0960e0aebbabf2f0197c4f6c901	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:23:12-04:00	true	[Ralph] Snapshot: Story 340	4	12841	0
+ade2887b2557b94d4bbc4506457b87ecadb3e828	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:22:07-04:00	true	[Ralph] Story 340: Simulation config API	4	23	10
+48378e21e57a89b828da1c6418a0c6327f46cdce	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:21:53-04:00	true	[Ralph] Story 339: Town history summary API	4	20	12
+cc41065c54e96540fba7cf2e53ebe6ff4d2e86ae	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:21:43-04:00	true	[Ralph] Snapshot: Story 338	4	12841	0
+39265f7e0c18fa7c73ee7726bdcb9529c6be3e4b	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:20:25-04:00	true	[Ralph] Story 338: Leaderboard API	4	24	11
+5d764b313fb243a9872ffb9f8114dd8800b77acc	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:20:11-04:00	true	[Ralph] Story 337: Resource flow API	4	19	11
+11c642e6c5f5c04c4cb48401cecaf326f1d4d803	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:20:01-04:00	true	[Ralph] Snapshot: Story 336	4	12841	0
+592b95224a7edcd9c5082b65f589c3c631e259f8	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:18:41-04:00	true	[Ralph] Story 336: Event calendar API	4	18	10
+64a6c229ae7cf5dd5e57b74caf7e3990f1450b9f	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:18:30-04:00	true	[Ralph] Snapshot: Story 335	4	12841	0
+534761f8b769c446ce50fd5dbf3e0203256d824f	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:17:13-04:00	true	[Ralph] Story 335: Town achievement progress API	4	18	10
+dae476de1db3e72e6e40c1301e09f7efb9c52794	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:17:01-04:00	true	[Ralph] Snapshot: Story 334	4	12841	0
+8ab7c2a651a307758d0190352a5df894182b689b	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:15:43-04:00	true	[Ralph] Story 334: Relationship graph API	4	19	11
+fd7cecd177bf2c3d93093651679c64e4fe109d0f	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:15:32-04:00	true	[Ralph] Snapshot: Story 333	4	12841	0
+784f78b4984d45d81ea18918a7f25f71243dcd42	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:13:58-04:00	true	[Ralph] Story 333: Economic chart data API	4	20	12
+817374f8368ae87daf7b8fbe779e1648521d4c9f	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:13:48-04:00	true	[Ralph] Snapshot: Story 332	4	12841	0
+fdd4f9d464f9c2ca4820e3269e45bba5e902fe29	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:12:15-04:00	true	[Ralph] Story 332: Building history API	4	19	11
+b6d8d330508d78eaad59135260639c6fd9cabb0c	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:12:04-04:00	true	[Ralph] Snapshot: Story 331	4	12841	0
+50162a7d066c3be18ea5e26d57b28998c3d4e1cb	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:10:46-04:00	true	[Ralph] Story 331: NPC biography API	4	18	10
+6f16c7da060c776fdca58461c830ce7eead01d07	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:10:35-04:00	true	[Ralph] Snapshot: Story 330	4	12841	0
+8c1cd5546e7b276c2513b7f176eb98b5f4d81fcc	kbadinger	kbadinger@resolventtech.com	2026-03-09T12:08:24-04:00	true	[Ralph] Story 330: Building rename system	6	74	13
+7d8568754a9a3d66fb6e0592e5b807a6f60ebaa4	kbadinger	kbadinger@resolventtech.com	2026-03-09T11:53:59-04:00	true	[Ralph] Snapshot: Story 329	4	12841	0
+ab4834d141127526ba3f99afa26c76557ce5dfc3	kbadinger	kbadinger@resolventtech.com	2026-03-09T11:49:54-04:00	true	[Ralph] Story 329: Resource storage limits	6	63	15
+1fae90db4f0319f69c8ce2cf070a3c0d6f9c88d6	kbadinger	kbadinger@resolventtech.com	2026-03-09T11:31:59-04:00	true	[Ralph] Story 328: Building inspection	6	60	13
+0e19aa1fe868a980c90595fd7d7f90c8f387b8b3	kbadinger	kbadinger@resolventtech.com	2026-03-09T11:19:19-04:00	true	[Ralph] Story 327: Landmark buildings	6	63	14
+05272b7a62c97bb64a339f60aa5aa3d3eacf5bc4	kbadinger	kbadinger@resolventtech.com	2026-03-09T10:57:33-04:00	true	[Ralph] Snapshot: Story 326	4	12841	0
+9ac9bf0051dfd5328fb82ffceac2e330df4f4ad8	kbadinger	kbadinger@resolventtech.com	2026-03-09T10:55:53-04:00	true	[Ralph] Story 326: Building insurance	6	46	13
+0715c67c2b05c7a8a073427c57b5841033323edc	kbadinger	kbadinger@resolventtech.com	2026-03-09T10:43:12-04:00	true	[Ralph] Snapshot: Story 325	4	12841	0
+b97878214c9c8f6f2c6157ef2e25357b3b97f273	kbadinger	kbadinger@resolventtech.com	2026-03-09T10:40:27-04:00	true	[Ralph] Story 325: Construction queue	6	96	15
+3fb82c7741f831b5b48f5b648e959fada1955214	kbadinger	kbadinger@resolventtech.com	2026-03-09T10:26:38-04:00	true	[Ralph] Snapshot: Story 324	4	12841	0
+609a250ccfb90ab276721f54e7b9600b3aea83b1	kbadinger	kbadinger@resolventtech.com	2026-03-09T10:24:50-04:00	true	[Ralph] Story 324: Ruin decay system	6	71	14
+102c0f3cb12df15f8812a516d6f0337eb43fdd99	kbadinger	kbadinger@resolventtech.com	2026-03-09T10:10:46-04:00	true	[Ralph] Snapshot: Story 323	4	12841	0
+58bcbebaf9f9bb4d62f8b5ef06569bd22143a51c	kbadinger	kbadinger@resolventtech.com	2026-03-09T10:09:05-04:00	true	[Ralph] Story 323: Building specialization	6	49	13
+49497d79fa199c796629ca5662093e0de055b537	kbadinger	kbadinger@resolventtech.com	2026-03-09T09:56:41-04:00	true	[Ralph] Snapshot: Story 322	4	12841	0
+9725d810dcbc485d73bb9fed060bae8ebd8b5e94	kbadinger	kbadinger@resolventtech.com	2026-03-09T09:53:55-04:00	true	[Ralph] Story 322: Road network speed bonus	6	37	14
+f107519c5086d1371a2fa015f471e17e224a197d	kbadinger	kbadinger@resolventtech.com	2026-03-09T09:39:43-04:00	true	[Ralph] Snapshot: Story 321	4	12841	0
+affa1863b0b86289798d567fb6242722fce8823a	kbadinger	kbadinger@resolventtech.com	2026-03-09T09:38:18-04:00	true	[Ralph] Story 321: Building adjacency bonuses	6	74	15
+38fc07baeb100cc3fc7a9e11c14497fb487cc78a	kbadinger	kbadinger@resolventtech.com	2026-03-09T09:25:33-04:00	true	[Ralph] Story 320: Emergency powers	6	63	13
+5aa3f2c61114db41c54648354fb7205730d77f67	kbadinger	kbadinger@resolventtech.com	2026-03-09T09:12:38-04:00	true	[Ralph] Snapshot: Story 319	4	12841	0
+c914a90d4eecf07c53244370750bef9b56ff2ed0	kbadinger	kbadinger@resolventtech.com	2026-03-09T09:10:37-04:00	true	[Ralph] Story 319: Town charter	6	59	14
+70175d30023aa4866fef51d7cd5cbbc821794c37	kbadinger	kbadinger@resolventtech.com	2026-03-09T08:56:26-04:00	true	[Ralph] Snapshot: Story 318	4	12841	0
+89f2157dd507e14f5dcb439ec716a99d27281e26	kbadinger	kbadinger@resolventtech.com	2026-03-09T08:54:28-04:00	true	[Ralph] Story 318: Census system	6	97	14
+3b8bb86ec498a085f572b285c79419683b54e54e	kbadinger	kbadinger@resolventtech.com	2026-03-09T08:39:11-04:00	false	Fix thinking spiral: auto-retry with think=False, fix story 317, empty-output uses help system	3	66	6
+e849defa5d363e928ffefd6291b4d454224e2182	kbadinger	kbadinger@resolventtech.com	2026-03-08T23:30:26-04:00	true	[Ralph] Snapshot: Story 316	4	12841	0
+06f3c4cb5c8ada0187caedf59f3478227bc987d3	kbadinger	kbadinger@resolventtech.com	2026-03-08T23:28:58-04:00	true	[Ralph] Story 316: Public works projects	6	61	14
+4268beb05a1b16f5759588f52ce4c79c00276c12	kbadinger	kbadinger@resolventtech.com	2026-03-08T23:00:06-04:00	true	[Ralph] Snapshot: Story 315	4	12841	0
+02225288ee274b18d71667829bbf4df4f4457071	kbadinger	kbadinger@resolventtech.com	2026-03-08T22:58:41-04:00	true	[Ralph] Story 315: Tax revolt	6	66	14
+d1f673504467034274ac383d6b142b31049b3858	kbadinger	kbadinger@resolventtech.com	2026-03-08T22:46:54-04:00	true	[Ralph] Snapshot: Story 314	4	12841	0
+a324e64ddd3029ab149622af961a59a5f4657a3f	kbadinger	kbadinger@resolventtech.com	2026-03-08T22:45:31-04:00	true	[Ralph] Story 314: Impeachment mechanic	6	60	14
+201e4c40498508c90116f6d5a8e0e9342c9375cd	kbadinger	kbadinger@resolventtech.com	2026-03-08T22:30:44-04:00	true	[Ralph] Snapshot: Story 313	4	12841	0
+e584e35a218e30f85d8cceb10a5318cc4f80584a	kbadinger	kbadinger@resolventtech.com	2026-03-08T22:29:21-04:00	true	[Ralph] Story 313: Term limits for mayor	6	79	14
+1b0c8b822b375025bd9002560910516e1b12478f	kbadinger	kbadinger@resolventtech.com	2026-03-08T22:16:31-04:00	true	[Ralph] Story 312: Policy proposal queue	6	46	14
+01e11c5f3e8c4f4fe0e1f9fa969d92d170d5da5c	kbadinger	kbadinger@resolventtech.com	2026-03-08T22:04:28-04:00	true	[Ralph] Snapshot: Story 311	4	12841	0
+be92e69d0767157802885fdf20e28fe02465ff6b	kbadinger	kbadinger@resolventtech.com	2026-03-08T22:03:03-04:00	true	[Ralph] Story 311: Political faction system	6	70	14
+1bcd3b8a36d96eca7adef62aee4afe7d74e9397d	kbadinger	kbadinger@resolventtech.com	2026-03-08T21:51:22-04:00	true	[Ralph] Snapshot: Story 310	4	12841	0
+b700a538f7aa87d6dcb0246790317fc4552741b0	kbadinger	kbadinger@resolventtech.com	2026-03-08T21:49:56-04:00	true	[Ralph] Story 310: Legendary event	6	88	14
+0441a00a024ae0c46a1770a9bdf6954553c7ee5b	kbadinger	kbadinger@resolventtech.com	2026-03-08T21:23:52-04:00	true	[Ralph] Snapshot: Story 309	4	12841	0
+d4a72107812e2284b43083bd5ba330a759de9059	kbadinger	kbadinger@resolventtech.com	2026-03-08T21:22:29-04:00	true	[Ralph] Story 309: Seasonal migration	6	93	14
+e32464d00952b1521c499d4cd1a829838346d60e	kbadinger	kbadinger@resolventtech.com	2026-03-08T21:10:46-04:00	true	[Ralph] Snapshot: Story 308	4	12841	0
+17dcf602a179bf9d9cc35fa4d80a56ce1d0e0ceb	kbadinger	kbadinger@resolventtech.com	2026-03-08T21:09:23-04:00	true	[Ralph] Story 308: Event prevention by guards	6	45	13
+7d00e071b10f4861e93a30bf1f5f63f07fd0faee	kbadinger	kbadinger@resolventtech.com	2026-03-08T20:58:17-04:00	true	[Ralph] Story 307: Memorial creation	6	70	15
+f1231000c839c50ca490ed48273f161c5975552d	kbadinger	kbadinger@resolventtech.com	2026-03-08T20:36:02-04:00	true	[Ralph] Story 306: Event newspaper coverage	6	57	13
+3c32df442079bbfd8c462bd63e39effd80e6f3e1	kbadinger	kbadinger@resolventtech.com	2026-03-08T20:24:45-04:00	true	[Ralph] Snapshot: Story 305	4	12841	0
+82a65f5748c37a2e651f5ee42a9c843ae821967a	kbadinger	kbadinger@resolventtech.com	2026-03-08T20:22:18-04:00	true	[Ralph] Story 305: Building damage from events	6	82	14
+f0e46e7597bff1713201f4b868dde538a020334e	kbadinger	kbadinger@resolventtech.com	2026-03-08T20:09:40-04:00	true	[Ralph] Story 304: Famine relief distribution	6	60	13
+8452a2dd383d2ce160579783245d507c6026c481	kbadinger	kbadinger@resolventtech.com	2026-03-08T19:58:14-04:00	true	[Ralph] Snapshot: Story 303	4	12841	0
+b00566bc2675069126b33daa9aa247c7448310ff	kbadinger	kbadinger@resolventtech.com	2026-03-08T19:56:51-04:00	true	[Ralph] Story 303: Crop yield calculation	7	83	14
+bf12be7b237a71572f6077ee526ab67133696b68	kbadinger	kbadinger@resolventtech.com	2026-03-08T19:44:26-04:00	true	[Ralph] Snapshot: Story 302	4	12841	0
+600ee1de3eca3c1abfe92d56ded166b58df030ec	kbadinger	kbadinger@resolventtech.com	2026-03-08T19:39:51-04:00	true	[Ralph] Story 302: Weather prediction	6	98	14
+37763cf1081eb8289831eb3128dd799debbc3ad9	kbadinger	kbadinger@resolventtech.com	2026-03-08T19:18:42-04:00	false	Make deploy failures non-fatal, add help poller, mark story 301 done	3	72	30
+407f8523f7e97d003b9b80996d814f222935ec82	kbadinger	kbadinger@resolventtech.com	2026-03-08T19:14:57-04:00	true	[Ralph] Deploy fix: Story 301	3	19	14
+8eadf3a30864de2dae3113fe5ed849294ad4c9f3	kbadinger	kbadinger@resolventtech.com	2026-03-08T19:13:45-04:00	true	[Ralph] Story 301: Festival voting	6	98	14
+734ebeadfc03eba4e567bef6d7904e8367a9de40	kbadinger	kbadinger@resolventtech.com	2026-03-08T18:59:12-04:00	false	Fix story 300: spawn_visitor_trader type hint + flush	2	4	5
+d7af03c5aa5c02b925039e0a4474a250f64e8455	kbadinger	kbadinger@resolventtech.com	2026-03-08T18:57:49-04:00	false	Ralph progress: events.py new functions + prd.json status updates	2	67	3
+0792b44ed5db4f1105f5696754f3530a358a917d	kbadinger	kbadinger@resolventtech.com	2026-03-08T18:57:32-04:00	false	Add autofix + help system: Postgres compat regex fixer, 10min pause-for-help on loop detection	1	112	1
+c9464315aa24b42e17880bec52a523beabea3f5f	kbadinger	kbadinger@resolventtech.com	2026-03-08T18:16:43-04:00	true	[Ralph] Snapshot: Story 299	4	12841	0
+503da8372a6b5832e2d38288d1924f847ca2388b	kbadinger	kbadinger@resolventtech.com	2026-03-08T18:15:13-04:00	true	[Ralph] Story 299: Anniversary events	6	62	13
+613713b3a7faa5d43b6b83e74bddc36a6deb5cc9	kbadinger	kbadinger@resolventtech.com	2026-03-08T18:00:42-04:00	true	[Ralph] Snapshot: Story 298	4	12841	0
+fa1f6313240b43469bad5074b2477d59a1a2b3cb	kbadinger	kbadinger@resolventtech.com	2026-03-08T17:57:41-04:00	true	[Ralph] Story 298: Event recovery bonus	5	95	12
+0b801a5fd3b08241ba48b35a3363d26b15604e54	kbadinger	kbadinger@resolventtech.com	2026-03-08T17:48:32-04:00	false	Fix 80 weak test assertions (is not None → isinstance checks), fix 2 PRD bad column refs	6	92	85
+de17fcbd83833b0ad172a589044c2b334a17f354	kbadinger	kbadinger@resolventtech.com	2026-03-08T17:36:06-04:00	false	Fix story 297: Event.tick_created → Event.tick (column doesn't exist)	2	57	3
+94b008c3751955126654231948b61c8f660a5227	kbadinger	kbadinger@resolventtech.com	2026-03-08T16:16:46-04:00	true	[Ralph] Snapshot: Story 296	4	12841	0
+379aa0d1aa7f2f2374252f16b71f0057da3b8911	kbadinger	kbadinger@resolventtech.com	2026-03-08T16:15:31-04:00	true	[Ralph] Story 296: Multi-day event chains	6	62	13
+bc0943c9582eb39237ffd4331090716219a97a23	kbadinger	kbadinger@resolventtech.com	2026-03-08T16:04:08-04:00	true	[Ralph] Snapshot: Story 295	4	12841	0
+511d41597fa8a340cc77435880c3dece7355e9cc	kbadinger	kbadinger@resolventtech.com	2026-03-08T16:01:24-04:00	true	[Ralph] Story 295: Wealth inequality index	6	86	15
+99fa246e20b9bbdd5a8de27e05df3b389f8e3c80	kbadinger	kbadinger@resolventtech.com	2026-03-08T15:49:37-04:00	true	[Ralph] Snapshot: Story 294	4	12841	0
+575ceb337d3617b36f686ab8dd15cdace98814ad	kbadinger	kbadinger@resolventtech.com	2026-03-08T15:48:14-04:00	true	[Ralph] Story 294: Economic report generation	6	85	13
+37804426868e0c10c46b7d07ecb9b6fffbb2dffd	kbadinger	kbadinger@resolventtech.com	2026-03-08T15:37:17-04:00	true	[Ralph] Snapshot: Story 293	4	12841	0
+50266633f2685d1bd609497301de5e5e10d1f5b4	kbadinger	kbadinger@resolventtech.com	2026-03-08T15:34:50-04:00	true	[Ralph] Story 293: Gold sink events	6	46	14
+da319ad333307bf84e24ab1b68774cdae1770d5b	kbadinger	kbadinger@resolventtech.com	2026-03-08T15:23:25-04:00	true	[Ralph] Snapshot: Story 292	4	12841	0
+2634673f8072ee6a0475ab49566611d75d35678e	kbadinger	kbadinger@resolventtech.com	2026-03-08T15:22:16-04:00	true	[Ralph] Story 292: Inflation adjustment	6	44	13
+13d46cf4f7f73892906510f576777a66b8e9cf9b	kbadinger	kbadinger@resolventtech.com	2026-03-08T15:10:44-04:00	true	[Ralph] Snapshot: Story 291	4	12841	0
+3cd0ca0d232d3c9727daa1657a4bd726326947aa	kbadinger	kbadinger@resolventtech.com	2026-03-08T15:09:21-04:00	true	[Ralph] Story 291: Import/export balance tracking	6	63	14
+94c78286874170c5cd1a0086e7c6c1409ff111a2	kbadinger	kbadinger@resolventtech.com	2026-03-08T14:57:42-04:00	true	[Ralph] Snapshot: Story 290	4	12841	0
+e77fad8415cdb4339c7c2e846b470ae2b60abb62	kbadinger	kbadinger@resolventtech.com	2026-03-08T14:56:18-04:00	true	[Ralph] Story 290: Resource quality tiers	6	69	14
+baf1d0131daa2d4e73489cd2d85eccb9929a7c7a	kbadinger	kbadinger@resolventtech.com	2026-03-08T14:45:03-04:00	true	[Ralph] Snapshot: Story 289	4	12841	0
+f256568279193c082bb54c640d04a38e2f6c3724	kbadinger	kbadinger@resolventtech.com	2026-03-08T14:43:40-04:00	true	[Ralph] Story 289: Tip system	6	67	13
+41fa509697d74a09c00915d7a578d68a4f849f62	kbadinger	kbadinger@resolventtech.com	2026-03-08T14:26:52-04:00	true	[Ralph] Snapshot: Story 288	4	12841	0
+87a637e70f93840f1181dd4dbc3de383b2598428	kbadinger	kbadinger@resolventtech.com	2026-03-08T14:25:41-04:00	true	[Ralph] Story 288: Wage negotiation	6	68	14
+60b079d5949e2800ffdd47b1bd57de4fc73259a0	kbadinger	kbadinger@resolventtech.com	2026-03-08T14:13:22-04:00	true	[Ralph] Story 287: Recession detection	5	34	12
+fb744449782734b306b3bcfc171672ffd4b83499	kbadinger	kbadinger@resolventtech.com	2026-03-08T14:12:50-04:00	false	Fix story 286: rewrite detect_economic_boom without WorldState.metadata, fix test setup	3	42	4
+b846fd75c01a61e379486de6260cad0132f0abe1	kbadinger	kbadinger@resolventtech.com	2026-03-08T13:37:57-04:00	true	[Ralph] Snapshot: Story 285	4	12841	0
+ff77443fce3dde6fe19967cabae3124b8102e53e	kbadinger	kbadinger@resolventtech.com	2026-03-08T13:36:49-04:00	true	[Ralph] Story 285: Debt forgiveness	6	71	14
+4104cabd175d0f11ac03c3ef4b89833e4e5afc2f	kbadinger	kbadinger@resolventtech.com	2026-03-08T13:25:13-04:00	true	[Ralph] Snapshot: Story 284	4	12841	0
+86994ad9ae1748107c56c6f72af900eb65a5d37b	kbadinger	kbadinger@resolventtech.com	2026-03-08T13:23:40-04:00	true	[Ralph] Story 284: Commodity futures	6	68	15
+8f2e070237db4aa3ff3786b4625130bd828a6749	kbadinger	kbadinger@resolventtech.com	2026-03-08T13:01:45-04:00	true	[Ralph] Snapshot: Story 283	4	12841	0
+6fbade47002a201618ff962d866915fad69bac5e	kbadinger	kbadinger@resolventtech.com	2026-03-08T13:00:00-04:00	true	[Ralph] Story 283: Price ceiling during disasters	6	63	15
+fdf1ffa790e5858dacd9c6eacd9c8ceb532094f6	kbadinger	kbadinger@resolventtech.com	2026-03-08T12:38:34-04:00	true	[Ralph] Snapshot: Story 282	4	12841	0
+ecc19b1c38ee742c52a9af4745274ec10d63dbff	kbadinger	kbadinger@resolventtech.com	2026-03-08T12:37:10-04:00	true	[Ralph] Story 282: Monopoly detection	6	84	14
+77cc4313dfbeb52f2fc0933d31a346f706e53029	kbadinger	kbadinger@resolventtech.com	2026-03-08T12:26:37-04:00	true	[Ralph] Snapshot: Story 281	4	12841	0
+96e5fa5f4bed61d7de12bbbb11d2a18473398194	kbadinger	kbadinger@resolventtech.com	2026-03-08T12:25:28-04:00	true	[Ralph] Story 281: Trade guild formation	6	59	14
+442d5280b11bb752824e59a4322b9b77f62fc5b9	kbadinger	kbadinger@resolventtech.com	2026-03-08T12:12:27-04:00	true	[Ralph] Snapshot: Story 280	4	12841	0
+4f9b27210561431d349086aaf7cb6744ffa30ed5	kbadinger	kbadinger@resolventtech.com	2026-03-08T12:10:47-04:00	true	[Ralph] Story 280: NPC mourning	6	81	15
+48b6d4d757d7072c71be5a28a785304ee3755b07	kbadinger	kbadinger@resolventtech.com	2026-03-08T11:57:26-04:00	true	[Ralph] Snapshot: Story 279	4	12841	0
+3b7aee7b946244e7e41e52a6ea446e452c45c353	kbadinger	kbadinger@resolventtech.com	2026-03-08T11:53:27-04:00	true	[Ralph] Story 279: NPC celebration	6	114	15
+46a868951aa9c746a972d5a788c29a4c3a418231	kbadinger	kbadinger@resolventtech.com	2026-03-08T10:37:11-04:00	false	Raise output cap to 16k think / 8k no-think — room for complex functions, still not infinite	1	2	2
+f2b6241668582f330bb633a960421d844e6620cf	kbadinger	kbadinger@resolventtech.com	2026-03-08T10:35:01-04:00	false	Cap Qwen output to 8192 tokens (think) / 4096 (no-think) — prevent 10min thinking spirals	1	4	4
+a9c536650dc111b06d2de8e61d48ef4d86451c19	kbadinger	kbadinger@resolventtech.com	2026-03-08T09:51:55-04:00	false	Fix test_s279: set NPC happiness > 90 so celebration triggers	1	6	1
+e0988be91348c8d4bc265b9287d71ead9e11eaf2	kbadinger	kbadinger@resolventtech.com	2026-03-08T09:03:22-04:00	false	Fix Postgres boolean in story 278, add Postgres compat rules to AGENTS.md	3	12	3
+302550ed2669bc1be7a9753f42e076f9076a88c3	kbadinger	kbadinger@resolventtech.com	2026-03-08T08:56:32-04:00	true	[Ralph] Deploy fix: Story 278	3	19	13
+da33ff8513d81c3fb729c56107ffe4c3f09ddf02	kbadinger	kbadinger@resolventtech.com	2026-03-08T08:55:50-04:00	true	[Ralph] Story 278: NPC fatigue system	6	81	13
+0da5282548866ef2f86b86f0a00e6002cd223afa	kbadinger	kbadinger@resolventtech.com	2026-03-08T08:44:49-04:00	false	Fix story 277: experience JSON list→dict parsing, fix Postgres boolean comparisons across simulation	4	63	18
+bdc6bde536b062f8fe1e704b5ec0a5feea0d844e	kbadinger	kbadinger@resolventtech.com	2026-03-08T03:09:42-04:00	true	[Ralph] Snapshot: Story 276	4	12871	0
+1b159563c69b80dee2097e9dcad4e914435b5ff6	kbadinger	kbadinger@resolventtech.com	2026-03-08T03:08:34-04:00	true	[Ralph] Story 276: Friendship decay	6	47	15
+c6d93e37160ea1c247c374a1e4ae75bcb2e58894	kbadinger	kbadinger@resolventtech.com	2026-03-08T01:56:32-05:00	true	[Ralph] Snapshot: Story 275	4	12871	0
+66b461940d0ee869df9f5845b874209f659b375a	kbadinger	kbadinger@resolventtech.com	2026-03-08T01:55:08-05:00	true	[Ralph] Story 275: NPC arrival by prosperity	6	58	14
+dfdd92e1af76273b737343ec70f8ca5ffa037cba	kbadinger	kbadinger@resolventtech.com	2026-03-08T01:41:16-05:00	true	[Ralph] Snapshot: Story 274	4	12856	0
+a8d13bdbb66bed819031aee2b268d507445d1716	kbadinger	kbadinger@resolventtech.com	2026-03-08T01:39:53-05:00	true	[Ralph] Story 274: NPC migration out	6	74	14
+2ed4aee5a884e8f4caaf3a4b6573f2c80217562b	kbadinger	kbadinger@resolventtech.com	2026-03-08T01:26:17-05:00	true	[Ralph] Snapshot: Story 273	4	12856	0
+cdc1c2f5ac1e867831c61bab3a09b0eb719a2e00	kbadinger	kbadinger@resolventtech.com	2026-03-08T01:24:54-05:00	true	[Ralph] Deploy fix: Story 273	3	11	9
+578d7f50866b17b8aa5b0d3ce9be975eadbf62a4	kbadinger	kbadinger@resolventtech.com	2026-03-08T01:22:48-05:00	true	[Ralph] Story 273: Emotion memory tracking	6	76	15
+fc94f0a9e834403441639b8708f185d1af324710	kbadinger	kbadinger@resolventtech.com	2026-03-08T01:06:28-05:00	true	[Ralph] Snapshot: Story 272	4	12856	0
+e25beabf41779bb06db4b0ef09bb656bdd668ef5	kbadinger	kbadinger@resolventtech.com	2026-03-08T01:04:59-05:00	true	[Ralph] Story 272: Crowd behavior	6	96	15
+e0016ebce431c6e8775f3852902f3e5b805536e6	kbadinger	kbadinger@resolventtech.com	2026-03-08T00:50:57-05:00	true	[Ralph] Snapshot: Story 271	4	12841	0
+05a9182bf57e0d52c23bbe508e4559dab179dbc9	kbadinger	kbadinger@resolventtech.com	2026-03-08T00:49:15-05:00	true	[Ralph] Story 271: NPC persuasion	6	67	14
+6d107aeba3bad5b74e98f79d3c864e0a9bf7cc49	kbadinger	kbadinger@resolventtech.com	2026-03-08T00:36:03-05:00	true	[Ralph] Snapshot: Story 270	4	12841	0
+444da37a3ae1eeb19cb206617f82d501f837c06e	kbadinger	kbadinger@resolventtech.com	2026-03-08T00:34:37-05:00	true	[Ralph] Story 270: Child NPC growth	6	66	15
+947ea0f68a620520d084db708c257ec044e5f5d6	kbadinger	kbadinger@resolventtech.com	2026-03-08T00:24:27-05:00	true	[Ralph] Snapshot: Story 269	4	12841	0
+a7b2881118f0629723f892467fda068745fa84d1	kbadinger	kbadinger@resolventtech.com	2026-03-08T00:23:08-05:00	true	[Ralph] Story 269: Family inheritance	6	35	17
+a2de7cea49852fda0fe00436ef4ec5b4b3749ece	kbadinger	kbadinger@resolventtech.com	2026-03-08T00:08:21-05:00	true	[Ralph] Snapshot: Story 268	4	12841	0
+f310b043c9fd6a9d14e1f83ccd7645d30f695e20	kbadinger	kbadinger@resolventtech.com	2026-03-08T00:06:21-05:00	true	[Ralph] Story 268: NPC retirement	5	63	12
+266c9272c2f5c047abe7408f1dce85dec20a48a5	kbadinger	kbadinger@resolventtech.com	2026-03-07T23:15:56-05:00	false	Add 100 stories (351-450) with tests: NPC sim, economy, events, governance, buildings, API, meta	7	2827	4
+b72f624d0a03906b408a1c7b5fe77f274224fdc6	kbadinger	kbadinger@resolventtech.com	2026-03-07T22:42:31-05:00	true	[Ralph] Snapshot: Story 267	4	12841	0
+d8ba728285e7774ec01b3ed2a8dc7e8852c40187	kbadinger	kbadinger@resolventtech.com	2026-03-07T22:41:09-05:00	true	[Ralph] Story 267: Career progression	6	60	14
+e7b109f828c9f96e5ec3b24a72ce4b77d308dac4	kbadinger	kbadinger@resolventtech.com	2026-03-07T22:30:23-05:00	true	[Ralph] Snapshot: Story 266	4	12841	0
+37732efccbfc08abbf554565cbb568fa61132790	kbadinger	kbadinger@resolventtech.com	2026-03-07T22:28:12-05:00	true	[Ralph] Story 266: NPC dream system	6	58	13
+b5f5cf55f375f56f954b2fc4e9fcfc4a409121c4	kbadinger	kbadinger@resolventtech.com	2026-03-07T22:17:36-05:00	true	[Ralph] Snapshot: Story 215	4	12841	0
+bc716f942b544f19256c607ca1adac3fe162c455	kbadinger	kbadinger@resolventtech.com	2026-03-07T22:16:21-05:00	true	[Ralph] Story 215: Add day/night cycle to PixiJS renderer	4	18	10
+2c3b243e4cef5d7819eb3d625a3775d57c82c335	kbadinger	kbadinger@resolventtech.com	2026-03-07T22:16:10-05:00	true	[Ralph] Snapshot: Story 214	4	12841	0
+362c42b4b5e1a5871051923c0c2d4861a37d4668	kbadinger	kbadinger@resolventtech.com	2026-03-07T22:14:54-05:00	true	[Ralph] Story 214: Add NPC speech bubbles to PixiJS renderer	4	20	11
+52d1752381186ffab820b8c0db9fe9d8e3f4a4b9	kbadinger	kbadinger@resolventtech.com	2026-03-07T22:14:43-05:00	true	[Ralph] Snapshot: Story 213	4	12841	0
+846e417c2b22a3af7544bddf3d9bb31f6eb2de3c	kbadinger	kbadinger@resolventtech.com	2026-03-07T22:13:28-05:00	true	[Ralph] Story 213: Add event trigger buttons to town view	4	18	10
+01ccecf6453540d4abc01fcc5b476b1f6a6cd9fd	kbadinger	kbadinger@resolventtech.com	2026-03-07T22:13:18-05:00	true	[Ralph] Snapshot: Story 212	4	12841	0
+c93d3273a05b5defc1373531dd0c9cc3470a3f57	kbadinger	kbadinger@resolventtech.com	2026-03-07T22:11:23-05:00	true	[Ralph] Story 212: Add visitor event triggers	7	129	15
+b1e2f051080b39509a4513b2a434544c05bb6507	kbadinger	kbadinger@resolventtech.com	2026-03-07T21:56:02-05:00	true	[Ralph] Snapshot: Story 211	4	12841	0
+f74ebe2b1e93e3553799473f6ba065ea752d221b	kbadinger	kbadinger@resolventtech.com	2026-03-07T21:54:46-05:00	true	[Ralph] Story 211: Add real-time visitor counter with WebSocket	4	19	11
+629e04317e39aa8a1c904888ada78893a34ce68c	kbadinger	kbadinger@resolventtech.com	2026-03-07T21:54:36-05:00	true	[Ralph] Snapshot: Story 208	4	12841	0
+f0f021c62c964485927f418a0623a7c1ea73793c	kbadinger	kbadinger@resolventtech.com	2026-03-07T21:53:05-05:00	true	[Ralph] Story 208: Add dialogue feed to town view	4	19	11
+2b278becf37e9a685c5f9bd0cec3c2a23a584d24	kbadinger	kbadinger@resolventtech.com	2026-03-07T21:52:38-05:00	true	[Ralph] Snapshot: Story 207	4	12841	0
+9540234eb8536b8e09abdc5cbed518d8612e5ae1	kbadinger	kbadinger@resolventtech.com	2026-03-07T21:50:32-05:00	true	[Ralph] Story 207: Add NPC dialogue to tick processing	4	20	13
+ee9d4a73ac09be06f7a7ad64119193a0e9263823	kbadinger	kbadinger@resolventtech.com	2026-03-07T21:46:20-05:00	false	Remove broken about.py router (missing Depends import, shadows main.py route)	1	0	17
+bdfea61543e5b9b77fa87632dd6e060dae2a3715	kbadinger	kbadinger@resolventtech.com	2026-03-07T21:18:38-05:00	false	Add /about page, fix HUD nav spacing	4	99	60
+9e8c313ae35d7cd23e4ecec8eab1452e95b0f4ea	kbadinger	kbadinger@resolventtech.com	2026-03-07T20:35:34-05:00	false	Fix world reset: clear Election/Policy/Newspaper/Event/TownAnthem FK refs before deleting NPCs	1	10	2
+335b6291c22612cdea050bfd1bc9276067b90e9c	kbadinger	kbadinger@resolventtech.com	2026-03-07T19:46:43-05:00	false	Slow tick to 30s, one-time world reset	1	61	3
+d2ffbf03f680f0191bc6fe724215e148032a444b	kbadinger	kbadinger@resolventtech.com	2026-03-07T19:24:40-05:00	false	Add NPC sprite repository — 30 unique character sprites	35	248	3
+cfe81af3d3824a7c24d7fcfbbe34305fb9219103	kbadinger	kbadinger@resolventtech.com	2026-03-07T17:12:15-05:00	false	Resume Ralph from story 208, update changelog and alerts	3	10	4
+7bad2372d23cd54d7b4784502995383d2aae3e34	kbadinger	kbadinger@resolventtech.com	2026-03-07T17:12:09-05:00	false	Expand PRD to 350 stories with tests for all	10	4002	2
+dacce9b9d02e58eaea5b983944f54fc37a463cef	kbadinger	kbadinger@resolventtech.com	2026-03-07T17:12:01-05:00	false	Add features voting page, stats panel, activity feed	7	426	10
+cb9aedd41a88ffdd4e477f379791b4d8432554d0	kbadinger	kbadinger@resolventtech.com	2026-03-07T17:11:53-05:00	false	Fix screenshot timing + clear stale snapshots	157	12	0
+b82a04e6952fa2ac14b6a2ad2a545f160c9e0e3f	kbadinger	kbadinger@resolventtech.com	2026-03-07T14:16:29-05:00	false	Restore check_population_growth with heavy throttling (every 100 ticks, 25% chance, cap 20)	1	35	4
+e3a0b12149d4c1865978980bc046cb8610d42f9b	kbadinger	kbadinger@resolventtech.com	2026-03-07T12:14:29-05:00	false	Disable random NPC spawning — population growth is marriage-based only	1	4	47
+48782e4c01c805a65b6c19867e8056d0db083eb5	kbadinger	kbadinger@resolventtech.com	2026-03-07T12:02:56-05:00	false	Remove one-time NPC cleanup (already executed on Railway)	1	0	1
+a4dbcdbfcbb930ee5027be1ce75b9f77edf487d8	kbadinger	kbadinger@resolventtech.com	2026-03-07T11:57:33-05:00	false	Fix NPC cleanup: handle foreign key constraints before deleting excess NPCs	1	25	3
+e207c677dcebd7763d2b80d2b9c8814651e8327c	kbadinger	kbadinger@resolventtech.com	2026-03-07T11:48:47-05:00	false	Fix runaway population: throttle growth to every 50 ticks with 30% chance, cleanup excess NPCs	2	48	12
+a98d005b78a82499e5bc8d82e7c11c0e1f897ea1	kbadinger	kbadinger@resolventtech.com	2026-03-07T11:42:29-05:00	false	Fix Postgres: use integer 0/1 instead of boolean for is_dead/is_bankrupt, use asyncio for tick loop	4	8	8
+13ed158745383b73e89b5509a237c043fc223512	kbadinger	kbadinger@resolventtech.com	2026-03-07T11:28:39-05:00	false	Fix auto-tick: use asyncio task in async startup instead of thread	2	21	19
+2fea6d534b8d6dcb93074815bac82f98015c72f8	kbadinger	kbadinger@resolventtech.com	2026-03-07T11:18:33-05:00	false	Remove duplicate tick endpoint, add verbose tick logging with traceback	1	7	9
+7f423ef2dcc029b3b3107b3dd0f14eb63b0d576f	kbadinger	kbadinger@resolventtech.com	2026-03-07T11:13:09-05:00	false	Add /api/tick endpoint for manual tick advancement	1	9	0
+e3897d34feb35a6eacdf2ce28e9dbc230087d014	kbadinger	kbadinger@resolventtech.com	2026-03-07T11:09:58-05:00	false	Fix auto-tick: add flush=True to print, move import outside loop	1	5	3
+f37c680015c617a171d1093aee814b630cf280d6	kbadinger	kbadinger@resolventtech.com	2026-03-07T10:55:24-05:00	false	Add layout migration for existing Railway DB	1	43	0
+ea080a65fa372268a3e905bbf2cf5a37e850e58f	kbadinger	kbadinger@resolventtech.com	2026-03-07T10:53:50-05:00	false	Bring the town to life: scatter buildings, auto-tick, terrain variety	4	265	554
+2e98c9dc483c75c9a7d147fa7ec75b88ca15c9df	kbadinger	kbadinger@resolventtech.com	2026-03-07T09:55:38-05:00	false	Restore PixiJS town renderer on index page	3	87	56
+472e27700970e06a142e1e3253532588909cde3a	kbadinger	kbadinger@resolventtech.com	2026-03-07T09:51:09-05:00	false	Fix index page: pass story progress counts to template	1	17	1
+23e73d5afe6be23399f26c5db6701e36186c6725	kbadinger	kbadinger@resolventtech.com	2026-03-07T09:48:09-05:00	false	Add 50 new stories (216-265) with tests — NPC psychology, economy, events, politics, military, culture, infrastructure, API	7	1115	1
+47b10d582fe29b0ae33f41a789d8e4d493a1412f	kbadinger	kbadinger@resolventtech.com	2026-03-07T01:57:52-05:00	true	[Ralph] Snapshot: Story 206	2	12777	0
+fcd3f92518c4378114275db5358d3108e60c5428	kbadinger	kbadinger@resolventtech.com	2026-03-07T01:56:50-05:00	true	[Ralph] Story 206: Add NPC dialogue system	7	115	14
+387076f4a4f1465046998ede441d3527d899d690	kbadinger	kbadinger@resolventtech.com	2026-03-07T01:42:20-05:00	true	[Ralph] Snapshot: Story 205	2	12777	0
+922626070ec86a5b41a0cc7cad7b8b9685ebd028	kbadinger	kbadinger@resolventtech.com	2026-03-07T01:40:58-05:00	true	[Ralph] Story 205: Implement town achievement system	6	34	23
+8a72489c0176897662ca504e5a65f1ed4bdc1872	kbadinger	kbadinger@resolventtech.com	2026-03-07T01:07:09-05:00	true	[Ralph] Story 204: Implement town newspaper that writes event summaries	8	101	13
+7a1e9e300cdaf51594f9388a82f5e3a35339144e	kbadinger	kbadinger@resolventtech.com	2026-03-07T00:57:31-05:00	true	[Ralph] Snapshot: Story 203	2	12777	0
+a839e9544a5e30d4f2fc49cfe60adbffe12e63fe	kbadinger	kbadinger@resolventtech.com	2026-03-07T00:56:13-05:00	true	[Ralph] Story 203: Implement NPC memory and learning system	6	104	14
+d3317dab69683c4f25dfe43508ae06d4f1c0f04a	kbadinger	kbadinger@resolventtech.com	2026-03-07T00:47:05-05:00	true	[Ralph] Snapshot: Story 202	2	12777	0
+c771107475c1c7487441ce2142f31fb0000ace0f	kbadinger	kbadinger@resolventtech.com	2026-03-07T00:45:47-05:00	true	[Ralph] Story 202: Implement dynamic supply/demand pricing engine	6	53	15
+1a538a93606a12ae9b9be7429a6f1dcd3dd175df	kbadinger	kbadinger@resolventtech.com	2026-03-07T00:37:08-05:00	true	[Ralph] Snapshot: Story 201	2	12777	0
+e6038fbeda46801fbfe0eab7104f332d6305ea7a	kbadinger	kbadinger@resolventtech.com	2026-03-07T00:35:48-05:00	true	[Ralph] Story 201: Implement A* pathfinding for NPC movement	6	108	14
+3300621577aa7e6b5b3dbfb13d58b3ba98277139	kbadinger	kbadinger@resolventtech.com	2026-03-07T00:26:03-05:00	true	[Ralph] Snapshot: Story 200	2	12777	0
+46713c42ea1ea55a1c86247496a483e4274e46ec	kbadinger	kbadinger@resolventtech.com	2026-03-07T00:24:45-05:00	true	[Ralph] Story 200: Town anthem generator	7	64	13
+b47e5dfa48a8a17570c8595eadc1ed28d01206da	kbadinger	kbadinger@resolventtech.com	2026-03-07T00:16:05-05:00	true	[Ralph] Snapshot: Story 199	2	12777	0
+9abc9fdcedf82b956dbe674c2e8c5eb1b5f09be6	kbadinger	kbadinger@resolventtech.com	2026-03-07T00:14:47-05:00	true	[Ralph] Story 199: Visitor log NPC	8	85	14
+8ce394f5390000b8c9cf57e25baa953dbbe87b90	kbadinger	kbadinger@resolventtech.com	2026-03-07T00:04:46-05:00	true	[Ralph] Story 198: Town achievements system	6	57	13
+562f534180d2d5057a61a1fb50636107fa2c346f	kbadinger	kbadinger@resolventtech.com	2026-03-06T23:55:48-05:00	true	[Ralph] Snapshot: Story 197	2	12777	0
+5d411a995f16de0c211954f5a627e0eef242d770	kbadinger	kbadinger@resolventtech.com	2026-03-06T23:54:30-05:00	true	[Ralph] Story 197: Historian NPC	7	98	14
+783042045f16ad866f845a451390a66b95309699	kbadinger	kbadinger@resolventtech.com	2026-03-06T23:45:36-05:00	true	[Ralph] Snapshot: Story 196	2	12777	0
+75d9527e13ce57159c8fd0300a86163d6b9827b0	kbadinger	kbadinger@resolventtech.com	2026-03-06T23:42:52-05:00	true	[Ralph] Story 196: Town newspaper NPC	6	101	14
+ebb3201f14b9c036de7355fbe64b9bc248dc4ac6	kbadinger	kbadinger@resolventtech.com	2026-03-06T23:33:19-05:00	false	Fix flaky test_s025_npc_movement — call move directly instead of process_tick	1	3	2
+c7e503d5bbc96ba7b6ff4a4501b271d1c4af9b6d	kbadinger	kbadinger@resolventtech.com	2026-03-06T23:26:13-05:00	false	Pre-add all remaining models and blocklist models.py	8	155	37
+379d96b1b80f411e20c1d8407fe76ebf22e233b7	kbadinger	kbadinger@resolventtech.com	2026-03-06T22:41:05-05:00	false	Fix targeted revert + story 193 scaffolding	4	44	17
+2eaf1d44f981074a70d562a3be7f296816e28e8b	kbadinger	kbadinger@resolventtech.com	2026-03-06T21:36:26-05:00	false	Fix story 192 scaffolding: add Policy model + propose_policy	2	41	1
+79986b9edb3ecaf9d7cec0e5eec93e825db6719f	kbadinger	kbadinger@resolventtech.com	2026-03-06T21:09:22-05:00	true	[Ralph] Snapshot: Story 191	2	12777	0
+6c3832b4715039bda64a356318e98086698955cb	kbadinger	kbadinger@resolventtech.com	2026-03-06T21:08:01-05:00	true	[Ralph] Deploy fix: Story 191	3	65	52
+701b4c78953569d4cfc3967ac16c919282dbe59f	kbadinger	kbadinger@resolventtech.com	2026-03-06T21:07:22-05:00	true	[Ralph] Story 191: Mayor election	8	108	13
+e994c09aea33ab544d4e84e12c48d623bd909166	kbadinger	kbadinger@resolventtech.com	2026-03-06T20:57:56-05:00	true	[Ralph] Snapshot: Story 190	2	12777	0
+e1916f323b9952a79e78e60ae7e2e09797fabe2c	kbadinger	kbadinger@resolventtech.com	2026-03-06T20:56:35-05:00	true	[Ralph] Story 190: Bankruptcy handling	3	28	10
+7b2bb70c81039692459f2978ba4b21b7c12b060f	kbadinger	kbadinger@resolventtech.com	2026-03-06T20:49:35-05:00	true	[Ralph] Deploy fix: Story 190	3	28	13
+a5deb81ed4dccf93751346606261b368d8ccfb93	kbadinger	kbadinger@resolventtech.com	2026-03-06T20:48:59-05:00	true	[Ralph] Story 190: Bankruptcy handling	7	45	14
+2531c314924cf0cc39e08227bc6ada66c58e6e4e	kbadinger	kbadinger@resolventtech.com	2026-03-06T20:40:14-05:00	true	[Ralph] Snapshot: Story 189	2	12777	0
+93141bac493ba1eb3be81f45941c18bc8f7e9c0c	kbadinger	kbadinger@resolventtech.com	2026-03-06T20:38:55-05:00	true	[Ralph] Story 189: Trade negotiations	6	92	14
+b1cb5021838c9533d9e96d1724b3e5be51524604	kbadinger	kbadinger@resolventtech.com	2026-03-06T20:28:37-05:00	true	[Ralph] Snapshot: Story 188	2	12777	0
+1766bc1cbd12e1d94f1f2826e06a8902f62393ee	kbadinger	kbadinger@resolventtech.com	2026-03-06T20:27:15-05:00	true	[Ralph] Story 188: Tax collector routes	6	52	15
+5564e45fd55a1167cb9a443effab194248733545	kbadinger	kbadinger@resolventtech.com	2026-03-06T20:09:53-05:00	true	[Ralph] Snapshot: Story 187	2	12777	0
+2c98ddfa3a535c12adc35d4fb40862598813ed89	kbadinger	kbadinger@resolventtech.com	2026-03-06T20:08:33-05:00	true	[Ralph] Story 187: Banker NPCs offer loans	7	137	14
+9dd495eae62d44cda93bfeadf5bd42aa6967afef	kbadinger	kbadinger@resolventtech.com	2026-03-06T20:00:13-05:00	true	[Ralph] Snapshot: Story 186	2	12777	0
+c87aee9f7cdb08eae71ef5034cefb1a091e90fe3	kbadinger	kbadinger@resolventtech.com	2026-03-06T19:58:50-05:00	true	[Ralph] Deploy fix: Story 186	2	11	10
+22a53c3438c56a6cdab48dd7fe5bf7be5a731d75	kbadinger	kbadinger@resolventtech.com	2026-03-06T18:22:04-05:00	true	[Ralph] Story 186: Merchant NPCs set prices	6	106	15
+5285e72966126a727ae22e6af71e14cb3d93db57	kbadinger	kbadinger@resolventtech.com	2026-03-06T18:04:47-05:00	true	[Ralph] Story 185: Infrastructure scoring	7	79	15
+7c9fd20d4d6ecffe2f0ed0145e5e1327690423fe	kbadinger	kbadinger@resolventtech.com	2026-03-06T17:53:55-05:00	true	[Ralph] Snapshot: Story 184	2	12777	0
+82fddbed455b9c0bba29cc4c4f30b61710a0d1db	kbadinger	kbadinger@resolventtech.com	2026-03-06T17:52:20-05:00	true	[Ralph] Story 184: Zoning system	7	43	15
+d7bec5e97d84068db3935f7efe8b2de63ddef23c	kbadinger	kbadinger@resolventtech.com	2026-03-06T17:44:14-05:00	true	[Ralph] Snapshot: Story 183	2	12777	0
+b9f0b2592b7487723bc1cce62e425bf7bb6221d8	kbadinger	kbadinger@resolventtech.com	2026-03-06T17:42:56-05:00	true	[Ralph] Deploy fix: Story 183	2	10	9
+cd65eab09a0df5b83d048333e3dbb08f3643a812	kbadinger	kbadinger@resolventtech.com	2026-03-06T17:42:25-05:00	true	[Ralph] Story 183: Recommend construction	6	75	14
+b6e948f9b35efcc2be5688f4820d21dfb516f167	kbadinger	kbadinger@resolventtech.com	2026-03-06T17:32:40-05:00	true	[Ralph] Snapshot: Story 182	2	12777	0
+ddbde8fe3624b8556a28ab527ba46fe5cb171d0b	kbadinger	kbadinger@resolventtech.com	2026-03-06T17:31:22-05:00	true	[Ralph] Story 182: Detect resource gaps	6	62	13
+53f75f827b439d0411f4973f96db349b0d8bb447	kbadinger	kbadinger@resolventtech.com	2026-03-06T17:23:25-05:00	true	[Ralph] Snapshot: Story 181	2	12777	0
+e8f1c036eb78c9e628e6d0ecfd93b9f9f7b0fadc	kbadinger	kbadinger@resolventtech.com	2026-03-06T17:22:06-05:00	true	[Ralph] Story 181: Auto-suggest building placement	6	95	15
+e51f03b517f57bc066e71976df0c5f9eb8298d1d	kbadinger	kbadinger@resolventtech.com	2026-03-06T17:14:01-05:00	true	[Ralph] Snapshot: Story 180	2	12777	0
+8d247d263a7fb2c8edee69f267d8b1edf2721e85	kbadinger	kbadinger@resolventtech.com	2026-03-06T17:12:43-05:00	true	[Ralph] Story 180: NPC learning from experience	7	63	13
+469bc648c4f075d471826353b642a7476cdf0369	kbadinger	kbadinger@resolventtech.com	2026-03-06T17:02:42-05:00	true	[Ralph] Snapshot: Story 179	2	12777	0
+b3971f79bc8f837e47a784d42b97fd2cb467a3d7	kbadinger	kbadinger@resolventtech.com	2026-03-06T17:01:19-05:00	true	[Ralph] Story 179: NPC memory - remember friends	6	34	13
+30ccf299dae14e5ad0c553f8c3a6c33a830be28c	kbadinger	kbadinger@resolventtech.com	2026-03-06T16:51:55-05:00	true	[Ralph] Snapshot: Story 178	2	12777	0
+fc69e3362e628d240be34460d41a2fd5ca33d6f8	kbadinger	kbadinger@resolventtech.com	2026-03-06T16:50:36-05:00	true	[Ralph] Deploy fix: Story 178	2	11	10
+1458263eabf5a2bc489ee03fe2ecd920300d04f2	kbadinger	kbadinger@resolventtech.com	2026-03-06T16:41:40-05:00	true	[Ralph] Story 178: NPC memory - avoid dangerous areas	8	65	13
+376f10d5121bf280eb547137307d5f2563b4a976	kbadinger	kbadinger@resolventtech.com	2026-03-06T16:33:43-05:00	true	[Ralph] Snapshot: Story 177	3	12777	0
+9d335e41d399d1716195e7d3cec9de4594fe19d3	kbadinger	kbadinger@resolventtech.com	2026-03-06T16:31:54-05:00	true	[Ralph] Story 177: NPC memory - favorite buildings	7	101	14
+73ce02259ebfb2254a319fe0ca4be8fbd70d5db4	kbadinger	kbadinger@resolventtech.com	2026-03-06T16:22:32-05:00	false	Fix index.html template defaults + mark story 176 completed	2	6	6
+bc99db1781622281cda65cc93eaef4ee77b2cca0	kbadinger	kbadinger@resolventtech.com	2026-03-06T16:20:42-05:00	false	Fix story 176 scaffolding + restore /api/tick route	3	21	1
+e693920aad22c4b8b65d945b6fc861bd3915f54f	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:39:47-05:00	true	[Ralph] Snapshot: Story 175	2	12777	0
+5ae3ac228cbd4906ee1c6bb6ead90479b5e7b44a	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:38:51-05:00	true	[Ralph] Story 175: Backlog status display	4	17	9
+1dc56a4554aec0f596c2542131e701f4677dd5ee	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:38:42-05:00	true	[Ralph] Snapshot: Story 174	2	12777	0
+e98e846ed842962df8ee3383c95d5233eea47c24	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:37:31-05:00	true	[Ralph] Deploy fix: Story 174	3	140	9
+06a9c6d8a9762dab1efa15ce383b145966dae883	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:36:07-05:00	true	[Ralph] Story 174: Test file generation	4	18	10
+f19c68ad48b6596786499c7f06d9ab3eab230e6b	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:35:57-05:00	true	[Ralph] Snapshot: Story 173	2	12777	0
+760ae5c2034ff1dfabffd418ac2b2868dc9a8500	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:34:45-05:00	true	[Ralph] Story 173: Story approve workflow	4	18	10
+d250d72fd14c6e8f06cad0ce339bee1caf7a4d6e	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:34:32-05:00	true	[Ralph] Snapshot: Story 172	2	12777	0
+5e53f2124e31d9aa75d13a1acfdd7722acd6792e	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:31:09-05:00	true	[Ralph] Story 172: Story review UI	4	20	12
+d01a8ba173d6522af5a0dc73ef0dd74f07cc3a3a	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:30:59-05:00	true	[Ralph] Snapshot: Story 171	2	12777	0
+f31e9981d4d3aaf548aaaeed2982c79a3f6f7511	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:29:32-05:00	true	[Ralph] Deploy fix: Story 171	3	90	9
+ab6027bdc045fc649e35cf2dda4e5012b4503007	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:28:23-05:00	true	[Ralph] Story 171: Propose stories endpoint	4	20	12
+a01cc063432ead5b1a9074301b1e6d88aec541be	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:28:13-05:00	true	[Ralph] Snapshot: Story 170	2	12777	0
+43cd1d145cee023cb29cf4bdfd641ed0c6803797	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:27:00-05:00	true	[Ralph] Story 170: GET /api/metrics endpoint	4	18	10
+1eaecd976b11e6b1e6fdf8c05712dc9126c15a60	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:26:51-05:00	true	[Ralph] Snapshot: Story 169	2	12777	0
+4b51c97c8d7915fe086b21d5218eff30a658f530	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:25:37-05:00	true	[Ralph] Story 169: Build progress timeline chart	4	15	8
+4c1c7cb98d695f4de8b5622f1b9ed152d1bfe0b4	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:24:48-05:00	true	[Ralph] Story 169: Build progress timeline chart	4	20	12
+7126985446d501cba83e7d3a1841ffa8e63629f4	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:24:39-05:00	true	[Ralph] Snapshot: Story 168	3	12777	0
+9738eb1443f7d02c6c09e8d712c4f97eb6e3be62	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:23:34-05:00	true	[Ralph] Story 168: Live stories completed counter	4	15	8
+7d658a45e52b1624ffb5235d8544aa6a90f34703	kbadinger	kbadinger@resolventtech.com	2026-03-06T14:22:29-05:00	true	[Ralph] Story 168: Live stories completed counter	3	27	9
+13c2cb7aabd711f02db9080859feaaadbd242d61	kbadinger	kbadinger@resolventtech.com	2026-03-06T12:14:16-05:00	true	[Ralph] Deploy fix: Story 168	4	131	82
+2a50e19aaee87e1b36a5640372a1ae7d0c1f9e38	kbadinger	kbadinger@resolventtech.com	2026-03-06T12:13:19-05:00	true	[Ralph] Story 168: Live stories completed counter	4	18	10
+dd1722e57bc6ec3f08beb1690a6266d4ea907db9	kbadinger	kbadinger@resolventtech.com	2026-03-06T12:13:10-05:00	true	[Ralph] Snapshot: Story 167	2	12777	0
+76d4ffbb467cf28d6d8cb6aad465bb1a4b847315	kbadinger	kbadinger@resolventtech.com	2026-03-06T12:11:21-05:00	true	[Ralph] Deploy fix: Story 167	6	70	1235
+0465b4630f1f9aef3b2352f023822e00651f4dd8	kbadinger	kbadinger@resolventtech.com	2026-03-06T12:10:06-05:00	true	[Ralph] Story 167: Cost comparison table component	3	25	7
+ed226c8f7372305d3645779e2887a186385455f8	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:58:38-05:00	true	[Ralph] Deploy fix: Story 167	5	1282	10
+53bc693f1be4fd14b97d04b4f339e00fba791a0d	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:49:49-05:00	true	[Ralph] Story 167: Cost comparison table component	4	19	11
+323bab410998d864491f2de1b3db6485f709f7e6	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:49:39-05:00	true	[Ralph] Snapshot: Story 166	2	12777	0
+d97754938c8c16f6127db657bc6824f9c1ab0e48	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:48:19-05:00	true	[Ralph] Story 166: GET /api/costs endpoint	4	19	11
+9bb934cb67a1d730b1dfeb1741510d18a5646931	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:48:08-05:00	true	[Ralph] Snapshot: Story 165	2	12777	0
+40ca953fdce7ab0c1b23fbda6e39b3113a56d016	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:46:51-05:00	true	[Ralph] Story 165: Detailed health check	4	18	10
+1bb21edc2ca67f62de8eea01fe6f96dd345e5ec0	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:46:42-05:00	true	[Ralph] Snapshot: Story 164	2	12777	0
+c3967bf4454a4237829115578b094572db36955f	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:45:24-05:00	true	[Ralph] Story 164: Gzip compression	4	20	12
+1c1cef552f3d312744522d35d21887a18fa25488	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:45:14-05:00	true	[Ralph] Snapshot: Story 163	2	12777	0
+c6defa567ebff137c89cf8146011a18c28f7acb9	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:44:01-05:00	true	[Ralph] Story 163: Response caching	4	19	11
+42c0d751633519a661afef5b5896ea3f7ac9f9e3	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:43:52-05:00	true	[Ralph] Snapshot: Story 162	2	12777	0
+4a28746a78c2c8b8178171f9d851738629c13fb5	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:42:33-05:00	true	[Ralph] Deploy fix: Story 162	6	156	12
+6c3b590fb499bb42a644d7c15f9d30c0e980fa29	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:37:26-05:00	true	[Ralph] Story 162: Query optimization for /api/world	4	18	10
+e2383430d265decb1cd0f7b6aa9734e85a14d709	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:37:17-05:00	true	[Ralph] Snapshot: Story 161	2	12777	0
+deafabb42a101e0e3c8de4d44183d1b1fda17c39	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:36:02-05:00	true	[Ralph] Story 161: DB indexes on hot queries	4	20	12
+722b376aa3cc8df0f37b66856992d2710a81eca5	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:35:53-05:00	true	[Ralph] Snapshot: Story 160	2	12777	0
+3933fc0c821e7b76effcfe4b1fd0d4c35e1a3041	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:34:32-05:00	true	[Ralph] Story 160: CORS preflight handling	4	18	10
+955fabbde2700849f1f64a320b4f0e26beb586b8	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:34:21-05:00	true	[Ralph] Snapshot: Story 159	2	12777	0
+77c9de43a143a5262e807c20a767d491f6c3ab5a	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:33:09-05:00	true	[Ralph] Story 159: Rate limit feedback page	4	19	11
+53e482c99d08f8fa59aae44871dbbe4327d47bec	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:33:00-05:00	true	[Ralph] Snapshot: Story 158	2	12777	0
+183d1176cc9cec2f9107eeba9976a807aa94dbae	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:31:45-05:00	true	[Ralph] Story 158: Custom 404 page	4	19	11
+012b9387fa71f61e321f45c2f2e1898da571da6b	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:31:35-05:00	true	[Ralph] Snapshot: Story 157	2	12777	0
+4bc8d69440cd6f025f783f2f6febd165b768b1ad	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:30:21-05:00	true	[Ralph] Story 157: Error message improvements	4	19	11
+8e396bec9cc43a6e8744f19f5a38f13489bce244	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:30:12-05:00	true	[Ralph] Snapshot: Story 156	2	12777	0
+73c2a6a1424a95b5dc027c55f1a32ad2bf78a14d	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:29:00-05:00	true	[Ralph] Story 156: Input validation on all endpoints	4	19	11
+fe8c1a07039be299ec4af81b323b6f9374197af8	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:28:52-05:00	true	[Ralph] Snapshot: Story 155	2	12777	0
+a50cc91f86b6b43699a8c7b4b7deb66969ba2188	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:27:56-05:00	true	[Ralph] Story 155: Bulk operations	4	18	10
+ecac47316bcb9fab25596696429c6cdfab92ebd5	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:27:46-05:00	true	[Ralph] Snapshot: Story 154	2	12777	0
+91816e886f458bb8573dc78f3f051746bac834e0	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:26:35-05:00	true	[Ralph] Story 154: Search support	4	19	11
+7d14efc78b78289866bcb628d8b49ace98303f12	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:26:26-05:00	true	[Ralph] Snapshot: Story 153	2	12777	0
+b39ba2ce7c7b8d90ed67f42b5376e1e41c3bd61f	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:25:13-05:00	true	[Ralph] Story 153: Sorting support	4	19	11
+cdb3b37d92fda699f5c9b16011bd7482e28dc0cf	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:25:03-05:00	true	[Ralph] Snapshot: Story 152	2	12777	0
+81bfab1ecc3790af274a93dec6fe4bbba9a2e5ad	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:23:50-05:00	true	[Ralph] Story 152: Filtering support	4	18	10
+d4f1205612e049d8ae4d649b7727910e45d136b5	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:23:40-05:00	true	[Ralph] Snapshot: Story 151	2	12777	0
+dce11c0d6d25c4a6735d45e170389cea2f163061	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:22:23-05:00	true	[Ralph] Story 151: Pagination on all list endpoints	4	20	12
+2f1bf3aeca7676279267f74f43c4621ee4e948d7	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:22:13-05:00	true	[Ralph] Snapshot: Story 150	2	12777	0
+d2a56a724e8e4b930da61eea313fdcc9d633c972	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:21:00-05:00	true	[Ralph] Story 150: Import data endpoint	4	18	10
+8fdf5c0ef72e5c7c7df107a160e4e7baf5ba00f6	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:20:50-05:00	true	[Ralph] Snapshot: Story 149	2	12777	0
+d1a13ef1c0c07986defd260cad4da4d4d1607a26	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:18:50-05:00	true	[Ralph] Story 149: Export data endpoint	4	18	10
+ea81ab1ae79188fc587619d055434d91ccec02d8	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:18:40-05:00	true	[Ralph] Snapshot: Story 148	2	12777	0
+771b366be52ad7e4c18c3a7a29ba141bc9fa982c	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:17:28-05:00	true	[Ralph] Story 148: Reset world endpoint	4	20	12
+bdb5dce31fef1e7159412647275c1899be4a02b2	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:17:19-05:00	true	[Ralph] Snapshot: Story 147	2	12777	0
+15a16a1952ee53304e6f278afe2ebe9f48f1def4	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:16:07-05:00	true	[Ralph] Story 147: Manual tick trigger UI	4	18	10
+820548ce1f513da834d51db2a590ed65a502ffcf	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:15:58-05:00	true	[Ralph] Snapshot: Story 146	2	12777	0
+653a511392e6adc8e23f3178407320ec9e2de6fa	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:14:45-05:00	true	[Ralph] Story 146: Simulation speed control	4	19	11
+dbb7c79e9859b875bd3b55c5a804480b52c01a1b	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:14:35-05:00	true	[Ralph] Snapshot: Story 145	2	12777	0
+f1eb12741cbf484ae3d9e8ae7969a6df4bd3c6a5	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:13:22-05:00	true	[Ralph] Story 145: Changelog page	4	18	10
+a7abbbc25748f49047eadb5a8923f8b799e76563	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:13:12-05:00	true	[Ralph] Snapshot: Story 144	2	12777	0
+71433799dd1d28e5a00ed5950d1b3d0b94ff6cee	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:12:00-05:00	true	[Ralph] Deploy fix: Story 144	4	174	10
+31687505aaa0fb62843b3ba66937f1e8689a540d	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:10:42-05:00	true	[Ralph] Story 144: API docs page	4	19	11
+d3b3c5b318132b481ac86d49b33f788fc850c790	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:10:31-05:00	true	[Ralph] Snapshot: Story 143	2	12777	0
+93c84fdf520fbac22f22064bf8aeb8d82c8a88fa	kbadinger	kbadinger@resolventtech.com	2026-03-06T09:09:09-05:00	true	[Ralph] Story 143: About page	3	26	8
+4ef4fdc85d7402d67ec01cf4597a5fa7de372b6c	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:55:35-05:00	true	[Ralph] Deploy fix: Story 143	4	95	9
+4d35fbeb74014c97cfc9e77b4085df94fa23237d	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:54:42-05:00	true	[Ralph] Story 143: About page	4	20	12
+31614a9f309e26723cc0aa6d851c9711acfb71bf	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:54:33-05:00	true	[Ralph] Snapshot: Story 142	2	12777	0
+3fdb5c32628ccc5a8a49fc306b7517076b2e6153	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:53:20-05:00	true	[Ralph] Story 142: Cost dashboard page	4	18	10
+f5510c13d38df5930f0138609e0e4888ad732749	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:53:11-05:00	true	[Ralph] Snapshot: Story 141	2	12777	0
+26b3f284d9a1e80770a8e50e43c5be95114f8faa	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:52:16-05:00	true	[Ralph] Story 141: Approval workflow page	4	18	10
+cbfa638545ca48e5ca19f3b3c0f5299369a76690	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:52:07-05:00	true	[Ralph] Snapshot: Story 140	2	12777	0
+f35209730d3f9d8c885193e621aa4b909d8e4139	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:50:56-05:00	true	[Ralph] Story 140: Admin panel	4	19	11
+0d6e0ba2516dce04bac9a39ba65fd95dd134325c	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:50:46-05:00	true	[Ralph] Snapshot: Story 139	2	12777	0
+2df8d70239465da462b90c294f72e91862322f99	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:49:33-05:00	true	[Ralph] Story 139: Feature list with vote buttons	4	19	11
+885ca932af5d839ef80a14b319d92c73838a84c5	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:49:23-05:00	true	[Ralph] Snapshot: Story 138	2	12777	0
+050b02aa37aa0fbdfc70afc13bfe0efe9757a41e	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:48:12-05:00	true	[Ralph] Story 138: Feature submit form	4	19	11
+69b719662773a1cdbd5a034ad99d17dd78580739	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:48:03-05:00	true	[Ralph] Snapshot: Story 137	2	12777	0
+3c97ca5b9108ac871503902d9675c1fe528892d3	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:46:49-05:00	true	[Ralph] Story 137: Happiness metrics display	4	19	11
+f5dc0608ff4f28fc8a9085140dd719283e3d88af	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:46:40-05:00	true	[Ralph] Snapshot: Story 136	2	12777	0
+e7c9e8b2bba560a042f0a79a0342914d2a4a734a	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:45:28-05:00	true	[Ralph] Story 136: Weather display	4	18	10
+8abc00fee7a83fc8c55089ecd9978f7c2bdc6e79	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:45:19-05:00	true	[Ralph] Snapshot: Story 135	2	12777	0
+05d1c90b5289f35cb4c9097b0dee09b47941bda2	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:44:06-05:00	true	[Ralph] Story 135: Event timeline	4	19	11
+fb3ea9c62dbd68509f6dc450b7d251aa63a6bdfd	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:43:57-05:00	true	[Ralph] Snapshot: Story 134	2	12777	0
+328eff14684c500b3a2ae6603b3d26c1fd2d8c5c	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:42:44-05:00	true	[Ralph] Story 134: Population charts	4	19	11
+122e3f12e2dcaea466c04e1b33683909b0b38226	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:42:34-05:00	true	[Ralph] Snapshot: Story 133	2	12777	0
+31f8240fcfc9b058305ba10f4d521b4bd4ed4613	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:41:22-05:00	true	[Ralph] Story 133: Economy dashboard	4	19	11
+c53013ce5f72a9196d2e926d02c22e8297cb1887	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:41:12-05:00	true	[Ralph] Snapshot: Story 132	2	12777	0
+bda82e043bafeff1d723f6c57e0044e1795fa8f6	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:39:58-05:00	true	[Ralph] Story 132: Building grid page	4	19	11
+32d2cef3804ca304da227c5a832fc7fa3bf5209e	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:39:48-05:00	true	[Ralph] Snapshot: Story 131	2	12777	0
+56ec65e360ace2ff190b4bc147f4e29c809cc72b	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:38:52-05:00	true	[Ralph] Story 131: NPC detail page	4	18	10
+2e4a4da1711ba3318bb72bd1843313bc94c3dd93	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:38:42-05:00	true	[Ralph] Snapshot: Story 130	2	12777	0
+8c51b81a2c974d3953d7ff46fbaf04155a1a6bfb	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:37:46-05:00	true	[Ralph] Story 130: NPC list page	4	20	12
+474002777c1c138fde4eb1b443b3583e8ca66684	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:37:36-05:00	true	[Ralph] Snapshot: Story 129	2	12777	0
+1bac69b3b2a196acae2fdf565a7dfc90f715398d	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:36:23-05:00	true	[Ralph] Story 129: Building detail page	4	18	10
+acac194d6a8368f56851f46177fce6975f8bc7d6	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:36:13-05:00	true	[Ralph] Snapshot: Story 128	2	12777	0
+970c58467b83773a62c561ba792e5d9cdd4be6a1	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:35:17-05:00	true	[Ralph] Story 128: Buildings list page	4	19	11
+ceb528e09a0f8e9db7d87d56495bf3fbb7ffb326	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:35:08-05:00	true	[Ralph] Snapshot: Story 127	2	12777	0
+01dbe206ab7c05d7acb7d54354b33797030ea609	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:33:56-05:00	true	[Ralph] Story 127: Responsive grid layout	4	19	11
+36a958078fd08689200e7841313a9a2eb9ac0ef1	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:33:48-05:00	true	[Ralph] Snapshot: Story 126	2	12777	0
+f4198629ce63fd3651959b135e0fb59d7e19973f	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:31:01-05:00	true	[Ralph] Story 126: Footer component	4	19	11
+1c621ce92672c9f7a9ae0433e938b1bcc727eb61	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:30:53-05:00	true	[Ralph] Snapshot: Story 125	2	12777	0
+d5265b3d070dd9e81d54503511c4c779c506682c	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:29:41-05:00	true	[Ralph] Story 125: Navigation bar	4	19	11
+a24907b18c2c2ee03669a427dedc01ee783a9f17	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:29:32-05:00	true	[Ralph] Snapshot: Story 124	2	12777	0
+174072da88ea5dece7be0ada47f38af6a2a8e142	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:28:37-05:00	true	[Ralph] Story 124: Base HTML template	4	19	10
+9cb77151345820a9155ffc86f694197e91028aeb	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:28:26-05:00	true	[Ralph] Snapshot: Story 123	2	12777	0
+b367c34cd9fcfd15b8e71a43056950b89e1c996c	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:27:23-05:00	true	[Ralph] Story 123: Cascading: bandit raid to justice	7	55	16
+b8b40f9ce1e6925f2e3671ebf13a67e6a48094a3	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:18:43-05:00	true	[Ralph] Snapshot: Story 122	2	12777	0
+918d174295c3fc400671698b73fa41b491bdbb0d	kbadinger	kbadinger@resolventtech.com	2026-03-06T08:16:35-05:00	true	[Ralph] Story 122: Cascading: flood to price spike	7	48	17
+daeb992f0a846ddd8df076f829b3332d6a890788	kbadinger	kbadinger@resolventtech.com	2026-03-06T07:52:39-05:00	true	[Ralph] Snapshot: Story 121	2	12777	0
+bc234b39efc35480c4d9667fa074b8d112c4a86e	kbadinger	kbadinger@resolventtech.com	2026-03-06T07:51:39-05:00	true	[Ralph] Story 121: Cascading: plague to hospital overwhelmed	7	107	14
+a9ca55e238a67738ced1bf186c0a23762397e1a6	kbadinger	kbadinger@resolventtech.com	2026-03-06T07:45:24-05:00	true	[Ralph] Snapshot: Story 120	2	12777	0
+6d341dbfe2f15652014e0b14edbd5c44b2382a78	kbadinger	kbadinger@resolventtech.com	2026-03-06T07:44:21-05:00	true	[Ralph] Story 120: Cascading: fire to rebuilding boom	6	35	15
+c2a6f151944d05d46e410ea705a70e5e34d019d9	kbadinger	kbadinger@resolventtech.com	2026-03-06T07:33:10-05:00	true	[Ralph] Snapshot: Story 119	2	12777	0
+68b315fbbbd4bcde34abd95e195a5fd7372ca76e	kbadinger	kbadinger@resolventtech.com	2026-03-06T07:31:57-05:00	true	[Ralph] Story 119: Cascading: drought to famine	7	64	18
+df9e8a136f485a44911bb6b1a7bf42db19a9d3af	kbadinger	kbadinger@resolventtech.com	2026-03-06T07:26:38-05:00	true	[Ralph] Snapshot: Story 118	2	12777	0
+754d0e60399c0b0ec8229580001748d7e45a89cc	kbadinger	kbadinger@resolventtech.com	2026-03-06T07:24:23-05:00	true	[Ralph] Story 118: Add gold_rush event type	8	88	16
+67d50a2368cbf651b5cbec4b84e6e9411647aacd	kbadinger	kbadinger@resolventtech.com	2026-03-06T01:11:30-05:00	true	[Ralph] Snapshot: Story 117	2	12777	0
+c8ed36f0ef47637a1a8fa43b512ff4758d441395	kbadinger	kbadinger@resolventtech.com	2026-03-06T01:09:53-05:00	true	[Ralph] Story 117: Add baby_boom event type	6	65	13
+0292ec4cbd54b7e6289522c96bbb5998800ef8aa	kbadinger	kbadinger@resolventtech.com	2026-03-06T01:04:23-05:00	true	[Ralph] Snapshot: Story 116	2	12777	0
+7cf524aac6a25ba01a1a30c770ac1d5142d3f26d	kbadinger	kbadinger@resolventtech.com	2026-03-06T01:03:02-05:00	true	[Ralph] Story 116: Add market_crash event type	6	52	15
+85db0ea38f2c6ca157e067b0cee81dbe4a49a107	kbadinger	kbadinger@resolventtech.com	2026-03-06T00:55:45-05:00	true	[Ralph] Snapshot: Story 115	2	12777	0
+0ca3cdbab4a0f3094a44ed8ba497031ee255a67d	kbadinger	kbadinger@resolventtech.com	2026-03-06T00:54:26-05:00	true	[Ralph] Story 115: Add earthquake event type	6	60	13
+0868352f1f45c79ef9fc804d55441686db96eb6f	kbadinger	kbadinger@resolventtech.com	2026-03-06T00:45:48-05:00	true	[Ralph] Snapshot: Story 114	2	12777	0
+2a40c382022261e7cd31b16fb05cdcc96f0f7df3	kbadinger	kbadinger@resolventtech.com	2026-03-06T00:44:45-05:00	true	[Ralph] Story 114: Add bandit_raid event type	6	74	14
+524a764540ed167b08231d5bbe7fbf46a5f341c3	kbadinger	kbadinger@resolventtech.com	2026-03-06T00:30:35-05:00	true	[Ralph] Snapshot: Story 113	2	12777	0
+fc628ed36e75f121082c1e72efb9275774bea7e5	kbadinger	kbadinger@resolventtech.com	2026-03-06T00:29:30-05:00	true	[Ralph] Deploy fix: Story 113	2	11	10
+3b0fbd2ddb7217a5905a59ef797001b3966ae677	kbadinger	kbadinger@resolventtech.com	2026-03-06T00:21:35-05:00	true	[Ralph] Story 113: Add harvest_festival event type	6	60	17
+1fa61f975a0e32fe01dad5cdc983da8ded99001a	kbadinger	kbadinger@resolventtech.com	2026-03-05T23:34:38-05:00	true	[Ralph] Snapshot: Story 112	2	12777	0
+2b56573bf03c7be68bba376a60c13f1b928f98d2	kbadinger	kbadinger@resolventtech.com	2026-03-05T23:33:19-05:00	true	[Ralph] Deploy fix: Story 112	3	22	12
+b99ebef5fdd117e9a2e33534db7b61cc9ff2e7de	kbadinger	kbadinger@resolventtech.com	2026-03-05T23:32:48-05:00	true	[Ralph] Story 112: Add plague event type	7	53	15
+2d6a7e80c8de79e67c341ff01e178f531b0dbfd6	kbadinger	kbadinger@resolventtech.com	2026-03-05T23:25:35-05:00	true	[Ralph] Snapshot: Story 111	2	12777	0
+be1d47a33c2c686bf65abaf4bf35a2e9880d0299	kbadinger	kbadinger@resolventtech.com	2026-03-05T23:24:14-05:00	true	[Ralph] Story 111: Add fire event type	6	50	13
+72202bb1e645488d99220277a0bb2b8982b01056	kbadinger	kbadinger@resolventtech.com	2026-03-05T23:18:49-05:00	true	[Ralph] Snapshot: Story 110	2	12777	0
+370e58deca8e8ea47e6dae3fb2f4bb9b21d4a50f	kbadinger	kbadinger@resolventtech.com	2026-03-05T23:16:55-05:00	true	[Ralph] Story 110: Add flood event type	6	73	15
+c52f144c43341d9222b75a201f83b048e80c4e32	kbadinger	kbadinger@resolventtech.com	2026-03-05T23:06:55-05:00	false	Fix _setup_world in all test files to create WorldState	3	6	3
+464a3650c4f9ad8dc894c7d7dc8d7dbf38680f4f	kbadinger	kbadinger@resolventtech.com	2026-03-05T23:05:06-05:00	false	Fix test_events scaffolding: _setup_world now creates WorldState	2	4	3
+9d37a8a1baf7dce31f3cfc7ae2b291c9a85f4354	kbadinger	kbadinger@resolventtech.com	2026-03-05T22:45:03-05:00	true	[Ralph] Snapshot: Story 109	2	12777	0
+6659bd0f0e48ed1e2d57f6ba66348ab921cae101	kbadinger	kbadinger@resolventtech.com	2026-03-05T22:43:20-05:00	true	[Ralph] Story 109: Add drought event type	4	21	9
+1d5307d7bd65305331c1bca0b49ec583f6f260a8	kbadinger	kbadinger@resolventtech.com	2026-03-05T22:42:37-05:00	false	Make sprite generation non-fatal, reset story 109	1	4	7
+0aa3745433d48bc246ce4ec6d30b863b4a2e76ba	kbadinger	kbadinger@resolventtech.com	2026-03-05T22:38:58-05:00	true	[Ralph] Story 109: Add drought event type	7	126	21
+f0ff8f57c054d88053c2a25d88b432b8573f83e8	kbadinger	kbadinger@resolventtech.com	2026-03-05T22:09:05-05:00	false	Fix CP-1252 em dashes in prd.json (0x97 -> --)	1	3	3
+5e7b428ef09488991c03148bf3f0512fcab4a06d	kbadinger	kbadinger@resolventtech.com	2026-03-05T22:07:07-05:00	false	Fix story 109: add production.py to context, explicit patching instructions	1	6	5
+4be8068bb05f97d259f9a7dc34c38d1a991e9d37	kbadinger	kbadinger@resolventtech.com	2026-03-05T21:32:19-05:00	false	AGENTS.md: tell Qwen not to touch __init__.py (auto-re-exports)	1	8	0
+f365a9261e7208367d0744e2f827b6cab2078880	kbadinger	kbadinger@resolventtech.com	2026-03-05T21:00:43-05:00	false	Fix remaining engine/simulation.py references in Ralph	3	4	4
+417c662d47365f5d9735073aed969c4fa1ce38ba	kbadinger	kbadinger@resolventtech.com	2026-03-05T20:16:17-05:00	false	Split engine/simulation.py into submodule package	15	3561	3316
+3e00bb4cab7771633e422238af551f9a6facf4cc	kbadinger	kbadinger@resolventtech.com	2026-03-05T18:02:09-05:00	true	[Ralph] Snapshot: Story 108	2	12777	0
+6efceefb0587d4627075319315e318f59cebe611	kbadinger	kbadinger@resolventtech.com	2026-03-05T18:00:33-05:00	true	[Ralph] Story 108: Medicine goods	7	56	15
+d23fd12306ccb12deeff51372aef208093493b50	kbadinger	kbadinger@resolventtech.com	2026-03-05T17:54:15-05:00	true	[Ralph] Snapshot: Story 107	2	12777	0
+5ec94e4d06f02fb37323e88788182ce0492a117b	kbadinger	kbadinger@resolventtech.com	2026-03-05T17:52:56-05:00	true	[Ralph] Story 107: Books luxury goods	7	77	27
+2ee37ab399a664cdd6ba387e31bf0ac699365575	kbadinger	kbadinger@resolventtech.com	2026-03-05T17:43:49-05:00	true	[Ralph] Snapshot: Story 106	2	12777	0
+023aee088e110bee6c916926e21178a21b30c13c	kbadinger	kbadinger@resolventtech.com	2026-03-05T17:42:26-05:00	true	[Ralph] Story 106: Art luxury goods	6	101	14
+ccc3c65b1d1f37eb5867399d7262910907ad30cb	kbadinger	kbadinger@resolventtech.com	2026-03-05T17:37:09-05:00	true	[Ralph] Snapshot: Story 105	2	12777	0
+e24834837e99a13c9044297efa3bef6ee0f082df	kbadinger	kbadinger@resolventtech.com	2026-03-05T17:34:31-05:00	true	[Ralph] Deploy fix: Story 105	2	11	10
+7ab08c936ce43f4660fa031a7fafdab5ab521865	kbadinger	kbadinger@resolventtech.com	2026-03-05T17:16:46-05:00	true	[Ralph] Story 105: Economic stimulus	7	76	13
+ee32754fde12864c920fb2d7758c8485bf90068f	kbadinger	kbadinger@resolventtech.com	2026-03-05T17:11:53-05:00	true	[Ralph] Snapshot: Story 104	2	12777	0
+861c395b3b16557ce1581989de4821b369ae410d	kbadinger	kbadinger@resolventtech.com	2026-03-05T17:10:24-05:00	true	[Ralph] Deploy fix: Story 104	3	101	19
+a1163f2f79a8edb1802a42491fdee3a18dd9e0ec	kbadinger	kbadinger@resolventtech.com	2026-03-05T17:09:09-05:00	true	[Ralph] Story 104: Recession detection	7	83	13
+ba22d5df631eb3307f1ce52078b0047f31b78f1c	kbadinger	kbadinger@resolventtech.com	2026-03-05T17:03:31-05:00	true	[Ralph] Snapshot: Story 103	2	12777	0
+7cbdff95dba98a53a7c462dcc48398c4b6cd99c4	kbadinger	kbadinger@resolventtech.com	2026-03-05T17:01:38-05:00	true	[Ralph] Story 103: Inflation tracking	7	69	15
+e3481882a49eb8008a72724d36aa502f5741ae19	kbadinger	kbadinger@resolventtech.com	2026-03-05T16:56:11-05:00	true	[Ralph] Snapshot: Story 102	2	12777	0
+1bc3dc587aa1ca0b8bebc8f1f012ec6b9a3e336c	kbadinger	kbadinger@resolventtech.com	2026-03-05T16:54:51-05:00	true	[Ralph] Story 102: Wage adjustments	8	97	17
+7548445f3bea811e9d88a034fa747b6852370416	kbadinger	kbadinger@resolventtech.com	2026-03-05T16:49:02-05:00	true	[Ralph] Snapshot: Story 101	2	12777	0
+d69229e07a743aeb15a4aaa9c79ce414c8d62a99	kbadinger	kbadinger@resolventtech.com	2026-03-05T16:47:33-05:00	true	[Ralph] Story 101: Configurable tax rates	7	92	14
+853b1551cedd737b88422963ca886188bf860008	kbadinger	kbadinger@resolventtech.com	2026-03-05T16:43:55-05:00	true	[Ralph] Snapshot: Story 100	2	12777	0
+aa528ea5da65d852a36931aa56637b6a1be1a88a	kbadinger	kbadinger@resolventtech.com	2026-03-05T16:42:36-05:00	true	[Ralph] Deploy fix: Story 100	3	14	14
+856a16a9a7d38eee985e6fffe9876eb7a7111fc2	kbadinger	kbadinger@resolventtech.com	2026-03-05T16:37:30-05:00	true	[Ralph] Story 100: Market saturation	7	129	15
+f315e6c14ce1624cf404aea398762b27877ac42b	kbadinger	kbadinger@resolventtech.com	2026-03-05T16:12:07-05:00	true	[Ralph] Snapshot: Story 099	2	12777	0
+09d7a71d6b19171fcbab2273d1c0bf25e7b8e2a4	kbadinger	kbadinger@resolventtech.com	2026-03-05T16:10:23-05:00	true	[Ralph] Story 099: Merchant NPC routes	6	58	14
+89c87e95f430f405e3338840e3ce736c03b86858	kbadinger	kbadinger@resolventtech.com	2026-03-05T16:05:36-05:00	true	[Ralph] Snapshot: Story 098	2	12777	0
+7b99607868a8916d033d3b40b2271dcf320de992	kbadinger	kbadinger@resolventtech.com	2026-03-05T16:01:50-05:00	true	[Ralph] Story 098: Trade between buildings	19	186	13
+0e37dc3be4f58059e1d979f955616d96bd1bcf6f	kbadinger	kbadinger@resolventtech.com	2026-03-05T15:57:59-05:00	false	Fix calculate_price call site (3-arg -> 2-arg)	1	1	1
+37a0527c33568b88f320e65b511a90bce696dd23	kbadinger	kbadinger@resolventtech.com	2026-03-05T14:48:51-05:00	false	Fix calculate_price regression, sprite gen, and add conflict resolver	4	298	40
+efaeff5c90e31c1a87fef2f2c8fae590230e48fd	kbadinger	kbadinger@resolventtech.com	2026-03-05T13:00:54-05:00	true	[Ralph] Snapshot: Story 097	2	12777	0
+5869d17afde45d217c25787cd8c3a3bb656ca635	kbadinger	kbadinger@resolventtech.com	2026-03-05T12:57:51-05:00	true	[Ralph] Deploy fix: Story 097	4	45	11
+eb3abd39a71cf31645286eec3467a0378aa4778c	kbadinger	kbadinger@resolventtech.com	2026-03-05T12:57:13-05:00	true	[Ralph] Story 097: Price history model	4	20	12
+ac02d1349360c791575c89af24c11b85f8e4ae09	kbadinger	kbadinger@resolventtech.com	2026-03-05T12:57:03-05:00	true	[Ralph] Snapshot: Story 096	2	12777	0
+0dd5f0761830409e7e5d34358b526b0657c56859	kbadinger	kbadinger@resolventtech.com	2026-03-05T12:55:43-05:00	true	[Ralph] Story 096: Supply and demand pricing	7	78	13
+4b00632140e718f3bab50f0fe5add89fe28e47c3	kbadinger	kbadinger@resolventtech.com	2026-03-05T12:50:03-05:00	true	[Ralph] Snapshot: Story 095	2	12777	0
+53dc5197306ce135644ca34c3588da2323e48c89	kbadinger	kbadinger@resolventtech.com	2026-03-05T12:46:20-05:00	true	[Ralph] Story 095: Herbs to medicine supply chain	6	70	15
+4718a09c9557836a0cb27d675d16f471e24a2398	kbadinger	kbadinger@resolventtech.com	2026-03-05T12:10:17-05:00	true	[Ralph] Snapshot: Story 094	2	12777	0
+19b64d54dfadf4384cc0fb75aca08144043b1c75	kbadinger	kbadinger@resolventtech.com	2026-03-05T12:09:00-05:00	true	[Ralph] Story 094: Fish to market supply chain	6	86	13
+10afa15ac4fa782dd59e1bc5e9876ceb5d25854f	kbadinger	kbadinger@resolventtech.com	2026-03-05T12:04:44-05:00	true	[Ralph] Snapshot: Story 093	2	12777	0
+795bbd1401894f07f936b43ba532e3f402cab123	kbadinger	kbadinger@resolventtech.com	2026-03-05T12:03:31-05:00	true	[Ralph] Story 093: Wood to lumber supply chain	6	62	14
+bb072815dc1e399be9b04bf83841c8e75cfa4ab0	kbadinger	kbadinger@resolventtech.com	2026-03-05T11:59:20-05:00	true	[Ralph] Snapshot: Story 092	2	12777	0
+00f6b47edf26cf6ff44a0ab57e7fbc6da87a50d2	kbadinger	kbadinger@resolventtech.com	2026-03-05T11:56:28-05:00	true	[Ralph] Story 092: Ore to tools supply chain	6	62	18
+fa7342f872a88fe2cbbdccbd5b065a3b2e41f561	kbadinger	kbadinger@resolventtech.com	2026-03-05T10:49:13-05:00	true	[Ralph] Snapshot: Story 091	2	12777	0
+a27b3079eb71b4051400405097d036522c79e5f0	kbadinger	kbadinger@resolventtech.com	2026-03-05T10:47:58-05:00	true	[Ralph] Story 091: Wheat to bread supply chain	4	18	10
+266c25c02faa1620130439b8b718f59baafe24fe	kbadinger	kbadinger@resolventtech.com	2026-03-05T10:47:49-05:00	true	[Ralph] Snapshot: Story 090	2	12777	0
+bd9b4d3497220a0727ef059d3ded238999194bd8	kbadinger	kbadinger@resolventtech.com	2026-03-05T10:46:37-05:00	true	[Ralph] Story 090: Inheritance	6	73	14
+15de98de8dfa8bcf0015d21687e833de7b9a6fc6	kbadinger	kbadinger@resolventtech.com	2026-03-05T10:40:44-05:00	true	[Ralph] Snapshot: Story 089	2	12777	0
+06808dcfc36d6ddf92e9007c6eeabef072794e78	kbadinger	kbadinger@resolventtech.com	2026-03-05T10:39:15-05:00	true	[Ralph] Story 089: Aging and death	7	42	14
+c5ce2f4ef161298a1626a799bd3f5339103366d7	kbadinger	kbadinger@resolventtech.com	2026-03-05T10:34:07-05:00	true	[Ralph] Snapshot: Story 088	2	12777	0
+c11319d28c21bbdb51a4177867f78e894964aba1	kbadinger	kbadinger@resolventtech.com	2026-03-05T10:32:37-05:00	true	[Ralph] Story 088: Marriage system	6	72	14
+e73e1bb7a441b47548ca25d902c4063c3d99035e	kbadinger	kbadinger@resolventtech.com	2026-03-05T10:27:45-05:00	true	[Ralph] Snapshot: Story 087	2	12777	0
+b9a7df211858f02b316921a6658cb0f6fd9505fd	kbadinger	kbadinger@resolventtech.com	2026-03-05T10:24:49-05:00	true	[Ralph] Story 087: Friendship and rivalry	6	165	16
+adbd9e1cb13590f72c2a53e0a8bfe6ab70e663bd	kbadinger	kbadinger@resolventtech.com	2026-03-05T01:33:43-05:00	true	[Ralph] Snapshot: Story 086	2	12777	0
+da580a379d3a82755d722096d77a7cc611b0844e	kbadinger	kbadinger@resolventtech.com	2026-03-05T01:32:22-05:00	true	[Ralph] Deploy fix: Story 086	3	14	16
+e246f9c89cbb3792a035e23bfe7595448602821e	kbadinger	kbadinger@resolventtech.com	2026-03-05T01:31:43-05:00	true	[Ralph] Story 086: Relationship model	6	55	17
+e2c1391cb736b6e881b36f1c676488d6a31dde52	kbadinger	kbadinger@resolventtech.com	2026-03-05T00:26:39-05:00	true	[Ralph] Snapshot: Story 085	2	12777	0
+1d3144543d3b860938189bb32e90083013c44196	kbadinger	kbadinger@resolventtech.com	2026-03-05T00:25:20-05:00	true	[Ralph] Story 085: Add thief role behavior	6	49	16
+a61c7c957f6a8d5590eb75dc2fa25431ca8d2003	kbadinger	kbadinger@resolventtech.com	2026-03-05T00:17:44-05:00	true	[Ralph] Story 084: Add politician role behavior	4	19	11
+8f4828eff898415babc19de7b90ec128c8471b1a	kbadinger	kbadinger@resolventtech.com	2026-03-05T00:17:35-05:00	true	[Ralph] Snapshot: Story 083	2	12777	0
+b001f5454545d1f534e7821e42c21e5ddbf93968	kbadinger	kbadinger@resolventtech.com	2026-03-05T00:16:22-05:00	true	[Ralph] Deploy fix: Story 083	3	23	10
+e5ff5f3ae5327c49f47fde711a3d3f8a2c69f7da	kbadinger	kbadinger@resolventtech.com	2026-03-05T00:15:05-05:00	true	[Ralph] Story 083: Add bard role behavior	4	19	11
+ba20cb07a4c8a756d27319fc60ba6e06dc14f3e4	kbadinger	kbadinger@resolventtech.com	2026-03-05T00:14:55-05:00	true	[Ralph] Snapshot: Story 082	2	12777	0
+ed9b6b774fa797b611e929c4395873da7d08b6bd	kbadinger	kbadinger@resolventtech.com	2026-03-05T00:13:34-05:00	true	[Ralph] Story 082: Add artist role behavior	6	50	14
+aa01373bf3220991fc302497597071ef9890f512	kbadinger	kbadinger@resolventtech.com	2026-03-05T00:08:00-05:00	true	[Ralph] Snapshot: Story 081	2	12777	0
+7090e25731ab2bca8ad3ae385b503582049151cf	kbadinger	kbadinger@resolventtech.com	2026-03-05T00:06:39-05:00	true	[Ralph] Story 081: Add fisherman role behavior	6	42	15
+5def2957e6d647f44748fb9e11ded6a30c338d34	kbadinger	kbadinger@resolventtech.com	2026-03-05T00:01:51-05:00	true	[Ralph] Snapshot: Story 080	2	12777	0
+a0752212644215be273e5ee30c03666bf9327bf0	kbadinger	kbadinger@resolventtech.com	2026-03-05T00:00:40-05:00	true	[Ralph] Story 080: Add lumberjack role behavior	6	41	14
+5fd4d446efb5dd2161f84f1df97378abe0f84da2	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:56:27-05:00	true	[Ralph] Snapshot: Story 079	2	12777	0
+6beff606c530b3b9e7c23a947e430eb352b1c225	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:55:08-05:00	true	[Ralph] Deploy fix: Story 079	2	11	10
+f6279a4cd65dbf9daac3ef11c743ef9223a52b8f	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:52:58-05:00	true	[Ralph] Story 079: Add miner role behavior	6	40	13
+0fc7a9bfe7394c5d1e44b40abdb73d7283570eb3	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:48:23-05:00	true	[Ralph] Snapshot: Story 078	2	12777	0
+e68e7d70138138bc63f49d8dca7a78e893685a0c	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:47:11-05:00	true	[Ralph] Story 078: Add tavern_keeper role behavior	4	19	11
+4308f2b56cf9e09b0871918b1853ec8f38ae2296	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:47:02-05:00	true	[Ralph] Snapshot: Story 077	2	12777	0
+e7d0364896bb76900a9d8af29759f49bde57c089	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:45:50-05:00	true	[Ralph] Story 077: Add doctor role behavior	4	20	12
+cc7e940d24275987209ace21da34839ffc032f37	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:45:40-05:00	true	[Ralph] Snapshot: Story 076	2	12777	0
+4d996dcc73de013ce0f52c2189c98550466597b0	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:44:29-05:00	true	[Ralph] Story 076: Add teacher role behavior	4	18	10
+3835866fde0e3585ec401e650dac28c8ee1560d0	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:44:19-05:00	true	[Ralph] Snapshot: Story 075	2	12777	0
+cbd7a3cb8efeafe58b29f0adb4cd601e36c7e581	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:43:16-05:00	true	[Ralph] Story 075: Add priest role behavior	6	37	15
+4d57a897a5114a12e4a034a2be35ccbfde87d501	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:37:37-05:00	true	[Ralph] Snapshot: Story 074	2	12777	0
+7d66269ca692803cfc279de69bf7dd252b14c7e3	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:36:10-05:00	true	[Ralph] Story 074: Add guard role behavior	4	19	11
+50e70e086d0a821517dc5c4cf95e6aafbe085ebd	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:36:00-05:00	true	[Ralph] Snapshot: Story 073	2	12777	0
+b8e074951d1a341b306e3d35efff1d2e04e7a51f	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:33:15-05:00	true	[Ralph] Deploy fix: Story 073	2	10	9
+49939a5c1d630aca050d3875237df1788f991fba	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:32:03-05:00	true	[Ralph] Story 073: Add blacksmith role behavior	6	50	13
+9c3690c819fc1b2e9927959f28a59774df4e60a3	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:28:07-05:00	true	[Ralph] Snapshot: Story 072	2	12777	0
+36b79c17799181e3aa0cbd0275cfb50255ec379d	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:26:55-05:00	true	[Ralph] Story 072: Add baker role behavior	6	53	14
+0b0797fa3e558bcdc1358e5360f5cea4a5f212c9	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:23:12-05:00	true	[Ralph] Snapshot: Story 071	2	12777	0
+3a1760a57dfeba842f2b6e04fccddf266ae4f4ec	kbadinger	kbadinger@resolventtech.com	2026-03-04T23:20:25-05:00	true	[Ralph] Story 071: Add farmer role behavior	6	90	15
+1b376ee6e6ad8c97f4744c81f06357c18d7ce9ab	kbadinger	kbadinger@resolventtech.com	2026-03-04T20:48:50-05:00	true	[Ralph] Snapshot: Story 069	3	12777	0
+20b46ac00700b49cc3c7847c543081e68cbea4b4	kbadinger	kbadinger@resolventtech.com	2026-03-04T20:46:25-05:00	true	[Ralph] Story 069: Add windmill building type	5	62	14
+67c95907d73dd3893e9debd9c8aa30eb8cffd3bf	kbadinger	kbadinger@resolventtech.com	2026-03-04T20:45:14-05:00	false	seed_all_buildings in process_tick + show test source in Qwen prompt	2	113	2
+09df231491b10e47c3ce36b11ec4cef19e4dda0a	kbadinger	kbadinger@resolventtech.com	2026-03-04T19:39:01-05:00	true	[Ralph] Snapshot: Story 070	2	12585	0
+739ad27ffcd006d1538b13c3f8952f6b8ae64c91	kbadinger	kbadinger@resolventtech.com	2026-03-04T19:36:36-05:00	true	[Ralph] Story 070: Add watchtower building type	6	99	17
+6707c4c6c70c19e91f3fb2cb77b1f7d13edfce70	kbadinger	kbadinger@resolventtech.com	2026-03-04T19:24:33-05:00	false	Wire sprite gen into Ralph, fix seed_all_buildings, smart constant patching	5	249	62
+10a2658ba1106631e229a6ec3a78c19870de2b2f	kbadinger	kbadinger@resolventtech.com	2026-03-04T18:45:45-05:00	true	[Ralph] Snapshot: Story 068	2	12585	0
+8a9b52b198325284ebc69ec8c9251720da3241a8	kbadinger	kbadinger@resolventtech.com	2026-03-04T18:44:25-05:00	true	[Ralph] Story 068: Add garden building type	6	103	42
+8fffa97f2256a0f22ccd6697d65a8c1d25cd7450	kbadinger	kbadinger@resolventtech.com	2026-03-04T18:35:44-05:00	true	[Ralph] Snapshot: Story 067	2	12585	0
+a02f80546d01dd9e2317ce1452f78457a43b1996	kbadinger	kbadinger@resolventtech.com	2026-03-04T18:33:27-05:00	true	[Ralph] Story 067: Add graveyard building type	6	72	40
+a30c9ed44fd68b0c3e1f1f5ce63731ba38446cbe	kbadinger	kbadinger@resolventtech.com	2026-03-04T18:29:51-05:00	true	[Ralph] Snapshot: Story 066	2	12585	0
+1226bd715689e094058af7fab49fb0a45bd46224	kbadinger	kbadinger@resolventtech.com	2026-03-04T18:28:34-05:00	true	[Ralph] Story 066: Add prison building type	6	45	13
+09b0d232cceb4eb4802a67a2cfbce026918dfaff	kbadinger	kbadinger@resolventtech.com	2026-03-04T18:25:09-05:00	true	[Ralph] Snapshot: Story 065	2	12585	0
+79eec19fcaf2ef81146aad2a86c44c59284095d8	kbadinger	kbadinger@resolventtech.com	2026-03-04T18:23:55-05:00	true	[Ralph] Story 065: Add arena building type	6	99	39
+56c10050e5e74d737d02f9609b116333474c46c0	kbadinger	kbadinger@resolventtech.com	2026-03-04T18:15:37-05:00	true	[Ralph] Snapshot: Story 064	2	12585	0
+e5988d24a5d52196de05688c18cf41e3c41a1ee5	kbadinger	kbadinger@resolventtech.com	2026-03-04T18:13:59-05:00	true	[Ralph] Deploy fix: Story 064	2	12	11
+2580887c9d0a76b12692a912bc3dc8b829354344	kbadinger	kbadinger@resolventtech.com	2026-03-04T17:54:10-05:00	true	[Ralph] Sprites for Story 064	2	0	0
+c5baa60540d158bac8118da91d500d0281a0ac09	kbadinger	kbadinger@resolventtech.com	2026-03-04T17:53:54-05:00	true	[Ralph] Story 064: Add theater building type	23	119	31
+fc8639fddc6cd6f86b1c298a046540a900beeee1	kbadinger	kbadinger@resolventtech.com	2026-03-04T16:37:52-05:00	true	[Ralph] Snapshot: Story 063	2	12585	0
+8b0585342292322d7fd7f9edcd124965c1cd4cb4	kbadinger	kbadinger@resolventtech.com	2026-03-04T16:33:03-05:00	true	[Ralph] Story 063: Add bank building type	6	72	14
+283ef462b242ee62da53c911a7d35b488c95724d	kbadinger	kbadinger@resolventtech.com	2026-03-04T16:29:18-05:00	true	[Ralph] Snapshot: Story 062	2	12585	0
+ce8dbf929b188bce38ed7c81935c591082965b76	kbadinger	kbadinger@resolventtech.com	2026-03-04T16:27:30-05:00	true	[Ralph] Story 062: Add warehouse building type	6	72	15
+2603845012d72b3df9180a39a1b7375b4cd05cd1	kbadinger	kbadinger@resolventtech.com	2026-03-04T16:23:34-05:00	true	[Ralph] Snapshot: Story 061	2	12585	0
+1a03934bcb4be834cfb038b83dcf351a33f25324	kbadinger	kbadinger@resolventtech.com	2026-03-04T16:21:58-05:00	true	[Ralph] Story 061: Add well building type	6	89	19
+23002faca5425b2210165c4e52c7e0bf25b9775a	kbadinger	kbadinger@resolventtech.com	2026-03-04T16:08:28-05:00	true	[Ralph] Snapshot: Story 060	2	12585	0
+4fb1fc86a3b98dcc5f0ec7f795327f0060f9eff2	kbadinger	kbadinger@resolventtech.com	2026-03-04T16:07:16-05:00	true	[Ralph] Story 060: Add fountain building type	6	67	13
+98b1eb0f304b732a737e8a40318d5123d234e3a5	kbadinger	kbadinger@resolventtech.com	2026-03-04T16:04:02-05:00	true	[Ralph] Snapshot: Story 059	2	12585	0
+5c08ec7c8cd196bb631f81bc558db874096af354	kbadinger	kbadinger@resolventtech.com	2026-03-04T16:02:49-05:00	true	[Ralph] Story 059: Add gate building type	6	86	29
+1053f54d947a9b9f443e339de351b6d7d0ff108d	kbadinger	kbadinger@resolventtech.com	2026-03-04T15:59:45-05:00	true	[Ralph] Snapshot: Story 058	2	12585	0
+33db06b165abcca0151550b2fd1f86a0c259831f	kbadinger	kbadinger@resolventtech.com	2026-03-04T15:56:27-05:00	true	[Ralph] Story 058: Add wall building type	6	48	14
+6e891d21f187fb112b4a756573f7c954adf8fb07	kbadinger	kbadinger@resolventtech.com	2026-03-04T15:51:15-05:00	true	[Ralph] Snapshot: Story 057	2	12585	0
+b9efbd8a3b103f3ed19ec91e7a84d3cd78f64604	kbadinger	kbadinger@resolventtech.com	2026-03-04T15:49:24-05:00	true	[Ralph] Story 057: Add guard_tower building type	6	145	24
+d7d21634edb91f310ada8f646c592549596eedf6	kbadinger	kbadinger@resolventtech.com	2026-03-04T15:37:39-05:00	false	Feed Qwen its post-write errors instead of re-running pre-write tests	1	22	7
+f7415a73e36130c54be96b6b20bd0fc89671eab8	kbadinger	kbadinger@resolventtech.com	2026-03-04T15:27:56-05:00	true	[Ralph] Story 056: Add fishing_dock building type	2	66	6
+8fd17ef410ab69dd4e982ea066c821166e32aea4	kbadinger	kbadinger@resolventtech.com	2026-03-04T15:12:04-05:00	false	Redirect misplaced BUILDING_TYPES from models.py to simulation.py	2	52	2
+b10d7d89384d5e35ed70e81d4f7dd3cf61f6a934	kbadinger	kbadinger@resolventtech.com	2026-03-04T14:54:02-05:00	true	[Ralph] Story 055: Add lumber_mill building type	2	67	12
+8e63cc502c56a2b8223640be2785925ac403de08	kbadinger	kbadinger@resolventtech.com	2026-03-04T14:26:37-05:00	false	Increase post-write loop detection threshold from 3 to 5	2	2	2
+05047f13d73a9d1aaadfa671743b5035b200560b	kbadinger	kbadinger@resolventtech.com	2026-03-04T14:17:08-05:00	true	[Ralph] Snapshot: Story 054	2	12585	0
+299c3503028fc4a65ba26a3e784ed8e7152c401a	kbadinger	kbadinger@resolventtech.com	2026-03-04T14:12:56-05:00	true	[Ralph] Story 054: Add mine building type	6	144	17
+18a4a8636ef6f008aecf77517593ca83923f7136	kbadinger	kbadinger@resolventtech.com	2026-03-04T14:01:36-05:00	false	Reset stories 054-055 to pending	1	2	2
+36e4e7569db540e89e39c34ec8e93fd6512a8ec4	kbadinger	kbadinger@resolventtech.com	2026-03-04T13:07:21-05:00	false	Fix loop detection: track post-write errors, not pre-write	1	14	9
+a457ffebb07ce5d1e39b0d910f94d84a6e9a1365	kbadinger	kbadinger@resolventtech.com	2026-03-04T12:57:03-05:00	false	Fix patch parser: tolerate Qwen's format variations	2	52	13
+adbeaaa018948c9c07e89152a2b80ac10f0c076b	kbadinger	kbadinger@resolventtech.com	2026-03-04T12:29:21-05:00	false	Switch Ralph to patch mode for existing files	3	434	36
+7ee0deb5155eabb22ac3f599a0e5443724a60677	kbadinger	kbadinger@resolventtech.com	2026-03-04T11:36:24-05:00	true	[Ralph] Snapshot: Story 053	2	12585	0
+b07a8f4b43ea5cc947ad172bb2cfd5bb3eb1dea2	kbadinger	kbadinger@resolventtech.com	2026-03-04T11:34:57-05:00	true	[Ralph] Story 053: Add library building type	6	65	16
+1986562d45f36716b4354ac258dac24ef4a4c02c	kbadinger	kbadinger@resolventtech.com	2026-03-04T11:27:49-05:00	true	[Ralph] Snapshot: Story 052	2	12585	0
+0635ec6d1804db5ce4a3b8281c85a7934b41b93a	kbadinger	kbadinger@resolventtech.com	2026-03-04T11:26:29-05:00	true	[Ralph] Story 052: Add tavern building type	6	124	15
+77bacf96b4fd647e1539d2e98e19c425ac33cce2	kbadinger	kbadinger@resolventtech.com	2026-03-04T11:19:04-05:00	true	[Ralph] Snapshot: Story 051	2	12585	0
+3d46233fa58e4f8b164fb639da1069dac673505d	kbadinger	kbadinger@resolventtech.com	2026-03-04T11:17:01-05:00	true	[Ralph] Story 051: Add hospital building type	6	83	16
+08ea7569be30a840996b59820189c462f29818d0	kbadinger	kbadinger@resolventtech.com	2026-03-04T10:56:11-05:00	true	[Ralph] Snapshot: Story 050	2	12585	0
+3efdefae6babaa76dca8f7a605075233ab434f9d	kbadinger	kbadinger@resolventtech.com	2026-03-04T10:54:50-05:00	true	[Ralph] Story 050: Add school building type	6	69	14
+80380bf9bd25ac8b281668793b90ef4ffa11df4c	kbadinger	kbadinger@resolventtech.com	2026-03-04T10:47:19-05:00	true	[Ralph] Snapshot: Story 049	3	12585	0
+d951b0a157f86396b1214292326961ee56174c94	kbadinger	kbadinger@resolventtech.com	2026-03-04T10:44:37-05:00	true	[Ralph] Story 049: Add church building type	6	96	18
+f651c4cd8fd5756df9e6264eadcbeec462e0566e	kbadinger	kbadinger@resolventtech.com	2026-03-04T10:36:05-05:00	false	Fix merge logic to prevent function body corruption + crash recovery	3	62	31
+fd247bf6d9e6007764514e5089c04f1c7e428986	kbadinger	kbadinger@resolventtech.com	2026-03-04T09:11:40-05:00	true	[Ralph] Snapshot: Story 048	4	12585	0
+d42f99ce3150f51bdd4dee72841623f1d373c7c4	kbadinger	kbadinger@resolventtech.com	2026-03-04T09:08:50-05:00	true	[Ralph] Story 048: Add farm building type	6	109	39
+ca013e992610264f9076d021bb2b05b3191855a6	kbadinger	kbadinger@resolventtech.com	2026-03-04T08:56:06-05:00	false	Fix deploy: add NUL/test_debug.db to gitignore, mark story 047 done	2	6	1
+eaa074ded18951fe67cfd10f1699ace569cd452e	kbadinger	kbadinger@resolventtech.com	2026-03-04T08:47:10-05:00	true	[Ralph] Deploy fix: Story 047	2	10	9
+f7507db71266fe834417570a6f7bee1122dda0ea	kbadinger	kbadinger@resolventtech.com	2026-03-04T08:43:11-05:00	true	[Ralph] Story 047: Add blacksmith building type	6	109	19
+5d49b0feddf42cae12347fc8c158c1fd0e222f8e	kbadinger	kbadinger@resolventtech.com	2026-03-04T08:31:38-05:00	false	Complete test scaffolding + Ralph pipeline hardening for 24h unattended run	9	3948	67
+8acd47fe8cb7341dbd0dd75912c12918df628e19	kbadinger	kbadinger@resolventtech.com	2026-03-04T08:07:29-05:00	false	Fix story 046 + write tests for stories 046-070 + fix test bugs	20	10074	89
+4412b57a3df01f0bcc8a38a56cae82b8953881fc	kbadinger	kbadinger@resolventtech.com	2026-03-03T23:14:13-05:00	true	[Ralph] Snapshot: Story 045	4	12585	0
+bc35089412bd4ac809869bedf5b401abb3bcde29	kbadinger	kbadinger@resolventtech.com	2026-03-03T23:12:01-05:00	true	[Ralph] Story 045: PRD conversion	6	125	29
+32d219933f672219483cc31fb6ab5329881b9c70	kbadinger	kbadinger@resolventtech.com	2026-03-03T22:24:11-05:00	true	[Ralph] Snapshot: Story 044	4	12585	0
+a74fe0387eb2146061ce130c0e7066eae10a55fa	kbadinger	kbadinger@resolventtech.com	2026-03-03T22:23:16-05:00	true	[Ralph] Story 044: Admin approval	4	19	11
+b08ae4784a0084f11e6d84de9857ccf0411e72d7	kbadinger	kbadinger@resolventtech.com	2026-03-03T22:23:06-05:00	true	[Ralph] Snapshot: Story 043	4	12585	0
+92fca99bfbc0af0e1b4d0f8dc8e7eaceb231f484	kbadinger	kbadinger@resolventtech.com	2026-03-03T22:21:55-05:00	true	[Ralph] Story 043: Voting with IP dedup	6	159	20
+0ed221d8b3da133451d5bd6fe7d709e1c7fc9a76	kbadinger	kbadinger@resolventtech.com	2026-03-03T22:18:10-05:00	true	[Ralph] Snapshot: Story 042	4	12585	0
+77f5821bdabddf993ed4a1cd65f67f50b4b49767	kbadinger	kbadinger@resolventtech.com	2026-03-03T22:16:57-05:00	true	[Ralph] Story 042: Feature submit and list	6	86	13
+24ac93a818cd995ed69c4c6cbe55ff789827730a	kbadinger	kbadinger@resolventtech.com	2026-03-03T22:14:27-05:00	true	[Ralph] Snapshot: Story 041	4	12585	0
+21b341391228b9c8e686d9f38720a637a8f60f43	kbadinger	kbadinger@resolventtech.com	2026-03-03T22:13:24-05:00	true	[Ralph] Story 041: Utility-based decisions	6	63	15
+9db2ad4bdeeca28c1ac4a881e1074e8d1c3f503c	kbadinger	kbadinger@resolventtech.com	2026-03-03T22:01:48-05:00	true	[Ralph] Snapshot: Story 040	4	12585	0
+857818b2a7b6dc1c386f126d063ef7e11dea7f87	kbadinger	kbadinger@resolventtech.com	2026-03-03T22:00:29-05:00	true	[Ralph] Story 040: Personality traits	7	105	60
+4774d5d64aa086d7a34aaefd2d841ba47e1de8a5	kbadinger	kbadinger@resolventtech.com	2026-03-03T21:54:24-05:00	true	[Ralph] Snapshot: Story 039	4	12585	0
+c0ee6cdf84c67c9fbf52346cc6ebf6a40ebc74e7	kbadinger	kbadinger@resolventtech.com	2026-03-03T21:52:55-05:00	true	[Ralph] Story 039: NPC happiness field	6	91	48
+ed754e369b98ebbc22b64df2fda875d450f81d99	kbadinger	kbadinger@resolventtech.com	2026-03-03T21:36:55-05:00	false	Fix texture loading: retry failed every 10s, use Image() for reliable events, timestamp busts CDN cache on retry	2	28	19
+c3da0e397f3554c0a67bf3122a31675a239ceacd	kbadinger	kbadinger@resolventtech.com	2026-03-03T21:33:06-05:00	false	Clear old snapshots — fresh start from Story 032	97	0	62811
+7305f50d8e73aefdc5eef931d51e43c13aefb5e2	kbadinger	kbadinger@resolventtech.com	2026-03-03T21:25:16-05:00	false	Fix status counter visibility, add favicon from town hall sprite	4	21	13
+e4c956a705ae6fcd7c1a10e5cdbb7d1570982d11	kbadinger	kbadinger@resolventtech.com	2026-03-03T21:22:50-05:00	false	Bump script tag to v19 to bust Cloudflare cache for status counter	1	1	1
+224a91f795ae8bbf8da9529db0ace29dc0de876e	kbadinger	kbadinger@resolventtech.com	2026-03-03T21:18:30-05:00	false	Restore status counter (bottom-right tile/building/npc counts)	1	14	0
+e610410f4f3f7e1547a69e316cc46c244f2bbf77	kbadinger	kbadinger@resolventtech.com	2026-03-03T21:15:17-05:00	false	Remove all debug overlays, update tick description to in-game hours	2	3	62
+5593db2bd141133d9cf10be61dbaa4e5a7c9ce02	kbadinger	kbadinger@resolventtech.com	2026-03-03T21:02:31-05:00	false	Bump ASSET_VERSION to v17 to bust cached pre-retrim sprites	2	2	2
+5a1fe9966202f7e779e24bf28f883374829dec44	kbadinger	kbadinger@resolventtech.com	2026-03-03T20:57:44-05:00	false	Re-trim house and farm sprites: flush base to bottom edge (matches civic)	2	0	0
+5a5c39614610ccd447ccaa4db1957f1f09b50f30	kbadinger	kbadinger@resolventtech.com	2026-03-03T20:54:33-05:00	false	Fix debug diamond: use actual tile outer vertices for 2x2 footprint	2	13	12
+9ec8a0c3af806b77c7494a361499321b95fc7449	kbadinger	kbadinger@resolventtech.com	2026-03-03T20:46:45-05:00	false	Debug: red 2x2 footprint diamond under each building	2	17	2
+cbb460d7ec4058b706459893f001f53012e7a73d	kbadinger	kbadinger@resolventtech.com	2026-03-03T20:31:41-05:00	false	Revert civic scale — keep all buildings at 2.0x, bump v14	2	4	6
+1d795d0ca4bc24b833d486c26aa3fec0fc4daf76	kbadinger	kbadinger@resolventtech.com	2026-03-03T20:28:36-05:00	false	Clickable HUD stat info + scale up civic building sprite	2	33	8
+53b35221b333c93a42cc64866748ce41668b2708	kbadinger	kbadinger@resolventtech.com	2026-03-03T20:17:14-05:00	false	Fix building positioning: anchor at center of 2x2 block, not top corner	1	4	2
+e875e51c3a7a0720077678be01522b60d9d3b1e8	kbadinger	kbadinger@resolventtech.com	2026-03-03T19:31:11-05:00	false	Debug: add tile coordinate labels every 5th cell, bump cache v12	2	16	2
+8709315ad674b6f63dd11c145f665fe12d297ccf	kbadinger	kbadinger@resolventtech.com	2026-03-03T18:14:47-05:00	false	Remove playwright from requirements.txt — only used locally by Ralph, hangs Railway builds	1	0	1
+66de7b716e09564cfd61a81ccace4249db33c50e	kbadinger	kbadinger@resolventtech.com	2026-03-03T17:57:36-05:00	false	Subtle checkerboard ground: close green shades, faint grid lines (0.08 opacity)	2	9	7
+76f2b33731e409f9f1164f4a2fd7edf2b465138e	kbadinger	kbadinger@resolventtech.com	2026-03-03T17:50:08-05:00	false	Solid green ground (no checkerboard/grid lines), restore full building sprites	2	6	7
+71f67141003f723bfdb5fc096e5f4a89fa504565	kbadinger	kbadinger@resolventtech.com	2026-03-03T17:45:52-05:00	false	Add hover tooltips to HUD stat labels explaining each metric	1	6	6
+743385bf7a8d04614d7907c89414d7665b558508	kbadinger	kbadinger@resolventtech.com	2026-03-03T17:40:55-05:00	false	Push buildings down to fix floating town hall, bump cache v8	2	3	3
+d12104efa2558dfb665022e4da56a3433f506951	kbadinger	kbadinger@resolventtech.com	2026-03-03T17:39:54-05:00	false	Update asset_gen.py: rembg post-processing, download via API, chibi NPC prompts	1	118	38
+5eb978c4b4cbc89eaba3641451eefbb170a6ed0c	kbadinger	kbadinger@resolventtech.com	2026-03-03T17:35:22-05:00	false	Regenerate NPC sprites as standalone characters (no ground plates)	7	8	8
+7afdf8c754b3608bb285481ab24fef4338d6a0b8	kbadinger	kbadinger@resolventtech.com	2026-03-03T17:24:51-05:00	false	Regenerate all sprites with AI background removal (rembg), bump cache v6	10	2	2
+55eeaf1fa513ec42ef66d7eeb113fa5d89c9c9ac	kbadinger	kbadinger@resolventtech.com	2026-03-03T17:09:01-05:00	false	Fix sprite positioning: shift down to sit on tile diamonds	2	4	4
+e14b3fe724d56c314795694055036b49104e0869	kbadinger	kbadinger@resolventtech.com	2026-03-03T17:02:06-05:00	false	High-res sprites (256px buildings, 128px NPCs) — single characters, zoom-friendly	10	2	2
+34f5985052d0b0920574d85d0a72e4cfec699dd0	kbadinger	kbadinger@resolventtech.com	2026-03-03T16:57:07-05:00	false	Fix sprites: single characters, proper anchoring, cache-bust v3	5	6	6
+5829eb389447c3083b177ee56b8a33ecb0f8a5d8	kbadinger	kbadinger@resolventtech.com	2026-03-03T16:42:39-05:00	false	Cache-bust town.js to bypass Cloudflare cached old version	1	1	1
+d220d15354a2c9ff393d6ab1162555778fb729ad	kbadinger	kbadinger@resolventtech.com	2026-03-03T16:36:49-05:00	false	Fix sprite rendering: cache-bust for Cloudflare, show fallbacks immediately	1	17	7
+a786147854f555ec8c663c6c8a35f26b3c36e2b8	kbadinger	kbadinger@resolventtech.com	2026-03-03T16:31:05-05:00	false	Add visible JS error diagnostics to renderer	1	29	0
+6c9a8b0e8d62a38a292802ccabc79b0ff0009358	kbadinger	kbadinger@resolventtech.com	2026-03-03T15:57:02-05:00	false	Process sprites: remove backgrounds, resize, optimize	14	2	2
+b68fd2e9ede694a68cff9a8f329f8d39dad06d5e	kbadinger	kbadinger@resolventtech.com	2026-03-03T15:41:37-05:00	false	Generate sprites + fix deploy pipeline + function preservation guard	19	203	5
+e967fee1e32c6dc2ed31c4b7bebe05d8d916f88e	kbadinger	kbadinger@resolventtech.com	2026-03-03T13:54:42-05:00	true	[Ralph] Snapshot: Story 038	4	12534	0
+d1aca74e1a3c8ebd6c9bcf9296ee47fbbe421759	kbadinger	kbadinger@resolventtech.com	2026-03-03T13:54:34-05:00	true	[Ralph] Story 038: GET /api/stats	6	69	14
+d3bb2949fe61b628a4f226c9081a464f092bfa46	kbadinger	kbadinger@resolventtech.com	2026-03-03T13:52:22-05:00	true	[Ralph] Snapshot: Story 037	4	12534	0
+6bf94d26a7392771e6ab13714286cb7ca97a761c	kbadinger	kbadinger@resolventtech.com	2026-03-03T13:51:53-05:00	true	[Ralph] Story 037: GET /api/events	6	58	15
+38d824925c8ca1867d98d7df384e8b9e64347deb	kbadinger	kbadinger@resolventtech.com	2026-03-03T13:42:29-05:00	true	[Ralph] Story 036: Weather effects	6	102	32
+a40b080d55b9fef04c8617f07e30eeaa4b7d9300	kbadinger	kbadinger@resolventtech.com	2026-03-03T12:57:53-05:00	true	[Ralph] Snapshot: Story 035	4	12534	0
+44c3b9648abb155b9983eba3fad615c10fafe0c1	kbadinger	kbadinger@resolventtech.com	2026-03-03T12:57:46-05:00	true	[Ralph] Story 035: Weather system	6	57	22
+abc299fad3b7376a8d5bda49e36c9d9e3aa766b1	kbadinger	kbadinger@resolventtech.com	2026-03-03T12:53:28-05:00	true	[Ralph] Snapshot: Story 034	4	12534	0
+7196f2e423d0cf0efc6bc44119eb2e6de0b3f7c0	kbadinger	kbadinger@resolventtech.com	2026-03-03T12:53:20-05:00	true	[Ralph] Story 034: Auto-log events in tick	4	19	11
+060071cd4c6e742255d2da3c3b773d14b962dd55	kbadinger	kbadinger@resolventtech.com	2026-03-03T12:53:10-05:00	true	[Ralph] Snapshot: Story 033	4	12534	0
+477f23778c8d57a323208c096b9c167fcd85f61f	kbadinger	kbadinger@resolventtech.com	2026-03-03T12:53:02-05:00	true	[Ralph] Story 033: Event model	6	39	14
+f3423fff0194012634ea0dba5073510dce732bbc	kbadinger	kbadinger@resolventtech.com	2026-03-03T12:50:30-05:00	true	[Ralph] Snapshot: Story 032	4	8	0
+44e3a2729fd715ec06d235b31fa6b144b297b040	kbadinger	kbadinger@resolventtech.com	2026-03-03T12:50:01-05:00	true	[Ralph] Story 032: Population growth	7	113	16
+cbe228b18371f88a2c0b6d5bc764418b965fef06	kbadinger	kbadinger@resolventtech.com	2026-03-03T10:01:23-05:00	false	Seed world on startup so production DB isn't empty	1	16	0
+8ba8303e7635d292a795e0ab9d9b0d93ca63dd8c	kbadinger	kbadinger@resolventtech.com	2026-03-03T09:58:40-05:00	false	Regression gate + recover 5 dropped functions from simulation.py	7	274	47
+99b7afa0bb62306abc698cb00d34c9be70e3e226	kbadinger	kbadinger@resolventtech.com	2026-03-03T08:45:33-05:00	false	Restore simulation.py + models.py after story 032 overwrote them	1	1	1
+8d490a5fe49a1726500bc631b129bc6275c74367	kbadinger	kbadinger@resolventtech.com	2026-03-03T08:18:09-05:00	true	[Ralph] Snapshot: Story 031	4	8	0
+c0a6eae86340ef04d27c854bdb2940d9f4dbb0d7	kbadinger	kbadinger@resolventtech.com	2026-03-03T08:18:02-05:00	true	[Ralph] Story 031: Build building via simulation	6	55	14
+1e80fb61480408db8a60ce72d0ab15be962edeb9	kbadinger	kbadinger@resolventtech.com	2026-03-03T08:16:01-05:00	true	[Ralph] Snapshot: Story 030	4	8	0
+a6025111d1348ab3564a88a416b1ca166c45c0ea	kbadinger	kbadinger@resolventtech.com	2026-03-03T08:15:54-05:00	true	[Ralph] Story 030: Treasury and taxes	7	81	17
+297b50639644301fe62f566099bf0df80eb30ded	kbadinger	kbadinger@resolventtech.com	2026-03-03T08:10:34-05:00	true	[Ralph] Snapshot: Story 029	4	8	0
+308b21eec455ed259931353752dd9e167d8ccb17	kbadinger	kbadinger@resolventtech.com	2026-03-03T08:10:15-05:00	true	[Ralph] Story 029: Buy food	6	67	15
+93805e16d1e204c916b17d80ec0a87ae305d211a	kbadinger	kbadinger@resolventtech.com	2026-03-03T08:06:14-05:00	false	Fix test_s029: seed Food resource before buy_food test	2	7	2
+1c8e18c2bc4ed96e6928d0da52a26c9862198312	kbadinger	kbadinger@resolventtech.com	2026-03-02T22:57:02-05:00	true	[Ralph] Snapshot: Story 028	3	0	0
+b3754781c280877b899b9772681e9f1076ee5841	kbadinger	kbadinger@resolventtech.com	2026-03-02T22:56:55-05:00	true	[Ralph] Story 028: Food production	6	50	17
+bffd1ec72ed6e1f3afb4bd25e3155016cdf7452c	kbadinger	kbadinger@resolventtech.com	2026-03-02T22:53:35-05:00	true	[Ralph] Snapshot: Story 027	3	0	0
+801b335017d9e26ba601596ba7507934e5c5e8a2	kbadinger	kbadinger@resolventtech.com	2026-03-02T22:53:28-05:00	true	[Ralph] Story 027: Resource model	6	37	16
+17a5ab667d269f22c396e53ffa223bd79226555d	kbadinger	kbadinger@resolventtech.com	2026-03-02T22:52:21-05:00	true	[Ralph] Snapshot: Story 026	3	0	0
+bb9f40450089e40dd6392f0a84a315560764f80b	kbadinger	kbadinger@resolventtech.com	2026-03-02T22:52:06-05:00	true	[Ralph] Story 026: Earn gold at work	5	31	14
+ccc31f3cf52260f9483ee9e8163d121c6ac25623	kbadinger	kbadinger@resolventtech.com	2026-03-02T22:50:53-05:00	false	Audit and fix test bugs across all test files	4	32	6
+3d788cf2057a4ab148f993e99b1ce90d8a23a2a7	kbadinger	kbadinger@resolventtech.com	2026-03-02T22:46:09-05:00	false	Fix test_s026: place NPC at building + commit before refresh	2	6	2
+b067dc153b96662ac2e1398294782e59d9d98eb2	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:48:31-05:00	true	[Ralph] Snapshot: Story 025	3	0	0
+f56518cf7ff1bdcc032975517ebd292947b9569d	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:48:24-05:00	true	[Ralph] Story 025: NPC movement	6	110	19
+a7f44d3e24b974748d1a4ea8c2f8b71077279852	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:45:48-05:00	true	[Ralph] Snapshot: Story 024	4	8	0
+c28a0238ebb22fce25e5b37c544a89ef21be32ad	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:45:42-05:00	true	[Ralph] Story 024: WorldState model	7	62	295
+883097a64650ee908db127f0b793e8040265ce86	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:44:23-05:00	true	[Ralph] Snapshot: Story 023	4	8	0
+74c39b6a00127681e71581d8c7d70a4f36e584d5	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:44:16-05:00	true	[Ralph] Story 023: Auto-sleep in tick	6	31	15
+65f5f4744c545ae4a23b8e8e1f97c725a41281a4	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:39:46-05:00	true	[Ralph] Snapshot: Story 022	4	8	0
+05c19436be9c77c8b76b42f2e7f9bfefb9ea2100	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:39:40-05:00	true	[Ralph] Story 022: Sleeping behavior	6	50	15
+97d5c52dd0b5aeb9ea3d7b41863d32ab74ea330b	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:35:37-05:00	true	[Ralph] Snapshot: Story 021	4	8	0
+2088a0311053096bda5932841884063167567a7d	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:35:31-05:00	true	[Ralph] Story 021: Auto-eat in tick	6	32	16
+47e5d4d2fcad2d462730fe94d4da6f292fb75faf	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:32:26-05:00	true	[Ralph] Snapshot: Story 020	4	8	0
+429f416918fcb383badb122c3c9fa2083a78ac65	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:32:17-05:00	true	[Ralph] Story 020: Eating behavior	6	55	15
+cb340506b742f1993e1045b04f48d768c814dce2	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:28:51-05:00	true	[Ralph] Snapshot: Story 019	4	8	0
+43d5360746901062892b675fe192d8c8da00d7b7	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:28:45-05:00	true	[Ralph] Story 019: Assign work to NPCs	6	58	14
+0ecf17041e63937fd297e7c6c7a3b131087191fd	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:23:39-05:00	true	[Ralph] Snapshot: Story 018	4	8	0
+a90b858f567979f4039f15b99399aad3e57390bc	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:23:33-05:00	true	[Ralph] Story 018: Assign homes to NPCs	6	52	15
+5c3a64381449028c527c4df7be406b7fd9fe4860	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:19:50-05:00	true	[Ralph] Snapshot: Story 017	4	8	0
+9dd640d3b912ff8b902e58224e4fa603bfda8d7f	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:19:43-05:00	true	[Ralph] Story 017: Tick decay for hunger and energy	6	33	16
+c096f9514c4e29da7f918a56c0114c46acef0ad0	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:18:17-05:00	true	[Ralph] Snapshot: Story 016	4	8	0
+178ca60bb7b4c1a67989675b83cc66470c0e23bf	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:18:10-05:00	true	[Ralph] Story 016: Add energy field to NPC	4	19	11
+050a92f3a36a64f02d6ebb22b4a08cb188fd99b5	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:18:01-05:00	true	[Ralph] Snapshot: Story 015	4	8	0
+6f24e184a26f6073f7da6101e9291ecbeb7e5682	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:17:54-05:00	true	[Ralph] Story 015: Add hunger field to NPC	4	18	10
+39f4860abd1a7d70e46cd2603a329a52980618ae	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:17:44-05:00	true	[Ralph] Snapshot: Story 014	4	8	0
+f7c83363102fba174fb03322027b431f18153ae6	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:17:38-05:00	true	[Ralph] Story 014: Transaction model and endpoint	7	50	14
+503d8b6c5b11a655362add642897e2081e097dbf	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:16:20-05:00	true	[Ralph] Snapshot: Story 013	4	8	0
+62c89baac05fe6cbe2ee688d1f6c59e8a8ec2fb2	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:16:14-05:00	true	[Ralph] Story 013: Transfer gold function	7	88	17
+0989c7dc63f678b572672d939b31786085869ff3	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:13:05-05:00	true	[Ralph] Snapshot: Story 012	4	8	0
+449ae674654ad6bf544f92347b0fdf874b09c31b	kbadinger	kbadinger@resolventtech.com	2026-03-02T21:12:51-05:00	true	[Ralph] Story 012: Add gold field to NPC	4	22	14
+55d99862fb55051d990466fa21025a9a6e866b51	kbadinger	kbadinger@resolventtech.com	2026-03-02T20:20:11-05:00	false	Add GET /api/world endpoint for main page PixiJS renderer	1	45	3
+fd63e06798312d1926c25518ad84f907da24b747	kbadinger	kbadinger@resolventtech.com	2026-03-02T20:11:07-05:00	false	Fix dashboard cost fields + harden file_writer + reset story 012	3	24	11
+4a5d56793a8fee2548539ed9ffcecb5451707fca	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:39:44-05:00	true	[Ralph] Story 012: Add gold field to NPC	4	19	11
+6a948e583805b603ab68135ec947a25327324c70	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:39:34-05:00	true	[Ralph] Snapshot: Story 011	3	0	0
+694ff85e1f04ef95fdb4fe95c7774fe0873b6c9b	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:39:27-05:00	true	[Ralph] Story 011: POST /api/npcs (admin)	6	84	32
+0137b83c1d4033b24aa966813c5e72126bb2d1de	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:38:12-05:00	true	[Ralph] Snapshot: Story 010	3	0	0
+2512b3db0b8da960afb8eec5dd6d7625908d5f61	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:38:06-05:00	true	[Ralph] Story 010: GET /api/npcs	6	56	15
+26b07912344629a323959d737c62b82df83f3b69	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:37:23-05:00	true	[Ralph] Snapshot: Story 009	3	0	0
+a40794a3389d4915e2362be0452f6b5e92114a41	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:37:17-05:00	true	[Ralph] Story 009: POST /api/buildings (admin)	6	54	63
+49a832ae233c82296c89a3e6e644d491ff02eb31	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:35:48-05:00	true	[Ralph] Snapshot: Story 008	3	0	0
+633ddbddbea5a51ab3a42d3c237a8bf69ca398fe	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:35:41-05:00	true	[Ralph] Story 008: GET /api/buildings	6	115	15
+656e86a9a418c02abce036b03563ac13fb53528d	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:34:46-05:00	true	[Ralph] Snapshot: Story 007	3	5	0
+bfe4992c1467362a842bf198534f99bf533253f1	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:34:12-05:00	true	[Ralph] Story 007: POST /api/tick endpoint	8	70	76
+86bb7436589439d48cd3d4af39fb1933bf01b385	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:32:23-05:00	true	[Ralph] Snapshot: Story 006	3	0	0
+4431ddefea22c8a6ec08de591476b37b361e8b1d	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:32:16-05:00	true	[Ralph] Story 006: GET /api/world endpoint	6	86	14
+561ddc95d8970831f791cfe99e73c1f50438e600	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:31:25-05:00	true	[Ralph] Snapshot: Story 005	3	0	0
+110a819611eb62872a95099d3514c99783db34d1	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:31:19-05:00	true	[Ralph] Story 005: Seed starter NPCs	6	59	16
+b280de1f821f30b1319239952064b73dd7c89dad	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:30:15-05:00	true	[Ralph] Snapshot: Story 004	3	0	0
+ee877fcf70246c5267e44669c4099efcee8045ad	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:30:08-05:00	true	[Ralph] Story 004: Seed starter buildings	6	54	16
+ae30315e649792f8927633372f6e92b20d58aed3	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:29:08-05:00	true	[Ralph] Snapshot: Story 003	3	0	0
+e5287a7f06fdea292658c3034930a5a4e614acc0	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:29:01-05:00	true	[Ralph] Story 003: Add NPC model	6	45	15
+ec2b6cc78878ed5d5e8161d2d2236575d845c88d	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:28:05-05:00	true	[Ralph] Snapshot: Story 002	3	0	0
+e0573af4ddd775621d324f203a0f66033c89776f	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:27:58-05:00	true	[Ralph] Story 002: Add Building model	4	19	11
+f7621fb56965a9fc8a909642838b8b329c299420	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:27:49-05:00	true	[Ralph] Snapshot: Story 001	3	0	0
+834e35a196d525bf1f8f4e618de6cf64fb55aa30	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:27:26-05:00	true	[Ralph] Story 001: Initialize 50x50 grid	3	23	7
+296df2a0be75847e4c0a7030c7eda4c37b186d57	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:22:08-05:00	true	[Ralph] Deploy fix: Story 001	3	17	18
+4ee6f658b03e1f2d0e42e17a3d943471ab8930e3	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:21:52-05:00	true	[Ralph] Story 001: Initialize 50x50 grid	3	25	9
+4b92f24f03893bec67f56e9352160785fa0297b2	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:14:21-05:00	true	[Ralph] Deploy fix: Story 001	3	27	17
+85ba8eac27493005933f14acdfc054ce28fd870b	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:14:05-05:00	true	[Ralph] Story 001: Initialize 50x50 grid	4	20	12
+8fa3ae7ee8db453b0999be27df553098a888cbb1	kbadinger	kbadinger@resolventtech.com	2026-03-02T19:13:18-05:00	false	Switch Ollama to /api/chat with proper think control + tuned params	2	24	13
+1a7c2f905d3291bac3424c3e91c5b91a5c1cd53e	kbadinger	kbadinger@resolventtech.com	2026-03-02T17:28:57-05:00	false	Add timestamped logging to all Ralph phases + bump Ollama timeout to 7200s	2	35	15
+1377a6863a03bcaa20ea81e54385e67959175d99	kbadinger	kbadinger@resolventtech.com	2026-03-02T16:25:20-05:00	false	Unbuffered Python output + clear pycache + reset stories	3	15	6
+ae84156dc1de87033ffc5e88c01e0fad3cb0384e	kbadinger	kbadinger@resolventtech.com	2026-03-02T16:24:20-05:00	true	[Ralph] Deploy fix: Story 001	2	11	10
+6982324a0d4179c8c3d0b5126511c218fc957d4c	kbadinger	kbadinger@resolventtech.com	2026-03-02T16:23:16-05:00	true	[Ralph] Story 001: Initialize 50x50 grid	6	39	19
+ad1e7b188136cb183fb63ca4512cef799e77ed83	kbadinger	kbadinger@resolventtech.com	2026-03-02T16:17:27-05:00	false	Block Ralph on failed stories instead of skipping + reset 001/002	3	17	6
+f85553e8286d059247a087fd10c9dc32228fccdc	kbadinger	kbadinger@resolventtech.com	2026-03-02T16:05:20-05:00	false	Fix railway CLI: add shell=True for Windows .cmd resolution + reset story 001	3	17	9
+b623fcfdf6055a77be330b5a8beaec90d38d631e	kbadinger	kbadinger@resolventtech.com	2026-03-02T16:05:09-05:00	true	[Ralph] Deploy fix: Story 001	4	22	22
+d9ef689d6f8deb6470ccdf7ed597c73b14d92170	kbadinger	kbadinger@resolventtech.com	2026-03-02T16:01:57-05:00	true	[Ralph] Story 001: Initialize 50x50 grid	3	19	11
+d9d1e9931e3f86dc398e3065cc68e3e563cb7c0f	kbadinger	kbadinger@resolventtech.com	2026-03-02T15:54:24-05:00	true	[Ralph] Story 001: Initialize 50x50 grid	4	24	17
+87f8a74eefe26635a20e16823d0c85102492a8d4	kbadinger	kbadinger@resolventtech.com	2026-03-02T15:48:03-05:00	false	Fix Railway CLI not in PATH + reset story 001	3	16	5
+7864e3b0b3c90a940dd6dc555a5b971cb1ef58cd	kbadinger	kbadinger@resolventtech.com	2026-03-02T15:39:01-05:00	true	[Ralph] Deploy fix: Story 001	4	22	18
+73136f26d716b7c1c009386148443e7bbdee0062	kbadinger	kbadinger@resolventtech.com	2026-03-02T15:28:56-05:00	true	[Ralph] Story 001: Initialize 50x50 grid	4	23	14
+d779dc50efd3a0d59330ff8a5766533f272626cb	kbadinger	kbadinger@resolventtech.com	2026-03-02T15:20:14-05:00	false	Add /stories page with per-story status, attempts, and commit links	4	160	0
+eada1cd37a00f0d53930c163a70acfdc1baa65f8	kbadinger	kbadinger@resolventtech.com	2026-03-02T15:11:33-05:00	false	Resilient restart + fix deploy skip + reset story 001	1	10	4
+bad8e0eea353e7e8f5e9cea8b9608e5f7aa73f3f	kbadinger	kbadinger@resolventtech.com	2026-03-02T15:02:14-05:00	false	Stop Ralph on any story failure + Telegram alert	1	13	19
+f0b107aab28f2e4aae057ff77970b18e85715e4a	kbadinger	kbadinger@resolventtech.com	2026-03-02T15:00:36-05:00	false	Fix Ralph skipping failed stories + reset prd.json	2	6	6
+3cecc422af030ec9de01d2047b5bb421c54cb07d	kbadinger	kbadinger@resolventtech.com	2026-03-02T14:54:20-05:00	false	Bump Ollama timeout from 600s to 3600s	1	1	1
+76b016bb03607f8d2331e3a2a7abc361f70d2d3e	kbadinger	kbadinger@resolventtech.com	2026-03-02T14:52:31-05:00	true	[Ralph] Story 001: Initialize 50x50 grid	6	52	4
+4c305d58193041a1ab9dd3b8eecae6bb674c1958	kbadinger	kbadinger@resolventtech.com	2026-03-02T14:18:32-05:00	false	Test isolation + launch prep: prefix 56 tests with story IDs, filter by -k in runner	17	244	105
+a00a4bfde4b6595dec264a8a913a925b0d4616b2	kbadinger	kbadinger@resolventtech.com	2026-03-01T19:13:59-05:00	false	Fix Ralph not loading .env, correct default model to 27b	1	5	1
+2775ecad04cc6c319833b03456df0135a637f825	kbadinger	kbadinger@resolventtech.com	2026-03-01T19:09:44-05:00	false	Security hardening: blocklist bypass, XSS, git staging	3	53	16
+a19d2dac89d2f058c0d364bdc9bb7bdbb2041bc6	kbadinger	kbadinger@resolventtech.com	2026-03-01T18:54:47-05:00	false	Add snapshot timeline page at /timeline	5	144	1
+e37b6bfeb44f5660c9fd8557006f28679d6ce1d2	kbadinger	kbadinger@resolventtech.com	2026-03-01T18:51:15-05:00	false	12 attempts per story, warn at attempt 5	1	4	1
+187bf8c684f6cebf5c77178d8313555d499899b5	kbadinger	kbadinger@resolventtech.com	2026-03-01T18:49:42-05:00	false	Bump MAX_ATTEMPTS to 8, bail early on loop detection	1	4	3
+dda8b167a18a52445f01f5bb8d483f2222b3bb85	kbadinger	kbadinger@resolventtech.com	2026-03-01T18:39:01-05:00	false	Add Telegram activity feed with loop detection	3	121	60
+3476f297ffd5c494b5e7866e7bc4fdc503670765	kbadinger	kbadinger@resolventtech.com	2026-03-01T18:32:06-05:00	false	Add Ralph service management and crash recovery	6	135	0
+ba76a107020196e68ad790f17f6403ed3a05c63d	kbadinger	kbadinger@resolventtech.com	2026-03-01T18:23:48-05:00	false	Fix cost tracker showing fake values before any work is done	1	4	4
+58c3100f7439cb25604ab8789753f184130803f3	kbadinger	kbadinger@resolventtech.com	2026-03-01T18:19:39-05:00	false	Bypass TrustedHostMiddleware for /health endpoint	1	20	3
+2900841e4abc4b79c5869dd572fdfd41f574c33f	kbadinger	kbadinger@resolventtech.com	2026-03-01T17:58:25-05:00	false	Add human intervention log (CHANGELOG.md) with auto-logging	3	70	0
+8ea4f80e9c789b3c5da2b12f7ef60c71ba944381	kbadinger	kbadinger@resolventtech.com	2026-03-01T17:53:53-05:00	false	Fix Railway healthcheck 400 and add deploy log capture	2	84	31
+75ff43bbbe5cab501dcc7deab4d3ed631a0ef935	kbadinger	kbadinger@resolventtech.com	2026-03-01T17:37:39-05:00	false	Add context and dashboard link to game HUD	1	7	3
+826a9ae41cdd341b46523662c78ac14110efc8a0	kbadinger	kbadinger@resolventtech.com	2026-03-01T17:32:09-05:00	false	Day 0 hardening: scaffolding + Ralph safety + dashboard + auto-discovery	49	8225	2
