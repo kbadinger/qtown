@@ -2,7 +2,7 @@
 
 A few months ago I set out to build a fully autonomous AI-driven town simulation. Not as a job. Not for a startup. As a proof — to myself and anyone who looks at my GitHub — that I can ship a complex, real system. And I wanted to do it with an AI developer writing most of the code.
 
-The result is **Qtown v1**: a 50x50 isometric town where NPCs eat, sleep, work, trade, commit crimes, vote in elections, and gossip — all without a single human writing their behavior. 1,451 commits. 510 stories shipped. 88% of the code written by an AI named Ralph.
+The result is **Qtown v1**: a 50x50 isometric town where NPCs eat, sleep, work, trade, commit crimes, vote in elections, and gossip — all without a single human writing their behavior. 1,451 commits. 550 stories shipped. 88% of the code written by an AI named Ralph.
 
 Here's the full story.
 
@@ -44,7 +44,7 @@ Ralph is the agent I built to actually write Qtown. He runs on Qwen 3.5:27b via 
 
 That's it. No magic. No complex planning system. No memory architecture. A tight loop with a clear success condition.
 
-Ralph averaged **2.5 stories per day**, working autonomously. At peak he was shipping 4-5 stories in a session without me touching anything. Over the life of v1, he completed **510 out of 550 stories** in the backlog. The remaining 40 were either deferred to v2, too architecturally complex to delegate without more scaffolding, or intentionally cut as scope changed.
+Ralph averaged **2.5 stories per day**, working autonomously. At peak he was shipping 4-5 stories in a session without me touching anything. Over the life of v1, he closed out the entire backlog: **550 of 550 stories**. The last forty took longer than the rest combined — they were the ones I'd deferred for being too architecturally tangled to delegate cleanly. Ralph eventually got them too, with more scaffold help on each one.
 
 ---
 
@@ -54,7 +54,7 @@ Let me be concrete about the scale:
 
 - **1,451 total commits**
 - **88% of code written by Ralph**
-- **510 stories completed**
+- **550 of 550 stories completed**
 - **30-second tick loop**
 - **50x50 grid, fully simulated town**
 - **One Postgres database, one Python monolith**
@@ -118,13 +118,15 @@ None of these are dealbreakers. They're just the edges of what the current scaff
 
 Qtown v1 proved the concept. One developer, one AI agent, one monolith, one town.
 
-V2 is a different kind of ambition.
+v2 is a different kind of ambition.
 
-We've evolved Qtown into a polyglot microservices architecture where each neighborhood runs on a different tech stack — Go for the Market District, Rust for the Fortress, Python for the Academy's AI agents. 194 stories, 420 files, 12 languages. Kafka for event streaming. gRPC between services. GraphQL for the client API. Redis. Elasticsearch. 9 neighborhoods, each its own bounded context, each its own engineering philosophy.
+I evolved Qtown into a polyglot microservices architecture where each neighborhood runs on a different tech stack — Go for the Market District, Rust for the Fortress, Python for the Academy's AI agents. 194 stories so far, 420 files, 12 languages. Kafka for event streaming. gRPC between services. GraphQL for the client API. Redis. Elasticsearch. 9 neighborhoods, each its own bounded context, each its own engineering philosophy. Ralph v2 runs five Ollama models now, routed by story type — heavy reasoning for architecture, fast coder for everyday work, debug specialist for race conditions.
 
-The qtown.ai site is currently down — we're mid-migration to v2 infrastructure. It'll be back up soon.
+v1 still runs at **[v1.qtown.ai](https://v1.qtown.ai)** as a live archive. You can watch the original simulation tick along — Helen the mayor, Garrett the merchant, the lumber mill, the bakery, the elections, the rumors. It's the proof that the whole thing was real.
 
-But that's a story for the next post.
+**[qtown.ai](https://qtown.ai)** is the v2 home. While v2 is being finished, it's a coming-soon page that pulls live data from v1.qtown.ai so you can still see the simulation breathe. When v2 is ready, qtown.ai becomes the new front door.
+
+But all of that's a story for the next post.
 
 ---
 
@@ -134,7 +136,7 @@ If you want to see what 1,451 commits of AI-assisted development actually looks 
 
 **[github.com/kbadinger/qtown](https://github.com/kbadinger/qtown)**
 
-Read the commit history. Look at the story IDs in the commit messages. Check out the tick loop. If you're building something similar — an agent scaffold, a simulation, anything autonomous — I'm happy to talk through it.
+Read the commit history. Look at the story IDs in the commit messages. Check out the tick loop in `v1/engine/`. The v2 polyglot rewrite lives at the repo root in `services/`. If you're building something similar — an agent scaffold, a simulation, anything autonomous — I'm happy to talk through it.
 
 Qtown v1 is done. It runs. It works. An AI wrote most of it.
 

@@ -2,7 +2,7 @@
 // QTOWN LANDING PAGE — Live Data + Interactions
 // ========================================
 
-const API_BASE = 'https://qtown.ai/api';
+const API_BASE = 'https://v1.qtown.ai/api';
 
 // Fallback data snapshot (real data from the running simulation)
 const FALLBACK_DATA = {

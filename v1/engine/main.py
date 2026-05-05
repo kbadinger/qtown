@@ -57,8 +57,10 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
+        "http://localhost:3100",
         "https://qtown.ai",
         "https://www.qtown.ai",
+        "https://v1.qtown.ai",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -85,6 +87,7 @@ if IS_PROD:
         allowed_hosts=[
             "qtown.ai",
             "www.qtown.ai",
+            "v1.qtown.ai",
             "*.up.railway.app",
         ],
     )

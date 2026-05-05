@@ -2387,6 +2387,536 @@
       "status": "complete",
       "phase": 5,
       "group": "5.3"
+    },
+    {
+      "id": "P6-001",
+      "title": "Architect town-core gRPC server: define proto contracts and Tonic-style server in Python",
+      "service": "town-core",
+      "language": "python",
+      "deps": [],
+      "phase": 6,
+      "group": "6.1",
+      "description": "Cartographer's grpc-clients instantiate a town-core client but town-core only exposes HTTP. Define proto contract for ListNPCs, GetWorld, GetNPC, GetBuildings; generate Python stubs into services/town-core/engine/__generated__/; add grpc.aio server alongside FastAPI in services/town-core/engine/main.py listening on a new port (e.g. 50050).",
+      "acceptance_criteria": [
+        "proto/town_core.proto exists with all RPCs cartographer's resolvers.ts calls",
+        "services/town-core/engine/grpc_server.py implements TownCoreServicer",
+        "services/town-core/engine/main.py starts grpc server alongside uvicorn",
+        "cartographer integration test calls town-core.ListNPCs and gets non-empty data"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-002",
+      "title": "Architect Fortress proto codegen via tonic-build and mount Tonic gRPC router",
+      "service": "fortress",
+      "language": "rust",
+      "deps": [],
+      "phase": 6,
+      "group": "6.1",
+      "description": "services/fortress/src/main.rs:127 has 'proto codegen pending' placeholder. Wire build.rs with tonic-build pointing at proto/fortress.proto. Generate Rust types into src/__generated__/. Mount the Tonic router in main.rs alongside the Kafka consumer. Expose ValidateEvent RPC.",
+      "acceptance_criteria": [
+        "services/fortress/build.rs invokes tonic-build with proto/fortress.proto",
+        "services/fortress/src/grpc_server.rs implements ValidateEvent",
+        "services/fortress/src/main.rs starts tonic Server on port 50052",
+        "cargo test passes; integration test from town-core calls fortress.ValidateEvent and gets accept/reject response"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-003",
+      "title": "Refactor Fortress to confine all unsafe blocks to a single wasm wrapper module",
+      "service": "fortress",
+      "language": "rust",
+      "deps": [],
+      "phase": 6,
+      "group": "6.1",
+      "description": "README claims zero unsafe in validation/rules. grep finds 27 unsafe blocks across services/fortress/src/. Audit each; move any required unsafe (likely from wasmtime FFI) into src/wasm_sandbox/unsafe_ffi.rs as the only file allowed to contain unsafe. Add a CI check (similar to existing zero-unsafe check in .github/workflows/ci.yml) that confirms unsafe count outside that file is zero.",
+      "acceptance_criteria": [
+        "All unsafe blocks live in services/fortress/src/wasm_sandbox/unsafe_ffi.rs",
+        "Existing CI grep check is updated to cover all of src/, allowing only that one file",
+        "cargo clippy -- -D warnings passes",
+        "cargo test passes"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-004",
+      "title": "Architect Library gRPC server for RAG queries from Academy",
+      "service": "library",
+      "language": "python",
+      "deps": [],
+      "phase": 6,
+      "group": "6.1",
+      "description": "Academy needs Library context for RAG-grounded NPC content. Define proto/library.proto with QueryRAG (text, k, filter) \u2192 ranked passages. Implement the server in services/library/library/grpc_server.py using ES vector search; mount in services/library/library/main.py alongside HTTP.",
+      "acceptance_criteria": [
+        "proto/library.proto declares QueryRAG RPC",
+        "services/library/library/grpc_server.py implements LibraryServicer",
+        "services/library/library/main.py starts gRPC alongside FastAPI",
+        "Academy integration test calls library.QueryRAG and gets ranked passages"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-005",
+      "title": "Register market-district gRPC service in cmd/server/main.go",
+      "service": "market-district",
+      "language": "go",
+      "deps": [],
+      "phase": 6,
+      "group": "6.1",
+      "description": "services/market-district/cmd/server/main.go:34 has TODO: register gRPC service implementations. Wire grpc_marketdistrict.RegisterMarketDistrictServer(grpcServer, &grpc.MarketServer{...}) so PlaceOrder is actually reachable.",
+      "acceptance_criteria": [
+        "cmd/server/main.go registers the service against the grpc.Server before Serve()",
+        "go test ./... passes",
+        "An external client (or the existing integration_test.go) successfully calls PlaceOrder over the network"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-006",
+      "title": "Emit qtown.economy.trade.settled from market-district after each successful match",
+      "service": "market-district",
+      "language": "go",
+      "deps": [
+        "P6-005"
+      ],
+      "phase": 6,
+      "group": "6.2",
+      "description": "services/market-district/internal/grpc/server.go:79 has TODO: emit economy.trade.settled. Add a sarama or kgo producer in internal/kafka/producer.go; emit one event per matched trade with fields trade_id, buyer_npc_id, seller_npc_id, item, qty, price, gold_delta. Town-core's existing handler at services/town-core/engine/kafka_consumer.py:115-137 consumes this topic.",
+      "acceptance_criteria": [
+        "internal/kafka/producer.go publishes a struct serialized to JSON or proto on topic qtown.economy.trade.settled",
+        "Producer is invoked from internal/grpc/server.go in the same place the TODO removed",
+        "After PlaceOrder + match, town-core consumer logs a trade and updates the buyer/seller wallet"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-007",
+      "title": "Add Kafka producer in academy emitting qtown.ai.content.generated after GenerateDialogue",
+      "service": "academy",
+      "language": "python",
+      "deps": [],
+      "phase": 6,
+      "group": "6.2",
+      "description": "Tavern's services/tavern/src/kafka-consumer.ts:220-224 already subscribes to ai.content.generated but academy never produces it. Add aiokafka producer in services/academy/academy/kafka_producer.py; emit on every successful GenerateDialogue with fields conversation_id, npc_a, npc_b, lines, model, generated_at.",
+      "acceptance_criteria": [
+        "services/academy/academy/kafka_producer.py created with aiokafka producer",
+        "academy/grpc_server.py calls producer after Ollama generates dialogue",
+        "Tavern integration test consumes the event and broadcasts to a connected WS client"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-008",
+      "title": "Add town-core consumer handler for qtown.validation.result",
+      "service": "town-core",
+      "language": "python",
+      "deps": [],
+      "phase": 6,
+      "group": "6.2",
+      "description": "Fortress emits validation results to qtown.validation.result. No service consumes them. Register a handler in services/town-core/engine/kafka_consumer.py that reads (event_id, accepted: bool, reason) and either commits or rolls back the pending state mutation referenced by event_id.",
+      "acceptance_criteria": [
+        "services/town-core/engine/kafka_consumer.py registers a handler for qtown.validation.result",
+        "town-core has a pending-mutations table or in-memory map keyed by event_id",
+        "Integration test: emit validation.request, fortress accepts, town-core commits the change; emit again, fortress rejects, town-core rolls back"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-009",
+      "title": "Subscribe asset-pipeline to NPC and building creation events to trigger sprite generation",
+      "service": "asset-pipeline",
+      "language": "python",
+      "deps": [],
+      "phase": 6,
+      "group": "6.2",
+      "description": "asset-pipeline has a Kafka consumer task but it doesn't subscribe to creation events. Wire to qtown.entity.npc_created and qtown.entity.building_created. On each event, enqueue a ComfyUI workflow with the entity attributes; on completion, emit qtown.entity.asset_ready with the sprite URL.",
+      "acceptance_criteria": [
+        "Consumer subscribes to both topics",
+        "Each event triggers comfyui_client.submit_workflow with templated params",
+        "On completion, asset-pipeline emits qtown.entity.asset_ready with public URL",
+        "Dashboard's NPC list shows generated sprites for newly created NPCs"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-010",
+      "title": "Add NPC order origination in town-core that calls market-district PlaceOrder via gRPC",
+      "service": "town-core",
+      "language": "python",
+      "deps": [
+        "P6-005"
+      ],
+      "phase": 6,
+      "group": "6.3",
+      "description": "No service initiates trades today. NPCs at the market should call market-district.PlaceOrder when their goal selector chooses 'buy food' or 'sell goods'. Add a grpc client in services/town-core/engine/grpc_clients/market_client.py; have services/town-core/engine/simulation/npcs.py call it from the relevant action handler.",
+      "acceptance_criteria": [
+        "Market gRPC client exists in town-core",
+        "NPC action handler for 'buy_at_market' / 'sell_at_market' invokes PlaceOrder",
+        "After a tick, market-district logs received orders; matches happen; trade.settled events flow"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-011",
+      "title": "Add NPC dialogue trigger endpoint in town-core that calls academy GenerateDialogue",
+      "service": "town-core",
+      "language": "python",
+      "deps": [],
+      "phase": 6,
+      "group": "6.3",
+      "description": "Academy's GenerateDialogue is reachable but nothing calls it. When two NPCs end up adjacent during a tick (already detected by the gossip system), call academy.GenerateDialogue and dispatch the result via the existing dialogues.py router. The router currently exists but uses static text.",
+      "acceptance_criteria": [
+        "services/town-core/engine/grpc_clients/academy_client.py created",
+        "services/town-core/engine/simulation/npcs.py invokes academy on adjacent-NPC events",
+        "services/town-core/engine/routers/dialogues.py returns AI-generated lines",
+        "Dashboard chat bubble shows the generated dialogue end-to-end"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-012",
+      "title": "Add gRPC client in academy to query Library for RAG context before Ollama generation",
+      "service": "academy",
+      "language": "python",
+      "deps": [
+        "P6-004"
+      ],
+      "phase": 6,
+      "group": "6.3",
+      "description": "Academy generates dialogue without retrieving the relevant town history. Add a Library gRPC client in services/academy/academy/library_client.py. In GenerateDialogue, before calling Ollama, query Library.QueryRAG for the top-k recent events involving the two NPCs and inject the passages into the prompt.",
+      "acceptance_criteria": [
+        "services/academy/academy/library_client.py created",
+        "GenerateDialogue prompt includes RAG context",
+        "Integration test: indexed event 'NPC A insulted NPC B yesterday' shows up in subsequent dialogue context"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-013",
+      "title": "Define and compile academy LangGraph workflow for NPC decision agents",
+      "service": "academy",
+      "language": "python",
+      "deps": [],
+      "phase": 6,
+      "group": "6.4",
+      "description": "langgraph is in pyproject.toml but no StatefulGraph or compiled graph exists. Build services/academy/academy/agents/npc_decision_graph.py with nodes: gather_context, query_rag, choose_action, generate_dialogue. Compile and expose via a gRPC RPC.",
+      "acceptance_criteria": [
+        "services/academy/academy/agents/npc_decision_graph.py defines a StateGraph and compiles it",
+        "A new gRPC RPC RunNPCAgent invokes the compiled graph",
+        "Tests cover at least three branches of the graph"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-014",
+      "title": "Implement library indexing pipeline: Kafka consumer writes events into ES per template",
+      "service": "library",
+      "language": "python",
+      "deps": [],
+      "phase": 6,
+      "group": "6.4",
+      "description": "Library has ES connect and templates but no actual indexing pipeline. Wire the existing Kafka consumer task to read from qtown.* topics and index each event into the matching ES index using the templates from index_templates.py.",
+      "acceptance_criteria": [
+        "services/library/library/indexer.py implements per-topic write logic",
+        "After producing N events on Kafka, GET /_cat/indices on ES shows them populated",
+        "Tests use testcontainers ES + Kafka"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-015",
+      "title": "Implement library search and aggregation query endpoints",
+      "service": "library",
+      "language": "python",
+      "deps": [
+        "P6-014"
+      ],
+      "phase": 6,
+      "group": "6.4",
+      "description": "FastAPI app exists but no search endpoints implemented. Add /search/full-text, /search/timeline, /aggregate/npc-history endpoints. These power the Cartographer GraphQL Library type.",
+      "acceptance_criteria": [
+        "Three endpoints implemented with ES query DSL",
+        "Cartographer's library resolver calls them and returns data to GraphQL clients",
+        "Dashboard /newspaper page shows ES-aggregated event timeline"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-016",
+      "title": "Wire asset-pipeline output to S3 (or local MinIO in dev) with public URLs",
+      "service": "asset-pipeline",
+      "language": "python",
+      "deps": [],
+      "phase": 6,
+      "group": "6.4",
+      "description": "ComfyUI generates sprites but no CDN delivery. Add services/asset-pipeline/asset_pipeline/storage.py wrapping boto3 (S3) with a MinIO fallback for docker-compose dev. Upload generated sprites under a versioned path; return public URL.",
+      "acceptance_criteria": [
+        "storage.py supports both S3 and MinIO",
+        "docker-compose.yml adds minio service for dev",
+        "Generated sprite URL is reachable from the dashboard's <img src> in tests"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-017",
+      "title": "Investigate cartographer grpc-clients tryLoadPackage soft-fail and replace with strict load",
+      "service": "cartographer",
+      "language": "typescript",
+      "deps": [],
+      "phase": 6,
+      "group": "6.5",
+      "description": "services/cartographer/src/grpc-clients.ts:24-35 returns null on missing proto. That hides bugs. Replace with strict load that throws a diagnostic error naming which proto file failed and where it was looked for. If the design intent really is graceful degradation, gate it behind GRACEFUL_GRPC=1 env.",
+      "acceptance_criteria": [
+        "Default behavior is strict load with clear error",
+        "Optional env-gated graceful mode preserved",
+        "Existing tests still pass; a new test asserts the diagnostic error message"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-018",
+      "title": "Override dashboard port from 3000 to 3100 in docker-compose to free Kevin's reserved local-dev range",
+      "service": "dashboard",
+      "language": "yaml",
+      "deps": [],
+      "phase": 6,
+      "group": "6.5",
+      "description": "Ports 3000-3010 are reserved for Kevin's other long-running services. docker-compose.yml exposes dashboard on 3000. Override to 3100 host-side; container can stay on 3000 internally.",
+      "acceptance_criteria": [
+        "docker-compose.yml maps 3100:3000 for dashboard",
+        "Makefile target make docker-up still brings up dashboard reachable at http://localhost:3100",
+        "README port map reflects new host port"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-019",
+      "title": "Design v2 production deployment: pick host (Railway / Fly / k8s) and ship minimum subset to qtown.ai",
+      "service": "infra",
+      "language": "yaml",
+      "deps": [],
+      "phase": 6,
+      "group": "6.5",
+      "description": "Currently no v2 service is deployed. Decide on the minimum-viable production footprint (probably cartographer + dashboard + one backing service + Postgres + Redis), pick a host, and ship. Existing infra/helm and infra/terraform are k8s-flavored but k8s is overkill for a portfolio piece. Likely choice: Fly.io for the Go/TS services, with managed Postgres/Redis. Output: a docs/v2-deploy.md plan and the actual config commit.",
+      "acceptance_criteria": [
+        "docs/v2-deploy.md documents the chosen platform and tradeoffs",
+        "A working preview deployment exists at a temporary URL",
+        "qtown.ai is flipped from the Vercel coming-soon to the v2 dashboard once auth/health checks are clean"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-020",
+      "title": "Architect world snapshot system in town-core for periodic state export and replay",
+      "service": "town-core",
+      "language": "python",
+      "deps": [],
+      "phase": 6,
+      "group": "6.6",
+      "description": "v1 had snapshot PNGs of the simulation every N ticks. v2 has none. Implement a snapshotter that runs alongside the tick loop, dumps key state (npcs, buildings, world tiles, time, weather) to JSON in services/town-core/snapshots/ and renders a 50x50 PNG of the grid using PIL. Surfaces via /api/snapshots/latest.",
+      "acceptance_criteria": [
+        "services/town-core/engine/snapshotter.py implements both JSON + PNG snapshot",
+        "Background task fires every N ticks (configurable via env)",
+        "GET /api/snapshots/latest returns metadata + signed PNG URL"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-021",
+      "title": "Migrate v1 sprite assets into asset-pipeline storage so dashboard can render them",
+      "service": "asset-pipeline",
+      "language": "python",
+      "deps": [
+        "P6-016"
+      ],
+      "phase": 6,
+      "group": "6.6",
+      "description": "v1's assets/ contains hand-crafted building and NPC sprites still useful for v2 fallbacks. Migrate them into the asset-pipeline storage layer, register their URLs, and have town-core link NPCs/buildings to a sprite_url so the dashboard can render even before generated sprites are ready.",
+      "acceptance_criteria": [
+        "Migration script uploads everything in assets/{npcs,buildings} to the storage layer",
+        "Town-core models hold sprite_url with a v1-asset default",
+        "Dashboard NPC table shows sprites for every NPC"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-022",
+      "title": "Investigate market-trade flow end-to-end and write integration test covering all 7 hops",
+      "service": "infra",
+      "language": "python",
+      "deps": [
+        "P6-005",
+        "P6-006",
+        "P6-008",
+        "P6-010"
+      ],
+      "phase": 6,
+      "group": "6.7",
+      "description": "Write tests/integration/test_market_trade_flow.py using testcontainers. Boot Kafka + Postgres + Redis + town-core + market-district + tavern. Place an order via gRPC, assert match happens, assert trade.settled event lands on Kafka, assert town-core wallet update, assert tavern WS broadcast, assert dashboard GraphQL query returns the trade.",
+      "acceptance_criteria": [
+        "Integration test passes locally and in CI",
+        "Failure at any hop produces a clear assertion message naming the hop",
+        "Test runs in <60s wall clock"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-023",
+      "title": "Investigate AI dialogue flow end-to-end and write integration test",
+      "service": "infra",
+      "language": "python",
+      "deps": [
+        "P6-007",
+        "P6-011",
+        "P6-012",
+        "P6-013"
+      ],
+      "phase": 6,
+      "group": "6.7",
+      "description": "Write tests/integration/test_dialogue_flow.py. Trigger an NPC adjacency event in town-core, assert academy.GenerateDialogue is called, assert library RAG was consulted, assert ai.content.generated landed on Kafka, assert tavern broadcasted, assert dashboard rendered the chat bubble.",
+      "acceptance_criteria": [
+        "Test passes with stubbed Ollama (use a deterministic small model or mock at the HTTP layer)",
+        "Each hop has a named assertion",
+        "Test runs in <90s wall clock"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-024",
+      "title": "Investigate validation flow end-to-end and confirm Fortress accept/reject is acted on",
+      "service": "infra",
+      "language": "python",
+      "deps": [
+        "P6-008"
+      ],
+      "phase": 6,
+      "group": "6.7",
+      "description": "Write tests/integration/test_validation_flow.py. Town-core proposes a state mutation, validation.request goes to fortress, fortress validates via WASM, validation.result returns, town-core either commits or rolls back.",
+      "acceptance_criteria": [
+        "Both accept and reject paths are tested",
+        "On reject, town-core state is unchanged",
+        "On accept, town-core state reflects the mutation"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-025",
+      "title": "Update README v2 architecture diagram to mark live vs stubbed gRPC and Kafka topics",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [
+        "P6-001",
+        "P6-002",
+        "P6-005",
+        "P6-006",
+        "P6-007"
+      ],
+      "phase": 6,
+      "group": "6.8",
+      "description": "README claims a fully wired polyglot system. Update the architecture section to mark each gRPC link and Kafka topic with status (LIVE / STUB / PENDING) and progressively flip them to LIVE as Phase 6 stories close.",
+      "acceptance_criteria": [
+        "README arch diagram annotated",
+        "A status table maps each topic + RPC to a status",
+        "After Phase 6 closes, all entries are LIVE"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
+    },
+    {
+      "id": "P6-026",
+      "title": "Update landing page stats to reflect Phase-6 truth on qtown.ai",
+      "service": "dashboard",
+      "language": "html",
+      "deps": [
+        "P6-019"
+      ],
+      "phase": 6,
+      "group": "6.8",
+      "description": "landing/index.html currently says '194 stories shipped'. Once Phase 6 ships, replace with the cumulative count and a live-from-v2 verb tense. Coordinate with P6-019 (production deploy).",
+      "acceptance_criteria": [
+        "Hero stats reflect v2 reality (e.g. '220 stories', topics live, services healthy)",
+        "Live data section now pulls from v2 cartographer once it's deployed",
+        "Coming-soon framing removed from hero copy"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null,
+      "labels": []
     }
   ]
 }

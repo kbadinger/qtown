@@ -1494,18 +1494,23 @@ git add -p && git commit -m "fix: <description>" && git push origin main
 
 | What | Where |
 |---|---|
-| FastAPI v1 app | `engine/main.py` |
-| Landing page | `landing/` |
-| Blog post | `docs/blog-post-v1-closeout.md` |
+| FastAPI v1 app | `v1/engine/main.py` |
+| Landing page (coming-soon) | `landing/` |
+| Blog post (source) | `docs/blog-post-v1-closeout.md` |
+| Blog post (publish target) | `~/Projects/KevinBadingerWebsite/content/blog/2026-05-05-qtown-v1-an-ai-wrote-88-percent.md` |
+| Domain handover guide | `docs/handover-domain-flip.md` |
+| v2 audit (TBD) | `docs/v2-audit.md` |
 | Docker Compose (all) | `docker-compose.yml` |
 | Docker Compose (infra only) | `docker-compose.deps.yml` |
-| Ralph orchestrator | `ralph/v2_orchestrator.py` |
-| Ralph worklist | `ralph/worklist.json` |
+| Ralph v2 orchestrator | `ralph/v2_orchestrator.py` |
+| Ralph v2 worklist | `ralph/worklist.json` |
+| Ralph v1 orchestrator | `v1/ralph/ralph.py` |
 | CI workflow | `.github/workflows/ci.yml` |
 | Helm chart | `infra/helm/qtown/` |
 | Terraform | `infra/terraform/` |
 | Kafka init script | `infra/kafka-init.sh` |
-| Railway config | `railway.json` |
+| Railway config (v1) | `v1/railway.json` |
+| Railway deploy notes | `v1/DEPLOY.md` |
 | Port map | README.md → Port Map section |
 | Makefile targets | `Makefile` (40+ targets, all documented in README) |
 
@@ -1526,3 +1531,49 @@ git add -p && git commit -m "fix: <description>" && git push origin main
 | Redis | 6379 | Redis protocol |
 | Elasticsearch | 9200 | HTTP |
 | Kafka UI | 8088 | HTTP |
+
+---
+
+## Distribution — After the Blog Post is Live
+
+The v1 closeout post lives at `kevinbadinger.com/blog/qtown-v1-an-ai-wrote-88-percent` (publish target). Once that URL is live and indexed, fan it out:
+
+### Substack
+
+1. Create a new post on Kevin's Substack.
+2. Title: "I Let an AI Write 88% of My Code. Here's What Happened."
+3. Body: paste the markdown from `~/Projects/KevinBadingerWebsite/content/blog/2026-05-05-qtown-v1-an-ai-wrote-88-percent.md` (drop the frontmatter; Substack ignores it).
+4. **Set canonical URL** to `https://kevinbadinger.com/blog/qtown-v1-an-ai-wrote-88-percent` (Settings → SEO → Canonical URL). This avoids SEO cannibalization — search engines treat kevinbadinger.com as the source of truth.
+5. Publish. Schedule for the same week as the kbadinger.com publish.
+
+### Hacker News
+
+Wait at least 24 hours after kbadinger.com is live so the post is indexed.
+
+- Title: `Show HN: I let an AI write 88% of my town simulation`
+- URL: `https://kevinbadinger.com/blog/qtown-v1-an-ai-wrote-88-percent`
+- First comment (post immediately after submission): brief context — what Qtown is, link to repo, link to v1.qtown.ai live demo, what makes Ralph different from a copilot.
+- Don't submit Friday/Saturday/Sunday — weekday mornings (US) get more eyeballs.
+
+### Dev.to
+
+- Title: same
+- Cover image: same hero image used on kbadinger.com
+- **Set canonical URL** to `https://kevinbadinger.com/blog/qtown-v1-an-ai-wrote-88-percent`
+- Tags: `ai`, `agents`, `python`, `experimentation`
+- Cross-post via the Dev.to GitHub action if Kevin uses one, otherwise paste manually.
+
+### LinkedIn / Twitter / X
+
+- Quote-style: "I let an AI named Ralph write 88% of a town simulation. 1,451 commits. 550 stories. Zero cloud LLM cost. Wrote up what worked and what broke: kevinbadinger.com/blog/qtown-v1-an-ai-wrote-88-percent"
+- LinkedIn: post in full long-form using the article feature, or share the link with a 2-3 sentence intro pulled from the post's hook.
+
+### Reddit
+
+- r/MachineLearning, r/programming, r/LocalLLaMA — the local-Ollama angle is the hook for the LocalLLaMA crowd.
+- Always reply with substance to comments — Reddit downvotes drive-by self-promotion.
+
+### Tracking
+
+- Add UTM parameters per channel: `?utm_source=substack&utm_medium=newsletter`, `?utm_source=hn`, etc. on the kbadinger.com URL when sharing.
+- Watch GA / Plausible (whichever kbadinger.com uses) for which channel actually drives readers vs. clicks.
