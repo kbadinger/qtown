@@ -575,13 +575,15 @@ multiple subjects, cropped, cut off, perspective lines visible
 
 ## 8 · Style consistency strategy
 
-Three layers ensure ~205 sprites feel like one game:
+Three layers ensure ~205 sprites feel like one game (full mechanics in `v2-pipeline.md` §§ 3-4):
 
-1. **Per-neighborhood architectural style LoRA** — train 3 LoRAs covering: civic-formal (Town Hall, Cartographer), militant-industrial (Fortress, Artisan's), warm-organic (Tavern, Library, Market). Academy and Roads use a blend. Training data: 15-20 reference images per LoRA. ~2-3h training each on 3090 Ti.
-2. **IPAdapter v2 (Flux variant)** — applied with the global "qtown set" reference for the entire batch. Strength ~0.7.
-3. **ControlNet Canny** — composition lock for building sprites against generated silhouette guides. Ensures consistent isometric angle and proportion.
+1. **Base style LoRA** (one, from CivitAI) — defines the global "isometric sticker cartoon white-bg" look that v1's `zavy-ctsmtrc` produced for SDXL. Primary candidate: [Flux Mobile Game Isometric Building](https://civitai.com/models/1901291). Strength 0.8-0.9. No custom training needed in the happy path.
+2. **IPAdapter v2 (Flux variant)** — per-neighborhood reference image (strength 0.5-0.7) gives each district its architectural mood, plus a global "qtown set" reference at 0.3 keeps everything in one family. **This replaces what would otherwise be per-district LoRAs** — Flux's multi-LoRA blending issues make IPAdapter the cleaner tool for district variation.
+3. **ControlNet Canny** (Flux variant) — composition lock for building sprites against generated silhouette guides. Ensures consistent isometric angle and proportion.
 
 After generation: BiRefNet pass for clean alpha edges → final sprite delivered to `dashboard/public/sprites/`.
+
+**Escape hatch:** if the candidate base LoRAs fail the 5-sprite trial, fall back to training one custom Flux LoRA from v1's existing 76 SDXL sprites (~6-8h on 3090 Ti). See `v2-pipeline.md` § 3.3.
 
 ---
 

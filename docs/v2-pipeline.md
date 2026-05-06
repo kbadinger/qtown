@@ -46,37 +46,62 @@ This is the recipe for the day-2 generation session. It assumes the visual style
 
 ---
 
-## 3 · LoRA training plan
+## 3 · Style strategy
 
-Three architectural-style LoRAs cover all 9 neighborhoods with appropriate cross-bleed:
+Per the v1 → v2 jump: v1 used `zavy-ctsmtrc` (SDXL) as its base style LoRA. **`zavy-ctsmtrc` has no Flux port.** v2 needs an equivalent base style LoRA from CivitAI/HuggingFace, plus per-neighborhood IPAdapter references for architectural variation. **No custom LoRA training in the happy path** — IPAdapter handles district variation. Custom training is an escape hatch only if the chosen base LoRA fails the trial.
 
-| LoRA | Covers | Reference set | Training time |
-|---|---|---|---|
-| `qtown-civic-formal` | Town Hall, Cartographer's Guild, Library | 50-60 images: civic Roman/Florentine, marble palaces, Long Room library, Royal Cartographic Society interiors | ~1.5-2h on 3090 Ti |
-| `qtown-militant-industrial` | The Fortress, Artisan's Workshop | 50-60 images: stone keeps, brass-fitted gates, medieval guild halls, steampunk forges, Aardman-style workshop interiors | ~1.5-2h |
-| `qtown-warm-organic` | The Tavern, Market District, The Academy (partial), Roads | 50-60 images: Renaissance inns, Camden Market stalls, Bodleian Library cozy reading rooms, Roman roads with milestones | ~1.5-2h |
+### 3.1 Base style LoRA selection
 
-**The Academy** uses `qtown-warm-organic` as a base with `qtown-civic-formal` blended at 0.4 strength for the more formal lecture hall + Tesla coil tower. **Roads + countryside** uses `qtown-warm-organic` only.
+Three Flux candidates, ranked. Test the top one first via the trial run (§ 5.1, step 7); fall back to #2 or #3 if quality is insufficient.
 
-### 3.1 Training data sourcing
-- All references must be public-domain or CC-licensed (or owned by you)
-- Curate ~50-60 high-quality images per LoRA (1024×1024 or upscale-able)
-- Caption each image with descriptive tags — Kohya generates auto-captions via BLIP, then refine by hand for accuracy
-- Avoid mixing styles within a single LoRA's training set (causes drift)
+| Rank | LoRA | Source | Trigger | Strength | Why |
+|---|---|---|---|---|---|
+| **1** | **Flux Mobile Game Isometric Building** by orest_weise | [CivitAI 1901291](https://civitai.com/models/1901291/flux-mobile-game-isometric-building) | `isometric building mobile game style` | 0.8-0.9 | Closest to v1's `zavy-ctsmtrc` intent — explicit mobile-game asset training, white-background guarantee, matches "sticker silhouette" target |
+| 2 | **Flux-Game-Assets-LoRA-v2** by gokaygokay | [HF gokaygokay/Flux-Game-Assets-LoRA-v2](https://huggingface.co/gokaygokay/Flux-Game-Assets-LoRA-v2) | `wbgmsst, [description], white background` | 0.7 | Production-proven (used by FAL Fast LoRA Trainer), explicit white-bg, 3D isometric assets — falls back here if #1 underdelivers cartoon feel |
+| 3 | **Isometrica v1** by jurdn | [CivitAI 720442](https://civitai.com/models/720442/isometrica) | `isometric` | 0.4-0.75 | High downloads + ratings (3.6K likes), flexible architecture; output leans 3D-rendered over cartoon — use only if #1 and #2 both fail the trial |
 
-### 3.2 Kohya config (per LoRA)
+**Settings (for #1):** Euler sampler, CFG 3.5, 20-40 steps, distilled-model-optimized.
+
+### 3.2 Per-neighborhood IPAdapter references
+
+Per-district architectural variation (Town Hall vs Fortress vs Market) is achieved by **swapping the IPAdapter v2 reference image per neighborhood**, not by stacking additional style LoRAs. This avoids the well-known multi-LoRA blending problem on Flux (3+ stacked LoRAs produce muddied output; community consensus is max 2 at 0.5 strength each — see [HF discussion](https://discuss.huggingface.co/t/trying-to-run-multiple-loras-on-flux-1-dev/106813)).
+
+For each of the 9 neighborhoods, curate **one IPAdapter reference image** that captures the architectural mood:
+
+| Neighborhood | Reference target |
+|---|---|
+| Town Hall | Civic Roman/Florentine palazzo, marble columns |
+| Market District | Marrakech souk / Camden Market with copper awnings |
+| The Fortress | Edinburgh Castle keep with brass gate accents |
+| The Academy | Bodleian Library + Tesla's lab fusion |
+| The Tavern | Renaissance inn with hearth glow |
+| The Library | Trinity College Long Room |
+| Cartographer's Guild | Royal Cartographic Society / Doge's map room |
+| Artisan's Workshop | Medieval guild hall + Aardman workshop |
+| Roads + countryside | Roman road with milestones, pilgrim's way |
+
+Plus one **global "qtown set" reference** applied at lower strength (~0.3) across the entire batch to pull stylistic outliers back toward consistency.
+
+**IPAdapter v2 setup for Flux:** install `flux-ip-adapter.safetensors` (XLabs) + `google/siglip-so400m-patch14-384` vision encoder. Apply LoRA to UNet first, then IPAdapter on the LoRA-modified model output. See [XLabs tutorial](https://www.youtube.com/watch?v=KvrRlVFZjVo).
+
+### 3.3 Escape hatch — custom Flux LoRA training
+
+Only triggered if the trial run (§ 5.1, step 7) shows the candidate base LoRAs cannot produce acceptable cartoon-sticker isometric output. In that case, train one Flux LoRA from scratch using v1's existing 76 SDXL sprites at `/v1/assets/` as the dataset (with manual cartoon adjustments where needed).
+
+**Kohya SS GUI config (single Flux LoRA, only if needed):**
 - Base: Flux.1 [dev]
-- Network module: LoRA
-- Network dim: 32 (good balance of expressiveness vs file size for a Flux style LoRA)
-- Network alpha: 16
+- Network module: LoRA, dim 32, alpha 16
 - Learning rate: 1e-4 with LoRA+ enabled
-- Batch size: 1 (Flux is memory-heavy; bigger batches OOM on 24GB)
+- Batch size: 1 (Flux memory headroom on 24GB)
 - Resolution: 1024
-- Epochs: 10-15
-- Save checkpoints every 2 epochs to compare; pick the best one (usually epoch 8-12)
+- Epochs: 10-15, save every 2 epochs, pick best
+- Training data: 25-50 reference sprites with descriptive captions (BLIP auto-caption + manual refinement)
+- Time estimate: ~6-8h on 3090 Ti
+- Output size: ~18-37 MB
 
-### 3.3 LoRA acceptance test
-After each LoRA trains, run a 16-image grid comparing the LoRA at strength 0.7 vs base Flux. Acceptance: the LoRA visibly imparts the architectural style without overfitting (no specific buildings appear verbatim from training data).
+**Acceptance test for custom LoRA:** 16-image grid comparing custom-LoRA at strength 0.7 vs candidate-LoRA-#1 at 0.8. Pick whichever produces cleaner cartoon-sticker silhouettes with white bg.
+
+**Likelihood we hit this escape hatch:** moderate. Candidate #1 is the closest match for the v1 aesthetic but is newer / less proven. Budget the extra 6-8h in case.
 
 ---
 
@@ -89,27 +114,28 @@ Three workflows — one per sprite type. Save as JSON in `ComfyUI/workflows/qtow
 1. Load Flux UNet (FP8 if memory-constrained, FP16 otherwise)
 2. Load Flux VAE
 3. Load CLIP-L + T5-XXL (FP8 e4m3fn)
-4. Load architectural-style LoRA (selected per-neighborhood; strength 0.7)
-5. Load global "qtown set" IPAdapter reference image (strength 0.7)
+4. Load **base style LoRA** (from § 3.1 selection — Flux Mobile Game Isometric Building at strength 0.8-0.9 in the happy path)
+5. IPAdapter v2 — load **per-neighborhood reference image** (strength 0.7) + **global "qtown set" reference** (strength 0.3 layered)
 6. Load per-building Canny silhouette guide (strength 0.5) — optional, used for the larger buildings to lock isometric angle
-7. Positive prompt: from `docs/v2-prompts/<neighborhood>.txt` (per-sprite line)
+7. Positive prompt: from `docs/v2-prompts/<neighborhood>.txt` (per-sprite line, includes the LoRA's trigger phrase)
 8. Negative prompt: from `visual-style-guide.md` § 7.5
-9. KSampler: 25 steps, dpmpp_2m_sde, sgm_uniform scheduler, CFG 3.5
+9. KSampler: 25 steps, Euler, sgm_uniform scheduler, CFG 3.5
 10. VAE Decode
 11. BiRefNet RMBG node (post-process)
 12. Save image to `<output_root>/<neighborhood>/buildings/<sprite_id>.png`
 
 ### 4.2 `qtown-v2-npc.json` — NPC generator
 Same as building, except:
-- LoRA selection per neighborhood (same mapping as buildings)
-- IPAdapter reference: the global "qtown set" reference at strength 0.6 (slightly lower so NPCs don't blend into buildings)
+- Base style LoRA: same as buildings (one LoRA for the entire batch)
+- IPAdapter reference: per-neighborhood reference at strength 0.5 (slightly lower so NPCs don't read as buildings) + global "qtown set" at 0.3
 - ControlNet: skip (NPCs don't need composition lock)
 - Resolution: 512×512 (NPC canvas)
 - KSampler: 22 steps (NPCs converge faster)
 
 ### 4.3 `qtown-v2-prop.json` — prop generator
 Same as NPC (smaller canvas, no ControlNet), with:
-- IPAdapter strength 0.5 (props are smaller, less style critical)
+- Base style LoRA: same as buildings/NPCs
+- IPAdapter strength: per-neighborhood 0.4, global 0.3 (props are smaller, less style critical)
 - KSampler: 20 steps
 
 ### 4.4 `qtown-v2-terrain.json` — terrain tile generator
@@ -124,46 +150,61 @@ Different from buildings/NPCs/props because terrain is tileable:
 ## 5 · Batch generation plan
 
 ### 5.1 Order of operations
-1. **Setup day** (~4-6h):
-   - Install ComfyUI updates + custom nodes
-   - Download Flux base + VAE + encoders + IPAdapter Flux + ControlNet Flux + BiRefNet
-   - Curate IPAdapter reference images (10: one per neighborhood + global)
-   - Curate LoRA training data (~150-180 images across 3 LoRAs)
-2. **LoRA training night** (~6h, parallel — start one, do other prep, kick off next):
-   - Train `qtown-civic-formal`
-   - Train `qtown-militant-industrial`
-   - Train `qtown-warm-organic`
-3. **Prompt generation** (~1h):
-   - Substitute manifest entries into prompt patterns from `visual-style-guide.md` § 7
-   - Output: `docs/v2-prompts/<neighborhood>.txt` (one prompt per line, sprite ID in a comment)
-4. **Batch generation** (~12-18h, mostly unattended):
+1. **Setup** (~3-4h):
+   - Stop Ollama (frees the 3090 Ti for Flux)
+   - Install/update ComfyUI + custom nodes (§ 2.2)
+   - Download Flux base + VAE + encoders + IPAdapter Flux + ControlNet Flux + BiRefNet (§ 2.1)
+2. **LoRA selection** (~30 min):
+   - Download candidate base style LoRA #1 (Flux Mobile Game Isometric Building) and #2 (Flux-Game-Assets-LoRA-v2) from § 3.1
+3. **IPAdapter reference curation** (~1h):
+   - Curate 10 reference images (9 per-neighborhood + 1 global) per § 3.2 mapping
+   - Place in `ComfyUI/input/qtown-refs/`
+4. **Prompt generation** (~1h):
+   - Substitute manifest entries from `visual-style-guide.md` § 6 into prompt patterns from § 7
+   - Output: `docs/v2-prompts/<neighborhood>.txt` (one prompt per line, sprite ID in a comment, includes the base LoRA trigger phrase)
+5. **Workflow build** (~2h):
+   - Build the 4 ComfyUI workflows from § 4 (`qtown-v2-building.json`, `qtown-v2-npc.json`, `qtown-v2-prop.json`, `qtown-v2-terrain.json`)
+   - Save to `ComfyUI/workflows/qtown-v2/`
+6. **5-sprite trial** (~1h):
+   - Generate 5 sprites end-to-end using base LoRA #1 (one building, one NPC, one prop, one terrain, one tech-signature prop)
+   - Quality check against mood boards
+   - **Decision gate:** if quality acceptable → continue to step 8 with LoRA #1
+   - If poor: try LoRA #2, retest. If still poor: trigger § 3.3 escape hatch (custom Flux LoRA training, +6-8h)
+7. **(Optional) Custom LoRA training** (~6-8h, only if step 6 failed):
+   - Per § 3.3 — train one Flux LoRA on v1 sprite dataset
+   - Re-test 5-sprite trial with the custom LoRA
+8. **Batch generation** (~6-10h, mostly unattended):
    - Queue all prompts in ComfyUI's batch queue (rgthree-comfy makes this clean)
    - Run building workflow → 97 sprites × ~30-40s each = ~50-70 min
    - Run NPC workflow → 48 sprites × ~25s each = ~20 min
    - Run prop workflow → 51 sprites × ~20s each = ~17 min
    - Run terrain workflow → 9 tiles × ~30s = ~5 min
-   - Variants + retries for the ~10-15% that fail first-pass: ~4-6h additional
+   - Retries for the ~10-15% that fail first-pass: ~4-6h additional
    - **Wall time estimate:** ~6-10h of unattended batch + manual restarts on OOM crashes
-5. **Manual review** (~4-6h):
+9. **Manual review** (~4-6h):
    - Visual side-by-side check against mood boards
    - Regenerate outliers (target: ~30 sprites need re-runs)
    - Per-sprite quality gate: silhouette is correct, palette matches, no text bleed, BiRefNet alpha is clean
-6. **Asset publishing** (~30 min):
-   - Copy curated final sprites into `dashboard/public/sprites/<neighborhood>/{buildings,npcs,props,terrain}/`
-   - Bump `ASSET_VERSION=v22` in `dashboard/composables/useSpriteTextures.ts`
-   - Git commit with the sprite manifest count: `Phase 2: deliver 205 fresh sprites for v2 visual identity`
-7. **Shutdown:**
-   - Stop ComfyUI
-   - Restart Ollama
-   - 3090 Ti returns to Ralph/Qwen duty
+10. **Asset publishing** (~30 min):
+    - Copy curated final sprites into `dashboard/public/sprites/<neighborhood>/{buildings,npcs,props,terrain}/`
+    - Generate `manifest.json` from filesystem walk
+    - Bump `ASSET_VERSION=v22` in `dashboard/composables/useSpriteTextures.ts`
+    - Git commit: `Phase 2: deliver 205 fresh sprites for v2 visual identity`
+11. **Shutdown:**
+    - Stop ComfyUI
+    - Restart Ollama
+    - 3090 Ti returns to Ralph/Qwen duty
 
 ### 5.2 Total time estimate
-- Setup + LoRA prep: ~4-6h human time
-- LoRA training: ~6h compute (overlaps with setup)
-- Prompt generation: ~1h human
-- Batch generation: ~6-10h compute (mostly unattended, overnight viable)
-- Manual review + retries: ~4-6h human
-- **Total wall clock:** 1.5-2 days, with most compute overnight
+- **Happy path** (CivitAI base LoRA passes trial):
+  - Setup + LoRA download + IPAdapter prep + prompts + workflow build: ~7-8h human
+  - Trial: ~1h
+  - Batch generation: ~6-10h compute (mostly unattended, overnight viable)
+  - Manual review + retries: ~4-6h human
+  - **Total wall clock: ~1 day** (most compute overnight)
+- **Escape hatch path** (must train custom LoRA):
+  - Add ~6-8h compute for LoRA training + ~1h re-trial
+  - **Total wall clock: ~1.5-2 days**
 
 ---
 
@@ -251,7 +292,7 @@ This doc is "done" when:
 - User has tested ComfyUI + Flux + IPAdapter + ControlNet + BiRefNet running together on the 3090 Ti before signing off — pending Phase 2 setup
 
 **Open items for Phase 2 setup:**
-- Curate IPAdapter reference images (10 total)
-- Source LoRA training data (~150-180 images)
+- Curate IPAdapter reference images (10 total — one per neighborhood + one global "qtown set")
+- Download candidate base style LoRA(s) from § 3.1 (Flux Mobile Game Isometric Building primary; Flux-Game-Assets-LoRA-v2 fallback)
 - Generate per-sprite full prompts into `docs/v2-prompts/<neighborhood>.txt`
-- Run a 5-sprite trial batch end-to-end before committing to the full ~205-sprite run
+- Run the 5-sprite trial (§ 5.1, step 6) — if it fails, source ~25-50 reference sprites for the custom-LoRA escape hatch (§ 3.3)
