@@ -1,0 +1,288 @@
+# Qtown v2 Asset Taxonomy
+#
+# Draft 2026-05-26 — seeded from v1's 21 building types + 10 NPC roles
+# (mentioned in commit 3dd366a "Enrich test world with 21 building types
+# + 10 NPC roles for stories 500+"). Kevin must review and lock before
+# pre-gen batch can run.
+#
+# Each entry below becomes one or more ComfyUI gen jobs:
+#   - buildings → 1 overhead exterior + N interior room backgrounds
+#   - npcs → 1 overhead sprite + M activity poses
+#   - activities → covered by the (npc × activity) cross-product in
+#     each room
+#
+# Fields marked TBD need Kevin's product decision. Leave defaults and
+# refine in subsequent passes.
+
+version: 1
+locked: true   # locked 2026-05-26; Kevin delegated all 7 pending decisions to my recommendations
+
+# ---------------------------------------------------------------------------
+# BUILDINGS — 21 types from v1, each with interior rooms
+# ---------------------------------------------------------------------------
+buildings:
+
+  - id: tavern
+    description: cozy two-story building with wooden balcony, hops growing up the walls, copper brewing chimney
+    rooms:
+      - id: bar_room
+        description: main drinking area, long copper-topped bar, lanterns, communal tables
+        activities: [drinking, talking, eating, idling]
+      - id: kitchen
+        description: warm cooking space, woodfire hearth integrated with induction copper coils, hanging herbs
+        activities: [cooking, prep_work]
+      - id: cellar
+        description: brick-arched basement, glowing fermentation vats, climbing vines
+        activities: [brewing, inventory]
+
+  - id: market
+    description: open-air market hall with woven canopy roof, stalls below, holographic price displays
+    rooms:
+      - id: trading_floor
+        description: stall-lined open area, goods on display, bustling
+        activities: [haggling, selling, browsing]
+      - id: stockroom
+        description: organized storage with smart inventory holo-tags
+        activities: [stocking, inventory]
+
+  - id: academy
+    description: tall stepped building with vertical gardens, glowing copper-trimmed windows, holographic knowledge sigils
+    rooms:
+      - id: classroom
+        description: warm wood-floored teaching space, holo-projector at front, plant-lined walls
+        activities: [teaching, studying, discussing]
+      - id: library
+        description: floor-to-ceiling shelves mixed with holo-reading consoles, cozy reading nooks
+        activities: [reading, researching]
+      - id: laboratory
+        description: workbench with mixed analog tools and bioluminescent test stations
+        activities: [experimenting, observing]
+
+  - id: town_hall
+    description: large central building with green dome roof, copper accents, civic banners
+    rooms:
+      - id: assembly
+        description: amphitheater seating, central speaker platform, holographic agenda displays
+        activities: [speaking, listening, debating]
+      - id: office
+        description: warm administrative space, desks with holo-screens, plant dividers
+        activities: [paperwork, meeting]
+
+  - id: home
+    description: small family dwelling, sloped green roof, terracotta walls, garden patch
+    rooms:
+      - id: living_room
+        description: comfortable hearth-centered family space
+        activities: [relaxing, talking, eating]
+      - id: bedroom
+        description: simple bed, soft lighting, personal items
+        activities: [sleeping, dressing]
+      - id: kitchen
+        description: family cooking space, smaller version of tavern kitchen
+        activities: [cooking, eating]
+
+  - id: blacksmith
+    description: open-front workshop with chimney, copper tools displayed, sparks visible
+    rooms:
+      - id: forge
+        description: anvil, glowing hearth, hammers and tongs on copper-strip wall
+        activities: [forging, repairing]
+      - id: showroom
+        description: finished goods displayed, customer counter
+        activities: [selling, browsing]
+
+  - id: bakery
+    description: small shop with steaming chimney, copper oven door visible, vines on facade
+    rooms:
+      - id: bakehouse
+        description: ovens, kneading bench, flour-dusted air
+        activities: [baking, kneading]
+      - id: shopfront
+        description: counter with bread displays, holographic price labels
+        activities: [selling, browsing]
+
+  - id: farm
+    description: low building with surrounding terraced fields, glowing crop sensors, water collection visible
+    rooms:
+      - id: barn
+        description: large open space with farm equipment, copper tools
+        activities: [tending, repairing]
+      - id: greenhouse
+        description: arched glass structure with rows of plants, hydroponic glow
+        activities: [planting, harvesting]
+
+  - id: clinic
+    description: small medical building, soft sage exterior, copper caduceus sign
+    rooms:
+      - id: examination
+        description: medical bed, holo-diagnostic table, soft warm lighting
+        activities: [examining, treating]
+      - id: dispensary
+        description: shelves of remedies (jars + bio-vials), preparation counter
+        activities: [preparing, dispensing]
+
+  - id: temple
+    description: stepped pyramid form with vertical gardens, central skylight, contemplative
+    rooms:
+      - id: sanctuary
+        description: open meditation space, central altar, soft natural light
+        activities: [meditating, praying, gathering]
+      - id: garden
+        description: enclosed cloister with reflecting pool and ornamental plants
+        activities: [walking, contemplating]
+
+  - id: workshop
+    description: community maker-space, open-front building with copper-trimmed glass walls, shared tools visible, ivy along eaves
+    rooms:
+      - id: workspace
+        description: shared workbenches with rentable copper tools, holographic skill-share board, projects in progress
+        activities: [crafting, fixing, learning, collaborating]
+
+  - id: warehouse
+    description: large flat-roofed storage with copper sliding doors, ivy-covered walls
+    rooms:
+      - id: storage_floor
+        description: tall stacked goods, organized lanes, holo-inventory tags
+        activities: [moving, organizing]
+
+  # stable dropped — animals deferred to Phase 8+ if they come up
+  # farm keeps crops-only (greenhouse + barn for crop equipment, no animal stalls)
+
+  - id: bank
+    description: imposing copper-clad building with secure vault visible behind glass-and-vine facade
+    rooms:
+      - id: lobby
+        description: tellers behind copper counters, holographic queue displays
+        activities: [transacting, queuing]
+      - id: vault
+        description: secured storage, glowing access panels, plant-softened corridors
+        activities: [securing, auditing]
+
+  - id: courthouse
+    description: domed civic building with green roof, columns, holo-banner of laws
+    rooms:
+      - id: courtroom
+        description: tiered seating, judge's bench, holographic evidence display
+        activities: [judging, testifying, listening]
+
+  - id: restoration_center  # renamed from "jail" — solarpunk restorative-justice reframe
+    description: low warm building with green sloped roof, clinic-adjacent feel, central garden courtyard, copper-trimmed windows (no bars)
+    rooms:
+      - id: counseling
+        description: quiet rooms with comfortable seating, soft natural light, plant-screened privacy
+        activities: [counseling, listening, restoring]
+      - id: reflection_garden
+        description: enclosed courtyard with reflecting pool, soft greenery, contemplative space
+        activities: [reflecting, walking, meditating]
+
+  - id: theater
+    description: domed amphitheater with vertical garden facade, holographic show announcements
+    rooms:
+      - id: stage
+        description: performance space with holographic backdrop options, warm spotlights
+        activities: [performing, rehearsing]
+      - id: audience
+        description: tiered seating, soft lighting
+        activities: [watching, applauding]
+
+  - id: park
+    description: open green space with winding paths, central water feature, ornamental plantings, integrated solar light bollards, gathering benches
+    overhead_only: true   # park has no drill-in rooms — it's experienced from the overhead view only
+    rooms: []
+
+  # docks dropped — v2 sim has no water trade routes specced; warehouse covers in-town logistics
+
+  - id: tower
+    description: tall observation/communication tower, vine-wrapped, copper top with holo-array
+    rooms:
+      - id: observation_deck
+        description: panoramic glass-floored room with holographic town overlay
+        activities: [observing, communicating]
+
+  - id: validation_citadel  # renamed from "fortress" — solarpunk reframe; keeps v2's existing validation-service logic, no military framing
+    description: imposing-but-warm civic building with vertical garden facade, copper holographic-array crown, central glass-domed verification chamber
+    rooms:
+      - id: verification_chamber
+        description: central round room with holographic ledger displays, copper-trimmed verification stations, integrated greenery softens the formal feel
+        activities: [validating, reviewing, certifying]
+      - id: arbitration
+        description: smaller side rooms for resolving disputes, comfortable seating, holographic evidence displays
+        activities: [arbitrating, mediating, deliberating]
+
+# ---------------------------------------------------------------------------
+# NPC ROLES — 10 from v1
+# Each gets: 1 overhead sprite (top-down 3/4) + activity poses per role
+# ---------------------------------------------------------------------------
+npcs:
+
+  - id: trader
+    description: solarpunk trader, layered earth-tone flowing robes, copper holo-bracelet, satchel of goods, friendly merchant face
+    activity_poses: [idle, walking, haggling, selling, carrying_goods, talking]
+
+  - id: scholar
+    description: solarpunk academic, sage-green flowing robes, holographic notes floating beside, intelligent thoughtful face
+    activity_poses: [idle, walking, reading, teaching, researching, talking]
+
+  - id: artisan
+    description: solarpunk craftsperson, work apron over comfortable clothing, copper tools at belt, dust-covered hands, focused face
+    activity_poses: [idle, walking, crafting, working, examining_work, talking]
+
+  - id: farmer
+    description: solarpunk cultivator, durable practical clothing, wide-brim sun hat, woven basket, weather-worn friendly face
+    activity_poses: [idle, walking, planting, harvesting, tending, talking]
+
+  - id: healer
+    description: solarpunk medic, soft cream clothing with copper caduceus pin, herbs in pouch, calm reassuring face
+    activity_poses: [idle, walking, examining, treating, preparing_remedy, talking]
+
+  - id: cook
+    description: solarpunk chef, terracotta apron over comfortable clothing, sleeves rolled up, hands floured, warm welcoming face
+    activity_poses: [idle, walking, cooking, kneading, serving, talking]
+
+  - id: smith
+    description: solarpunk metalworker, leather apron with copper rivets, soot-marked clothing, strong frame, focused intense face
+    activity_poses: [idle, walking, forging, hammering, examining_metal, talking]
+
+  - id: guard
+    description: solarpunk peacekeeper, slate-gray uniform with copper insignia, holographic non-lethal deterrent device at belt (sonic emitter — not a weapon), calm watchful but friendly face, no firearms
+    activity_poses: [idle, walking, patrolling, observing, talking, deterring]
+
+  - id: official
+    description: solarpunk civic worker, formal flowing robes in muted earth tones, copper insignia of office, holographic clipboard, measured face
+    activity_poses: [idle, walking, addressing, documenting, listening, talking]
+
+  - id: child
+    description: solarpunk child, simple bright earth-tone clothing, curious wide-eyed face, hair in motion, often barefoot
+    activity_poses: [idle, walking, running, playing, watching, talking]
+
+# ---------------------------------------------------------------------------
+# RESOLVED DECISIONS (locked 2026-05-26)
+# ---------------------------------------------------------------------------
+resolved_decisions:
+  - issue: "Fortress purpose under solarpunk"
+    chose: "Reframe as 'Validation Citadel' — civic infrastructure for validating trades/contracts/laws"
+    why: "Keeps existing v2 fortress service logic (validation events) intact; gives the building a solarpunk-compatible narrative"
+
+  - issue: "Guard armament"
+    chose: "Non-lethal tech only — sonic deterrent device, no firearms"
+    why: "Preserves the peacekeeping role while fitting solarpunk values"
+
+  - issue: "Animals in v2"
+    chose: "Defer — no animal sprites in Phase 7 batch"
+    why: "Phase 6 sim doesn't require animal state; stable dropped; farm becomes crops-only"
+
+  - issue: "Jail"
+    chose: "Recast as 'Restoration Center' — restorative justice space, no cells"
+    why: "Keeps crime/justice logic working with a solarpunk-compatible visual"
+
+  - issue: "Park interiors"
+    chose: "Overhead-only — no drill-in rooms"
+    why: "Parks aren't natural drill-in targets; simpler taxonomy"
+
+  - issue: "Docks"
+    chose: "Drop entirely"
+    why: "v2 sim has no water trade routes; warehouse covers in-town logistics"
+
+  - issue: "Workshop"
+    chose: "Keep as maker space"
+    why: "Community shared workshop fits solarpunk values, distinct from owned shops (blacksmith, bakery)"

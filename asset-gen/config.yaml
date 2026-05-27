@@ -1,0 +1,57 @@
+# Pre-gen batch config — points at the actual model/LoRA files Kevin installs
+# on the 3090 box. Adjust filenames after pulling from HuggingFace / Civitai.
+#
+# Filenames here must match what's in ComfyUI/models/* on the 3090 box.
+
+comfyui_url: http://localhost:8188
+
+models:
+  # Production base — full Flux.1-dev fp8
+  production:
+    unet: flux1-dev-fp8.safetensors           # → ComfyUI/models/unet/
+    clip_t5: t5xxl_fp8_e4m3fn.safetensors     # → ComfyUI/models/clip/
+    clip_l: clip_l.safetensors                # → ComfyUI/models/clip/
+    vae: ae.safetensors                       # → ComfyUI/models/vae/
+    steps: 25
+    cfg: 3.5
+
+  # Test-gen base — Flux.1-schnell, ~5s/image on 3090
+  test:
+    unet: flux1-schnell-fp8.safetensors
+    clip_t5: t5xxl_fp8_e4m3fn.safetensors
+    clip_l: clip_l.safetensors
+    vae: ae.safetensors
+    steps: 4
+    cfg: 1.0
+
+loras:
+  # Style LoRAs — pull from Civitai, names as published
+  # Search terms to find good candidates:
+  #   - "flux solarpunk"
+  #   - "flux studio ghibli"
+  #   - "flux 2d character"
+  - name: solarpunk_flux.safetensors          # placeholder; replace with actual filename
+    strength: 0.8
+    apply_to: [overhead_building, overhead_npc, interior_background, npc_activity]
+  - name: ghibli_style_flux.safetensors       # placeholder
+    strength: 0.6
+    apply_to: [overhead_building, overhead_npc, interior_background, npc_activity]
+
+controlnet:
+  openpose: flux_openpose_controlnet.safetensors  # for activity-pose consistency
+  depth: flux_depth_controlnet.safetensors        # for building geometry consistency
+
+ip_adapter:
+  model: flux_ip_adapter_plus.safetensors         # for character consistency across activity poses
+  clip_vision: clip_vision_h.safetensors
+
+output:
+  root: output
+  formats: [png]
+  background_removal: true   # post-process to transparent for character sprites
+
+dimensions:
+  overhead_building: [1024, 1024]
+  overhead_npc: [512, 512]
+  interior_background: [1280, 720]
+  npc_activity: [512, 768]
