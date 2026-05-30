@@ -37,3 +37,13 @@ Thumbs.db
 # ─── Env ───
 .env
 .env.local
+
+# secrets (rotated; untracked 2026-05-30)
+.env
+.env.*
+!.env.example
+.dev.vars
+*.dev.vars
+*.p8
+*.pem
+*.key
