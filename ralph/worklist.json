@@ -10,7 +10,10 @@
       "deps": [],
       "status": "complete",
       "phase": 0,
-      "group": "0.1"
+      "group": "0.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-002",
@@ -22,7 +25,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.1"
+      "group": "0.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-003",
@@ -34,7 +40,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.1"
+      "group": "0.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-004",
@@ -46,7 +55,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.1"
+      "group": "0.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-005",
@@ -58,7 +70,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.1"
+      "group": "0.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-006",
@@ -70,7 +85,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.1"
+      "group": "0.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-007",
@@ -82,7 +100,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.1"
+      "group": "0.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-008",
@@ -94,7 +115,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.1"
+      "group": "0.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-009",
@@ -106,7 +130,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.2"
+      "group": "0.2",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P0-010",
@@ -118,7 +145,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.2"
+      "group": "0.2",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P0-011",
@@ -130,7 +160,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.2"
+      "group": "0.2",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P0-012",
@@ -142,7 +175,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.2"
+      "group": "0.2",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P0-013",
@@ -154,7 +190,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.2"
+      "group": "0.2",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P0-014",
@@ -166,7 +205,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.2"
+      "group": "0.2",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P0-015",
@@ -181,7 +223,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.2"
+      "group": "0.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-016",
@@ -193,7 +238,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.3"
+      "group": "0.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-017",
@@ -205,7 +253,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.3"
+      "group": "0.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-018",
@@ -217,7 +268,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.3"
+      "group": "0.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-019",
@@ -229,7 +283,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.3"
+      "group": "0.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-020",
@@ -241,7 +298,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.3"
+      "group": "0.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-021",
@@ -253,7 +313,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.3"
+      "group": "0.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-022",
@@ -265,7 +328,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.4"
+      "group": "0.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-023",
@@ -277,7 +343,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.4"
+      "group": "0.4",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P0-024",
@@ -289,7 +358,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.4"
+      "group": "0.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-025",
@@ -301,7 +373,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.4"
+      "group": "0.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-026",
@@ -313,7 +388,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.5"
+      "group": "0.5",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P0-027",
@@ -325,7 +403,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.5"
+      "group": "0.5",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-028",
@@ -337,7 +418,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.5"
+      "group": "0.5",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-029",
@@ -349,7 +433,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.5"
+      "group": "0.5",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-030",
@@ -361,7 +448,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.5"
+      "group": "0.5",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-031",
@@ -373,7 +463,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.5"
+      "group": "0.5",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-032",
@@ -385,7 +478,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.6"
+      "group": "0.6",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-033",
@@ -397,7 +493,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.6"
+      "group": "0.6",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-034",
@@ -409,7 +508,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.6"
+      "group": "0.6",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-035",
@@ -421,7 +523,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.6"
+      "group": "0.6",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P0-036",
@@ -433,7 +538,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.6"
+      "group": "0.6",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-037",
@@ -445,7 +553,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.6"
+      "group": "0.6",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P0-038",
@@ -458,7 +569,10 @@
       ],
       "status": "complete",
       "phase": 0,
-      "group": "0.6"
+      "group": "0.6",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-001",
@@ -470,7 +584,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.1"
+      "group": "1.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-002",
@@ -482,7 +599,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.1"
+      "group": "1.1",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P1-003",
@@ -494,7 +614,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.1"
+      "group": "1.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-004",
@@ -506,7 +629,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.1"
+      "group": "1.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-005",
@@ -518,7 +644,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.1"
+      "group": "1.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-006",
@@ -530,7 +659,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.1"
+      "group": "1.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-007",
@@ -542,7 +674,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.1"
+      "group": "1.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-008",
@@ -554,7 +689,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.1"
+      "group": "1.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-009",
@@ -566,7 +704,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.1"
+      "group": "1.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-010",
@@ -578,7 +719,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.1"
+      "group": "1.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-011",
@@ -590,7 +734,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.1"
+      "group": "1.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-012",
@@ -602,7 +749,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.1"
+      "group": "1.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-013",
@@ -614,7 +764,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.1"
+      "group": "1.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-014",
@@ -626,7 +779,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.1"
+      "group": "1.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-015",
@@ -639,7 +795,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.1"
+      "group": "1.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-016",
@@ -651,7 +810,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.2"
+      "group": "1.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-017",
@@ -663,7 +825,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.2"
+      "group": "1.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-018",
@@ -675,7 +840,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.2"
+      "group": "1.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-019",
@@ -688,7 +856,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.2"
+      "group": "1.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-020",
@@ -701,7 +872,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.2"
+      "group": "1.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-021",
@@ -713,7 +887,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.2"
+      "group": "1.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-022",
@@ -725,7 +902,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.2"
+      "group": "1.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-023",
@@ -737,7 +917,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.2"
+      "group": "1.2",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P1-024",
@@ -749,7 +932,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.2"
+      "group": "1.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-025",
@@ -761,7 +947,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.3"
+      "group": "1.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-026",
@@ -773,7 +962,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.3"
+      "group": "1.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-027",
@@ -785,7 +977,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.3"
+      "group": "1.3",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P1-028",
@@ -797,7 +992,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.3"
+      "group": "1.3",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P1-029",
@@ -810,7 +1008,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.3"
+      "group": "1.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-030",
@@ -822,7 +1023,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.3"
+      "group": "1.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-031",
@@ -834,7 +1038,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.3"
+      "group": "1.3",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P1-032",
@@ -846,7 +1053,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.3"
+      "group": "1.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-033",
@@ -858,7 +1068,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.3"
+      "group": "1.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-034",
@@ -871,7 +1084,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.4"
+      "group": "1.4",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P1-035",
@@ -884,7 +1100,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.4"
+      "group": "1.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-036",
@@ -897,7 +1116,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.4"
+      "group": "1.4",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P1-037",
@@ -910,7 +1132,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.4"
+      "group": "1.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-038",
@@ -923,7 +1148,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.4"
+      "group": "1.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-039",
@@ -936,7 +1164,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.4"
+      "group": "1.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-040",
@@ -948,7 +1179,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.4"
+      "group": "1.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P1-041",
@@ -962,7 +1196,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.4"
+      "group": "1.4",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P1-042",
@@ -975,7 +1212,10 @@
       ],
       "status": "complete",
       "phase": 1,
-      "group": "1.4"
+      "group": "1.4",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P2-001",
@@ -987,7 +1227,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.1"
+      "group": "2.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-002",
@@ -999,7 +1242,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.1"
+      "group": "2.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-003",
@@ -1011,7 +1257,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.1"
+      "group": "2.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-004",
@@ -1023,7 +1272,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.1"
+      "group": "2.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-005",
@@ -1035,7 +1287,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.1"
+      "group": "2.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-006",
@@ -1048,7 +1303,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.1"
+      "group": "2.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-007",
@@ -1060,7 +1318,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.1"
+      "group": "2.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-008",
@@ -1073,7 +1334,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.1"
+      "group": "2.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-009",
@@ -1085,7 +1349,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.1"
+      "group": "2.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-010",
@@ -1097,7 +1364,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.1"
+      "group": "2.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-011",
@@ -1109,7 +1379,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.2"
+      "group": "2.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-012",
@@ -1121,7 +1394,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.2"
+      "group": "2.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-013",
@@ -1133,7 +1409,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.2"
+      "group": "2.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-014",
@@ -1145,7 +1424,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.2"
+      "group": "2.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-015",
@@ -1158,7 +1440,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.2"
+      "group": "2.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-016",
@@ -1170,7 +1455,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.2"
+      "group": "2.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-017",
@@ -1182,7 +1470,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.2"
+      "group": "2.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-018",
@@ -1194,7 +1485,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.2"
+      "group": "2.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-019",
@@ -1206,7 +1500,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.3"
+      "group": "2.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-020",
@@ -1218,7 +1515,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.3"
+      "group": "2.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-021",
@@ -1230,7 +1530,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.3"
+      "group": "2.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-022",
@@ -1242,7 +1545,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.3"
+      "group": "2.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-023",
@@ -1254,7 +1560,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.3"
+      "group": "2.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-024",
@@ -1267,7 +1576,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.3"
+      "group": "2.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-025",
@@ -1279,7 +1591,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.3"
+      "group": "2.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-026",
@@ -1291,7 +1606,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.3"
+      "group": "2.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-027",
@@ -1305,7 +1623,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.4"
+      "group": "2.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P2-028",
@@ -1317,7 +1638,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.4"
+      "group": "2.4",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P2-029",
@@ -1329,7 +1653,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.4"
+      "group": "2.4",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P2-030",
@@ -1342,7 +1669,10 @@
       ],
       "status": "complete",
       "phase": 2,
-      "group": "2.4"
+      "group": "2.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-001",
@@ -1354,7 +1684,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.1"
+      "group": "3.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-002",
@@ -1366,7 +1699,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.1"
+      "group": "3.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-003",
@@ -1378,7 +1714,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.1"
+      "group": "3.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-004",
@@ -1390,7 +1729,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.1"
+      "group": "3.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-005",
@@ -1404,7 +1746,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.1"
+      "group": "3.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-006",
@@ -1417,7 +1762,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.1"
+      "group": "3.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-007",
@@ -1429,7 +1777,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.1"
+      "group": "3.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-008",
@@ -1441,7 +1792,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.1"
+      "group": "3.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-009",
@@ -1453,7 +1807,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.1"
+      "group": "3.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-010",
@@ -1465,7 +1822,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.2"
+      "group": "3.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-011",
@@ -1477,7 +1837,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.2"
+      "group": "3.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-012",
@@ -1489,7 +1852,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.2"
+      "group": "3.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-013",
@@ -1501,7 +1867,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.2"
+      "group": "3.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-014",
@@ -1513,7 +1882,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.2"
+      "group": "3.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-015",
@@ -1525,7 +1897,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.2"
+      "group": "3.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-016",
@@ -1538,7 +1913,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.2"
+      "group": "3.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-017",
@@ -1550,7 +1928,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.2"
+      "group": "3.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-018",
@@ -1562,7 +1943,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.2"
+      "group": "3.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-019",
@@ -1574,7 +1958,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.3"
+      "group": "3.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-020",
@@ -1586,7 +1973,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.3"
+      "group": "3.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-021",
@@ -1599,7 +1989,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.3"
+      "group": "3.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-022",
@@ -1611,7 +2004,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.3"
+      "group": "3.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-023",
@@ -1624,7 +2020,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.3"
+      "group": "3.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-024",
@@ -1637,7 +2036,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.3"
+      "group": "3.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-025",
@@ -1650,7 +2052,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.3"
+      "group": "3.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-026",
@@ -1663,7 +2068,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.3"
+      "group": "3.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-027",
@@ -1675,7 +2083,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.3"
+      "group": "3.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-028",
@@ -1687,7 +2098,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.3"
+      "group": "3.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-029",
@@ -1699,7 +2113,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.3"
+      "group": "3.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-030",
@@ -1713,7 +2130,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.4"
+      "group": "3.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-031",
@@ -1726,7 +2146,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.4"
+      "group": "3.4",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P3-032",
@@ -1739,7 +2162,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.4"
+      "group": "3.4",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P3-033",
@@ -1751,7 +2177,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.4"
+      "group": "3.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-034",
@@ -1763,7 +2192,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.4"
+      "group": "3.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-035",
@@ -1776,7 +2208,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.4"
+      "group": "3.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P3-036",
@@ -1790,7 +2225,10 @@
       ],
       "status": "complete",
       "phase": 3,
-      "group": "3.4"
+      "group": "3.4",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P4-001",
@@ -1804,7 +2242,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.1"
+      "group": "4.1",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P4-002",
@@ -1816,7 +2257,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.1"
+      "group": "4.1",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P4-003",
@@ -1829,7 +2273,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.1"
+      "group": "4.1",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P4-004",
@@ -1842,7 +2289,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.1"
+      "group": "4.1",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P4-005",
@@ -1854,7 +2304,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.1"
+      "group": "4.1",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P4-006",
@@ -1866,7 +2319,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.1"
+      "group": "4.1",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P4-007",
@@ -1878,7 +2334,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.1"
+      "group": "4.1",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P4-008",
@@ -1893,7 +2352,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.2"
+      "group": "4.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P4-009",
@@ -1905,7 +2367,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.2"
+      "group": "4.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P4-010",
@@ -1917,7 +2382,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.2"
+      "group": "4.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P4-011",
@@ -1931,7 +2399,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.2"
+      "group": "4.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P4-012",
@@ -1943,7 +2414,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.2"
+      "group": "4.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P4-013",
@@ -1955,7 +2429,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.2"
+      "group": "4.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P4-014",
@@ -1970,7 +2447,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.2"
+      "group": "4.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P4-015",
@@ -1982,7 +2462,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.3"
+      "group": "4.3",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P4-016",
@@ -1994,7 +2477,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.3"
+      "group": "4.3",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P4-017",
@@ -2006,7 +2492,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.3"
+      "group": "4.3",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P4-018",
@@ -2018,7 +2507,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.3"
+      "group": "4.3",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P4-019",
@@ -2030,7 +2522,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.3"
+      "group": "4.3",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P4-020",
@@ -2044,7 +2539,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.3"
+      "group": "4.3",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P4-021",
@@ -2056,7 +2554,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.4"
+      "group": "4.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P4-022",
@@ -2070,7 +2571,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.4"
+      "group": "4.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P4-023",
@@ -2082,7 +2586,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.4"
+      "group": "4.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P4-024",
@@ -2094,7 +2601,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.4"
+      "group": "4.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P4-025",
@@ -2106,7 +2616,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.4"
+      "group": "4.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P4-026",
@@ -2118,7 +2631,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.4"
+      "group": "4.4",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P4-027",
@@ -2130,7 +2646,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.4"
+      "group": "4.4",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P4-028",
@@ -2142,7 +2661,10 @@
       ],
       "status": "complete",
       "phase": 4,
-      "group": "4.4"
+      "group": "4.4",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P5-001",
@@ -2154,7 +2676,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.1"
+      "group": "5.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P5-002",
@@ -2166,7 +2691,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.1"
+      "group": "5.1",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P5-003",
@@ -2178,7 +2706,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.1"
+      "group": "5.1",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P5-004",
@@ -2190,7 +2721,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.1"
+      "group": "5.1",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P5-005",
@@ -2202,7 +2736,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.1"
+      "group": "5.1",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P5-006",
@@ -2214,7 +2751,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.1"
+      "group": "5.1",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P5-007",
@@ -2226,7 +2766,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.1"
+      "group": "5.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P5-008",
@@ -2238,7 +2781,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.1"
+      "group": "5.1",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P5-009",
@@ -2250,7 +2796,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.2"
+      "group": "5.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P5-010",
@@ -2262,7 +2811,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.2"
+      "group": "5.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P5-011",
@@ -2274,7 +2826,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.2"
+      "group": "5.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P5-012",
@@ -2286,7 +2841,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.2"
+      "group": "5.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P5-013",
@@ -2298,7 +2856,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.2"
+      "group": "5.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P5-014",
@@ -2310,7 +2871,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.2"
+      "group": "5.2",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P5-015",
@@ -2322,7 +2886,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.3"
+      "group": "5.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P5-016",
@@ -2334,7 +2901,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.3"
+      "group": "5.3",
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P5-017",
@@ -2346,7 +2916,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.3"
+      "group": "5.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P5-018",
@@ -2358,7 +2931,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.3"
+      "group": "5.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P5-019",
@@ -2370,7 +2946,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.3"
+      "group": "5.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P5-020",
@@ -2386,7 +2965,10 @@
       ],
       "status": "complete",
       "phase": 5,
-      "group": "5.3"
+      "group": "5.3",
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P6-001",
@@ -2406,7 +2988,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P6-002",
@@ -2426,7 +3010,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P6-003",
@@ -2446,7 +3032,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P6-004",
@@ -2466,7 +3054,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P6-005",
@@ -2485,7 +3075,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P6-006",
@@ -2506,7 +3098,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P6-007",
@@ -2525,7 +3119,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P6-008",
@@ -2544,7 +3140,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P6-009",
@@ -2564,7 +3162,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P6-010",
@@ -2585,7 +3185,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P6-011",
@@ -2605,7 +3207,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P6-012",
@@ -2626,7 +3230,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P6-013",
@@ -2645,7 +3251,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P6-014",
@@ -2664,7 +3272,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P6-015",
@@ -2685,7 +3295,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P6-016",
@@ -2704,7 +3316,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P6-017",
@@ -2723,7 +3337,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P6-018",
@@ -2742,7 +3358,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P6-019",
@@ -2761,7 +3379,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P6-020",
@@ -2780,7 +3400,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P6-021",
@@ -2801,7 +3423,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P6-022",
@@ -2825,7 +3449,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P6-023",
@@ -2849,7 +3475,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P6-024",
@@ -2870,7 +3498,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:opus"
+      ]
     },
     {
       "id": "P6-025",
@@ -2895,7 +3525,9 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:ralph"
+      ]
     },
     {
       "id": "P6-026",
@@ -2916,7 +3548,2054 @@
       "status": "pending",
       "attempts": 0,
       "last_error": null,
-      "labels": []
+      "labels": [
+        "grade:opus"
+      ]
+    },
+    {
+      "id": "P6.5-001",
+      "title": "Build ghz load-test harness for market-district PlaceOrder gRPC path",
+      "service": "market-district",
+      "language": "go",
+      "deps": [
+        "P6-005"
+      ],
+      "phase": "6.5",
+      "group": "6.5.1",
+      "description": "The README claims '<5ms p99 at 10K orders/sec' and it has never been run under load. Create perf/market-district/ with a ghz (https://ghz.sh) script driving the gRPC PlaceOrder path under docker-compose. Include warmup, 3 measured runs, and recorded hardware/notes. perf/run.sh must reproduce deterministically on Kevin's machine.",
+      "acceptance_criteria": [
+        "perf/market-district/run.sh exists and reproduces on a fresh checkout",
+        "Script does warmup + 3 runs at stepped load (1K/5K/10K orders/sec)",
+        "Raw ghz JSON output committed under perf/market-district/results/"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:B"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P6.5-002",
+      "title": "Write perf/REPORT.md with measured p50/p99/p999 and saturation analysis",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [
+        "P6.5-001"
+      ],
+      "phase": "6.5",
+      "group": "6.5.1",
+      "description": "Author perf/REPORT.md: methodology, exact hardware, p50/p99/p999 at 1K/5K/10K orders/sec, where the engine saturates, and a flamegraph of the hot path. The measured number wins interviews; the claimed one loses them. Numbers must come from P6.5-001 output, not estimates.",
+      "acceptance_criteria": [
+        "perf/REPORT.md committed with real numbers traceable to results/ JSON",
+        "Saturation point and flamegraph (or pprof svg) included",
+        "Every number cites the run that produced it"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:B"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P6.5-003",
+      "title": "Rewrite README + landing perf claims to the measured number",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [
+        "P6.5-002"
+      ],
+      "phase": "6.5",
+      "group": "6.5.1",
+      "description": "Replace every unmeasured perf claim in README and dashboard landing with the measured value from perf/REPORT.md (whatever it is). The Market room proof panel (Plan 01 \u00a74.1) reads the same constants from a single committed source so copy and panel can never diverge.",
+      "acceptance_criteria": [
+        "No unmeasured perf claim remains anywhere in the repo (grep clean)",
+        "README perf line links to perf/REPORT.md",
+        "A single perf-constants source feeds README + Market proof panel"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:B"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P6.5-004",
+      "title": "Add k6 gateway load script for GraphQL townOverview fan-out",
+      "service": "cartographer",
+      "language": "javascript",
+      "deps": [
+        "P6-017"
+      ],
+      "phase": "6.5",
+      "group": "6.5.1",
+      "description": "Add a k6 script hitting the cartographer GraphQL townOverview fan-out at 100 rps \u2014 the user-facing latency number. Commit the k6 summary alongside perf/REPORT.md.",
+      "acceptance_criteria": [
+        "perf/gateway/townOverview.k6.js exists",
+        "k6 summary JSON committed; p95 fan-out latency recorded in REPORT.md"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:B"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P6.5-005",
+      "title": "Standardize /healthz + /readyz across all 9 services",
+      "service": "infra",
+      "language": "python",
+      "deps": [],
+      "phase": "6.5",
+      "group": "6.5.2",
+      "description": "Today there is no uniform health story. Every service must answer two questions the same way: /healthz (process up) and /readyz (dependencies reachable \u2014 Kafka producer connected, ES green, Ollama tags listed, Redis ping). Use the gRPC Health Checking Protocol for market-district + fortress; HTTP for the rest. readyz lists each dependency with its own status.",
+      "acceptance_criteria": [
+        "make health prints a 9-row status table",
+        "Each service exposes both endpoints; readyz enumerates per-dependency status",
+        "market-district + fortress implement grpc.health.v1.Health"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:B"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P6.5-006",
+      "title": "Aggregate town-core GET /system/health fanning out to all services",
+      "service": "town-core",
+      "language": "python",
+      "deps": [
+        "P6.5-005",
+        "P6-001"
+      ],
+      "phase": "6.5",
+      "group": "6.5.2",
+      "description": "town-core GET /system/health fans out to all 9 service health endpoints and returns the matrix. This is the Clinic room's feed (Plan 01 \u00a74.2): the examination table renders real statuses and a sick patient NPC appears when a service is degraded.",
+      "acceptance_criteria": [
+        "GET /system/health returns a 9-service status matrix",
+        "Killing tavern turns its row red within 15s",
+        "Response shape documented for the Clinic ProofPanel"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:B"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P6.5-007",
+      "title": "CI job that proves world-snapshot restore actually works",
+      "service": "infra",
+      "language": "yaml",
+      "deps": [
+        "P6-020"
+      ],
+      "phase": "6.5",
+      "group": "6.5.2",
+      "description": "P6-020's snapshot system gets a CI job: snapshot a world, wipe a scratch world, restore, and diff. The Bank vault panel's 'restore-tested \u2705' must be earned, not asserted. NEVER run against any real/durable data \u2014 scratch world only.",
+      "acceptance_criteria": [
+        "CI job snapshots -> wipes scratch -> restores -> diffs clean",
+        "Job fails if restore diverges from snapshot",
+        "Runs only against an ephemeral scratch world (no durable data touched)"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:B"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P6.5-008",
+      "title": "Instrument town-core (Python) with OpenTelemetry spans",
+      "service": "town-core",
+      "language": "python",
+      "deps": [
+        "P6-001"
+      ],
+      "phase": "6.5",
+      "group": "6.5.3",
+      "description": "Jaeger/Prometheus/Grafana are configured in infra/ but no service emits spans. Add the OTel SDK to town-core: tick loop, gRPC server, and Kafka produce. Inject W3C traceparent into Kafka message headers so the trace can continue downstream.",
+      "acceptance_criteria": [
+        "Spans for tick loop + gRPC + Kafka produce visible in Jaeger",
+        "traceparent injected into Kafka headers on every produced message"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:B"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P6.5-009",
+      "title": "Instrument market-district (Go) continuing the inbound trace context",
+      "service": "market-district",
+      "language": "go",
+      "deps": [
+        "P6.5-008",
+        "P6-005"
+      ],
+      "phase": "6.5",
+      "group": "6.5.3",
+      "description": "Add OTel to market-district: a gRPC server interceptor and Kafka emit instrumentation that continues the trace context arriving from town-core. One trace ID must span town-core -> market.",
+      "acceptance_criteria": [
+        "One trace ID spans town-core -> market-district in Jaeger",
+        "Kafka emit propagates the same traceparent forward"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:B"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P6.5-010",
+      "title": "Instrument tavern (TS) closing the polyglot market-trade trace",
+      "service": "tavern",
+      "language": "typescript",
+      "deps": [
+        "P6.5-009",
+        "P6-006"
+      ],
+      "phase": "6.5",
+      "group": "6.5.3",
+      "description": "Add OTel to tavern: Kafka consume -> WS broadcast, continuing the same trace. The result is one market-trade trace crossing 3 languages and gRPC + Kafka hops as a single Jaeger waterfall.",
+      "acceptance_criteria": [
+        "Full market-trade trace: 3 languages, gRPC + Kafka hops, one waterfall",
+        "tavern consumer span is a child of the market emit span"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:B"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P6.5-011",
+      "title": "Read-only Jaeger query proxy + commit the trace screenshot",
+      "service": "town-core",
+      "language": "python",
+      "deps": [
+        "P6.5-010"
+      ],
+      "phase": "6.5",
+      "group": "6.5.3",
+      "description": "Add a small read-only proxy for the Jaeger query API (Jaeger is never exposed raw) so the Tower observation deck (P7-016) can render the live waterfall. Commit the trace screenshot to docs/img/trace-market-flow.png for the README.",
+      "acceptance_criteria": [
+        "Read-only proxy returns the latest trace tagged flow=market-trade",
+        "docs/img/trace-market-flow.png committed and referenced in README"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:B"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P6.5-012",
+      "title": "Wire kafka-exporter -> Prometheus -> Warehouse room feed",
+      "service": "infra",
+      "language": "yaml",
+      "deps": [],
+      "phase": "6.5",
+      "group": "6.5.3",
+      "description": "Add kafka-exporter to the existing Prometheus config so per-topic throughput and consumer lag are scraped. This is the Warehouse room's feed: holo-tags show real lag numbers (Plan 01 \u00a74.2).",
+      "acceptance_criteria": [
+        "kafka-exporter scraped by Prometheus; per-topic lag query returns data",
+        "A read-only endpoint exposes topic throughput/lag for the Warehouse panel"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:B"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P6.5-013",
+      "title": "Add gitleaks secret-scanning CI gate",
+      "service": "infra",
+      "language": "yaml",
+      "deps": [],
+      "phase": "6.5",
+      "group": "6.5.4",
+      "description": "Add a required gitleaks job to .github/workflows/ci.yml. This is the secrets postmortem's structural guard (commit 280d792 leaked keys). The gate must block merge on any detected secret.",
+      "acceptance_criteria": [
+        "gitleaks job is a required check on every PR",
+        "CI fails on a seeded fake secret in a test PR",
+        "Baseline/allowlist documented if any historical match is intentionally ignored"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:B"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P6.5-014",
+      "title": "Add trivy container/image vulnerability scan CI gate",
+      "service": "infra",
+      "language": "yaml",
+      "deps": [],
+      "phase": "6.5",
+      "group": "6.5.4",
+      "description": "Add a required trivy scan over built images to ci.yml, failing on HIGH/CRITICAL with a documented, time-boxed allowlist mechanism.",
+      "acceptance_criteria": [
+        "trivy job required; fails on a seeded HIGH/CRITICAL vuln",
+        "Allowlist file documented with expiry dates"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:B"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P6.5-015",
+      "title": "Add buf breaking-change gate on proto/",
+      "service": "infra",
+      "language": "yaml",
+      "deps": [],
+      "phase": "6.5",
+      "group": "6.5.4",
+      "description": "Add a required `buf breaking` check against the main branch baseline so proto contract changes can't silently break a consumer.",
+      "acceptance_criteria": [
+        "buf breaking job required; fails on a seeded incompatible proto change",
+        "buf.yaml/buf.gen.yaml baseline configured"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:B",
+        "proto"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P6.5-016",
+      "title": "Add per-language dependency-audit CI gates",
+      "service": "infra",
+      "language": "yaml",
+      "deps": [],
+      "phase": "6.5",
+      "group": "6.5.4",
+      "description": "Add dependency vulnerability audits per language as required checks: pip-audit (Python), govulncheck (Go), cargo audit (Rust), npm audit --audit-level=high (TS).",
+      "acceptance_criteria": [
+        "All four audit jobs run and are required",
+        "Each fails on a seeded known-vulnerable dependency"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:B"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P6.5-017",
+      "title": "Make the 3 e2e flow tests a required merge gate (Gate A wiring in CI)",
+      "service": "infra",
+      "language": "yaml",
+      "deps": [
+        "P6-022",
+        "P6-023",
+        "P6-024"
+      ],
+      "phase": "6.5",
+      "group": "6.5.4",
+      "description": "Add the `e2e` job to ci.yml: boot docker-compose.deps.yml + the services each flow needs, run test_market_trade_flow / test_ai_dialogue_flow / test_validation_flow, required for merge. Slow (~5-8 min) is acceptable; wrongness is not. Verify by intentionally breaking one hop and watching CI fail.",
+      "acceptance_criteria": [
+        "e2e job required on every PR; all 3 flows green on main",
+        "Intentionally breaking one hop in a PR turns the check red",
+        "README architecture diagram drops the live-vs-stubbed marker once green"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:A"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7A-001",
+      "title": "Author 4 ComfyUI workflow JSONs (classes A-D) with Flux + IP-Adapter + ControlNet",
+      "service": "asset-pipeline",
+      "language": "json",
+      "deps": [],
+      "phase": "7A",
+      "group": "7A.1",
+      "description": "workflows/ has only INSTALL.md. Author 4 ComfyUI workflow JSONs (one per asset class A-D) per the INSTALL.md model layout: Flux.1-dev fp8, IP-Adapter (identity), ControlNet-OpenPose (activity poses), with parameterized prompt/size/seed inputs so run_batch.py can drive them.",
+      "acceptance_criteria": [
+        "4 workflow JSONs validate via the ComfyUI /prompt API dry-run",
+        "Prompt/size/seed are externally parameterized inputs",
+        "IP-Adapter present in B/D workflows; ControlNet-OpenPose present in D"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:C",
+        "track:kevin-gpu"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7A-002",
+      "title": "Add interior_cast matrix + class-E extras to taxonomy.yaml (additive only)",
+      "service": "asset-pipeline",
+      "language": "yaml",
+      "deps": [],
+      "phase": "7A",
+      "group": "7A.1",
+      "description": "Add the curated per-room (role x activity) cast matrix as a new ADDITIVE interior_cast field on each room in taxonomy.yaml (taxonomy stays locked \u2014 this adds, never changes), plus the class-E extras list (ground tiles, props, landing hero, OG, favicon). Curation rule: 1-2 roles per activity. Dedupe by (role, activity).",
+      "acceptance_criteria": [
+        "run_batch.py --plan prints the full manifest with counts matching Plan 02 \u00a71.6 \u00b110%",
+        "taxonomy.yaml `locked: true` preserved; only additive fields added",
+        "Class-D unique sprite count resolves to ~95-110 after dedupe"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:C",
+        "track:kevin-gpu"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7A-003",
+      "title": "Finish run_batch.py: manifest expansion, submit/poll/download, retry, filters",
+      "service": "asset-pipeline",
+      "language": "python",
+      "deps": [
+        "P7A-001",
+        "P7A-002"
+      ],
+      "phase": "7A",
+      "group": "7A.1",
+      "description": "Complete run_batch.py: expand the manifest from taxonomy, submit jobs to ComfyUI, poll, download, retry-on-failure, --only-new, --only-class, and deterministic seeds logged per asset. Reads taxonomy at run time (no second source of truth).",
+      "acceptance_criteria": [
+        "run_batch.py --mode test --limit 10 produces 10 correctly named files",
+        "--only-new and --only-class filters work",
+        "Every generation logs prompt+seed+workflow+model-hash to output/genlog.jsonl"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:C",
+        "track:kevin-gpu"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7A-004",
+      "title": "Post-process: rembg transparency, WebP convert, per-class contact sheets",
+      "service": "asset-pipeline",
+      "language": "python",
+      "deps": [
+        "P7A-003"
+      ],
+      "phase": "7A",
+      "group": "7A.1",
+      "description": "Add postprocess.py: rembg for class B/D transparency, WebP conversion, and a contact-sheet generator (one grid PNG per class) for Kevin's QA review.",
+      "acceptance_criteria": [
+        "postprocess.py runs clean on the test batch",
+        "Contact sheets render one grid per class",
+        "B/D outputs have clean transparent edges"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:C",
+        "track:kevin-gpu"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7A-005",
+      "title": "Emit assets/manifest.json consumed by the dashboard InteriorRenderer",
+      "service": "asset-pipeline",
+      "language": "python",
+      "deps": [
+        "P7A-003"
+      ],
+      "phase": "7A",
+      "group": "7A.1",
+      "description": "Emit assets/manifest.json mapping building/room/sprite -> relative path, served via asset-pipeline storage (P6-016) and consumed by the dashboard (Plan 01 \u00a75). The dashboard must render any room with zero hardcoded asset paths.",
+      "acceptance_criteria": [
+        "manifest.json covers 100% of taxonomy rooms/roles",
+        "Dashboard InteriorRenderer loads a room purely from the manifest",
+        "Manifest schema documented for the dashboard composable"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:C"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7A-006",
+      "title": "LoRA A/B decision: evaluate solarpunk LoRA vs none, record in DECISIONS.md",
+      "service": "asset-pipeline",
+      "language": "python",
+      "deps": [
+        "P7A-003"
+      ],
+      "phase": "7A",
+      "group": "7A.1",
+      "description": "Run A/B test-gens with vs without a solarpunk LoRA from config.yaml's candidate slots; pick or drop. Record the decision + seeds in asset-gen/DECISIONS.md.",
+      "acceptance_criteria": [
+        "A/B contact sheet generated for both arms",
+        "Decision + seeds + reasoning recorded in asset-gen/DECISIONS.md"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:C",
+        "track:kevin-gpu"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-001",
+      "title": "Architect room/activity projection in town-core (rooms.yaml + simulation/rooms.py)",
+      "service": "town-core",
+      "language": "python",
+      "deps": [
+        "P6-001"
+      ],
+      "phase": "7B",
+      "group": "7B.1",
+      "description": "The sim does not track rooms. Add a projection layer (NOT a new simulation system): rooms.yaml generated from taxonomy.yaml (single source of truth, synced by script), simulation/rooms.py with Room{building_id,room_id,activities,capacity}, NPC gains current_building/current_room/current_activity/activity_since, and a deterministic action->(building,room,activity) mapping table living in rooms.yaml.",
+      "acceptance_criteria": [
+        "Unit test: every taxonomy room is reachable",
+        "Unit test: every sim action maps to a valid (building, room, activity)",
+        "rooms.yaml is generated from taxonomy.yaml, never hand-duplicated"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-002",
+      "title": "Add rooms.proto + buf codegen (Python + TS)",
+      "service": "town-core",
+      "language": "proto",
+      "deps": [
+        "P7-001"
+      ],
+      "phase": "7B",
+      "group": "7B.1",
+      "description": "Add proto/qtown/town/v1/rooms.proto with RoomState, Occupant, GetRoomStateRequest/Response. Run buf codegen for Python (town-core) + TS (cartographer).",
+      "acceptance_criteria": [
+        "buf generate is clean",
+        "Generated stubs imported by town-core + cartographer"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D",
+        "proto"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-003",
+      "title": "Emit qtown.town.room.activity per tick; register topic in kafka-init",
+      "service": "town-core",
+      "language": "python",
+      "deps": [
+        "P7-001"
+      ],
+      "phase": "7B",
+      "group": "7B.1",
+      "description": "town-core emits qtown.town.room.activity to Kafka once per tick (30s), one message per OCCUPIED room: {building_id,room_id,occupants:[{npc_id,role,activity,since}],tick}. Register the topic in infra/kafka-init.sh.",
+      "acceptance_criteria": [
+        "Topic shows >=1 msg/tick with valid schema in an integration test",
+        "Topic registered in kafka-init.sh",
+        "Only occupied rooms emit (no empty-room spam)"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-004",
+      "title": "Implement GetRoomState RPC on the town-core gRPC server",
+      "service": "town-core",
+      "language": "python",
+      "deps": [
+        "P7-002",
+        "P6-001"
+      ],
+      "phase": "7B",
+      "group": "7B.1",
+      "description": "Implement the GetRoomState RPC on town-core's gRPC server (P6-001) returning live occupants for a building, for the dashboard's initial page load.",
+      "acceptance_criteria": [
+        "grpcurl GetRoomState returns occupants matching sim state",
+        "Empty building returns an empty-but-valid response, not an error"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-005",
+      "title": "Add cartographer roomState(buildingId) GraphQL query",
+      "service": "cartographer",
+      "language": "typescript",
+      "deps": [
+        "P7-004",
+        "P6-017"
+      ],
+      "phase": "7B",
+      "group": "7B.2",
+      "description": "Add a cartographer roomState(buildingId) query resolving to town-core's GetRoomState gRPC. Fail loud if town-core is down (the P6-017 strict-load pattern) \u2014 no soft-fail.",
+      "acceptance_criteria": [
+        "GraphQL roomState query returns live data",
+        "Resolver errors loudly when town-core is unreachable (no silent empty)"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-006",
+      "title": "Add tavern room:<building> WS channels from the new topic",
+      "service": "tavern",
+      "language": "typescript",
+      "deps": [
+        "P7-003"
+      ],
+      "phase": "7B",
+      "group": "7B.2",
+      "description": "tavern consumes qtown.town.room.activity and broadcasts to a new WS channel room:<building_id> (the pattern already exists in src/kafka-consumer.ts).",
+      "acceptance_criteria": [
+        "A WS test client subscribed to room:tavern receives deltas within 1 tick",
+        "Channel name pattern matches the dashboard composable's expectation"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-007",
+      "title": "Drill-in route + ZoomTransition + overhead click-targets",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-005"
+      ],
+      "phase": "7B",
+      "group": "7B.3",
+      "description": "Add the full-page route /town/<building_id> (deep-linkable, browser-history aware). Overhead camera tweens to the building footprint (~400ms) then crossfades to the interior; Esc/back-arrow/browser-back zooms out. No modal \u2014 interiors are a place. Add building click-targets + a hover affordance to the existing PixiRenderer.",
+      "acceptance_criteria": [
+        "Click tavern -> animated zoom -> /town/tavern interior; back returns",
+        "Deep-link to /town/tavern loads the interior directly",
+        "Esc and browser-back both zoom out"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-008",
+      "title": "InteriorRenderer: 2.5D parallax scene + NPC sprite layer + tween system",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7A-005"
+      ],
+      "phase": "7B",
+      "group": "7B.3",
+      "description": "New PixiJS InteriorRenderer.client.vue: side-view dollhouse with parallax layers (background plate -> mid props -> NPC layer -> foreground accents at differing scroll factors). Liveness via cheap tweens (idle bob \u00b12px, walk slide, flip) + speech bubbles \u2014 not sprite-sheet animation. Must hit the Plan 01 \u00a73.7 perf budget.",
+      "acceptance_criteria": [
+        "Renders a room from manifest assets at 60fps with 15 sprites (M-series)",
+        "<=2.5MB transferred per room first-visit; LRU cache of 3 visited rooms",
+        "Overhead view unloads while inside"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-009",
+      "title": "useRoomState composable: GraphQL snapshot + WS delta merge + dormant mode",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-005",
+        "P7-006"
+      ],
+      "phase": "7B",
+      "group": "7B.3",
+      "description": "composables/useRoomState.ts: initial snapshot via GraphQL roomState, live updates via WS room:<id>. When a feed is absent, return dormant state (never fabricate occupants).",
+      "acceptance_criteria": [
+        "Occupants update without a page refresh",
+        "Dormant mode returns when the feed is absent (no fabricated data)"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-010",
+      "title": "ProofPanel component + per-room panel configs (no-fake-data enforced)",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-008"
+      ],
+      "phase": "7B",
+      "group": "7B.3",
+      "description": "components/ProofPanel.vue, data-driven by dashboard/proof-panels/<building>.<room>.ts ({title,metrics:[{label,source,format,staleAfterSec}],docsLink}). Hard rules: no fabricated values ever (errored source -> '\u2014' + reason on hover); staleness visible (dim + age past staleAfterSec); dormant mode names the missing gate; every panel links to its ops page + room doc.",
+      "acceptance_criteria": [
+        "Panel renders real metrics for all 5 flagship rooms",
+        "An errored metric source renders '\u2014' with reason, never a fabricated value",
+        "Stale values dim and show their age"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-011",
+      "title": "RoomDocs drawer + content loader",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-008"
+      ],
+      "phase": "7B",
+      "group": "7B.3",
+      "description": "components/RoomDocs.vue: the \u24d8 drawer that loads docs/rooms/<building>.<room>.md (content authored in Plan 04 \u00a76) for the room currently in view.",
+      "acceptance_criteria": [
+        "\u24d8 opens the room's doc drawer with the right content",
+        "Drawer closes on Esc and does not block the scene"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-012",
+      "title": "Wire flagship room: Tavern bar room with live data + proof panel",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-010",
+        "P7-011",
+        "P7-006"
+      ],
+      "phase": "7B",
+      "group": "7B.4",
+      "description": "Integrate Tavern bar room (tavern.bar_room) end to end per Plan 01 \u00a74.1. Feed: WS room:tavern occupants + real tavern broadcast events as bar chatter; proof panel shows live WS connection count, events/5min, Kafka consumer lag. A room may not fake its feed \u2014 if the backing flow isn't green yet, ship dormant (labeled, NPCs idle, panel says 'awaiting Phase 6 wiring').",
+      "acceptance_criteria": [
+        "Tavern bar room shows live data cross-checked against the source API in an e2e test",
+        "Proof panel renders only real/labeled values; dormant if feed not wired",
+        "\u24d8 docs hook present"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-013",
+      "title": "Wire flagship room: Market trading floor with live data + proof panel",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-010",
+        "P7-011",
+        "P6-006"
+      ],
+      "phase": "7B",
+      "group": "7B.4",
+      "description": "Integrate Market trading floor (market.trading_floor) end to end per Plan 01 \u00a74.1. Feed: roomState(market) + cartographer orderBook/recentTrades; WS deltas via economy.trade.settled; proof panel shows measured p50/p99 match latency, orders/sec, trades settled today. A room may not fake its feed \u2014 if the backing flow isn't green yet, ship dormant (labeled, NPCs idle, panel says 'awaiting Phase 6 wiring').",
+      "acceptance_criteria": [
+        "Market trading floor shows live data cross-checked against the source API in an e2e test",
+        "Proof panel renders only real/labeled values; dormant if feed not wired",
+        "\u24d8 docs hook present"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-014",
+      "title": "Wire flagship room: Academy classroom with live data + proof panel",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-010",
+        "P7-011",
+        "P6-011",
+        "P6-012"
+      ],
+      "phase": "7B",
+      "group": "7B.4",
+      "description": "Integrate Academy classroom (academy.classroom) end to end per Plan 01 \u00a74.1. Feed: dialogue trigger -> academy GenerateDialogue -> ai.content.generated -> tavern WS; projector renders latest generated content + clickable RAG citations; proof panel shows model name, tokens/sec, RAG hit count. A room may not fake its feed \u2014 if the backing flow isn't green yet, ship dormant (labeled, NPCs idle, panel says 'awaiting Phase 6 wiring').",
+      "acceptance_criteria": [
+        "Academy classroom shows live data cross-checked against the source API in an e2e test",
+        "Proof panel renders only real/labeled values; dormant if feed not wired",
+        "\u24d8 docs hook present"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-015",
+      "title": "Wire flagship room: Validation Citadel chamber with live data + proof panel",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-010",
+        "P7-011",
+        "P6-024"
+      ],
+      "phase": "7B",
+      "group": "7B.4",
+      "description": "Integrate Validation Citadel chamber (validation_citadel.verification_chamber) end to end per Plan 01 \u00a74.1. Feed: qtown.validation.result (works today); proof panel shows validations/min, accept rate, p99 WASM exec time, 'unsafe confined to wasm_sandbox: N blocks'. A room may not fake its feed \u2014 if the backing flow isn't green yet, ship dormant (labeled, NPCs idle, panel says 'awaiting Phase 6 wiring').",
+      "acceptance_criteria": [
+        "Validation Citadel chamber shows live data cross-checked against the source API in an e2e test",
+        "Proof panel renders only real/labeled values; dormant if feed not wired",
+        "\u24d8 docs hook present"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-016",
+      "title": "Wire flagship room: Tower observation deck with live data + proof panel",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-010",
+        "P7-011",
+        "P6.5-011"
+      ],
+      "phase": "7B",
+      "group": "7B.4",
+      "description": "Integrate Tower observation deck (tower.observation_deck) end to end per Plan 01 \u00a74.1. Feed: Jaeger query proxy for the latest flow=market-trade trace waterfall + cartographer fan-out beams; proof panel shows end-to-end trade latency, span count, services touched. A room may not fake its feed \u2014 if the backing flow isn't green yet, ship dormant (labeled, NPCs idle, panel says 'awaiting Phase 6 wiring').",
+      "acceptance_criteria": [
+        "Tower observation deck shows live data cross-checked against the source API in an e2e test",
+        "Proof panel renders only real/labeled values; dormant if feed not wired",
+        "\u24d8 docs hook present"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-017",
+      "title": "E2E room test: sim tick -> room.activity -> WS -> DOM assertion (Gate D check)",
+      "service": "infra",
+      "language": "python",
+      "deps": [
+        "P7-012",
+        "P7-013",
+        "P7-014",
+        "P7-015",
+        "P7-016"
+      ],
+      "phase": "7B",
+      "group": "7B.4",
+      "description": "tests/e2e/test_room_flow.py: drive a sim tick, assert qtown.town.room.activity emits, assert the WS delta arrives, assert the DOM updates. This becomes the Gate D check.",
+      "acceptance_criteria": [
+        "Green in CI as a required check",
+        "Breaking the room.activity emit turns the test red"
+      ],
+      "labels": [
+        "grade:opus",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-018",
+      "title": "Second-ring room: Warehouse storage floor",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-017",
+        "P6.5-012"
+      ],
+      "phase": "7B",
+      "group": "7B.5",
+      "description": "27 storage lanes = Kafka topics; height = depth; holo-tags show topic name, msg/min, consumer lag; proof panel flags any zero-consumer topic (audit's one-sided topology). Same done-when pattern as the flagship five: real feed or labeled dormant; proof panel live; \u24d8 docs hook present.",
+      "acceptance_criteria": [
+        "Warehouse storage floor renders a real feed or a labeled dormant state (never fabricated)",
+        "Proof panel live; \u24d8 docs hook present",
+        "Cross-checked against its source API"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-019",
+      "title": "Second-ring room: Academy library + working search console",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-017",
+        "P6-015"
+      ],
+      "phase": "7B",
+      "group": "7B.5",
+      "description": "Real library service search; typed query pulls glowing books from shelves; proof panel shows docs indexed, last index write, search p50. Same done-when pattern as the flagship five: real feed or labeled dormant; proof panel live; \u24d8 docs hook present.",
+      "acceptance_criteria": [
+        "Academy library + working search console renders a real feed or a labeled dormant state (never fabricated)",
+        "Proof panel live; \u24d8 docs hook present",
+        "Cross-checked against its source API"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-020",
+      "title": "Second-ring room: Town Hall assembly",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-017"
+      ],
+      "phase": "7B",
+      "group": "7B.5",
+      "description": "Election candidates on stage with live vote tallies; proof panel shows current tick, ticks/day uptime, election schedule (the tick loop's heartbeat). Same done-when pattern as the flagship five: real feed or labeled dormant; proof panel live; \u24d8 docs hook present.",
+      "acceptance_criteria": [
+        "Town Hall assembly renders a real feed or a labeled dormant state (never fabricated)",
+        "Proof panel live; \u24d8 docs hook present",
+        "Cross-checked against its source API"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-021",
+      "title": "Second-ring room: Bank lobby + vault",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-017",
+        "P6-020"
+      ],
+      "phase": "7B",
+      "group": "7B.5",
+      "description": "Tellers process real wallet deltas from settlements; vault shelves world snapshots; proof panel shows money supply, settlements today, snapshot count + restore-tested. Same done-when pattern as the flagship five: real feed or labeled dormant; proof panel live; \u24d8 docs hook present.",
+      "acceptance_criteria": [
+        "Bank lobby + vault renders a real feed or a labeled dormant state (never fabricated)",
+        "Proof panel live; \u24d8 docs hook present",
+        "Cross-checked against its source API"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-022",
+      "title": "Second-ring room: Clinic examination + dispensary",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-017",
+        "P6.5-006"
+      ],
+      "phase": "7B",
+      "group": "7B.5",
+      "description": "Healer's diagnostic table = the 9-service health board; sick patient NPC on degrade; dispensary links remediation runbooks; proof panel shows overall status, slowest check. Same done-when pattern as the flagship five: real feed or labeled dormant; proof panel live; \u24d8 docs hook present.",
+      "acceptance_criteria": [
+        "Clinic examination + dispensary renders a real feed or a labeled dormant state (never fabricated)",
+        "Proof panel live; \u24d8 docs hook present",
+        "Cross-checked against its source API"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-023",
+      "title": "Second-ring room: Workshop workspace",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-017",
+        "P6-016",
+        "P7A-005"
+      ],
+      "phase": "7B",
+      "group": "7B.5",
+      "description": "Skill-share board cycles the latest real asset-pipeline outputs; proof panel shows assets generated, last gen duration, queue depth. Same done-when pattern as the flagship five: real feed or labeled dormant; proof panel live; \u24d8 docs hook present.",
+      "acceptance_criteria": [
+        "Workshop workspace renders a real feed or a labeled dormant state (never fabricated)",
+        "Proof panel live; \u24d8 docs hook present",
+        "Cross-checked against its source API"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-024",
+      "title": "Second-ring room: Theater stage",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-017"
+      ],
+      "phase": "7B",
+      "group": "7B.5",
+      "description": "Performer NPC reads the latest newspaper edition / generated narrative; proof panel shows editions published, stories generated this week. Same done-when pattern as the flagship five: real feed or labeled dormant; proof panel live; \u24d8 docs hook present.",
+      "acceptance_criteria": [
+        "Theater stage renders a real feed or a labeled dormant state (never fabricated)",
+        "Proof panel live; \u24d8 docs hook present",
+        "Cross-checked against its source API"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-025",
+      "title": "Second-ring room: Temple sanctuary",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-017"
+      ],
+      "phase": "7B",
+      "group": "7B.5",
+      "description": "Gossip/rumor graph as a constellation above the altar (nodes=NPCs, edges=rumors); proof panel shows active rumors, most-believed rumor, decay rate. Same done-when pattern as the flagship five: real feed or labeled dormant; proof panel live; \u24d8 docs hook present.",
+      "acceptance_criteria": [
+        "Temple sanctuary renders a real feed or a labeled dormant state (never fabricated)",
+        "Proof panel live; \u24d8 docs hook present",
+        "Cross-checked against its source API"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-026",
+      "title": "Second-ring room: Courthouse courtroom",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-017",
+        "P6-008",
+        "P6-024"
+      ],
+      "phase": "7B",
+      "group": "7B.5",
+      "description": "Docket = recent \u274c verdicts from fortress that town-core acted on; proof panel shows cases this week, overturn rate. Same done-when pattern as the flagship five: real feed or labeled dormant; proof panel live; \u24d8 docs hook present.",
+      "acceptance_criteria": [
+        "Courthouse courtroom renders a real feed or a labeled dormant state (never fabricated)",
+        "Proof panel live; \u24d8 docs hook present",
+        "Cross-checked against its source API"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-027",
+      "title": "Second-ring room: Restoration Center",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-017"
+      ],
+      "phase": "7B",
+      "group": "7B.5",
+      "description": "Sim crime/justice restorative outcomes; proof panel shows incidents, completion rate. Same done-when pattern as the flagship five: real feed or labeled dormant; proof panel live; \u24d8 docs hook present.",
+      "acceptance_criteria": [
+        "Restoration Center renders a real feed or a labeled dormant state (never fabricated)",
+        "Proof panel live; \u24d8 docs hook present",
+        "Cross-checked against its source API"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-028",
+      "title": "Second-ring room: Home (drill into a specific NPC)",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-017"
+      ],
+      "phase": "7B",
+      "group": "7B.5",
+      "description": "Needs bars, current goal, today's action log; bedroom shows real sleep state at night. Feed: town-core NPC state. Same done-when pattern as the flagship five: real feed or labeled dormant; proof panel live; \u24d8 docs hook present.",
+      "acceptance_criteria": [
+        "Home (drill into a specific NPC) renders a real feed or a labeled dormant state (never fabricated)",
+        "Proof panel live; \u24d8 docs hook present",
+        "Cross-checked against its source API"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-029",
+      "title": "Second-ring room: Blacksmith forge/showroom",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-017"
+      ],
+      "phase": "7B",
+      "group": "7B.5",
+      "description": "Production-chain room: goods/tick, inventory, 'sold at Market' counters reconciling with market-district settlements (cross-service consistency proof). Sim-fed. Same done-when pattern as the flagship five: real feed or labeled dormant; proof panel live; \u24d8 docs hook present.",
+      "acceptance_criteria": [
+        "Blacksmith forge/showroom renders a real feed or a labeled dormant state (never fabricated)",
+        "Proof panel live; \u24d8 docs hook present",
+        "Cross-checked against its source API"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-030",
+      "title": "Second-ring room: Bakery bakehouse/shopfront",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-017"
+      ],
+      "phase": "7B",
+      "group": "7B.5",
+      "description": "Production-chain room reconciling produced goods against Market settlements. Sim-fed. Same done-when pattern as the flagship five: real feed or labeled dormant; proof panel live; \u24d8 docs hook present.",
+      "acceptance_criteria": [
+        "Bakery bakehouse/shopfront renders a real feed or a labeled dormant state (never fabricated)",
+        "Proof panel live; \u24d8 docs hook present",
+        "Cross-checked against its source API"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7-031",
+      "title": "Second-ring room: Farm barn/greenhouse",
+      "service": "dashboard",
+      "language": "typescript",
+      "deps": [
+        "P7-017"
+      ],
+      "phase": "7B",
+      "group": "7B.5",
+      "description": "Production-chain room reconciling produced goods against Market settlements. Sim-fed. Same done-when pattern as the flagship five: real feed or labeled dormant; proof panel live; \u24d8 docs hook present.",
+      "acceptance_criteria": [
+        "Farm barn/greenhouse renders a real feed or a labeled dormant state (never fabricated)",
+        "Proof panel live; \u24d8 docs hook present",
+        "Cross-checked against its source API"
+      ],
+      "labels": [
+        "grade:ralph",
+        "gate:D"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-001",
+      "title": "Write docs/STATE.md + CI quickstart smoke job",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [
+        "P6.5-017"
+      ],
+      "phase": "7.5",
+      "group": "7.5.1",
+      "description": "docs/STATE.md: What works now (green e2e flows, live rooms) \u00b7 What's in flight (phase + gate) \u00b7 The numbers (measured only, linked to perf/REPORT.md) \u00b7 5-minute quickstart (make deps && make build && make run) \u00b7 Honest gaps (audit summary). A CI smoke job runs the quickstart so it can never rot.",
+      "acceptance_criteria": [
+        "A stranger reproduces the quickstart from a fresh clone",
+        "Every number on the page links to its proof",
+        "CI smoke job executes the quickstart and is required"
+      ],
+      "labels": [
+        "grade:opus"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-002",
+      "title": "Write ADR-01 Go for the order book",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [],
+      "phase": "7.5",
+      "group": "7.5.2",
+      "description": "Draft ADR-01 Go for the order book using the template Context -> Decision -> Consequences -> Receipts. Receipt that makes it credible: perf/REPORT.md numbers; orderbook.go. <=1 page, zero aspirational statements; every Consequences claim links to a receipt. Kevin voice-passes before merge.",
+      "acceptance_criteria": [
+        "ADR is <=1 page",
+        "Every Consequences claim links to a real receipt (code/test/report)",
+        "No aspirational/unproven statements"
+      ],
+      "labels": [
+        "grade:opus",
+        "voice-pass"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-003",
+      "title": "Write ADR-02 Rust + WASM for untrusted validation",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [],
+      "phase": "7.5",
+      "group": "7.5.2",
+      "description": "Draft ADR-02 Rust + WASM for untrusted validation using the template Context -> Decision -> Consequences -> Receipts. Receipt that makes it credible: confined-unsafe module (P6-003); sandbox tests. <=1 page, zero aspirational statements; every Consequences claim links to a receipt. Kevin voice-passes before merge.",
+      "acceptance_criteria": [
+        "ADR is <=1 page",
+        "Every Consequences claim links to a real receipt (code/test/report)",
+        "No aspirational/unproven statements"
+      ],
+      "labels": [
+        "grade:opus",
+        "voice-pass"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-004",
+      "title": "Write ADR-03 Kafka at-least-once + idempotent consumers",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [],
+      "phase": "7.5",
+      "group": "7.5.2",
+      "description": "Draft ADR-03 Kafka at-least-once + idempotent consumers using the template Context -> Decision -> Consequences -> Receipts. Receipt that makes it credible: consumer idempotency tests; topic catalog. <=1 page, zero aspirational statements; every Consequences claim links to a receipt. Kevin voice-passes before merge.",
+      "acceptance_criteria": [
+        "ADR is <=1 page",
+        "Every Consequences claim links to a real receipt (code/test/report)",
+        "No aspirational/unproven statements"
+      ],
+      "labels": [
+        "grade:opus",
+        "voice-pass"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-005",
+      "title": "Write ADR-04 GraphQL gateway as sole public entry",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [],
+      "phase": "7.5",
+      "group": "7.5.2",
+      "description": "Draft ADR-04 GraphQL gateway as sole public entry using the template Context -> Decision -> Consequences -> Receipts. Receipt that makes it credible: cartographer authz + rate limit (P8-003). <=1 page, zero aspirational statements; every Consequences claim links to a receipt. Kevin voice-passes before merge.",
+      "acceptance_criteria": [
+        "ADR is <=1 page",
+        "Every Consequences claim links to a real receipt (code/test/report)",
+        "No aspirational/unproven statements"
+      ],
+      "labels": [
+        "grade:opus",
+        "voice-pass"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-006",
+      "title": "Write ADR-05 Polyglot-by-domain vs resume-driven",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [],
+      "phase": "7.5",
+      "group": "7.5.2",
+      "description": "Draft ADR-05 Polyglot-by-domain vs resume-driven using the template Context -> Decision -> Consequences -> Receipts. Receipt that makes it credible: the building->service map (Plan 01 \u00a71). <=1 page, zero aspirational statements; every Consequences claim links to a receipt. Kevin voice-passes before merge.",
+      "acceptance_criteria": [
+        "ADR is <=1 page",
+        "Every Consequences claim links to a real receipt (code/test/report)",
+        "No aspirational/unproven statements"
+      ],
+      "labels": [
+        "grade:opus",
+        "voice-pass"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-007",
+      "title": "Write ADR-06 v1 monolith -> v2 decomposition triggers",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [],
+      "phase": "7.5",
+      "group": "7.5.2",
+      "description": "Draft ADR-06 v1 monolith -> v2 decomposition triggers using the template Context -> Decision -> Consequences -> Receipts. Receipt that makes it credible: v1 closeout post; audit parity table. <=1 page, zero aspirational statements; every Consequences claim links to a receipt. Kevin voice-passes before merge.",
+      "acceptance_criteria": [
+        "ADR is <=1 page",
+        "Every Consequences claim links to a real receipt (code/test/report)",
+        "No aspirational/unproven statements"
+      ],
+      "labels": [
+        "grade:opus",
+        "voice-pass"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-008",
+      "title": "Write ADR-07 Local-model routing by task type",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [],
+      "phase": "7.5",
+      "group": "7.5.2",
+      "description": "Draft ADR-07 Local-model routing by task type using the template Context -> Decision -> Consequences -> Receipts. Receipt that makes it credible: ralph/v2_model_router.py in production. <=1 page, zero aspirational statements; every Consequences claim links to a receipt. Kevin voice-passes before merge.",
+      "acceptance_criteria": [
+        "ADR is <=1 page",
+        "Every Consequences claim links to a real receipt (code/test/report)",
+        "No aspirational/unproven statements"
+      ],
+      "labels": [
+        "grade:opus",
+        "voice-pass"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-009",
+      "title": "Write ADR-08 Fail-loud over fail-soft",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [],
+      "phase": "7.5",
+      "group": "7.5.2",
+      "description": "Draft ADR-08 Fail-loud over fail-soft using the template Context -> Decision -> Consequences -> Receipts. Receipt that makes it credible: the cartographer tryLoadPackage lesson (P6-017). <=1 page, zero aspirational statements; every Consequences claim links to a receipt. Kevin voice-passes before merge.",
+      "acceptance_criteria": [
+        "ADR is <=1 page",
+        "Every Consequences claim links to a real receipt (code/test/report)",
+        "No aspirational/unproven statements"
+      ],
+      "labels": [
+        "grade:opus",
+        "voice-pass"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-010",
+      "title": "Write ADR-09 Linkerd mTLS + service authz",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [],
+      "phase": "7.5",
+      "group": "7.5.2",
+      "description": "Draft ADR-09 Linkerd mTLS + service authz using the template Context -> Decision -> Consequences -> Receipts. Receipt that makes it credible: infra/linkerd/ policies. <=1 page, zero aspirational statements; every Consequences claim links to a receipt. Kevin voice-passes before merge.",
+      "acceptance_criteria": [
+        "ADR is <=1 page",
+        "Every Consequences claim links to a real receipt (code/test/report)",
+        "No aspirational/unproven statements"
+      ],
+      "labels": [
+        "grade:opus",
+        "voice-pass"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-011",
+      "title": "Write ADR-10 Agent-written code: CI as the trust boundary",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [],
+      "phase": "7.5",
+      "group": "7.5.2",
+      "description": "Draft ADR-10 Agent-written code: CI as the trust boundary using the template Context -> Decision -> Consequences -> Receipts. Receipt that makes it credible: the e2e gates (Plan 03 \u00a71); the audit. <=1 page, zero aspirational statements; every Consequences claim links to a receipt. Kevin voice-passes before merge.",
+      "acceptance_criteria": [
+        "ADR is <=1 page",
+        "Every Consequences claim links to a real receipt (code/test/report)",
+        "No aspirational/unproven statements"
+      ],
+      "labels": [
+        "grade:opus",
+        "voice-pass"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-012",
+      "title": "Write docs/agent-ops.md \u2014 the differentiator document",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [],
+      "phase": "7.5",
+      "group": "7.5.3",
+      "description": "Nobody else interviews with this doc. Cover: Ralph architecture (orchestrator, worklist, conflict detection) \u00b7 the model-routing policy as production config \u00b7 the HUMAN.md steering protocol + intervention log \u00b7 cost-per-story methodology \u00b7 THE AUDIT STORY (194/194 'complete' while 0/3 flows worked \u2014 'true per-story, misleading at the system level' \u2014 and the structural fix: e2e gates) \u00b7 how Opus + Ralph divide work in this very plan pack (the doc describes the process that produced it).",
+      "acceptance_criteria": [
+        "agent-ops.md covers all six sections with real artifacts linked",
+        "The audit story is told honestly with the structural fix",
+        "The Opus-plans / Ralph-executes / Opus-cleanup cadence is documented"
+      ],
+      "labels": [
+        "grade:opus",
+        "voice-pass"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-013",
+      "title": "Write SECURITY.md + STRIDE-lite threat model",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [
+        "P6.5-013",
+        "P6.5-016"
+      ],
+      "phase": "7.5",
+      "group": "7.5.3",
+      "description": "SECURITY.md: trust-boundary diagram (public -> cartographer -> mesh; Kafka internal; Ollama/ComfyUI local-only), what's enforced today (Linkerd mTLS/authz), and what's honestly NOT done (no auth on internal RPCs, no gateway rate limit \u2014 with the P8-003 plan attached). Plus a 1-page STRIDE-lite threat model mapping mitigations to the CI gates and OWASP-LLM items. Honest partial > silent absence.",
+      "acceptance_criteria": [
+        "SECURITY.md states enforced vs not-done honestly with linked plans",
+        "Threat model maps each mitigation to a CI gate or OWASP-LLM item"
+      ],
+      "labels": [
+        "grade:opus",
+        "voice-pass"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-014",
+      "title": "Write docs/postmortems/2026-05-30-committed-secrets.md",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [
+        "P6.5-013"
+      ],
+      "phase": "7.5",
+      "group": "7.5.3",
+      "description": "Convert the leaked-secrets incident (commit 280d792) into operational signal: what leaked, blast radius, rotation timeline, and the guards now in CI (gitleaks, trivy, dependency audit). Opus drafts from git history; Kevin confirms the rotation facts.",
+      "acceptance_criteria": [
+        "Postmortem covers leak, blast radius, rotation timeline, and CI guards",
+        "Rotation facts confirmed by Kevin before merge"
+      ],
+      "labels": [
+        "grade:opus",
+        "voice-pass"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-015",
+      "title": "Per-service README template + 9 service READMEs",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [],
+      "phase": "7.5",
+      "group": "7.5.3",
+      "description": "docs/templates/service-readme.md (What this is + its building \u00b7 Interface gRPC/HTTP/Kafka in+out linked to proto+topic catalog \u00b7 Run/test locally \u00b7 How it proves itself \u00b7 Design notes -> owning ADRs \u00b7 Honest status per feature), then fill it for all 9 services.",
+      "acceptance_criteria": [
+        "Template exists; all 9 services have a README against it",
+        "Each README's status column is honest (live/dormant per feature)"
+      ],
+      "labels": [
+        "grade:opus"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-016",
+      "title": "Kafka topic catalog (checked-in YAML + generated markdown)",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [
+        "P6-022",
+        "P6-023",
+        "P6-024"
+      ],
+      "phase": "7.5",
+      "group": "7.5.3",
+      "description": "docs/kafka-topics.md generated from a checked-in YAML: all 27 topics \u2014 producer, consumers, schema, and the e2e test that exercises it. Single source so catalog, kafka-init.sh, and the Warehouse feed can't drift. This is the Warehouse docs hook.",
+      "acceptance_criteria": [
+        "All 27 topics listed with producer + consumers + schema + exercising test",
+        "Catalog generated from YAML; CI checks it matches kafka-init.sh"
+      ],
+      "labels": [
+        "grade:ralph"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-017",
+      "title": "Room doc: market.trading_floor",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [
+        "P7-013"
+      ],
+      "phase": "7.5",
+      "group": "7.5.4",
+      "description": "docs/rooms/market.trading_floor.md (~200 words, frontmatter with building/service/sources). Body: What you're watching \u00b7 How it flows (3-5 hops, each naming a real file) \u00b7 Why it's built this way (distilled from the owning ADR) \u00b7 Go deeper (ops page, ADR, README, e2e test). CI checks the source links resolve.",
+      "acceptance_criteria": [
+        "Doc <=200 words with resolving source links (CI link-check passes)",
+        "A non-engineer can read it and explain what the room demonstrates"
+      ],
+      "labels": [
+        "grade:ralph"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-018",
+      "title": "Room doc: tavern.bar_room",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [
+        "P7-012"
+      ],
+      "phase": "7.5",
+      "group": "7.5.4",
+      "description": "docs/rooms/tavern.bar_room.md (~200 words, frontmatter with building/service/sources). Body: What you're watching \u00b7 How it flows (3-5 hops, each naming a real file) \u00b7 Why it's built this way (distilled from the owning ADR) \u00b7 Go deeper (ops page, ADR, README, e2e test). CI checks the source links resolve.",
+      "acceptance_criteria": [
+        "Doc <=200 words with resolving source links (CI link-check passes)",
+        "A non-engineer can read it and explain what the room demonstrates"
+      ],
+      "labels": [
+        "grade:ralph"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-019",
+      "title": "Room doc: academy.classroom",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [
+        "P7-014"
+      ],
+      "phase": "7.5",
+      "group": "7.5.4",
+      "description": "docs/rooms/academy.classroom.md (~200 words, frontmatter with building/service/sources). Body: What you're watching \u00b7 How it flows (3-5 hops, each naming a real file) \u00b7 Why it's built this way (distilled from the owning ADR) \u00b7 Go deeper (ops page, ADR, README, e2e test). CI checks the source links resolve.",
+      "acceptance_criteria": [
+        "Doc <=200 words with resolving source links (CI link-check passes)",
+        "A non-engineer can read it and explain what the room demonstrates"
+      ],
+      "labels": [
+        "grade:ralph"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-020",
+      "title": "Room doc: validation_citadel.verification_chamber",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [
+        "P7-015"
+      ],
+      "phase": "7.5",
+      "group": "7.5.4",
+      "description": "docs/rooms/validation_citadel.verification_chamber.md (~200 words, frontmatter with building/service/sources). Body: What you're watching \u00b7 How it flows (3-5 hops, each naming a real file) \u00b7 Why it's built this way (distilled from the owning ADR) \u00b7 Go deeper (ops page, ADR, README, e2e test). CI checks the source links resolve.",
+      "acceptance_criteria": [
+        "Doc <=200 words with resolving source links (CI link-check passes)",
+        "A non-engineer can read it and explain what the room demonstrates"
+      ],
+      "labels": [
+        "grade:ralph"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-021",
+      "title": "Room doc: tower.observation_deck",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [
+        "P7-016"
+      ],
+      "phase": "7.5",
+      "group": "7.5.4",
+      "description": "docs/rooms/tower.observation_deck.md (~200 words, frontmatter with building/service/sources). Body: What you're watching \u00b7 How it flows (3-5 hops, each naming a real file) \u00b7 Why it's built this way (distilled from the owning ADR) \u00b7 Go deeper (ops page, ADR, README, e2e test). CI checks the source links resolve.",
+      "acceptance_criteria": [
+        "Doc <=200 words with resolving source links (CI link-check passes)",
+        "A non-engineer can read it and explain what the room demonstrates"
+      ],
+      "labels": [
+        "grade:ralph"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-022",
+      "title": "Room docs for the second ring (batch)",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [
+        "P7-018"
+      ],
+      "phase": "7.5",
+      "group": "7.5.4",
+      "description": "Author docs/rooms/*.md for every second-ring room with a live feed, same content schema and CI link-check as the flagship five.",
+      "acceptance_criteria": [
+        "Every second-ring room with a live feed has a doc",
+        "CI link-check passes for all room docs"
+      ],
+      "labels": [
+        "grade:ralph"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P7.5-023",
+      "title": "Refresh docs/index.json + docs IA; README links the full pack",
+      "service": "infra",
+      "language": "markdown",
+      "deps": [
+        "P7.5-001",
+        "P7.5-012"
+      ],
+      "phase": "7.5",
+      "group": "7.5.4",
+      "description": "Update docs/index.json and the docs information architecture; README links the plan pack, STATE.md, ADRs, agent-ops.md, SECURITY.md, perf report, and topic catalog.",
+      "acceptance_criteria": [
+        "docs/index.json regenerated and valid",
+        "README links every top-level doc artifact"
+      ],
+      "labels": [
+        "grade:opus"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P8-001",
+      "title": "Build MCP server exposing read-only town tools",
+      "service": "mcp-gateway",
+      "language": "python",
+      "deps": [
+        "P6-001",
+        "P7-004"
+      ],
+      "phase": "8",
+      "group": "8.1",
+      "description": "services/mcp-gateway (or a town-core module): an MCP server exposing read-only tools \u2014 query_town_state, get_npc, get_room_activity, search_library, get_trace_summary. Python or TS SDK, stdio + SSE transports. The 2026 table-stakes integration story. Tower's holo-array gains an 'agent uplink' visual + MCP docs hook.",
+      "acceptance_criteria": [
+        "Claude Code connects and answers 'who is in the tavern right now' from live state",
+        "Both stdio and SSE transports work",
+        "All exposed tools are read-only (no mutation surface)"
+      ],
+      "labels": [
+        "grade:opus"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P8-002",
+      "title": "LLM evals in CI: golden dialogue set + local judge + threshold gate",
+      "service": "academy",
+      "language": "python",
+      "deps": [
+        "P6-013"
+      ],
+      "phase": "8",
+      "group": "8.1",
+      "description": "evals/: ~30-case golden dialogue set, rubric scoring via a local judge model (deepseek-r1:14b), thresholds as a CI gate behind a recorded-fixture mode for determinism. 'How do you test LLM output' is a guaranteed interview probe. Academy laboratory room renders the latest eval run.",
+      "acceptance_criteria": [
+        "A deliberately degraded prompt fails the CI eval gate",
+        "Eval gate is deterministic in CI via recorded fixtures",
+        "Rubric + thresholds documented"
+      ],
+      "labels": [
+        "grade:opus"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P8-003",
+      "title": "Gateway hardening: API-key auth, rate limit, query-depth/complexity limits",
+      "service": "cartographer",
+      "language": "typescript",
+      "deps": [
+        "P6-017"
+      ],
+      "phase": "8",
+      "group": "8.1",
+      "description": "cartographer: API-key auth for mutating ops, a Redis sliding-window rate limit, and GraphQL query-depth + complexity limits. 'Your gateway is the front door.'",
+      "acceptance_criteria": [
+        "A k6 abuse script gets 429s",
+        "A depth-bomb query is rejected by the depth/complexity limiter",
+        "Mutating ops require a valid API key"
+      ],
+      "labels": [
+        "grade:opus"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P8-004",
+      "title": "Structured outputs: academy emits schema-validated dialogue JSON",
+      "service": "academy",
+      "language": "python",
+      "deps": [
+        "P6-007"
+      ],
+      "phase": "8",
+      "group": "8.1",
+      "description": "academy emits schema-validated JSON (Ollama format=json + pydantic validation + retry-on-invalid). NPC dialogue gets {speaker,text,mood,refs[]}; mood drives the NPC sprite pose in the classroom projector.",
+      "acceptance_criteria": [
+        "Invalid-schema rate <1% over the eval set",
+        "mood field drives the rendered NPC pose",
+        "Invalid generations are retried, never emitted raw"
+      ],
+      "labels": [
+        "grade:opus"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P8-005",
+      "title": "Guardrails: moderation as a fortress WASM rule + prompt-injection canaries",
+      "service": "fortress",
+      "language": "rust",
+      "deps": [
+        "P6-007",
+        "P6-012"
+      ],
+      "phase": "8",
+      "group": "8.2",
+      "description": "Add a moderation pass on qtown.ai.content.generated AS a fortress WASM rule (content policy = just another validation), plus prompt-injection canary tests on the RAG path. Rejected content gets adjudicated in the Citadel \u2014 on theme. OWASP-LLM coverage.",
+      "acceptance_criteria": [
+        "Disallowed generated content is rejected by the WASM moderation rule",
+        "Prompt-injection canary cases are caught on the RAG path",
+        "Rejected content surfaces in the Courthouse docket"
+      ],
+      "labels": [
+        "grade:opus"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P8-006",
+      "title": "Hybrid retrieval: ES dense-vector kNN + BM25 + reranker, A/B on the eval set",
+      "service": "library",
+      "language": "python",
+      "deps": [
+        "P6-014",
+        "P6-015",
+        "P8-002"
+      ],
+      "phase": "8",
+      "group": "8.2",
+      "description": "library: ES dense-vector kNN (nomic embeddings) + BM25 + the existing reranker; A/B on the eval set. Library console gains a retrieval-mode toggle.",
+      "acceptance_criteria": [
+        "Hybrid retrieval beats BM25-only on the eval set (recorded A/B)",
+        "Retrieval-mode toggle works in the Library console"
+      ],
+      "labels": [
+        "grade:opus"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P8-007",
+      "title": "Streaming token UX: Ollama stream -> academy -> WS -> classroom projector",
+      "service": "academy",
+      "language": "python",
+      "deps": [
+        "P6-007"
+      ],
+      "phase": "8",
+      "group": "8.2",
+      "description": "Stream Ollama tokens: academy -> WS stream:<dialogue_id> -> classroom projector types token-by-token.",
+      "acceptance_criteria": [
+        "Classroom projector renders generation token-by-token over WS",
+        "Stream cleanly terminates and finalizes the message"
+      ],
+      "labels": [
+        "grade:ralph"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P8-008",
+      "title": "LLM observability: GenAI OTel semantic-convention attributes on academy spans",
+      "service": "academy",
+      "language": "python",
+      "deps": [
+        "P6.5-008"
+      ],
+      "phase": "8",
+      "group": "8.2",
+      "description": "Add GenAI semantic-convention attributes (model, tokens in/out, duration) to academy spans; add a Grafana panel. Feeds the Academy proof panel.",
+      "acceptance_criteria": [
+        "academy spans carry model + token + duration attributes per GenAI conventions",
+        "Grafana panel renders tokens/sec + cost; Academy proof panel reads it"
+      ],
+      "labels": [
+        "grade:ralph"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P8-009",
+      "title": "make k8s-local: kind + Helm + Linkerd with real probes",
+      "service": "infra",
+      "language": "shell",
+      "deps": [
+        "P6.5-005"
+      ],
+      "phase": "8",
+      "group": "8.2",
+      "description": "make k8s-local: kind cluster + Helm install + Linkerd, with the Plan 03 \u00a73 readiness/liveness endpoints wired as real probes. One GIF in docs. Clinic probes become its feed.",
+      "acceptance_criteria": [
+        "make k8s-local brings up the stack on kind with Linkerd",
+        "Liveness/readiness probes use the real health endpoints",
+        "A short demo GIF is committed"
+      ],
+      "labels": [
+        "grade:opus"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
+    },
+    {
+      "id": "P8-010",
+      "title": "Episodic NPC memory: per-NPC event log embedded + retrieved into dialogue",
+      "service": "town-core",
+      "language": "python",
+      "deps": [
+        "P6-012",
+        "P8-006"
+      ],
+      "phase": "8",
+      "group": "8.2",
+      "description": "Per-NPC episodic memory: an event log embedded and retrieved into dialogue prompts; the gossip graph becomes the SOCIAL memory layer. Add an ADR on context engineering. Shown in the Temple constellation + Home.",
+      "acceptance_criteria": [
+        "NPC dialogue references retrieved episodic memories",
+        "ADR on context engineering written",
+        "Temple/Home visualize the memory layer"
+      ],
+      "labels": [
+        "grade:opus"
+      ],
+      "status": "pending",
+      "attempts": 0,
+      "last_error": null
     }
   ]
 }
