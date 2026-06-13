@@ -27,6 +27,22 @@ P7A-004 postprocess, P7A-006 LoRA) in `ralph/worklist.json`.
 This lane has **zero dependency on Phase 6** — it can start the moment the ComfyUI
 workflows exist (P7A-001), in parallel with all service wiring.
 
+## 🔴 Blocked on Kevin (the asset lane can't finish without these two)
+
+Everything box-independent is done and validated offline. The remaining asset work needs
+your hardware, and two of those steps are *only yours to do*:
+
+1. **Pick the LoRAs off Civitai** — `asset-gen/config.yaml` ships placeholder filenames
+   (`solarpunk_flux.safetensors`, `ghibli_style_flux.safetensors`). Download real ones per
+   `workflows/INSTALL.md §4` and update `config.yaml` with the actual filenames.
+2. **Kick off a test-gen** — `python3 run_batch.py --mode test --limit 10` on the 3090 so
+   we can iterate the IP-Adapter/ControlNet wiring (P7A-001) against real output. (You run
+   these manually since the batches are long.)
+
+Once those land, the box-coupled code (P7A-001 IP-Adapter/ControlNet, P7A-004 rembg/WebP
+postprocess) gets finished with ComfyUI in the loop, then the ~3–4 GPU-hour production
+batch runs. Nothing else on the asset side is waiting on anything.
+
 ## The full manifest (derived from the locked taxonomy)
 
 ### Class A — Overhead building exteriors · 19 total · **0 have / 19 missing**
