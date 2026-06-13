@@ -256,6 +256,167 @@ npcs:
     activity_poses: [idle, walking, running, playing, watching, talking]
 
 # ---------------------------------------------------------------------------
+# INTERIOR CAST (additive, P7A-002, 2026-06-13) — curated (room → activity →
+# roles) matrix for Class-D interior activity sprites. NOT the full cross
+# product: 1–2 roles per activity (natural worker + one visitor). run_batch.py
+# dedupes by (role, activity), so a trader_talking sprite is generated once and
+# reused everywhere traders talk. Locked building/room defs above are untouched.
+# ---------------------------------------------------------------------------
+interior_cast:
+  tavern:
+    bar_room:
+      - {activity: drinking, roles: [trader, farmer]}
+      - {activity: talking, roles: [trader, scholar]}
+      - {activity: eating, roles: [farmer, child]}
+      - {activity: idling, roles: [guard]}
+    kitchen:
+      - {activity: cooking, roles: [cook]}
+      - {activity: prep_work, roles: [cook]}
+    cellar:
+      - {activity: brewing, roles: [cook]}
+      - {activity: inventory, roles: [artisan]}
+  market:
+    trading_floor:
+      - {activity: haggling, roles: [trader, farmer]}
+      - {activity: selling, roles: [trader]}
+      - {activity: browsing, roles: [trader, child]}
+    stockroom:
+      - {activity: stocking, roles: [artisan]}
+      - {activity: inventory, roles: [trader]}
+  academy:
+    classroom:
+      - {activity: teaching, roles: [scholar]}
+      - {activity: studying, roles: [scholar, child]}
+      - {activity: discussing, roles: [scholar]}
+    library:
+      - {activity: reading, roles: [scholar, child]}
+      - {activity: researching, roles: [scholar]}
+    laboratory:
+      - {activity: experimenting, roles: [scholar]}
+      - {activity: observing, roles: [scholar]}
+  town_hall:
+    assembly:
+      - {activity: speaking, roles: [official]}
+      - {activity: listening, roles: [official, trader]}
+      - {activity: debating, roles: [official]}
+    office:
+      - {activity: paperwork, roles: [official]}
+      - {activity: meeting, roles: [official]}
+  home:
+    living_room:
+      - {activity: relaxing, roles: [child]}
+      - {activity: talking, roles: [farmer, child]}
+      - {activity: eating, roles: [farmer]}
+    bedroom:
+      - {activity: sleeping, roles: [farmer]}
+      - {activity: dressing, roles: [farmer]}
+    kitchen:
+      - {activity: cooking, roles: [cook]}
+      - {activity: eating, roles: [child]}
+  blacksmith:
+    forge:
+      - {activity: forging, roles: [smith]}
+      - {activity: repairing, roles: [smith]}
+    showroom:
+      - {activity: selling, roles: [smith]}
+      - {activity: browsing, roles: [trader]}
+  bakery:
+    bakehouse:
+      - {activity: baking, roles: [cook]}
+      - {activity: kneading, roles: [cook]}
+    shopfront:
+      - {activity: selling, roles: [cook]}
+      - {activity: browsing, roles: [child]}
+  farm:
+    barn:
+      - {activity: tending, roles: [farmer]}
+      - {activity: repairing, roles: [artisan]}
+    greenhouse:
+      - {activity: planting, roles: [farmer]}
+      - {activity: harvesting, roles: [farmer]}
+  clinic:
+    examination:
+      - {activity: examining, roles: [healer]}
+      - {activity: treating, roles: [healer]}
+    dispensary:
+      - {activity: preparing, roles: [healer]}
+      - {activity: dispensing, roles: [healer]}
+  temple:
+    sanctuary:
+      - {activity: meditating, roles: [scholar]}
+      - {activity: praying, roles: [official]}
+      - {activity: gathering, roles: [trader, child]}
+    garden:
+      - {activity: walking, roles: [scholar]}
+      - {activity: contemplating, roles: [scholar]}
+  workshop:
+    workspace:
+      - {activity: crafting, roles: [artisan]}
+      - {activity: fixing, roles: [artisan]}
+      - {activity: learning, roles: [child, artisan]}
+      - {activity: collaborating, roles: [artisan, scholar]}
+  warehouse:
+    storage_floor:
+      - {activity: moving, roles: [artisan, farmer]}
+      - {activity: organizing, roles: [artisan]}
+  bank:
+    lobby:
+      - {activity: transacting, roles: [official, trader]}
+      - {activity: queuing, roles: [trader, farmer]}
+    vault:
+      - {activity: securing, roles: [guard]}
+      - {activity: auditing, roles: [official]}
+  courthouse:
+    courtroom:
+      - {activity: judging, roles: [official]}
+      - {activity: testifying, roles: [trader]}
+      - {activity: listening, roles: [official, child]}
+  restoration_center:
+    counseling:
+      - {activity: counseling, roles: [healer]}
+      - {activity: listening, roles: [healer]}
+      - {activity: restoring, roles: [healer]}
+    reflection_garden:
+      - {activity: reflecting, roles: [official]}
+      - {activity: walking, roles: [healer]}
+      - {activity: meditating, roles: [scholar]}
+  theater:
+    stage:
+      - {activity: performing, roles: [official, child]}
+      - {activity: rehearsing, roles: [scholar]}
+    audience:
+      - {activity: watching, roles: [child, trader]}
+      - {activity: applauding, roles: [farmer]}
+  tower:
+    observation_deck:
+      - {activity: observing, roles: [scholar]}
+      - {activity: communicating, roles: [official]}
+  validation_citadel:
+    verification_chamber:
+      - {activity: validating, roles: [official]}
+      - {activity: reviewing, roles: [official]}
+      - {activity: certifying, roles: [official]}
+    arbitration:
+      - {activity: arbitrating, roles: [official]}
+      - {activity: mediating, roles: [healer]}
+      - {activity: deliberating, roles: [official]}
+
+# ---------------------------------------------------------------------------
+# CLASS-E EXTRAS (additive, P7A-002) — world terrain, scatter props, and the
+# landing/social chrome. UI chrome (panels, drawers, tabs, bubbles) is built in
+# the dashboard as SVG/CSS, NOT generated here.
+# ---------------------------------------------------------------------------
+extras:
+  ground_tiles:   # 512x512 tileable overhead terrain
+    [grass, grass_flowers, path, plaza, garden_bed, soil, water_feature, stone, moss, sand]
+  overhead_props: # 256x256 transparent scatter decoration
+    [tree_oak, tree_pine, tree_fruit, bench, solar_bollard, planter, drone, cart]
+  chrome:
+    - {id: landing_hero, size: [1920, 1080]}
+    - {id: og_image, size: [1200, 630]}
+    - {id: favicon, size: [512, 512]}
+
+# ---------------------------------------------------------------------------
 # RESOLVED DECISIONS (locked 2026-05-26)
 # ---------------------------------------------------------------------------
 resolved_decisions:

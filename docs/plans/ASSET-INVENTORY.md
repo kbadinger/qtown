@@ -11,15 +11,18 @@
 
 | Thing | State |
 |---|---|
-| `asset-gen/output/` | **Empty** — 0 generated files |
-| `asset-gen/workflows/*.json` | **Missing** — only `INSTALL.md` exists; no ComfyUI graphs |
-| `asset-gen/run_batch.py` | Exists, **never run** against a real workflow |
-| `asset-gen/style-spec.md` + `taxonomy.yaml` | ✅ Locked and complete |
+| `asset-gen/output/` | **Empty** — 0 generated files (the generated library is unbuilt) |
+| `asset-gen/run_batch.py` | **~60% built and improving.** Working inline Flux+LoRA workflow builder, ComfyUI submit/poll/download, taxonomy-driven planning. **2026-06-13 (box-independent parts, validated offline):** deterministic per-asset seeds, all-6-poses overhead NPCs (was idle-only → now 60), `interior_cast`-driven deduped activity planning, `genlog.jsonl` provenance, offline `--plan` + `--manifest`. **Still box-coupled / TODO:** IP-Adapter + ControlNet node wiring (identity/pose consistency), rembg/WebP post-process (P7A-004) |
+| `asset-gen/taxonomy.yaml` | ✅ Locked; **+ additive `interior_cast` matrix + class-E extras (P7A-002, done)** |
+| `asset-gen/style-spec.md` | ✅ Locked and complete |
+| `asset-gen/workflows/*.json` | Only `INSTALL.md`. **Superseded:** workflows are built inline in `run_batch.py` (parameterized), so separate JSON files are not needed — P7A-001 is now "wire IP-Adapter/ControlNet into the inline builder," done with the box in the loop |
 | `services/town-core/assets/` | 39 buildings + 37 NPCs — **v1 pixel art, off-taxonomy, wrong style.** v1 fallback only (P6-021), not reusable for the v2 look |
 
-So the v2 asset library is **0% generated** and the pipeline is **~30% built** (spec done,
-code/workflows not). Everything below is "missing → must be generated." The build steps
-map 1:1 to the **Phase 7-A stories (P7A-001..006)** now in `ralph/worklist.json`.
+So the v2 asset **library is 0% generated**, but the **pipeline is ~60% built** and the
+box-independent half landed on 2026-06-13. `python3 run_batch.py --plan` now prints the
+real manifest offline: **A=19, B=60, C=35, D=94 (deduped), E=21 → 229 total.** Remaining
+work maps to Phase 7-A stories (P7A-001 IP-Adapter/ControlNet, P7A-003 finish,
+P7A-004 postprocess, P7A-006 LoRA) in `ralph/worklist.json`.
 
 This lane has **zero dependency on Phase 6** — it can start the moment the ComfyUI
 workflows exist (P7A-001), in parallel with all service wiring.
@@ -90,9 +93,8 @@ workflows exist (P7A-001), in parallel with all service wiring.
   everywhere traders talk.
 - 384×512, transparent. Identity via IP-Adapter from the role's approved idle; pose via
   ControlNet-OpenPose (one reference skeleton per activity in `asset-gen/poses/`).
-- **The exact list does not exist yet** — it is produced by P7A-002 writing the additive
-  `interior_cast` field into the taxonomy. `run_batch.py --plan` will then print the real
-  count (target ~95–110 after dedupe).
+- **Resolved (P7A-002, done):** the additive `interior_cast` matrix is in `taxonomy.yaml`
+  and `run_batch.py --plan` prints the real deduped count: **94 unique activity sprites**.
 - Output: `output/interior/activities/<role>_<activity>.png` → WebP.
 
 ### Class E — World & chrome extras · ~21 · **0 have / ~21 missing**

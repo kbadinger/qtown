@@ -3987,7 +3987,7 @@
         "gate:C",
         "track:kevin-gpu"
       ],
-      "status": "pending",
+      "status": "complete",
       "attempts": 0,
       "last_error": null
     },
