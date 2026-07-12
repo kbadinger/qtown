@@ -93,9 +93,9 @@ jobs:
       - name: Type check
         run: cd services/tavern && npx tsc --noEmit
       - name: Lint
-        run: cd services/tavern && npx eslint src/ || true  # non-blocking until config exists
+        run: 'echo "no eslint config yet - tavern (add eslint.config.js to enable)"'
       - name: Test
-        run: cd services/tavern && npm test || true  # non-blocking until tests exist
+        run: cd services/tavern && npm test
 
   # ─── Academy (Python) ───
   test-academy:
@@ -106,13 +106,13 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install
-        run: cd services/academy && pip install -e ".[dev]"
+        run: cd services/academy && pip install -e ".[dev]" && pip install mypy ruff
       - name: Lint
         run: cd services/academy && ruff check .
       - name: Type check
-        run: cd services/academy && mypy academy/ --ignore-missing-imports || true
+        run: cd services/academy && mypy academy/ --ignore-missing-imports
       - name: Test
-        run: cd services/academy && pytest tests/ -v --tb=short
+        run: cd services/academy && pytest tests/ academy/tests/ -v --tb=short
 
   # ─── Cartographer (GraphQL/TypeScript) ───
   test-cartographer:
@@ -127,7 +127,7 @@ jobs:
       - name: Type check
         run: cd services/cartographer && npx tsc --noEmit
       - name: Test
-        run: cd services/cartographer && npm test || true
+        run: cd services/cartographer && npm test
 
   # ─── Library (Python) ───
   test-library:
@@ -140,9 +140,9 @@ jobs:
       - name: Install
         run: cd services/library && pip install -e ".[dev]" || pip install -r requirements.txt 2>/dev/null && pip install pytest ruff
       - name: Lint
-        run: cd services/library && ruff check . || true
+        run: cd services/library && ruff check .
       - name: Test
-        run: cd services/library && pytest tests/ -v --tb=short || true
+        run: cd services/library && pytest library/tests/ -v --tb=short
 
   # ─── Dashboard (Nuxt 3) ───
   test-dashboard:
@@ -155,13 +155,41 @@ jobs:
       - name: Install
         run: cd dashboard && npm install
       - name: Type check
-        run: cd dashboard && npx nuxi typecheck || npx tsc --noEmit || true
+        run: cd dashboard && npx nuxi typecheck
       - name: Lint (zero any types)
         run: |
           count=$(grep -rn ": any" dashboard/pages/ dashboard/components/ dashboard/composables/ 2>/dev/null | grep -v node_modules | grep -v .spec. | wc -l)
           echo "Found $count 'any' types"
       - name: Test
-        run: cd dashboard && npm test || true
+        run: 'echo "no tests yet - dashboard (no *.test.ts / *.spec.ts files present)"'
+
+  # ─── Secret Scan (gitleaks, full history) ───
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history so gitleaks scans every commit
+      - name: Gitleaks scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # No GITLEAKS_LICENSE required for public repos; action exits non-zero on findings.
+
+  # ─── Dependency / Filesystem Scan (trivy) ───
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"  # fail the build on CRITICAL/HIGH findings
 
   # ─── Docker Build (all images) ───
   docker-build:
