@@ -1,245 +1,121 @@
-# Qwen Town — Developer Handbook
+# qtown v2 — Agent Handbook
 
-You are Qwen, an AI developer building a 2D town simulation. Follow these rules exactly.
+You are a coding agent working on **qtown v2**: a polyglot microservices system disguised as a
+living town — a portfolio-grade AI-systems lab. This handbook orients you to what v2 actually is,
+where the code lives, and how honest to be about status. Read `CLAUDE.md` (repo root) first for the
+one-screen version; read `docs/REQUIREMENTS.md` for the authoritative bar for "done."
 
-## Stack
+> **If you were told qtown is a single Python/SQLite/Jinja2/HTMX monolith with `engine/models.py`,
+> one router-per-domain, and a single-loop Ralph — that description is v1, and v1 is archived.**
+> That is the wrong architecture to build in. Everything below supersedes it.
 
-- Python 3.11+
-- FastAPI (web framework)
-- SQLAlchemy 2.0 (ORM)
-- SQLite (dev/test database), Postgres (production)
-- Jinja2 (HTML templates)
-- HTMX (dynamic frontend, no JavaScript frameworks)
-- Tailwind CSS (styling via CSS classes)
-- pytest (testing)
+## v1 is archived; v2 lives in `services/`
 
-## CRITICAL: Postgres Compatibility
+- **v1 (archived, read-only):** the original monolith is under **`v1/`** (FastAPI + SQLAlchemy +
+  SQLite + Jinja2/HTMX + PixiJS, plus its own Ralph and snapshots). A partial leftover copy of the
+  old sim also sits at repo-root **`engine/`**. Do not add features to either — they exist for
+  reference and parity checks only.
+- **v2 (where you work):** **`services/`** holds 8 backend services; **`dashboard/`** is the
+  frontend. They are stitched together by a **Kafka event backbone** and **gRPC/protobuf contracts**
+  in **`proto/qtown/`**. This is a distributed system, not a monolith with a nametag.
 
-Production uses Postgres which does NOT auto-cast boolean to integer.
-- `is_dead`, `is_bankrupt`, `illness`, `drought_active`, `gold_rush_active`, `is_saturated` are `Column(Integer)` — ALWAYS compare with `== 0` or `== 1`
-- `resolved`, `achieved` are `Column(Boolean)` — ALWAYS compare with `== 0` or `== 1`
-- NEVER use `== False` or `== True` — this breaks on Postgres
-- NEVER use `not npc.is_dead` — use `npc.is_dead == 0`
-- The `experience` column defaults to `'[]'` (JSON list string). Always parse and convert to dict: `parsed = json.loads(npc.experience); experience = parsed if isinstance(parsed, dict) else {}`
+## The v2 system
 
-## Code Style
+### 8 services + dashboard
 
-- Always use type hints on function parameters and return types
-- Functions must be under 50 lines
-- One model per concept (don't combine unrelated things)
-- Use descriptive variable names — no single-letter variables except `i`, `x`, `y`
-- Import models inside functions if needed to avoid circular imports
+| # | Service | Language / stack | Role | Default port |
+|---|---|---|---|---|
+| 1 | **town-core** | Python · FastAPI | The sim: tick loop (30s), NPCs/needs/goals, buildings, economy; Kafka producer | 8000 |
+| 2 | **market-district** | Go · gRPC | Order-book / matching engine; emits trade events | 50051 |
+| 3 | **fortress** | Rust · WASM + gRPC + Kafka | Deterministic validation / safety boundary ("Validation Citadel") | 8080 / 50052 |
+| 4 | **academy** | Python · LangGraph + Ollama | LLM/RAG dialogue & tutoring; local-model routing | 8001 |
+| 5 | **library** | Python · Elasticsearch | Search / indexing / RAG corpus store | 8003 |
+| 6 | **tavern** | TypeScript · WebSocket + Redis + Kafka | Real-time social broadcast to clients | 3001 |
+| 7 | **cartographer** | TypeScript · Apollo GraphQL | Gateway: GraphQL fan-out over gRPC to backing services | 4000 |
+| 8 | **asset-pipeline** | Python · ComfyUI + Kafka | Generative sprite/asset pipeline | — |
+|   | **dashboard** | Nuxt 3 / Vue | Frontend; talks GraphQL to cartographer + WebSocket to tavern | 3000 (see status) |
 
-## Architecture
+**Event backbone:** services communicate over **Kafka** topics (e.g. `qtown.economy.trade.settled`,
+`qtown.ai.content.generated`, `qtown.validation.result`) *and* synchronous **gRPC** where a
+request/response is needed. Wire contracts are defined once in **`proto/qtown/`**
+(`market.proto`, `academy.proto`, `fortress.proto`, `town_core.proto`, `common.proto`) and codegen'd
+per language — `proto/` is the intended single source of truth for cross-service shapes.
 
-- **All state in SQLite** — no global variables, no in-memory state
-- **Models**: `engine/models.py` — all SQLAlchemy models in one file
-- **Simulation**: `engine/simulation/` — game logic split into submodules:
+### The 15 areas
 
-| Submodule | What goes here |
-|-----------|---------------|
-| `constants.py` | BUILDING_TYPES, DEFAULT_BASE_PRICE, etc. |
-| `init.py` | init_world_state, init_grid, seed_buildings, seed_npcs |
-| `buildings.py` | seed_all_buildings, build_building, all seed_* functions |
-| `production.py` | All produce_* functions |
-| `effects.py` | Hospital, tavern, church, fountain, school effects |
-| `npcs.py` | Movement, needs, decisions, lifecycle, relationships, buying |
-| `economy.py` | process_work, pricing, trade, taxes, inflation, recession |
-| `weather.py` | update_weather, apply_weather_effects |
-| `events.py` | Event triggers (disasters, cascading effects) |
-| `tick.py` | process_tick orchestrator |
+The *product* is framed as **15 "areas"** of a town (Market, Academy, Tavern, Validation Citadel,
+Tower/Observatory, Clinic, Workshop, Bank, Warehouse, Courthouse, Town Hall, etc.). Each area is a
+"technical proof room" meant to demonstrate one real capability (distributed systems, RAG, classical
+ML, observability, safety/WASM, agentic loops, generative pipelines). **Areas do not map 1:1 to
+services** — one service can back several areas, and some areas span multiple services. The
+authoritative definition of every area — its tech pillar, what it must teach, and what it must
+prove — is in **`docs/plans/AREA-TECH-TEACHING-PLAN.md`**. Start there when a task names an "area."
 
-- **Routers**: `engine/routers/` — one router file per domain (buildings, npcs, economy, etc.)
-- **Templates**: `engine/templates/` — Jinja2 HTML templates
-- **Static files**: `engine/static/` — CSS, JS, images
+## Honest status — real vs planned
 
-## Security Rules
+Be truthful about what works. The current honest audit is **`docs/v2-audit.md`**; treat it as the
+source of truth for status and read it before assuming anything is wired.
 
-1. Use `Depends(require_admin)` on ALL admin-only endpoints — never write your own auth
-2. Use Pydantic models for request validation — never trust raw input
-3. Never use f-strings in SQL queries — always use SQLAlchemy's parameterized queries
-4. Rate limit all public-facing POST endpoints
-5. Never expose secrets, stack traces, or internal errors to users
+- **Per-service:** the services are **scaffolded, not fully delivered.** Some logic is real
+  (town-core tick loop, market-district order-book matching, fortress Kafka consumer + WASM sandbox,
+  academy Ollama client, cartographer resolvers, tavern WebSocket layer); other parts are shallow or
+  stubbed (e.g. town-core has **no gRPC server** yet; market-district's gRPC handler is **not
+  registered**; fortress gRPC codegen is **pending**; academy's LangGraph graph and Kafka producer
+  are **not built**; library's search/index pipeline is **unverified**).
+- **Cross-service flows:** of the three flagship end-to-end flows — **Market Trade, AI Dialogue,
+  Validation — 0/3 currently work end-to-end.** The bricks exist; the mortar between them (missing
+  gRPC servers, one-sided Kafka topology, no origination entrypoints) is being wired now.
+- **The AI layer is under repair.** Academy passes unit tests but paths exist where it never
+  actually calls the model; fixing that facade is active WAVE-0 work (see `06-FABLE-PLAN.md`).
+- **Not deployed.** No v2 service is hosted anywhere yet.
 
-## Template Rules
+When you touch anything, **mark real vs planned honestly** and do not present aspiration as fact.
+An area/service is "done" only per the per-area DoD in `docs/REQUIREMENTS.md §3.1` (wired · gated ·
+proven with real data · explained · documented · honest) — not when its own unit tests pass.
 
-- Use Jinja2 + HTMX patterns from `docs/fastapi-patterns.md`
-- Use Tailwind CSS classes for all styling — no inline styles, no custom CSS
-- All templates extend `base.html`
-- Use HTMX `hx-get`, `hx-post`, `hx-target`, `hx-swap` for dynamic updates
-- Partial templates go in `engine/templates/partials/`
+## The three inviolable principles (docs/REQUIREMENTS.md §2)
 
-## Simulation Package — Important
+These gate every increment. Violating any one means it is **not done**:
 
-`engine/simulation/__init__.py` uses `from .events import *` (and similar for all submodules).
-This means **any new function you add to a submodule is automatically importable** via
-`from engine.simulation import your_new_function`. You do NOT need to modify `__init__.py`.
-Never patch or write to `engine/simulation/__init__.py` — it is protected.
+1. **No fabricated data, ever.** A metric whose source errors renders as `—`, never a plausible
+   made-up number. Do not introduce `Math.random()` or hardcoded numbers into any proof/metric path.
+2. **No claim before its gate.** README / landing / proof-panel claims stay at "in flight" wording
+   until the CI gate that measures them is green. Don't assert a perf or safety number you can't
+   point at a committed measurement for.
+3. **Real, not scaffolded.** A flow is done only when it works end-to-end with a green CI gate.
+   Until then the area ships in **dormant** mode — visibly labeled, NPCs idle, proof panel says
+   "awaiting wiring" — never faking activity.
 
-## File Blocklist — NEVER Modify These
+## Working conventions
 
-You must NEVER create or modify these files:
-- `tests/` — all test files (human-written)
-- `ralph/` — the orchestrator (human-written)
-- `engine/simulation/__init__.py` — auto-re-export facade (human-written)
-- `engine/auth.py` — authentication (human-written, security-critical)
-- `engine/main.py` — app setup (human-written, security-critical)
-- `engine/models.py` — all models pre-added (human-written, BLOCKLISTED)
-- `engine/db.py` — database setup (human-written)
-- `engine/sprites.py` — sprite generation bridge (human-written)
-- `engine/templates/index.html` — main game page with PixiJS renderer (human-written)
-- `engine/templates/dashboard.html` — progress dashboard (human-written)
-- `docs/` — documentation (human-written)
-- `HUMAN.md` — human intervention file
-- `AGENTS.md` — this file
-- `prd.json` — story backlog
-- `.env` — environment secrets
-- `.gitignore` — git config
-- `requirements.txt` — Python dependencies
+- **Contracts first.** Cross-service shapes live in `proto/qtown/`. Change the proto, regenerate
+  (`make proto`), then implement — don't hand-write divergent message types per service.
+- **Stay in the right service.** A task usually targets one service (or the dashboard). Match the
+  language/stack of that service; don't reach across service boundaries except through the
+  Kafka/gRPC/GraphQL contracts.
+- **Don't edit v1.** Never add features under `v1/` or repo-root `engine/`. If you need v1 behavior
+  for parity, read it, then implement fresh in the v2 service.
+- **Prefer editing existing files.** Don't scatter new files, and don't create docs/READMEs unless
+  the task asks for them.
 
-## What You CAN Modify
+## Building & running
 
-- `engine/simulation/*.py` — add/update simulation functions (NOT `__init__.py`)
-- `engine/routers/*.py` — create new router files
-- `engine/templates/*.html` — create templates
-- `engine/static/*` — add static assets
+Builds and full-stack runs happen on the **toolchain box** (Go, Rust, `buf`, Docker). **Not every
+environment has that toolchain** — the WSL dev box does TypeScript / Python / docs only, so
+`go` / `cargo` / `buf` may not exist where you're running. Check before assuming.
 
-**IMPORTANT: `engine/models.py` is BLOCKLISTED.** All models have been pre-added by the human scaffolder.
-Do NOT try to modify, patch, or write to `engine/models.py`. All models you need already exist.
-Just import them: `from engine.models import Newspaper, Milestone, Achievement` etc.
+Common entry points (see the `Makefile`):
 
-Available models (already in models.py):
-- Tile, AdminUser, WorldState, Feature, Vote
-- Building (has: id, name, building_type, x, y, capacity, level)
-- NPC (has: id, name, role, x, y, gold, hunger, energy, happiness, age, max_age, is_dead, is_bankrupt, illness_severity, illness, home_building_id, work_building_id, target_x, target_y, personality, skill, memory_events, favorite_buildings, avoided_areas, experience)
-- Transaction, Resource, Treasury, Event, Relationship
-- PriceHistory (has: resource_name, price, supply, demand, tick)
-- Cost, Loan, Election, Policy, Crime
-- Newspaper (has: day, headline, body, author_npc_id, tick)
-- Milestone (has: name, description, tick_achieved)
-- Achievement (has: name, description, condition, condition_type, condition_value, achieved, unlocked_at)
-- VisitorLog (has: npc_id, arrival_tick, greeted_by_npc_id)
-- TownAnthem (has: lyrics, composed_by_npc_id, tick_composed)
-- Dialogue (has: speaker_npc_id, listener_npc_id, message, tick)
+- `make deps` — start infra (Kafka, Postgres, Redis, Elasticsearch) via `docker-compose.deps.yml`.
+- `make proto` / `make proto-lint` — regenerate / lint protobuf contracts for all languages.
+- `make build` / `make build-<service>` — build all or one service.
+- `make test` / `make test-<service>` — run per-service tests.
+- `docker-compose.yml` — the full v2 stack.
 
-### Which simulation submodule to patch
+## Where to go next
 
-| Story type | Target file |
-|-----------|-------------|
-| New building type | `engine/simulation/buildings.py` (seed) + `engine/simulation/production.py` (produce) + `engine/simulation/constants.py` (BUILDING_TYPES) |
-| New NPC behavior / buying | `engine/simulation/npcs.py` |
-| Economy / trade / pricing | `engine/simulation/economy.py` |
-| Events / disasters | `engine/simulation/events.py` |
-| Building effects (heal, teach) | `engine/simulation/effects.py` |
-| Weather changes | `engine/simulation/weather.py` |
-| Tick orchestration changes | `engine/simulation/tick.py` |
-| New constants | `engine/simulation/constants.py` |
-
-## Router Pattern — Auto-Discovery
-
-Routers in `engine/routers/` are **automatically registered** on startup. You do NOT need to
-edit `engine/main.py`. Just create a file with a `router` variable:
-
-```python
-# engine/routers/buildings.py
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-
-from engine.auth import require_admin
-from engine.db import get_db
-
-router = APIRouter(prefix="/api/buildings", tags=["buildings"])
-
-@router.get("/")
-def list_buildings(db: Session = Depends(get_db)):
-    from engine.models import Building
-    return [{"id": b.id, "name": b.name} for b in db.query(Building).all()]
-```
-
-The file must:
-1. Be in `engine/routers/` (not in subdirectories)
-2. Not start with `_` (e.g. `__init__.py` is skipped)
-3. Export a variable named `router` (a FastAPI `APIRouter` instance)
-
-See `docs/fastapi-patterns.md` for full examples.
-
-## Sprite Generation (ComfyUI)
-
-When your story adds a new building type or NPC role, generate a sprite for it:
-
-```python
-from engine.sprites import generate_building, generate_npc
-
-# Generate a building sprite — returns path or None if ComfyUI is down
-path = generate_building("bakery")
-
-# Generate an NPC sprite
-path = generate_npc("merchant")
-```
-
-- Call these in your router or simulation code whenever a new type/role is created
-- They return `None` gracefully if ComfyUI is unavailable — never crash on sprite failure
-- Generated sprites land in `assets/buildings/` and `assets/npcs/`
-- The PixiJS renderer already serves files from `assets/`
-
-## Behavioral Rules
-
-- **Do NOT skip steps.** Implement every function, every import, every edge case described in the story. Do not leave placeholder comments like `# TODO` or `pass`. If the story says it, build it.
-- **Do NOT redefine scope.** You are given ONE story with specific acceptance criteria. Do not add extra features, refactor unrelated code, or "improve" things outside the story. Stay in your lane.
-- **Do NOT guess at APIs.** If you need to call a function from `engine/models.py` or `engine/db.py`, check the context files provided in the prompt. Do not invent function signatures.
-
-## Testing Awareness
-
-- Ralph runs ONLY the test file listed in the story (`tests/test_XXX.py`), not the full suite
-- Tests are fast (<5 seconds). Do not add sleep calls, retries, or polling in your implementation unless the story explicitly requires async behavior
-- If tests import from `engine.simulation`, that module MUST exist and export the expected functions
-- Read the test file carefully — the function names, parameter types, and expected return values are your contract
-
-## Output Format
-
-Use **`### PATCH:`** for existing files and **`### FILE:`** for new files.
-
-### Patching existing files (preferred)
-
-For files that already exist (especially `engine/simulation/*.py`), output ONLY the new or changed
-sections — do NOT rewrite the entire file:
-
-```
-### PATCH: engine/simulation/constants.py
-
-### UPDATE CONSTANT: BUILDING_TYPES
-BUILDING_TYPES = ["civic", "food", "tavern", "library", "mine"]
-
-### PATCH: engine/simulation/buildings.py
-
-### ADD FUNCTION
-def seed_mine(db: Session) -> None:
-    """Seed a mine building."""
-    from engine.models import Building
-    ...full function body...
-
-### PATCH: engine/simulation/tick.py
-
-### UPDATE FUNCTION: process_tick
-def process_tick(db: Session) -> None:
-    """Run one simulation tick."""
-    ...full function body with new call added...
-```
-
-Section types:
-- `### ADD IMPORT` — new import lines (duplicates are automatically ignored)
-- `### ADD FUNCTION` — a completely new function (full body required)
-- `### UPDATE FUNCTION: name` — replace an existing function (full body required)
-- `### UPDATE CONSTANT: name` — replace a module-level constant (e.g. BUILDING_TYPES)
-
-### Creating new files
-
-For files that do not exist yet, use `### FILE:` with complete contents:
-
-```
-### FILE: engine/routers/mining.py
-<complete file contents here>
-```
-
-Every `### FILE:` block must contain the full, working file content — never use `...` or
-`# rest unchanged`.
+- **`docs/REQUIREMENTS.md`** — authoritative WHAT and the bar for "done" (the per-area DoD, the three
+  principles). Conflicts resolve in favor of this doc.
+- **`docs/plans/06-FABLE-PLAN.md`** — the HOW/WHEN: execution waves and story-level detail.
+- **`docs/plans/AREA-TECH-TEACHING-PLAN.md`** — the 15-area definitions (tech + teaching + proof).
+- **`docs/v2-audit.md`** — honest current status, service by service and flow by flow.
