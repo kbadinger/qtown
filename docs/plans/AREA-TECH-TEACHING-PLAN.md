@@ -951,6 +951,70 @@ Teach that simulations need human/social variables, not just transactions and jo
 
 ---
 
+### 16. Planning Office (meta-area)
+
+**Classification:** `core` · **meta-layer, not a peer proof-room.** Added 2026-07-12.
+
+**Product role:** The town's front door to itself — where the town shows you its own architecture,
+honestly. Not a 16th capability being demonstrated, but the *index and self-portrait* of the other
+15: the literal realization of "the town IS the architecture" and "the map is a curriculum." Staffed
+by the **Cartographer** (who already maps the town, now also maps the system). Civic-adjacent to
+**Town Hall** but distinct: Town Hall governs the *sim*; the Planning Office documents the *system*.
+
+**Primary tech demonstrated:**
+
+- self-documenting systems / architecture-as-data
+- live topology + health rendering (reads the real system, not a hand-drawn picture)
+- honest status surfacing (green / partial / dormant) as a first-class UI concern
+- drift detection (the diagram cannot silently disagree with the running contracts)
+
+**Languages / stack:**
+
+- TypeScript / Nuxt / Vue (the in-app room: `dashboard/pages/docs/architecture.vue`)
+- Mermaid architecture-of-record in `docs/architecture.md` (source of truth; renders on GitHub)
+- reads `docs/STATE.md` + service health for live status
+- a CI drift check over `proto/` + `docker-compose.yml` + the Kafka topic registry
+
+**Teaching goal:**
+
+Teach how a real distributed system documents and observes *itself* — and why an honest
+"here's what's built vs under construction" board is more credible than an all-green marketing
+diagram. The room is the honesty principle made visible.
+
+**Proof surface:**
+
+- the live service topology, colour-coded by real status (`—`/dormant when a source is down)
+- one real request trace animating across the map (same OTel data as the Observatory, made spatial)
+- the STATE.md truth table: flows 0/3, per-service real-vs-scaffolded
+- a "last verified" / drift indicator proving the diagram matches the actual contracts
+
+**Visible behavior:**
+
+- click any area from here to jump into its interior + teaching layer (the curriculum index)
+- dormant areas render as *literally under construction* — honest lore, not a bug
+- as an area goes green in CI, its node here flips green automatically
+
+**Definition of Green (its honest DoD, per REQUIREMENTS §3.1):**
+
+1. **Wired** — renders the *real* topology + live status from STATE.md / a status source, not a static image.
+2. **Gated** — a CI drift job fails if the diagram's service/topic list diverges from `proto/` + compose + the topic registry (the self-portrait can't lie by going stale).
+3. **Proven** — shows real per-service status + ≥1 real request trace; `—`/dormant on source failure.
+4. **Explained** — a teaching layer: how to read the architecture, and what green vs dormant means here.
+5. **Documented** — `docs/architecture.md` (source of truth) + `docs/STATE.md` (its data contract).
+6. **Honest** — it *is* the honesty instrument: it surfaces dormant/partial/green truthfully, including its own status.
+
+**Ships dormant first:** the static Mermaid architecture-of-record (`docs/architecture.md`) is the
+dormant content available today; the room goes green when it renders live status + a real trace and
+the drift gate is green. Until then it is labeled dormant like any other area.
+
+**Asset implications:**
+
+- planning-office exterior + drafting-room interior background
+- cartographer-at-the-drafting-table sprite; "under construction" scaffold overlays for dormant areas
+- the architecture map / status-board UI (this is the primary prop — mostly a UI, light on sprites)
+
+---
+
 ## Missing or Thin Technology Coverage
 
 Qtown already has substantial distributed-systems and agentic-coding ambition. The biggest gaps to intentionally add are:

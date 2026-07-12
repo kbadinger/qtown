@@ -112,11 +112,12 @@ Each area taken to green via the DoD §3.1 unit. **Order (interviewer-weighted, 
 
 | ID | Title | Req |
 |---|---|---|
-| **DOC-1** | `docs/STATE.md` (honest, living) | §3.2.3, §9 |
+| **DOC-1** | `docs/STATE.md` (honest, living) — **drafted 2026-07-12** | §3.2.3, §9 |
 | **DOC-2** | 10 ADRs (incl. idempotency+DLQ, outbox, "CI as trust boundary for agent code", capstone) | §3.2.4 |
 | **DOC-3** | `agent-ops.md` — centered on the facade-catch story | §3.2.4 |
 | **DOC-4** | postmortem + `SECURITY.md` + threat model (incl. prompt-injection) | §3.2.4, §5 |
 | **DOC-5** | `docs/DEMO.md` + 90s GIF + 60s recruiter narrative | §3.3 |
+| **DOC-6** | Architecture-of-record (`docs/architecture.md`, honest Mermaid) + **Planning Office** meta-area (AREA plan §16); de-falsify in-app `architecture.vue` — **drafted 2026-07-12; goes green when it renders live STATE.md status + a real trace + a drift gate** | §3.2.4, §2 |
 | **DEP-1** | Deploy the live subset (Wave 1 first, grows per wave) — host TBD (§10) | §3.2.5 |
 
 ## Traceability & gates

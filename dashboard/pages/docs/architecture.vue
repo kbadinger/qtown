@@ -67,9 +67,19 @@ const kafkaTopics: KafkaTopic[] = [
 <template>
   <div class="animate-fade-in">
     <h1 class="text-3xl font-bold text-qtown-text-primary mb-3">Architecture</h1>
-    <p class="text-qtown-text-secondary text-base mb-10 leading-relaxed">
+    <p class="text-qtown-text-secondary text-base mb-6 leading-relaxed">
       Deep dive into Qtown's service topology, communication protocols, and data flow.
     </p>
+
+    <!-- Honesty banner — this page is status-honest; source of truth is docs/STATE.md + docs/architecture.md -->
+    <div class="mb-10 rounded-lg border border-qtown-gold/40 bg-qtown-gold/5 p-4 text-sm text-qtown-text-secondary">
+      <strong class="text-qtown-gold">Status: dormant.</strong>
+      This diagram is the <em>target</em> topology. As of 2026-07-12, <strong>0 of 3</strong> flagship
+      flows run end-to-end &mdash; the services are scaffolded, not fully wired, so the arrows below
+      show intended contracts, not proven ones. The honest live status board is
+      <code class="text-qtown-gold">docs/STATE.md</code>; the source-of-truth diagram is
+      <code class="text-qtown-gold">docs/architecture.md</code>.
+    </div>
 
     <!-- Service Topology -->
     <section class="mb-12">
@@ -143,7 +153,7 @@ const kafkaTopics: KafkaTopic[] = [
           <rect x="365" y="252" width="100" height="65" fill="#16213e" rx="6" stroke="#c1121f" stroke-width="1.5" />
           <text x="415" y="278" text-anchor="middle" fill="#e94560" font-size="10" font-family="monospace" font-weight="bold">fortress</text>
           <text x="415" y="291" text-anchor="middle" fill="#64748b" font-size="9" font-family="monospace">Validation</text>
-          <text x="415" y="304" text-anchor="middle" fill="#64748b" font-size="8" font-family="monospace">Go / gRPC</text>
+          <text x="415" y="304" text-anchor="middle" fill="#64748b" font-size="8" font-family="monospace">Rust / WASM</text>
 
           <!-- academy -->
           <rect x="490" y="252" width="100" height="65" fill="#16213e" rx="6" stroke="#4a4e69" stroke-width="1.5" />
@@ -238,13 +248,13 @@ const kafkaTopics: KafkaTopic[] = [
       <div class="bg-qtown-card border border-qtown-border rounded-lg p-6">
         <pre class="text-xs font-mono text-qtown-text-secondary leading-relaxed overflow-x-auto">
 ┌─────────────────────────────────────────────────────────────────────┐
-│  town-core TickEngine (every ~500ms)                                 │
+│  town-core TickEngine (every 30 sec)                                 │
 │                                                                      │
 │  1. INCREMENT tick counter                                           │
 │  2. For each active NPC (async parallel):                            │
 │     a. Load NPC state from Redis                                     │
 │     b. Evaluate needs (hunger, gold, happiness, energy)              │
-│     c. SELECT action via Academy (GPT-4o-mini decision)              │
+│     c. SELECT action via Academy (local-model decision)              │
 │     d. VALIDATE action via Fortress gRPC call                        │
 │     e. If valid → EXECUTE action:                                    │
 │        - Trade: send order to market-district gRPC                   │
