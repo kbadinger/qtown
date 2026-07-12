@@ -230,17 +230,10 @@ class NewspaperGenerator:
         logger.info("Generating newspaper for tick=%d with %d events", tick, len(events))
 
         try:
-            result = await self._router.route(
-                "narration",
-                {
-                    "prompt": prompt,
-                    "system": self._SYSTEM_PROMPT,
-                    "temperature": 0.8,
-                    "max_tokens": 512,
-                },
+            raw = await self._router.route(
+                "narration", prompt, system=self._SYSTEM_PROMPT,
             )
-            raw = result.response
-            model_used = result.model_used
+            model_used = self._router.ROUTES["narration"].model_id
         except Exception as exc:
             logger.error("Newspaper generation failed: %s", exc)
             raw = (

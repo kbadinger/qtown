@@ -340,17 +340,10 @@ class QuestGenerator:
 
         model_used = "fallback"
         try:
-            result = await self._router.route(
-                "planning",
-                {
-                    "prompt": prompt,
-                    "system": self._SYSTEM_PROMPT,
-                    "temperature": 0.7,
-                    "max_tokens": 300,
-                },
+            raw = await self._router.route(
+                "planning", prompt, system=self._SYSTEM_PROMPT,
             )
-            raw = result.response
-            model_used = result.model_used
+            model_used = self._router.ROUTES["planning"].model_id
         except Exception as exc:
             logger.error("Quest generation LLM call failed: %s", exc)
             raw = ""

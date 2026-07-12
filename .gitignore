@@ -21,11 +21,16 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 
-# ─── IDE ───
+# ─── IDE / local agent tooling ───
 .vscode/
 .idea/
 *.swp
 *.swo
+
+# Claude Code / MCP local machine configuration. These can contain broad
+# permissions, absolute local paths, and API keys; keep them out of git.
+.claude/settings.local.json
+.mcp.json
 
 # ─── OS ───
 .DS_Store

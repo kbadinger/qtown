@@ -121,11 +121,32 @@ async def _handle_npc_decision_request(payload: dict[str, Any]) -> None:
     from academy.kafka_producer import get_producer
 
     npc_id = payload.get("npc_id", 0)
-    event_data = payload.get("event", {})
+    # NPC state may arrive nested under "npc_state" or "event", or flat on the payload.
+    npc_state: dict[str, Any] = (
+        payload.get("npc_state") or payload.get("event") or payload
+    )
+
+    npc_name = npc_state.get("name") or payload.get("npc_name") or "Unknown"
+
+    personality: dict[str, float] = {}
+    raw_traits = npc_state.get("personality") or npc_state.get("traits") or {}
+    for dim in ("risk_tolerance", "sociability", "ambition", "creativity", "aggression"):
+        if dim in raw_traits:
+            try:
+                personality[dim] = float(raw_traits[dim])
+            except (TypeError, ValueError):
+                continue
 
     t0 = time.monotonic()
     try:
-        result = await run_npc_cycle(str(npc_id), event_data)
+        result = await run_npc_cycle(
+            npc_id=str(npc_id),
+            npc_name=npc_name,
+            personality=personality,
+            hunger=float(npc_state.get("hunger", 0.0)),
+            happiness=float(npc_state.get("happiness", 0.5)),
+            current_tick=int(payload.get("tick", npc_state.get("tick", 0))),
+        )
         latency_ms = (time.monotonic() - t0) * 1000.0
     except Exception as exc:
         logger.error("NPC agent failed for npc_id=%s: %s", npc_id, exc)

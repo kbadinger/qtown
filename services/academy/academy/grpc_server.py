@@ -358,19 +358,33 @@ class AcademyServicer(academy_pb2_grpc.AcademyServicer):
         t0 = time.monotonic()
         npc_state = request.npc_state
         tick = request.current_tick
-        ctx_events = list(request.context)
 
-        event_data = {
-            "tick": tick,
-            "context": ctx_events,
-            "npc_name": npc_state.name,
-            "occupation": npc_state.occupation,
-        }
+        # Derive personality dict from the proto traits map (map<string,string>).
+        _PERSONALITY_DIMS = (
+            "risk_tolerance", "sociability", "ambition", "creativity", "aggression",
+        )
+        personality: dict[str, float] = {}
+        for dim in _PERSONALITY_DIMS:
+            raw = npc_state.traits.get(dim)
+            if raw is not None:
+                try:
+                    personality[dim] = float(raw)
+                except (TypeError, ValueError):
+                    continue
 
         loop = asyncio.new_event_loop()
         try:
             from academy.agents.npc import run_npc_cycle
-            result = loop.run_until_complete(run_npc_cycle(str(npc_state.id), event_data))
+            result = loop.run_until_complete(
+                run_npc_cycle(
+                    npc_id=str(npc_state.id),
+                    npc_name=npc_state.name,
+                    personality=personality,
+                    hunger=npc_state.hunger,
+                    happiness=npc_state.happiness,
+                    current_tick=tick,
+                )
+            )
         except Exception as exc:
             logger.error("NPCDecide agent error: %s", exc)
             context.set_code(grpc.StatusCode.INTERNAL)

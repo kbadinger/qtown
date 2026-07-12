@@ -264,17 +264,10 @@ class AnthemGenerator:
 
         model_used = "fallback"
         try:
-            result = await self._router.route(
-                "narration",
-                {
-                    "prompt": prompt,
-                    "system": self._SYSTEM_PROMPT,
-                    "temperature": 0.9,
-                    "max_tokens": 400,
-                },
+            raw = await self._router.route(
+                "narration", prompt, system=self._SYSTEM_PROMPT,
             )
-            raw = result.response
-            model_used = result.model_used
+            model_used = self._router.ROUTES["narration"].model_id
             fields = self._parse_response(raw)
         except Exception as exc:
             logger.error("Anthem generation failed: %s", exc)
