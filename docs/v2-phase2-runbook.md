@@ -9,6 +9,30 @@ This is the step-by-step you follow on the 3090 Ti to get from "ComfyUI is insta
 
 ---
 
+## TL;DR — the batch is automated (`run_batch.py`)
+
+> **The actual sprite generation is fully automated by `asset-gen/run_batch.py`.** It builds the
+> Flux + LoRA ComfyUI workflow *in code* (`build_workflow()`), derives every prompt from
+> `taxonomy.yaml` + `style-spec.md`, submits to ComfyUI's HTTP API, uses deterministic per-sprite
+> seeds, logs provenance to `genlog.jsonl`, and **skips anything already generated** (resumable).
+>
+> So Steps 0–7 are the one-time **setup** (models, LoRAs, custom nodes, reference images) and are
+> still required. Steps 8–9 (hand-building workflow JSONs / prompt files) are **optional** — useful
+> only for one-off validation in the ComfyUI UI; the batch does not need them.
+>
+> **Current state:** 86 of 229 sprites generated (all 19 buildings + all 35 room interiors done).
+> **143 remain** — 50 NPC poses, 72 activity poses, 21 terrain tiles.
+>
+> **To generate the remaining 143** (run from `asset-gen/`, after setup + a green trial):
+> ```bash
+> python3 run_batch.py --mode test --limit 5          # trial gate (Step 10) — eyeball 5 first
+> python3 run_batch.py --mode production               # fills only the missing sprites (skips the 86 done)
+> python3 run_batch.py --mode production --only npcs   # or target one category: npcs | activities | buildings | interiors
+> ```
+> Add `--regen` to overwrite existing, `--plan` to dry-run the job list.
+
+---
+
 ## Step 0 — Pre-flight
 
 **What:** free up the 3090 Ti and confirm prerequisites.
@@ -182,6 +206,10 @@ Per `visual-style-guide.md` § 4 (per-neighborhood mood) + reference touchstones
 
 ## Step 8 — Build the four ComfyUI workflows
 
+> **Optional — `run_batch.py` builds this workflow in code** (`build_workflow()`), so you do **not**
+> need to hand-build or save workflow JSONs for the batch. Do this step only to eyeball the graph or
+> debug generation interactively in the ComfyUI UI.
+
 **What:** the actual graph that generates a sprite. One workflow per sprite type (building, NPC, prop, terrain).
 
 Per `v2-pipeline.md` § 4, each workflow has roughly this graph:
@@ -210,6 +238,10 @@ Repeat with tweaks for `qtown-v2-npc.json`, `qtown-v2-prop.json`, `qtown-v2-terr
 ---
 
 ## Step 9 — Generate per-sprite prompts
+
+> **Optional — `run_batch.py` generates every prompt in code** from `taxonomy.yaml` + `style-spec.md`
+> (`prompt_overhead_building()`, `prompt_overhead_npc()`, `prompt_interior_background()`,
+> `prompt_npc_activity()`). Use the manual `.txt` path below only to hand-tune a specific prompt.
 
 **What:** convert the 205 manifest entries from `visual-style-guide.md` § 6 into actual Flux prompts using the templates from § 7.
 
@@ -267,11 +299,10 @@ After completing all 10 steps, your 3090 Ti has:
 - ✅ ComfyUI with Flux + IPAdapter Flux + ControlNet Flux + BiRefNet stack working
 - ✅ A base style LoRA from CivitAI loaded and proven on a 5-sprite trial
 - ✅ 10 IPAdapter reference images curated
-- ✅ 4 ComfyUI workflows saved
-- ✅ 205 prompts written (one per sprite)
+- ✅ `run_batch.py` proven on a 5-sprite trial (it builds the workflow + prompts in code — no hand-saved JSONs or prompt files needed)
 - ✅ A green decision gate to proceed to full batch generation
 
-Next: kick off the full batch (`v2-pipeline.md` § 5.1, step 8). Total run time ~6-10h, mostly unattended. Then manual review + asset publishing.
+Next: run the full batch — from `asset-gen/`, `python3 run_batch.py --mode production` (fills only the 143 missing sprites, ~6-10h mostly unattended). Then manual review + asset publishing.
 
 ---
 
