@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Qtown — Autonomous AI-Driven Town Simulation</title>
-  <meta name="description" content="A polyglot microservices simulation where NPCs live, work, trade, and make decisions across 9 neighborhoods, 12 languages, and 420 files. 88% written by an AI developer.">
+  <meta name="description" content="A polyglot microservices simulation where NPCs live, work, trade, and make decisions across 9 components (8 services + dashboard), 12 languages, and 420 files. 88% written by an AI developer. v2 in development — scaffolded, not yet delivered.">
   <meta property="og:title" content="Qtown — Autonomous AI-Driven Town Simulation">
   <meta property="og:description" content="v2 polyglot microservices architecture in development. v1 (Python monolith, 510 stories, 88% AI-written) still live at v1.qtown.ai.">
   <meta property="og:type" content="website">
@@ -61,9 +61,9 @@
     <!-- Hero -->
     <section class="hero">
       <div class="hero-inner">
-        <div class="hero-badge">v2 in development · v1 live at v1.qtown.ai</div>
+        <div class="hero-badge">v2 in development · v1 live at v1.qtown.ai · <a href="https://github.com/kbadinger/qtown/blob/main/docs/v2-audit.md" target="_blank" rel="noopener noreferrer">current status →</a></div>
         <h1>An autonomous town<br>where NPCs run<br>the economy.</h1>
-        <p class="hero-sub">v1 shipped: a Python monolith with 510 stories, 1,451 commits, 88% written by Ralph (an AI developer). v2 is being built right now — a polyglot microservices rewrite across 9 services and 12 languages. Each neighborhood will prove a different technology.</p>
+        <p class="hero-sub">v1 shipped: a Python monolith with 510 stories, 1,451 commits, 88% written by Ralph (an AI developer). v2 is being built right now — a polyglot microservices rewrite across 9 components (8 services + dashboard) and 12 languages. It's scaffolded, not yet delivered: per-service tests pass, but cross-service wiring is still in flight (Wave 1) and the end-to-end flows aren't green yet. Each neighborhood is meant to prove a different technology — the claims below ship as facts only once their gate is green. See the <a href="https://github.com/kbadinger/qtown/blob/main/docs/v2-audit.md" target="_blank" rel="noopener noreferrer">current status</a>.</p>
         <div class="hero-actions">
           <a href="https://v1.qtown.ai" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Visit v1 (live)</a>
           <a href="https://github.com/kbadinger/qtown" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">View on GitHub</a>
@@ -233,7 +233,7 @@
       <div class="container">
         <div class="section-header">
           <span class="section-tag">Neighborhoods</span>
-          <h2>9 districts. Each one proves<br>a technology works.</h2>
+          <h2>9 components. Each one is meant<br>to prove a technology works.</h2>
         </div>
 
         <div class="hood-grid">
@@ -246,13 +246,13 @@
           <div class="hood-card">
             <div class="hood-lang">Go</div>
             <h3>Market District</h3>
-            <p>Concurrent order book with real-time trade settlement. Goroutines handle parallel bid/ask matching. &lt;5ms p99 at 10K orders/sec.</p>
+            <p>Concurrent order book with real-time trade settlement. Goroutines handle parallel bid/ask matching. Designed for sub-5ms p99; in-process bench committed, load validation lands in Wave 1.</p>
             <span class="hood-tech">gRPC · goroutines · channel-based</span>
           </div>
           <div class="hood-card">
             <div class="hood-lang">Rust</div>
             <h3>Fortress</h3>
-            <p>Event validation with zero unsafe code. Every Kafka event passes through type-level guards before it can modify game state.</p>
+            <p>Event validation in safe Rust — the validation hot path has zero unsafe blocks, with unsafe confined to a small audited set at the WASM sandbox boundary. Every Kafka event passes through type-level guards before it can modify game state.</p>
             <span class="hood-tech">Actix · serde · zero-copy deserialization</span>
           </div>
           <div class="hood-card">

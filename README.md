@@ -6,7 +6,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Languages](https://img.shields.io/badge/languages-12-orange.svg)](#tech-stack)
 
-Qtown is an autonomous town simulation where NPCs live, work, trade, and make decisions without human direction. v1 was a Python monolith with a single simulation loop — 1,451 commits, 88% written by Ralph, an AI developer. v2 is a complete rewrite: a polyglot microservices architecture where each neighborhood runs on the technology best suited to it. The Market District runs a concurrent order book in Go. The Fortress validates every event in Rust with zero unsafe code. The Academy runs AI agents locally via Ollama. The whole thing is wired together over Kafka with a GraphQL gateway in front. 420 files, ~101K lines of code, 27 Kafka topics, 9 services, and Ralph still writes most of it.
+Qtown is an autonomous town simulation where NPCs live, work, trade, and make decisions without human direction. v1 was a Python monolith with a single simulation loop — 1,451 commits, 88% written by Ralph, an AI developer. v2 is a complete rewrite: a polyglot microservices architecture where each neighborhood runs on the technology best suited to it. The Market District runs a concurrent order book in Go. The Fortress validates events in Rust, with `unsafe` confined to a small audited set at the WASM sandbox boundary. The Academy runs AI agents locally via Ollama. The whole thing is wired together over Kafka with a GraphQL gateway in front. 420 files, ~101K lines of code, 27 Kafka topics, and 9 components (8 services + dashboard). Ralph still writes most of it.
+
+> **Status:** v2 is scaffolded, not delivered. Per-service tests pass and dashboard pages render, but cross-service wiring is still in flight (Wave 1), and none of the three flagship end-to-end flows pass yet. See **[current status → docs/v2-audit.md](docs/v2-audit.md)** for the honest, audited picture. (A dedicated `docs/STATE.md` is forthcoming.) Per `docs/REQUIREMENTS.md` §2.2, no performance or correctness claim ships as a stated fact before its gate is green.
 
 ---
 
@@ -47,13 +49,13 @@ Service-to-service calls use gRPC (with Protobuf definitions in `proto/`). Async
 | Neighborhood | Technology | What It Does | Proof |
 |---|---|---|---|
 | Town Core | Python 3.11 + FastAPI | Simulation engine, 30s tick loop, 50+ NPCs | `make test-town-core` |
-| Market District | Go + gRPC | Concurrent order book, trade settlement | <5ms p99 at 10K orders/sec |
-| Fortress | Rust + gRPC | Event validation, WASM sandbox | 100K validations/sec, `grep -r 'unsafe' src/ \| wc -l` = 0 |
+| Market District | Go + gRPC | Concurrent order book, trade settlement | Designed for sub-5ms p99; in-process `go test -bench` committed, load validation lands in Wave 1 |
+| Fortress | Rust + gRPC | Event validation, WASM sandbox | `unsafe` confined to a small audited set at the WASM boundary; throughput bench committed, not yet load-validated |
 | Academy | Python + LangGraph + Ollama | AI agents, RAG, NPC content generation | ≥90% local model routing |
 | Tavern | TypeScript + Redis + WebSocket | Real-time event broadcast, leaderboards | <50ms p99 broadcast |
 | Library | Python + Elasticsearch | Full-text search, town history analytics | <100ms search p99 |
 | Cartographer | TypeScript + Apollo Server | Unified GraphQL gateway | 1 query → up to 5 services |
-| Dashboard | Nuxt 3 + PixiJS + Chart.js | SSR frontend, live town visualization | Lighthouse score ≥90 |
+| Dashboard | Nuxt 3 + PixiJS + Chart.js | SSR frontend, live town visualization | `make test-dashboard` (Lighthouse ≥90 is a target, not yet measured) |
 | Asset Pipeline | Python + ComfyUI | NPC + building sprite generation, CDN delivery | `make build-asset-pipeline` |
 
 **Languages in use:** Python, Go, Rust, TypeScript, Vue, Protobuf, SQL, YAML, HCL, JSON, Dockerfile, Makefile
@@ -216,8 +218,8 @@ qtown/
 | `make bench-market` | Order book benchmark (30s, 5 runs) |
 | `make bench-fortress` | Validation engine benchmark |
 | `make proof` | Run all proof tests |
-| `make proof-market` | Verify <5ms p99 at 10K orders |
-| `make proof-fortress` | Verify 100K/sec + zero unsafe |
+| `make proof-market` | In-process bench for sub-5ms p99 (load test lands in Wave 1) |
+| `make proof-fortress` | Throughput bench + audit of `unsafe` at the WASM boundary |
 | `make proof-academy` | Verify ≥85% local model routing |
 
 ### Docker
@@ -295,13 +297,15 @@ Every technology claim in this project must be verifiable. "We use Go for high-p
 make proof
 
 # Individual proofs
-make proof-market    # go test -bench BenchmarkOrderBook — must show ns/op
-make proof-fortress  # cargo bench + zero unsafe grep — must both pass
+make proof-market    # go test -bench BenchmarkOrderBook — in-process bench; shows ns/op
+make proof-fortress  # cargo bench + unsafe-boundary audit
 make proof-academy   # pytest + live /metrics/model-routing endpoint — local_pct >= 85
 
-# Fortress zero-unsafe check (also runs in CI)
+# Fortress unsafe audit: the validation/rules hot path is safe Rust.
+# `unsafe` in the crate is confined to a small audited set at the WASM
+# sandbox boundary. The hot path stays at zero:
 grep -r 'unsafe' services/fortress/src/rules/ services/fortress/src/validation/ | wc -l
-# must be 0
+# hot-path count must be 0 (whole-crate count is non-zero by design — WASM boundary)
 
 # Market District p99 latency (live)
 cd services/market-district && go test -bench BenchmarkOrderBook -benchtime=30s -count=5 ./internal/orderbook/
@@ -350,7 +354,7 @@ docker compose -f infra/docker-compose.observability.yml up -d
 
 ### Kubernetes
 
-Helm chart at `infra/helm/qtown`. Deploys all 9 services with health checks, resource limits, and Linkerd service mesh annotations.
+Helm chart at `infra/helm/qtown`. Deploys all 9 components (8 services + dashboard) with health checks, resource limits, and Linkerd service mesh annotations.
 
 ```bash
 make helm-install
@@ -380,7 +384,7 @@ GitHub Actions (`.github/workflows/ci.yml`) — 9 parallel jobs:
 | `test-cartographer` | tsc --noEmit + npm test |
 | `test-library` | ruff + pytest |
 | `test-dashboard` | nuxi typecheck + zero-`any`-types check + npm test |
-| `docker-build` | Build all 9 images (PRs only) |
+| `docker-build` | Build all 9 component images (PRs only) |
 | `docker-push` | Push to GHCR (main branch merges only) |
 
 ### Observability
@@ -461,4 +465,4 @@ MIT — see [LICENSE](LICENSE).
 
 ---
 
-*Qtown v2 — 9 services, 12 languages, 27 Kafka topics, 420 files, ~101K lines. Ralph wrote most of it.*
+*Qtown v2 — 9 components (8 services + dashboard), 12 languages, 27 Kafka topics, 420 files, ~101K lines. Scaffolded, not yet delivered — see [docs/v2-audit.md](docs/v2-audit.md). Ralph wrote most of it.*
