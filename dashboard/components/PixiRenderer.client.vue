@@ -2,10 +2,7 @@
 import type { WorldState, Building, NpcSummary } from '~/composables/useTownState'
 
 // PixiJS imports — client-only
-import { Application } from '@pixi/core'
-import { Container } from '@pixi/display'
-import { Graphics } from '@pixi/graphics'
-import { Text } from '@pixi/text'
+import { Application, Container, Graphics, Text } from 'pixi.js'
 
 const props = withDefaults(
   defineProps<{

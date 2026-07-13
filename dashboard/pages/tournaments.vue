@@ -11,6 +11,7 @@ import {
   Legend,
   Filler,
 } from 'chart.js'
+import type { ChartOptions } from 'chart.js'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler)
 
@@ -143,7 +144,7 @@ const chartData = computed(() => {
   }
 })
 
-const chartOptions = {
+const chartOptions: ChartOptions<'line'> = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -166,7 +167,7 @@ const chartOptions = {
       ticks: {
         color: '#475569',
         font: { family: 'monospace', size: 10 },
-        callback: (v: number) => `${v.toLocaleString()}g`,
+        callback: (v: string | number) => `${Number(v).toLocaleString()}g`,
       },
     },
   },
