@@ -15,7 +15,6 @@ Coverage:
 
 from __future__ import annotations
 
-import asyncio
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -186,26 +185,23 @@ class TestPersonalityInfluence:
         With high ambition, trade quests should be selected more often
         than with neutral ambition across many trials.
         """
-        def count_type(npc_personality, n=30):
+        async def count_type(npc_personality, n=30):
             gen = QuestGenerator(router=make_router(), rng_seed=0)
             npc = make_npc(personality={**npc_personality})
             counts = {"fetch": 0, "trade": 0, "social": 0, "explore": 0}
 
-            async def run():
-                for _ in range(n):
-                    q = await gen.generate_quest(npc, TOWN_STATE, difficulty="easy")
-                    counts[q.quest_type] += 1
-                return counts
-
-            return asyncio.get_event_loop().run_until_complete(run())
+            for _ in range(n):
+                q = await gen.generate_quest(npc, TOWN_STATE, difficulty="easy")
+                counts[q.quest_type] += 1
+            return counts
 
         neutral = {"risk_tolerance": 0.5, "sociability": 0.5, "ambition": 0.5,
                    "creativity": 0.5, "aggression": 0.5}
         ambitious = {"risk_tolerance": 0.5, "sociability": 0.5, "ambition": 0.95,
                      "creativity": 0.5, "aggression": 0.5}
 
-        neutral_counts = count_type(neutral)
-        ambitious_counts = count_type(ambitious)
+        neutral_counts = await count_type(neutral)
+        ambitious_counts = await count_type(ambitious)
 
         # Ambitious NPCs should get more trade quests than neutral ones
         assert ambitious_counts["trade"] >= neutral_counts["trade"]

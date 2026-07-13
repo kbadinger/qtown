@@ -338,9 +338,7 @@ class TestTickInterval:
         _mock_embed(consolidator)
 
         events = trade_events(12)
-        asyncio.get_event_loop().run_until_complete(
-            consolidator.consolidate("npc1", events, tick=250)
-        )
+        asyncio.run(consolidator.consolidate("npc1", events, tick=250))
 
         assert consolidator._last_consolidation.get("npc1") == 250
 

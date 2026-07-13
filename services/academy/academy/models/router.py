@@ -14,7 +14,6 @@ CLOUD_FALLBACK for that request and records it against routing stats.
 
 from __future__ import annotations
 
-import asyncio
 import logging
 import os
 import time
