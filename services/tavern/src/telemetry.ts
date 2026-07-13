@@ -12,8 +12,8 @@
 import { diag, DiagConsoleLogger, DiagLogLevel, context, trace, SpanStatusCode } from '@opentelemetry/api';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
-import { Resource } from '@opentelemetry/resources';
-import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
+import { resourceFromAttributes } from '@opentelemetry/resources';
+import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from '@opentelemetry/semantic-conventions';
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { Counter, Gauge, Registry, collectDefaultMetrics } from 'prom-client';
 import * as http from 'http';
@@ -77,12 +77,12 @@ export async function initTelemetry(serviceName: string): Promise<void> {
   });
 
   sdk = new NodeSDK({
-    resource: new Resource({
-      [SemanticResourceAttributes.SERVICE_NAME]: serviceName,
-      [SemanticResourceAttributes.SERVICE_VERSION]: process.env.SERVICE_VERSION ?? '0.1.0',
+    resource: resourceFromAttributes({
+      [ATTR_SERVICE_NAME]: serviceName,
+      [ATTR_SERVICE_VERSION]: process.env.SERVICE_VERSION ?? '0.1.0',
       'deployment.environment': process.env.NODE_ENV ?? 'development',
     }),
-    spanProcessor: new BatchSpanProcessor(exporter),
+    spanProcessors: [new BatchSpanProcessor(exporter)],
   });
 
   await sdk.start();
