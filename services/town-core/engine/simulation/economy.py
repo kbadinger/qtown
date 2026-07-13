@@ -2442,7 +2442,13 @@ def apply_bank_interest(db: Session) -> int:
         npc.gold += interest
 
         # Create transaction record
-        tx = Transaction(npc_id=npc.id, amount=interest, reason='bank_interest')
+        # NPC receives interest from the bank (system transaction: npc is both sides)
+        tx = Transaction(
+            sender_id=npc.id,
+            receiver_id=npc.id,
+            amount=interest,
+            reason='bank_interest',
+        )
         db.add(tx)
 
         total_interest += interest
@@ -2565,7 +2571,7 @@ def apply_tax_mood(db: Session) -> int:
 
 def process_visitor_arrivals(db: Session) -> int:
     """Process visitor arrivals based on town reputation."""
-    from engine.models import WorldState, Treasury, Event
+    from engine.models import NPC, WorldState, Treasury, Event
 
     reputation = calculate_town_reputation(db)
 
@@ -2575,8 +2581,20 @@ def process_visitor_arrivals(db: Session) -> int:
             world_state = db.query(WorldState).first()
             current_tick = (world_state.tick or 0) if world_state else 0
 
+            # The wealthy visitor is a new NPC arriving in town; create it so the
+            # VisitorLog FK (npc_id is NOT NULL) references a real NPC.
+            visitor = NPC(
+                name=f"Visitor {random.randint(1, 1000000)}",
+                role="visitor",
+                x=0,
+                y=0,
+                gold=100,
+            )
+            db.add(visitor)
+            db.flush()  # assign visitor.id
+
             # Create VisitorLog
-            visitor_log = VisitorLog(arrival_tick=current_tick)
+            visitor_log = VisitorLog(npc_id=visitor.id, arrival_tick=current_tick)
             db.add(visitor_log)
 
             # Add 50 gold to Treasury

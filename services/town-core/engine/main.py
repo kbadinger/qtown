@@ -451,8 +451,20 @@ def _seed_admin():
         db.close()
 
 
+_routers_registered = False
+
+
 def _auto_discover_routers():
-    """Scan engine/routers/ for .py files with a `router` attribute and include them."""
+    """Scan engine/routers/ for .py files with a `router` attribute and include them.
+
+    Idempotent: routers are registered at most once per process. The startup
+    event can fire repeatedly (each TestClient context re-runs it); without this
+    guard every startup re-includes all routers, nesting FastAPI's merged
+    lifespan until the call stack overflows with a RecursionError.
+    """
+    global _routers_registered
+    if _routers_registered:
+        return
     routers_dir = Path("engine/routers")
     if not routers_dir.is_dir():
         return
@@ -469,6 +481,8 @@ def _auto_discover_routers():
                 print(f"[qtown] Auto-registered router: {module_name}")
         except Exception as e:
             print(f"[qtown] Failed to load router {module_name}: {e}")
+
+    _routers_registered = True
 
 
 # ---------------------------------------------------------------------------
@@ -490,8 +504,7 @@ def index(request: Request):
             stories_done = sum(1 for s in prd.get("stories", []) if s.get("status") == "done")
         except Exception:
             pass
-    return templates.TemplateResponse("index.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "index.html", {
         "stories_done": stories_done,
         "stories_total": stories_total,
     })
@@ -504,7 +517,7 @@ def index(request: Request):
 
 @app.get("/dashboard", response_class=HTMLResponse)
 def dashboard(request: Request):
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+    return templates.TemplateResponse(request, "dashboard.html")
 
 
 @app.get("/api/dashboard-data")
@@ -633,17 +646,17 @@ def world_state(db: Session = Depends(get_db)):
 
 @app.get("/about", response_class=HTMLResponse)
 def about_page(request: Request):
-    return templates.TemplateResponse("about.html", {"request": request})
+    return templates.TemplateResponse(request, "about.html")
 
 
 @app.get("/features", response_class=HTMLResponse)
 def features_page(request: Request):
-    return templates.TemplateResponse("features.html", {"request": request})
+    return templates.TemplateResponse(request, "features.html")
 
 
 @app.get("/stories", response_class=HTMLResponse)
 def stories_page(request: Request):
-    return templates.TemplateResponse("stories.html", {"request": request})
+    return templates.TemplateResponse(request, "stories.html")
 
 
 @app.get("/api/stories-data")
@@ -700,7 +713,7 @@ def stories_data():
 
 @app.get("/timeline", response_class=HTMLResponse)
 def timeline(request: Request):
-    return templates.TemplateResponse("timeline.html", {"request": request})
+    return templates.TemplateResponse(request, "timeline.html")
 
 
 @app.get("/api/timeline-data")

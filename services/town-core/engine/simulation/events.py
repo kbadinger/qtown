@@ -2194,13 +2194,16 @@ def trigger_trade_caravan(db: Session) -> int:
     and quantity=20. Creates an Event with event_type='trade_caravan'.
     Returns the count of resources added (3) or 0 if no market exists.
     """
-    from engine.models import Building, Resource, Event
+    from engine.models import Building, Resource, Event, WorldState
 
     # Find the market building
     market = db.query(Building).filter(Building.building_type == "market").first()
 
     if not market:
         return 0
+
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
 
     # Add 3 resources of type 'caravan_goods' with quantity 20
     resources_added = 0
@@ -2216,7 +2219,8 @@ def trigger_trade_caravan(db: Session) -> int:
     # Create the event
     new_event = Event(
         event_type="trade_caravan",
-        description="A trade caravan has arrived at the market!"
+        description="A trade caravan has arrived at the market!",
+        tick=current_tick,
     )
     db.add(new_event)
 
@@ -2277,10 +2281,13 @@ def trigger_miracle(db: Session) -> int | None:
 
 def check_building_collapse(db: Session) -> int:
     """Check for building collapses (5% chance for level 1 buildings with capacity > 0)."""
-    from engine.models import Building, NPC, Event
+    from engine.models import Building, NPC, Event, WorldState
     import random
 
     collapse_count = 0
+
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
 
     # Find all buildings with level==1 and capacity > 0
     buildings = db.query(Building).filter(
@@ -2302,8 +2309,10 @@ def check_building_collapse(db: Session) -> int:
             # Create event record
             event = Event(
                 event_type='building_collapse',
-                severity=4,
-                building_id=building.id
+                description=f"{building.name} has collapsed",
+                tick=current_tick,
+                severity='critical',
+                affected_building_id=building.id
             )
             db.add(event)
             collapse_count += 1

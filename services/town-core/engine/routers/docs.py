@@ -102,6 +102,7 @@ def get_api_docs(request: Request, db: Session = Depends(get_db)):
     Lists all endpoints, parameters, and example responses.
     """
     return templates.TemplateResponse(
+        request,
         "api_docs.html",
-        {"request": request, "endpoints": API_ENDPOINTS}
+        {"endpoints": API_ENDPOINTS}
     )

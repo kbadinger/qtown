@@ -7,9 +7,12 @@ from typing import Callable, Awaitable
 
 from aiokafka import AIOKafkaConsumer
 
-logger = logging.getLogger("town-core.kafka.consumer")
+# Imported at module level so the async handlers — and their tests' patches —
+# can reach them as engine.kafka_consumer.SessionLocal / .NPC.
+from engine.db import SessionLocal
+from engine.models import NPC
 
-# Import these at module level so handlers can use them
+logger = logging.getLogger("town-core.kafka.consumer")
 
 
 class TownCoreConsumer:
@@ -74,9 +77,6 @@ class TownCoreConsumer:
 
 async def handle_travel_complete(data: dict) -> None:
     """Handle npc.travel.complete — NPC has arrived or returned from another neighborhood."""
-    from engine.db import SessionLocal
-    from engine.models import NPC
-
     npc_id = data["npc_id"]
     status = data.get("status", "ok")
     gold_delta = data.get("gold_delta", 0)
@@ -110,9 +110,6 @@ async def handle_travel_complete(data: dict) -> None:
 
 async def handle_trade_settled(data: dict) -> None:
     """Handle economy.trade.settled — apply gold changes from Market District trades."""
-    from engine.db import SessionLocal
-    from engine.models import NPC
-
     npc_id = data["npc_id"]
     gold_delta = data["gold_delta"]
     resource = data.get("resource", "unknown")

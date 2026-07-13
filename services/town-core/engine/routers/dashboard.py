@@ -56,9 +56,9 @@ def index(request: Request, db: Session = Depends(get_db)):
         total_count = 200
 
     return templates.TemplateResponse(
+        request,
         "index.html",
         {
-            "request": request,
             "stories_done": completed_count,
             "stories_total": total_count
         }

@@ -2084,15 +2084,15 @@ def process_mourning(db: Session) -> int:
     for dead_npc in dead_npcs:
         # Find relationships involving the dead NPC
         relationships = db.query(Relationship).filter(
-            (Relationship.npc1_id == dead_npc.id) | (Relationship.npc2_id == dead_npc.id)
+            (Relationship.npc_id == dead_npc.id) | (Relationship.target_npc_id == dead_npc.id)
         ).all()
 
         for rel in relationships:
             # Identify the potential mourner (the other NPC in the relationship)
-            if rel.npc1_id == dead_npc.id:
-                mourner_id = rel.npc2_id
+            if rel.npc_id == dead_npc.id:
+                mourner_id = rel.target_npc_id
             else:
-                mourner_id = rel.npc1_id
+                mourner_id = rel.npc_id
 
             # Fetch the mourner NPC
             mourner = db.query(NPC).filter(NPC.id == mourner_id).first()
@@ -2444,7 +2444,7 @@ def update_trust_scores(db: Session) -> dict:
 
     for rel in relationships:
         # Process both NPCs in the relationship
-        for npc_id in [rel.npc1_id, rel.npc2_id]:
+        for npc_id in [rel.npc_id, rel.target_npc_id]:
             if npc_id not in trust_data:
                 trust_data[npc_id] = {'high': 0, 'low': 0}
 
@@ -2923,7 +2923,7 @@ def escalate_rivalries(db: Session) -> int:
         if random.random() < 0.15:
             # Create crime record for assault
             crime = Crime(
-                npc_id=relationship.npc1_id,
+                npc_id=relationship.npc_id,
                 crime_type='assault',
                 severity=1,
                 resolved=0,
@@ -2980,6 +2980,7 @@ def discover_talents(db: Session) -> int:
     candidates = db.query(NPC).filter(NPC.is_dead == 0, NPC.skill < 50).all()
 
     import random
+    import json
 
     for npc in candidates:
         # 5% chance to discover talent
@@ -2995,12 +2996,16 @@ def discover_talents(db: Session) -> int:
 
             npc.skill += skill_increase
 
-            # Add talent_discovered to memory_events
-            if npc.memory_events:
-                if 'talent_discovered' not in npc.memory_events:
-                    npc.memory_events.append('talent_discovered')
-            else:
-                npc.memory_events = ['talent_discovered']
+            # Add talent_discovered to memory_events (stored as JSON text)
+            try:
+                events = json.loads(npc.memory_events) if npc.memory_events else []
+            except (ValueError, TypeError):
+                events = []
+            if not isinstance(events, list):
+                events = []
+            if 'talent_discovered' not in events:
+                events.append('talent_discovered')
+            npc.memory_events = json.dumps(events)
 
             count += 1
 

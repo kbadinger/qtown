@@ -401,20 +401,20 @@ def hold_performance(db: Session) -> int:
     - Creates a Dialogue from a random attendee.
     - Returns the count of attendees boosted.
     """
-    from engine.models import Building, NPC, Event, Dialogue
+    from engine.models import Building, NPC, Event, Dialogue, WorldState
 
     # Find a theater building
     theater = db.query(Building).filter(Building.building_type == "theater").first()
     if not theater:
         return 0
 
-    # Create the event
+    # Create the event at the current world tick
+    world_state = db.query(WorldState).first()
+    current_tick = world_state.tick if world_state else 0
     event = Event(
         event_type="theater_performance",
         description="A magical theater performance is happening!",
-        location_x=theater.x,
-        location_y=theater.y,
-        is_active=1
+        tick=current_tick,
     )
     db.add(event)
     db.flush()
@@ -492,8 +492,8 @@ def hold_ceremony(db: Session) -> int:
     attendee_list = list(attendees)
     # Filter relationships where both participants are in the attendee list
     relationships = db.query(Relationship).filter(
-        Relationship.npc1_id.in_(attendee_list),
-        Relationship.npc2_id.in_(attendee_list)
+        Relationship.npc_id.in_(attendee_list),
+        Relationship.target_npc_id.in_(attendee_list)
     ).all()
 
     for rel in relationships:
@@ -505,7 +505,8 @@ def hold_ceremony(db: Session) -> int:
 
     event = Event(
         event_type='church_ceremony',
-        tick=current_tick
+        description='A church ceremony brought the community together.',
+        tick=current_tick,
     )
     db.add(event)
 

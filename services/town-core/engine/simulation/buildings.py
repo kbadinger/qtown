@@ -1806,7 +1806,7 @@ def check_mine_depletion(db: Session) -> int:
     for mine in mines:
         # Find Resource "Ore" at this building
         ore_resource = db.query(Resource).filter(
-            Resource.resource_name == "Ore",
+            Resource.name == "Ore",
             Resource.building_id == mine.id
         ).first()
 

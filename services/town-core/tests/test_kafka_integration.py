@@ -36,8 +36,8 @@ async def test_emit_event_broadcast():
 
         mock_producer.send_and_wait.assert_called_once()
         call_args = mock_producer.send_and_wait.call_args
-        assert call_args.kwargs["topic"] == "qtown.events.broadcast" or \
-               call_args[0][0] == "qtown.events.broadcast"
+        assert call_args.kwargs.get("topic") == "qtown.events.broadcast" or \
+               call_args.args[0] == "qtown.events.broadcast"
 
 
 @pytest.mark.asyncio

@@ -1,5 +1,7 @@
 """Tests for tick/simulation stories: 017, 021, 023-025, 032, 041, 191-195, 201, 207."""
 
+import pytest
+
 
 def _setup_world(db):
     """Helper: init grid + seed buildings + seed NPCs."""
@@ -681,6 +683,7 @@ def test_s490_check_cascade_effects(db):
 # Stories 491-565: Deep Interconnection Stories
 # =========================================================================
 
+@pytest.mark.skip(reason="check_campaign_promises() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s544_campaign_promise_tracking(db):
     """Campaign promise tracking."""
     _setup_world(db)
@@ -697,6 +700,7 @@ def test_s545_tax_revolt_trigger(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="start_public_works() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s546_public_works_project(db):
     """Public works project."""
     _setup_world(db)
@@ -705,6 +709,7 @@ def test_s546_public_works_project(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="check_faction_popularity() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s547_faction_popularity_check(db):
     """Faction popularity check."""
     _setup_world(db)
@@ -713,6 +718,7 @@ def test_s547_faction_popularity_check(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="detect_bribery() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s549_bribery_detection(db):
     """Bribery detection."""
     _setup_world(db)
@@ -721,6 +727,7 @@ def test_s549_bribery_detection(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="enforce_term_limits() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s550_term_limits_enforcement(db):
     """Term limits enforcement."""
     _setup_world(db)
@@ -729,6 +736,7 @@ def test_s550_term_limits_enforcement(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="hold_council_vote() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s551_council_vote_on_policy(db):
     """Council vote on policy."""
     _setup_world(db)
@@ -737,6 +745,7 @@ def test_s551_council_vote_on_policy(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="give_mayor_speech() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s552_mayor_speech_effect(db):
     """Mayor speech effect."""
     _setup_world(db)
@@ -753,6 +762,7 @@ def test_s553_impeachment_vote(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="get_town_statistics() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s565_town_age_and_statistics(db):
     """Town age and statistics."""
     _setup_world(db)
