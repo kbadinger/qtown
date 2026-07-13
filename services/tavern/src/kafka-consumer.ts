@@ -25,7 +25,7 @@ export const KAFKA_TOPICS = [
   "qtown.economy.trade.settled",
   "qtown.economy.price.update",
   "qtown.ai.content.generated",
-  "qtown.npc.travel.depart",
+  "qtown.npc.travel",
   "qtown.npc.travel.complete",
 ] as const;
 
@@ -40,7 +40,7 @@ const TOPIC_TO_REDIS_CHANNEL: Record<KafkaTopic, string | null> = {
   "qtown.economy.trade.settled": "market",
   "qtown.economy.price.update": "market",
   "qtown.ai.content.generated": "content",
-  "qtown.npc.travel.depart": null, // dynamic: npc:{id}
+  "qtown.npc.travel": null, // dynamic: npc:{id}
   "qtown.npc.travel.complete": null, // dynamic: npc:{id}
 };
 
@@ -156,7 +156,7 @@ export class KafkaConsumerService {
         case "qtown.ai.content.generated":
           await this.handleContentGenerated(event as ContentGenerated);
           break;
-        case "qtown.npc.travel.depart":
+        case "qtown.npc.travel":
           await this.handleTravelDepart(event as NPCTravelDepart);
           break;
         case "qtown.npc.travel.complete":
@@ -222,11 +222,12 @@ export class KafkaConsumerService {
   private async handleTravelDepart(event: NPCTravelDepart): Promise<void> {
     const channel = `npc:${event.npc_id}`;
 
-    // Update presence: status → traveling
+    // Update presence: status → traveling. The travel payload carries the
+    // origin neighborhood in `from`; there is no building granularity.
     await this.presence.updatePresence(
-      event.npc_id,
-      event.from_neighborhood,
-      event.from_building,
+      String(event.npc_id),
+      event.from,
+      "",
       "traveling"
     );
 

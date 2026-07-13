@@ -94,13 +94,16 @@ export interface EventBroadcast extends KafkaEvent {
   crime_count?: number;
 }
 
+// town-core emits the canonical `qtown.npc.travel` (spec: Wanderers' Path,
+// origin → destination) with { tick, npc_id, from, to, npc_state }. `from`/`to`
+// are neighborhood names; there is no building granularity in the travel payload.
 export interface NPCTravelDepart extends KafkaEvent {
-  type: "npc.travel.depart";
-  npc_id: string;
-  from_neighborhood: string;
-  from_building: string;
-  to_neighborhood: string;
-  to_building: string;
+  type: "npc.travel";
+  npc_id: number;
+  from: string;
+  to: string;
+  tick?: number;
+  npc_state?: Record<string, unknown>;
 }
 
 export interface NPCTravelComplete extends KafkaEvent {
