@@ -761,7 +761,7 @@ def apply_skill_bonuses(db: Session) -> dict:
         ).all()
 
         if not workers:
-            bonus_dict[resource.resource_name] = 0
+            bonus_dict[resource.name] = 0
             continue
 
         # Calculate total skill bonus
@@ -775,9 +775,9 @@ def apply_skill_bonuses(db: Session) -> dict:
         # Apply bonus to quantity
         if total_bonus > 0:
             resource.quantity = int(resource.quantity * (1 + total_bonus))
-            bonus_dict[resource.resource_name] = total_bonus
+            bonus_dict[resource.name] = total_bonus
         else:
-            bonus_dict[resource.resource_name] = 0
+            bonus_dict[resource.name] = 0
 
     return bonus_dict
 

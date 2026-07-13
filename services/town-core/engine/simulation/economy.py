@@ -2758,7 +2758,7 @@ def process_supply_chain(db: Session) -> int:
     for bakery in bakeries:
         # Find Wheat resources at farms with quantity >= 5
         wheat_resources = db.query(Resource).filter(
-            Resource.resource_name == "Wheat",
+            Resource.name == "Wheat",
             Resource.quantity >= 5
         ).all()
 
@@ -2769,7 +2769,7 @@ def process_supply_chain(db: Session) -> int:
 
             # Add Bread to bakery
             bread_resource = Resource(
-                resource_name="Bread",
+                name="Bread",
                 quantity=10,
                 building_id=bakery.id
             )
@@ -2795,7 +2795,7 @@ def check_merchant_caravan(db: Session) -> bool:
     # Add Resource "Exotic Goods" quantity 10 to first market building (building_type in ("market","economic"))
     market = db.query(Building).filter(Building.building_type.in_(["market", "economic"])).first()
     if market:
-        resource = Resource(resource_name="Exotic Goods", quantity=10, building_id=market.id)
+        resource = Resource(name="Exotic Goods", quantity=10, building_id=market.id)
         db.add(resource)
 
     # Create Event with event_type, description, tick (all NOT NULL)
@@ -2908,13 +2908,13 @@ def update_market_prices(db: Session) -> dict:
 
     # Get all unique resource names
     resources = db.query(Resource).all()
-    resource_names = set(r.resource_name for r in resources)
+    resource_names = set(r.name for r in resources)
 
     # Calculate supply for each resource
     supply_dict = {}
     for name in resource_names:
         total = db.query(func.sum(Resource.quantity)).filter(
-            Resource.resource_name == name
+            Resource.name == name
         ).scalar() or 0
         supply_dict[name] = total
 

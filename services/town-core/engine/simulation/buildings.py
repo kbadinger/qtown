@@ -2014,7 +2014,7 @@ def apply_windmill_bonus(db: Session) -> int:
                 # Find Wheat resource at this farm
                 wheat_resource = db.query(Resource).filter(
                     Resource.building_id == farm.id,
-                    Resource.resource_name == "Wheat"
+                    Resource.name == "Wheat"
                 ).first()
 
                 if wheat_resource:
@@ -2025,7 +2025,7 @@ def apply_windmill_bonus(db: Session) -> int:
                     # Create new Wheat resource if it doesn't exist
                     new_wheat = Resource(
                         building_id=farm.id,
-                        resource_name="Wheat",
+                        name="Wheat",
                         quantity=3
                     )
                     db.add(new_wheat)

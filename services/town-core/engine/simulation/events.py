@@ -2791,9 +2791,9 @@ def trigger_random_boon(db: Session) -> str | None:
 
     elif boon_type == 'bumper_crop':
         # Add 50 to first Food resource
-        food_resource = db.query(Resource).filter(Resource.resource_name == 'Food').first()
+        food_resource = db.query(Resource).filter(Resource.name == 'Food').first()
         if food_resource:
-            food_resource.amount = food_resource.amount + 50
+            food_resource.quantity = food_resource.quantity + 50
             event = Event(
                 event_type='bumper_crop',
                 description='A bumper crop has increased food reserves by 50!',

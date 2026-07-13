@@ -373,7 +373,7 @@ def conduct_research(db: Session) -> str | None:
     # Apply discovery effects
     if discovery == 'farming_technique':
         # Add 10 to all Food resources
-        db.query(Resource).filter(Resource.resource_name == 'Food').update({'amount': Resource.amount + 10})
+        db.query(Resource).filter(Resource.name == 'Food').update({'quantity': Resource.quantity + 10})
     elif discovery == 'medical_breakthrough':
         # Reduce all NPC illness_severity by 5 (minimum 0)
         db.query(NPC).update({'illness_severity': db.func.GREATEST(NPC.illness_severity - 5, 0)})
