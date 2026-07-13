@@ -61,123 +61,51 @@ const activeTournament = ref<ActiveTournament | null>(null)
 const history = ref<HistoricalTournament[]>([])
 const selectedNpc = ref<string | null>(null)
 const portfolioHistory = ref<Record<string, PortfolioPoint[]>>({})
-const nextTournamentIn = ref(0)
+const nextTournamentIn = ref<number | null>(null)
 const isLoading = ref(true)
+const sourceAvailable = ref(false)
 
-// ─── Mock / stub data (replaces API when upstream unavailable) ─────────────────
-
-function generateMockTournament(): ActiveTournament {
-  const npcs = ['Aldric', 'Mira', 'Gareth', 'Elara', 'Finn', 'Nora', 'Bram', 'Sasha']
-  const base = 1000
-  const standings: TournamentStanding[] = npcs.map((name, i) => {
-    const variation = (Math.random() - 0.4) * 600
-    const total = base + variation
-    const gold = total * (0.4 + Math.random() * 0.4)
-    return {
-      rank: i + 1,
-      npcId: `npc-${name.toLowerCase()}`,
-      npcName: name,
-      gold: Math.max(0, gold),
-      inventoryValue: Math.max(0, total - gold),
-      totalValue: total,
-      tradesExecuted: Math.floor(Math.random() * 30) + 1,
-      profitLoss: variation,
-    }
-  })
-  standings.sort((a, b) => b.totalValue - a.totalValue)
-  standings.forEach((s, i) => { s.rank = i + 1 })
-  return {
-    id: 'tournament-mock',
-    name: 'Weekly Gold Cup',
-    startTick: 2400,
-    endTick: 2500,
-    currentTick: 2450,
-    standings,
-  }
-}
-
-function generateMockHistory(): HistoricalTournament[] {
-  const names = ['Monthly Championship', 'Spring Market Duel', 'Winter Trade Wars', 'Harvest Cup']
-  return names.map((name, i) => ({
-    id: `hist-${i}`,
-    name,
-    winnerName: ['Aldric', 'Mira', 'Gareth', 'Elara'][i],
-    winnerProfit: 200 + Math.random() * 400,
-    startTick: 2000 - i * 200,
-    endTick: 2100 - i * 200,
-    totalTrades: 150 + Math.floor(Math.random() * 200),
-    participants: 6 + Math.floor(Math.random() * 4),
-  }))
-}
-
-function generatePortfolioHistory(npcId: string, currentTick: number): PortfolioPoint[] {
-  const points: PortfolioPoint[] = []
-  let value = 1000
-  for (let t = currentTick - 50; t <= currentTick; t += 5) {
-    value += (Math.random() - 0.45) * 80
-    value = Math.max(400, value)
-    points.push({ tick: t, value: Math.round(value * 100) / 100 })
-  }
-  return points
-}
+// No fabricated values, ever (docs/REQUIREMENTS.md §2.1). This page renders only what
+// the tournament source returns. Until market-district emits tournament.* events and a
+// server route proxies them, every fetch below fails and the page stays dormant:
+// metrics render `—`, tables render empty, nothing animates.
 
 // ─── Lifecycle ─────────────────────────────────────────────────────────────────
 
-onMounted(async () => {
-  await loadData()
-  // Simulate real-time updates
-  const interval = setInterval(() => {
-    if (activeTournament.value) {
-      activeTournament.value.currentTick++
-      nextTournamentIn.value = Math.max(0, nextTournamentIn.value - 1)
-      // Randomise standings slightly
-      activeTournament.value.standings = activeTournament.value.standings.map(s => ({
-        ...s,
-        gold: s.gold + (Math.random() - 0.5) * 20,
-        totalValue: s.totalValue + (Math.random() - 0.45) * 30,
-        profitLoss: s.profitLoss + (Math.random() - 0.45) * 30,
-      })).sort((a, b) => b.totalValue - a.totalValue).map((s, i) => ({ ...s, rank: i + 1 }))
-
-      if (selectedNpc.value) {
-        refreshPortfolio(selectedNpc.value, activeTournament.value.currentTick)
-      }
-    }
-  }, 3000)
-  onUnmounted(() => clearInterval(interval))
-})
+onMounted(loadData)
 
 async function loadData() {
   isLoading.value = true
   try {
-    // Try to fetch from the actual API; fall back to mock data.
+    // The intended wiring seam: market-district tournament.* events → server proxy →
+    // these endpoints. The routes don't exist yet, so both fetches reject and we render
+    // the honest dormant state.
     const [active, hist] = await Promise.allSettled([
-      $fetch<ActiveTournament>('/api/market/tournament/active'),
+      $fetch<ActiveTournament & { nextTournamentIn?: number }>('/api/market/tournament/active'),
       $fetch<HistoricalTournament[]>('/api/market/tournament/history'),
     ])
 
-    activeTournament.value = active.status === 'fulfilled' ? active.value : generateMockTournament()
-    history.value = hist.status === 'fulfilled' ? hist.value : generateMockHistory()
-    nextTournamentIn.value = 50 + Math.floor(Math.random() * 50)
+    activeTournament.value = active.status === 'fulfilled' ? active.value : null
+    history.value = hist.status === 'fulfilled' ? hist.value : []
+    nextTournamentIn.value =
+      active.status === 'fulfilled' ? active.value.nextTournamentIn ?? null : null
+    sourceAvailable.value = active.status === 'fulfilled' || hist.status === 'fulfilled'
   } finally {
     isLoading.value = false
   }
 }
 
-function selectNpc(npcId: string) {
+async function selectNpc(npcId: string) {
   selectedNpc.value = npcId
-  if (activeTournament.value) {
-    portfolioHistory.value[npcId] = generatePortfolioHistory(npcId, activeTournament.value.currentTick)
+  if (portfolioHistory.value[npcId]) return
+  try {
+    portfolioHistory.value[npcId] = await $fetch<PortfolioPoint[]>(
+      `/api/market/tournament/portfolio/${encodeURIComponent(npcId)}`,
+    )
+  } catch {
+    // No portfolio source yet — the chart panel renders its empty state.
+    portfolioHistory.value[npcId] = []
   }
-}
-
-function refreshPortfolio(npcId: string, currentTick: number) {
-  const existing = portfolioHistory.value[npcId] ?? []
-  const last = existing[existing.length - 1]
-  const newValue = (last?.value ?? 1000) + (Math.random() - 0.45) * 40
-  portfolioHistory.value[npcId] = [
-    ...existing.slice(-20),
-    { tick: currentTick, value: Math.round(Math.max(200, newValue) * 100) / 100 },
-  ]
 }
 
 // ─── Computed / chart data ──────────────────────────────────────────────────────
@@ -196,7 +124,7 @@ const progressPercent = computed(() => {
 
 const chartData = computed(() => {
   const npc = selectedNpc.value
-  if (!npc || !portfolioHistory.value[npc]) return null
+  if (!npc || !portfolioHistory.value[npc]?.length) return null
   const points = portfolioHistory.value[npc]
   return {
     labels: points.map(p => `T${p.tick}`),
@@ -260,14 +188,27 @@ function plSign(pl: number): string {
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold text-qtown-text-primary">NPC Trading Tournaments</h1>
-        <p class="text-qtown-text-secondary text-sm mt-1">Live market competitions among NPC traders</p>
+        <p class="text-qtown-text-secondary text-sm mt-1">Market competitions among NPC traders</p>
       </div>
       <div class="flex items-center gap-3">
         <div class="bg-qtown-card border border-qtown-border rounded-lg px-4 py-2 text-sm">
           <span class="text-qtown-text-dim">Next tournament: </span>
-          <span class="font-mono text-qtown-gold">{{ nextTournamentIn }} ticks</span>
+          <span class="font-mono text-qtown-gold">{{ nextTournamentIn ?? '—' }} ticks</span>
         </div>
       </div>
+    </div>
+
+    <!-- Honesty banner — shown while no tournament source is wired (docs/STATE.md) -->
+    <div
+      v-if="!isLoading && !sourceAvailable"
+      class="rounded-lg border border-qtown-gold/40 bg-qtown-gold/5 p-4 text-sm text-qtown-text-secondary"
+    >
+      <strong class="text-qtown-gold">Status: dormant.</strong>
+      No tournament service is wired yet &mdash; market-district emits no
+      <code class="text-qtown-gold">tournament.*</code> events, so there is no data source behind
+      this page. Nothing here is simulated: metrics render <span class="font-mono">—</span> and
+      tables stay empty until real events flow. Live status board:
+      <code class="text-qtown-gold">docs/STATE.md</code>.
     </div>
 
     <!-- Loading -->
@@ -366,16 +307,16 @@ function plSign(pl: number): string {
             </div>
             <div
               v-else
-              class="h-48 rounded border border-qtown-border border-dashed flex items-center justify-center text-qtown-text-dim text-sm"
+              class="h-48 rounded border border-qtown-border border-dashed flex items-center justify-center text-qtown-text-dim text-sm px-4 text-center"
             >
-              Click a row to view chart
+              {{ selectedNpc ? 'No portfolio data — source not wired yet' : 'Click a row to view chart' }}
             </div>
           </div>
         </div>
       </div>
 
       <div v-else class="bg-qtown-card border border-qtown-border rounded-xl p-10 text-center">
-        <p class="text-qtown-text-dim">No active tournament. Next starts in <span class="text-qtown-gold font-mono">{{ nextTournamentIn }}</span> ticks.</p>
+        <p class="text-qtown-text-dim">No active tournament.</p>
       </div>
 
       <!-- Tournament history -->
@@ -407,6 +348,11 @@ function plSign(pl: number): string {
                 <td class="px-4 py-3 text-right font-mono text-qtown-text-dim">{{ h.endTick - h.startTick }}</td>
                 <td class="px-4 py-3 text-right font-mono text-qtown-text-secondary">{{ h.totalTrades.toLocaleString() }}</td>
                 <td class="px-4 py-3 text-right font-mono text-qtown-text-dim">{{ h.participants }}</td>
+              </tr>
+              <tr v-if="history.length === 0">
+                <td colspan="6" class="px-4 py-8 text-center text-qtown-text-dim bg-qtown-card">
+                  No tournaments recorded — no data source wired yet.
+                </td>
               </tr>
             </tbody>
           </table>
