@@ -52,3 +52,6 @@ Thumbs.db
 *.p8
 *.pem
 *.key
+
+# local test artifacts
+services/town-core/test_town.db

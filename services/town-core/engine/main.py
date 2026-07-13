@@ -13,9 +13,7 @@ from sqlalchemy.orm import Session
 
 load_dotenv()
 
-from starlette.datastructures import URL
 from starlette.middleware.trustedhost import TrustedHostMiddleware as _TrustedHostMiddleware
-from starlette.responses import PlainTextResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 from fastapi import Depends, FastAPI, Request
@@ -28,7 +26,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
 from engine.auth import hash_key
-from engine.db import Base, SessionLocal, engine, get_db, init_db
+from engine.db import SessionLocal, get_db, init_db
 from engine.models import AdminUser, Building, NPC, Tile, Treasury, WorldState
 
 # ---------------------------------------------------------------------------
@@ -317,8 +315,8 @@ def _assign_sprite_ids(db):
 def _cleanup_excess_npcs(db):
     """One-time cleanup: remove NPCs spawned by runaway population growth."""
     from engine.models import (
-        NPC, WorldState, Transaction, Relationship, Event, Loan,
-        Election, Policy, Crime, Newspaper, VisitorLog, TownAnthem, Dialogue,
+        NPC, WorldState, Transaction, Relationship, Loan,
+        Crime, VisitorLog, Dialogue,
     )
 
     npc_count = db.query(NPC).count()
@@ -555,7 +553,7 @@ def dashboard_data():
         try:
             lines = progress_path.read_text(encoding="utf-8").strip().split("\n")
             # Take last 5 non-empty lines
-            learnings = [l for l in lines if l.strip()][-5:]
+            learnings = [line for line in lines if line.strip()][-5:]
         except OSError:
             pass
 
@@ -565,7 +563,7 @@ def dashboard_data():
     if alerts_path.exists():
         try:
             lines = alerts_path.read_text(encoding="utf-8").strip().split("\n")
-            alerts = [l for l in lines if l.strip()][-10:]
+            alerts = [line for line in lines if line.strip()][-10:]
         except OSError:
             pass
 

@@ -36,11 +36,6 @@ def costs_page(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse("costs.html", {"request": request})
 
 
-@router_page.get("")
-def cost_page(request: Request, db: Session = Depends(get_db)):
-    return templates.TemplateResponse("costs.html", {"request": request})
-
-
 class StoryProposal(BaseModel):
     title: str = Field(..., min_length=1, max_length=200)
     description: str = Field(..., min_length=1)
@@ -88,7 +83,7 @@ def propose_story(
     """Create a new story proposal and append to prd.json."""
     prd = _load_prd()
     stories = prd.get("stories", [])
-    
+
     # Calculate next ID
     if not stories:
         next_id = 1
@@ -101,7 +96,7 @@ def propose_story(
             except (ValueError, TypeError):
                 pass
         next_id = (max(existing_ids) if existing_ids else 0) + 1
-    
+
     new_story = {
         "id": str(next_id),
         "title": proposal.title,
@@ -109,9 +104,9 @@ def propose_story(
         "phase": proposal.phase,
         "status": "new"
     }
-    
+
     stories.append(new_story)
     prd["stories"] = stories
     _save_prd(prd)
-    
+
     return new_story

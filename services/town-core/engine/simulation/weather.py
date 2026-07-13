@@ -8,7 +8,7 @@ from engine.models import WorldState
 
 def update_weather(db: Session) -> None:
     """Update the weather in WorldState with weighted random selection.
-    
+
     Weather options with weights:
     - clear: 40%
     - rain: 25%
@@ -19,12 +19,12 @@ def update_weather(db: Session) -> None:
     world_state = db.query(WorldState).first()
     if not world_state:
         return
-    
+
     weather_options = ['clear', 'rain', 'storm', 'snow', 'fog']
     weights = [40, 25, 10, 10, 15]
-    
+
     new_weather = random.choices(weather_options, weights=weights, k=1)[0]
-    
+
     # Only update if weather changed
     if new_weather != world_state.weather:
         world_state.weather = new_weather
@@ -36,8 +36,7 @@ def apply_weather_effects(db: Session) -> None:
     world_state = db.query(WorldState).first()
     if not world_state:
         return
-    
-    weather = world_state.weather
+
 
 
 def get_season(db: Session) -> str:
@@ -61,25 +60,25 @@ def get_season(db: Session) -> str:
 
 def apply_winter_drain(db: Session) -> int:
     """Apply winter energy drain effects on NPCs when weather is snow.
-    
+
     If WorldState.weather == "snow":
     - All living NPCs (is_dead == 0) energy -= 5 (min 0) and hunger += 5 (max 100)
     - NPCs with home_building_id not None get half penalty (energy -2, hunger +2)
-    
+
     Returns count of affected NPCs.
     If weather is not snow, returns 0.
     """
     from engine.models import NPC, WorldState
-    
+
     world_state = db.query(WorldState).first()
     if not world_state or world_state.weather != "snow":
         return 0
-    
+
     # Get all living NPCs
     npcs = db.query(NPC).filter(NPC.is_dead == 0).all()
-    
+
     affected_count = 0
-    
+
     for npc in npcs:
         if npc.home_building_id is not None:
             # Half penalty for NPCs with home
@@ -90,6 +89,6 @@ def apply_winter_drain(db: Session) -> int:
             npc.energy = max(0, npc.energy - 5)
             npc.hunger = min(100, npc.hunger + 5)
         affected_count += 1
-    
+
     db.commit()
     return affected_count

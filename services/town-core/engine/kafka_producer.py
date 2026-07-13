@@ -1,5 +1,4 @@
 """Async Kafka producer for Town Core event emission."""
-import asyncio
 import json
 import logging
 import os

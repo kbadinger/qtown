@@ -2,7 +2,6 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
 
 from engine.auth import require_admin
 from engine.db import get_db
@@ -44,7 +43,6 @@ class PRDConversion(BaseModel):
 
 @router.get("/")
 def list_features(db: Session = Depends(get_db)):
-    from engine.models import Feature
     features = db.query(Feature).order_by(Feature.created_at.desc()).all()
     return [
         {
@@ -63,7 +61,6 @@ def list_features(db: Session = Depends(get_db)):
 
 @router.get("/{feature_id}")
 def get_feature(feature_id: int, db: Session = Depends(get_db)):
-    from engine.models import Feature
     feature = db.query(Feature).filter_by(id=feature_id).first()
     if not feature:
         raise HTTPException(status_code=404, detail="Feature not found")
@@ -85,7 +82,6 @@ def create_feature(
     request: Request,
     db: Session = Depends(get_db),
 ):
-    from engine.models import Feature
     voter_ip = request.client.host if request.client else None
     feature = Feature(
         title=data.title,
@@ -115,8 +111,6 @@ def vote_for_feature(
     request: Request,
     db: Session = Depends(get_db),
 ):
-    from engine.models import Feature, Vote
-    from sqlalchemy.exc import IntegrityError
 
     feature = db.query(Feature).filter_by(id=feature_id).first()
     if not feature:
@@ -160,7 +154,6 @@ def approve_feature(
     db: Session = Depends(get_db),
     _admin: str = Depends(require_admin),
 ):
-    from engine.models import Feature
     feature = db.query(Feature).filter_by(id=feature_id).first()
     if not feature:
         raise HTTPException(status_code=404, detail="Feature not found")
@@ -183,7 +176,6 @@ def reject_feature(
     db: Session = Depends(get_db),
     _admin: str = Depends(require_admin),
 ):
-    from engine.models import Feature
     feature = db.query(Feature).filter_by(id=feature_id).first()
     if not feature:
         raise HTTPException(status_code=404, detail="Feature not found")
@@ -207,7 +199,6 @@ def convert_to_prd(
     db: Session = Depends(get_db),
     _admin: str = Depends(require_admin),
 ):
-    from engine.models import Feature
     feature = db.query(Feature).filter_by(id=feature_id).first()
     if not feature:
         raise HTTPException(status_code=404, detail="Feature not found")

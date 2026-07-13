@@ -10,10 +10,6 @@ from aiokafka import AIOKafkaConsumer
 logger = logging.getLogger("town-core.kafka.consumer")
 
 # Import these at module level so handlers can use them
-from engine.kafka_producer import (
-    TOPIC_NPC_TRAVEL_COMPLETE,
-    TOPIC_ECONOMY_TRADE_SETTLED,
-)
 
 
 class TownCoreConsumer:

@@ -210,13 +210,13 @@ class Event(Base):
 
 class Relationship(Base):
     __tablename__ = "relationships"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=False, index=True)
     target_npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=False, index=True)
     relationship_type = Column(String(20), nullable=False)  # e.g., "friend", "rival", "family"
     strength = Column(Integer, default=0)  # 0 to 100
-    
+
     # Unique constraint to prevent duplicate relationships between the same pair
     __table_args__ = (
         UniqueConstraint('npc_id', 'target_npc_id', name='unique_relationship_pair'),

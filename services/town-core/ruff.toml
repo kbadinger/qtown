@@ -1,0 +1,9 @@
+# Lint config for town-core (CI runs: ruff check engine/ --select E,F,W).
+# 120-char lines: the v1-ported simulation code was written wide; 88 would
+# mean hand-wrapping ~300 lines with no behavior benefit.
+line-length = 120
+
+[lint.per-file-ignores]
+# main.py: load_dotenv() must run before the engine.* imports (they read
+# env at import time), so module-level imports after code are deliberate.
+"engine/main.py" = ["E402"]
