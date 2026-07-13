@@ -13,7 +13,7 @@ import random
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, TypedDict
 
 from academy.models.router import ModelRouter
 
@@ -26,7 +26,14 @@ logger = logging.getLogger("academy.content.quests")
 
 QUEST_TYPES = ["fetch", "trade", "social", "explore"]
 
-DIFFICULTY_TIERS = {
+
+class DifficultyTier(TypedDict):
+    gold_range: tuple[int, int]
+    xp_range: tuple[int, int]
+    deadline: int
+
+
+DIFFICULTY_TIERS: dict[str, DifficultyTier] = {
     "easy":   {"gold_range": (10, 50),   "xp_range": (20, 80),   "deadline": 20},
     "medium": {"gold_range": (50, 150),  "xp_range": (80, 200),  "deadline": 40},
     "hard":   {"gold_range": (150, 400), "xp_range": (200, 500), "deadline": 60},

@@ -143,7 +143,7 @@ async def model_routing_metrics() -> JSONResponse:
             "by_model": [...]
         }
     """
-    from academy.cost_tracker import get_metrics, get_db_metrics_today
+    from academy.cost_tracker import get_db_metrics_today
     from academy.models.router import ModelRouter
 
     # In-memory fast path

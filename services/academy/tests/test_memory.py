@@ -9,14 +9,12 @@ test_tick_interval            — verify should_consolidate respects 50-tick int
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from academy.agents.memory import (
     MemoryConsolidator,
     ConsolidatedMemory,
-    ConsolidationResult,
-    CONSOLIDATION_INTERVAL,
     MIN_EVENTS_PER_CATEGORY,
     CONSOLIDATED_IMPORTANCE,
 )

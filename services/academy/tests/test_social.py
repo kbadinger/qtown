@@ -9,7 +9,6 @@ test_reputation_forgiveness    — verify decay toward 0
 
 from __future__ import annotations
 
-import pytest
 
 from academy.agents.personality import PersonalityProfile
 from academy.agents.social import (
@@ -17,7 +16,6 @@ from academy.agents.social import (
     GossipEngine,
     SocialNetwork,
     Gossip,
-    GossipSpread,
     Relationship,
     GOSSIP_CREDIBILITY_DECAY,
     MIN_BELIEF_CREDIBILITY,
@@ -421,6 +419,7 @@ class TestSocialNetwork:
 
         assert "npc2" in friends or len(friends) == 0  # affinity may not cross 0.3 with 3 gifts
         # At minimum, the rivals list correctly omits very high affinity NPCs
+        assert "npc2" not in rivals
 
     def test_relationship_key_is_order_independent(self):
         sn = SocialNetwork()

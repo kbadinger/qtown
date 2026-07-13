@@ -81,12 +81,14 @@ async def _handle_ai_request(payload: dict[str, Any]) -> None:
         logger.error("AI request %s failed: %s", request_id, exc)
         return
 
-    stats = router.get_routing_stats()
+    # route() returns RouteResult; getattr keeps this path safe if a mock
+    # hands back a bare string.
+    model_used = getattr(response, "model_used", cfg.model_id)
     await record_request(
         task_type=task_type,
-        model=cfg.model_id,
-        tokens_in=0,
-        tokens_out=0,
+        model=model_used,
+        tokens_in=getattr(response, "prompt_tokens", 0),
+        tokens_out=getattr(response, "completion_tokens", 0),
         latency_ms=latency_ms,
     )
 
@@ -95,7 +97,7 @@ async def _handle_ai_request(payload: dict[str, Any]) -> None:
         request_id=request_id,
         task_type=task_type,
         content=response,
-        model_used=cfg.model_id,
+        model_used=model_used,
         latency_ms=latency_ms,
     )
     logger.info("Handled ai.request %s → %.0fms", request_id, latency_ms)

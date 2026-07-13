@@ -20,7 +20,6 @@ import asyncio
 import logging
 import os
 import time
-import uuid
 from concurrent import futures
 from typing import Any
 
@@ -412,7 +411,6 @@ class AcademyServicer(academy_pb2_grpc.AcademyServicer):
     ) -> academy_pb2.ModelStatsResponse:
         """Return aggregate model routing statistics."""
         stats = self._router.get_routing_stats()
-        total = max(stats["total_requests"], 1)
 
         by_model = [
             academy_pb2.ModelUsage(

@@ -95,7 +95,7 @@ class TestGenerateDialogue:
         servicer._embed_dialogue_sync = MagicMock()
 
         request = academy_pb2.DialogueRequest(npc_id_a=10, npc_id_b=20)
-        response = servicer.GenerateDialogue(request, grpc_context)
+        servicer.GenerateDialogue(request, grpc_context)
 
         assert servicer._record_cost_sync.called
 
