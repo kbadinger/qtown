@@ -116,6 +116,46 @@ State change → fortress consumes → WASM validates → emit result → downst
 
 **Verdict**: 4/5 hops work; the loop never closes because no consumer acts on the validation outcome.
 
+### Kafka contract update — 2026-07-13 (`fable/wave-0-floor`)
+
+A full producer→consumer audit was run against the canonical 12-topic registry
+(`docs/v2-spec.md` §topics, `infra/kafka-init.sh`). Changes landed this session
+(all unit-tested green per service; **runtime end-to-end still gated** by the
+missing triggers / gRPC registration below — these are *contract* fixes, not
+live flows):
+
+- **Topic prefix aligned** — academy/library/tavern/market consumer+producer
+  topics now all carry the `qtown.` prefix (several were bare `events.broadcast`
+  etc., so producer and consumer never met).
+- **Flow 1 step 4 (emit trade.settled)** is no longer a STUB: market-district
+  emits `qtown.economy.trade.settled` **single-sided per counterparty**
+  `{npc_id, gold_delta, resource, price, quantity, trade_id}` (two msgs/match,
+  buyer `gold_delta<0` / seller `>0`) from `internal/grpc/server.go` via
+  `internal/kafka/producer.go`. town-core, tavern, and library consume this
+  exact shape (Flow 1 steps 5–6 now contract-clean). **Steps 1–2 still block
+  the runtime path**: no caller invokes `PlaceOrder`, and the gRPC server is
+  still unregistered (proto codegen is `buf`-blocked → toolchain box).
+- **Flow 2 step 5 (academy Kafka emit)** is no longer MISSING: academy emits
+  `qtown.ai.content.generated` (now carrying `text` for dialogue) from the
+  `GenerateDialogue` gRPC path; tavern + library consume it, contract-clean.
+  **Steps 1 + 4 still MISSING**: nothing triggers `GenerateDialogue`, and there
+  is still no Library RAG gRPC client.
+- **tavern travel topic fixed**: tavern consumed a phantom
+  `qtown.npc.travel.depart` (no producer, off-registry) reading fields town-core
+  never sends. Repointed to canonical `qtown.npc.travel` with `{from, to}`.
+
+**Still-open orphans (tracked, not scaffolded — deliberately left dormant so no
+half-flow fakes activity):**
+
+| Topic | State | Fix owner |
+|---|---|---|
+| `qtown.economy.price.update` | tavern consumes; market has prices only over gRPC `PriceFeed`. Spec = periodic broadcast → needs a price-broadcaster feature, not a rename. | market-district |
+| `qtown.ai.request` / `qtown.ai.response` | academy consumes request / emits response; town-core has a helper but **never calls it** and has no response consumer. | town-core tick-loop |
+| `qtown.npc.decision.request` / `.result` | academy consumes request / emits result; **off-registry** (not in the 12-topic spec) and town-core produces neither nor consumes the result. | spec decision + town-core |
+| `qtown.validation.request` / `.result` | fortress consumes request / emits result (self-consistent) but town-core never calls `emit_validation_request` and nothing consumes the result. Whole flow gated on fortress reconciliation (`cargo` → toolchain box). | town-core + fortress |
+| `assets.generate` / `assets.generated` | asset-pipeline both ends **un-prefixed**, absent from `kafka-init.sh`, no cross-service peer. | asset-pipeline + infra |
+| `qtown.tournament.started/.tick/.ended` | market emits; scheduler never instantiated in `main.go`; no consumer. | market + a consumer |
+
 ---
 
 ## v1 → v2 feature parity
