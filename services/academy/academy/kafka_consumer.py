@@ -2,9 +2,9 @@
 Kafka consumer for the Academy service.
 
 Subscribes to:
-  ai.request            — inbound AI generation requests
-  events.broadcast      — town-wide events (embedded into pgvector for RAG)
-  npc.decision.request  — NPC agent decision requests from town-core
+  qtown.ai.request            — inbound AI generation requests
+  qtown.events.broadcast      — town-wide events (embedded into pgvector for RAG)
+  qtown.npc.decision.request  — NPC agent decision requests from town-core
 
 Uses aiokafka (consistent with town-core).
 
@@ -36,10 +36,11 @@ logger = logging.getLogger("academy.kafka_consumer")
 KAFKA_BOOTSTRAP = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
 CONSUMER_GROUP = os.environ.get("KAFKA_CONSUMER_GROUP", "academy-service")
 
+# Topic names must match the topics created by infra/kafka-init.sh (qtown.* prefix).
 SUBSCRIBED_TOPICS = [
-    "ai.request",
-    "events.broadcast",
-    "npc.decision.request",
+    "qtown.ai.request",
+    "qtown.events.broadcast",
+    "qtown.npc.decision.request",
 ]
 
 
@@ -55,7 +56,7 @@ async def _handle_ai_request(payload: dict[str, Any]) -> None:
     Expected payload keys:
       request_id, task_type, prompt, system (optional), context (optional)
 
-    Publishes the result to ai.response.
+    Publishes the result to qtown.ai.response.
     """
     from academy.models.router import ModelRouter
     from academy.kafka_producer import get_producer
@@ -67,7 +68,7 @@ async def _handle_ai_request(payload: dict[str, Any]) -> None:
     system = payload.get("system")
 
     if not prompt:
-        logger.warning("ai.request missing prompt (request_id=%s)", request_id)
+        logger.warning("qtown.ai.request missing prompt (request_id=%s)", request_id)
         return
 
     router = ModelRouter()
@@ -100,7 +101,7 @@ async def _handle_ai_request(payload: dict[str, Any]) -> None:
         model_used=model_used,
         latency_ms=latency_ms,
     )
-    logger.info("Handled ai.request %s → %.0fms", request_id, latency_ms)
+    logger.info("Handled qtown.ai.request %s → %.0fms", request_id, latency_ms)
 
 
 async def _handle_event_broadcast(payload: dict[str, Any]) -> None:
@@ -166,9 +167,9 @@ async def _handle_npc_decision_request(payload: dict[str, Any]) -> None:
 
 
 _HANDLERS = {
-    "ai.request": _handle_ai_request,
-    "events.broadcast": _handle_event_broadcast,
-    "npc.decision.request": _handle_npc_decision_request,
+    "qtown.ai.request": _handle_ai_request,
+    "qtown.events.broadcast": _handle_event_broadcast,
+    "qtown.npc.decision.request": _handle_npc_decision_request,
 }
 
 

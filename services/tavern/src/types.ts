@@ -49,16 +49,17 @@ export interface KafkaEvent {
   [key: string]: unknown;
 }
 
+// Single-sided settlement: market-district emits ONE message per counterparty
+// (town-core reads the same shape). `gold_delta` is the change to apply to the
+// NPC's running gold total — not an absolute balance.
 export interface TradeSettled extends KafkaEvent {
   type: "economy.trade.settled";
-  trade_id: string;
-  buyer_id: string;
-  seller_id: string;
+  npc_id: number;
+  gold_delta: number;
   resource: string;
-  quantity: number;
   price: number;
-  buyer_gold_after: number;
-  seller_gold_after: number;
+  quantity: number;
+  trade_id: string;
 }
 
 export interface PriceUpdate extends KafkaEvent {
@@ -69,13 +70,18 @@ export interface PriceUpdate extends KafkaEvent {
   tick: number;
 }
 
+// academy emits { content_type, content_id, content, metadata, timestamp }.
+// `text` is a convenience rendering some producers include; treat it as
+// optional so the handler consumes messages without it.
 export interface ContentGenerated extends KafkaEvent {
   type: "ai.content.generated";
   content_type: "newspaper" | "dialogue" | "description";
   content_id: string;
   npc_id?: string;
   day?: number;
-  text: string;
+  content?: unknown;
+  text?: string;
+  metadata?: Record<string, unknown>;
 }
 
 export interface EventBroadcast extends KafkaEvent {

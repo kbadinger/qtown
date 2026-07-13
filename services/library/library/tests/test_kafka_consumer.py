@@ -83,7 +83,7 @@ class TestLibraryConsumerRouting:
             "type": "npc_travel",
             "description": "Bob walked to the tavern",
         }
-        await consumer._route("events.broadcast", payload)
+        await consumer._route("qtown.events.broadcast", payload)
         assert not consumer._buffers["qtown-events"].is_empty()
 
     @pytest.mark.asyncio()
@@ -95,7 +95,7 @@ class TestLibraryConsumerRouting:
             "day": 10,
             "headline": "Big news today",
         }
-        await consumer._route("ai.content.generated", payload)
+        await consumer._route("qtown.ai.content.generated", payload)
         assert not consumer._buffers["qtown-newspapers"].is_empty()
         assert consumer._buffers["qtown-dialogues"].is_empty()
 
@@ -109,7 +109,7 @@ class TestLibraryConsumerRouting:
             "npc_id": "npc-bob",
             "text": "Howdy, stranger!",
         }
-        await consumer._route("ai.content.generated", payload)
+        await consumer._route("qtown.ai.content.generated", payload)
         assert not consumer._buffers["qtown-dialogues"].is_empty()
         assert consumer._buffers["qtown-newspapers"].is_empty()
 
@@ -118,7 +118,7 @@ class TestLibraryConsumerRouting:
         self, consumer: LibraryConsumer
     ) -> None:
         payload: dict[str, Any] = {"content_type": "video", "url": "http://example.com"}
-        await consumer._route("ai.content.generated", payload)
+        await consumer._route("qtown.ai.content.generated", payload)
         # All dialogue and newspaper buffers should remain empty
         assert consumer._buffers["qtown-dialogues"].is_empty()
         assert consumer._buffers["qtown-newspapers"].is_empty()
@@ -135,7 +135,7 @@ class TestLibraryConsumerRouting:
             "price": 5.0,
             "quantity": 10.0,
         }
-        await consumer._route("economy.trade.settled", payload)
+        await consumer._route("qtown.economy.trade.settled", payload)
         assert not consumer._buffers["qtown-transactions"].is_empty()
 
 

@@ -7,9 +7,16 @@ import (
 	"sync"
 	"time"
 
+	"qtown/market-district/internal/kafka"
 	"qtown/market-district/internal/orderbook"
 	pb "qtown/market-district/proto"
 )
+
+// tradeEmitter is the minimal contract MarketServer needs to publish settled
+// trades. *kafka.Producer satisfies it in production; tests supply a fake.
+type tradeEmitter interface {
+	EmitTradeSettled(ctx context.Context, settled kafka.TradeSettledMessage) error
+}
 
 // MarketServer implements the MarketDistrict gRPC service.
 type MarketServer struct {
@@ -19,6 +26,7 @@ type MarketServer struct {
 	books    map[string]*orderbook.OrderBook // resource -> orderbook
 	traders  map[int64]*TraderState          // npc_id -> state
 	tradeSeq uint64
+	emitter  tradeEmitter // best-effort; may be nil when Kafka is unavailable
 }
 
 // TraderState tracks an NPC trader visiting the Market District.
@@ -29,10 +37,13 @@ type TraderState struct {
 	ArrivedAt time.Time
 }
 
-func NewMarketServer() *MarketServer {
+// NewMarketServer builds a MarketServer. emitter may be nil, in which case
+// settled-trade events are simply not published (the trade still succeeds).
+func NewMarketServer(emitter tradeEmitter) *MarketServer {
 	return &MarketServer{
 		books:   make(map[string]*orderbook.OrderBook),
 		traders: make(map[int64]*TraderState),
+		emitter: emitter,
 	}
 }
 
@@ -63,7 +74,7 @@ func (s *MarketServer) PlaceOrder(ctx context.Context, req *pb.PlaceOrderRequest
 
 	order := orderbook.Order{
 		ID:       orderID,
-		NPCID:    fmt.Sprintf("%d", req.NpcId),
+		NPCID:    req.NpcId,
 		Resource: req.Resource,
 		Side:     side,
 		Price:    float64(req.Price),
@@ -76,7 +87,7 @@ func (s *MarketServer) PlaceOrder(ctx context.Context, req *pb.PlaceOrderRequest
 	trades := book.Match()
 	if len(trades) > 0 {
 		log.Printf("[market-district] %d trades matched for %s", len(trades), req.Resource)
-		// TODO: emit economy.trade.settled to Kafka for each trade
+		s.emitTradesSettled(ctx, trades)
 	}
 
 	return &pb.PlaceOrderResponse{
@@ -84,6 +95,45 @@ func (s *MarketServer) PlaceOrder(ctx context.Context, req *pb.PlaceOrderRequest
 		Accepted: true,
 		Message:  fmt.Sprintf("order placed, %d trades matched", len(trades)),
 	}, nil
+}
+
+// emitTradesSettled publishes one qtown.economy.trade.settled event per
+// counterparty for each trade: the buyer pays (negative gold_delta) and the
+// seller receives (positive gold_delta). Emission is best-effort — a Kafka
+// error is logged but never fails the trade, and a nil emitter is a no-op.
+func (s *MarketServer) emitTradesSettled(ctx context.Context, trades []orderbook.Trade) {
+	if s.emitter == nil {
+		return
+	}
+	for _, t := range trades {
+		notional := t.Price * t.Quantity
+
+		buyer := kafka.TradeSettledMessage{
+			NPCID:     t.BuyerNPCID,
+			GoldDelta: -notional,
+			Resource:  t.Resource,
+			Price:     t.Price,
+			Quantity:  t.Quantity,
+			TradeID:   t.ID,
+		}
+		seller := kafka.TradeSettledMessage{
+			NPCID:     t.SellerNPCID,
+			GoldDelta: notional,
+			Resource:  t.Resource,
+			Price:     t.Price,
+			Quantity:  t.Quantity,
+			TradeID:   t.ID,
+		}
+
+		if err := s.emitter.EmitTradeSettled(ctx, buyer); err != nil {
+			log.Printf("[market-district] emit trade.settled (buyer npc=%d trade=%s) failed: %v",
+				buyer.NPCID, t.ID, err)
+		}
+		if err := s.emitter.EmitTradeSettled(ctx, seller); err != nil {
+			log.Printf("[market-district] emit trade.settled (seller npc=%d trade=%s) failed: %v",
+				seller.NPCID, t.ID, err)
+		}
+	}
 }
 
 // GetOrderBook returns the current state of an order book.
@@ -223,7 +273,7 @@ func (s *MarketServer) StressTest(ctx context.Context, req *pb.StressTestRequest
 
 				book.PlaceOrder(orderbook.Order{
 					ID:       fmt.Sprintf("stress-%d-%d", gid, i),
-					NPCID:    fmt.Sprintf("%d", gid),
+					NPCID:    int64(gid),
 					Resource: "stress-test",
 					Side:     side,
 					Price:    price,

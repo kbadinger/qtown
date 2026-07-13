@@ -124,11 +124,20 @@ class AcademyServicer(academy_pb2_grpc.AcademyServicer):
         # Record cost asynchronously (best-effort)
         self._record_cost_sync("npc_dialogue", model_used, 0, 0, latency_ms)
 
+        dialogue_id = f"dialogue-{npc_a}-{npc_b}-{int(time.time())}"
+
         # Embed dialogue for RAG
         self._embed_dialogue_sync(
-            f"dialogue-{npc_a}-{npc_b}-{int(time.time())}",
+            dialogue_id,
             lines,
             {"npc_a": npc_a, "npc_b": npc_b, "tone": tone},
+        )
+
+        # Emit to qtown.ai.content.generated so Tavern can broadcast (best-effort)
+        self._emit_content_generated_sync(
+            dialogue_id,
+            lines,
+            {"npc_a": npc_a, "npc_b": npc_b, "tone": tone, "model_used": model_used},
         )
 
         return academy_pb2.DialogueResponse(
@@ -506,6 +515,45 @@ class AcademyServicer(academy_pb2_grpc.AcademyServicer):
             loop.run_until_complete(embedder.process_dialogue(dialogue_id, lines_dicts, metadata))
         except Exception as exc:
             logger.debug("Dialogue embedding failed (non-critical): %s", exc)
+        finally:
+            loop.close()
+
+    def _emit_content_generated_sync(
+        self,
+        content_id: str,
+        lines: list[academy_pb2.DialogueLine],
+        metadata: dict[str, Any],
+    ) -> None:
+        """
+        Best-effort publish of generated dialogue to qtown.ai.content.generated.
+
+        Runs the async producer in a fresh event loop (this RPC executes on a
+        gRPC threadpool). Never raises — a Kafka failure must not fail the RPC.
+        """
+        from academy.kafka_producer import get_producer
+
+        # Structured lines for downstream consumers plus a flattened string
+        # (Tavern's ContentGenerated type requires a `text` field).
+        content = [
+            {"npc_id": ln.npc_id, "text": ln.text, "emotion": ln.emotion}
+            for ln in lines
+        ]
+        text = "\n".join(f"NPC {ln.npc_id}: {ln.text}" for ln in lines)
+
+        loop = asyncio.new_event_loop()
+        try:
+            producer = loop.run_until_complete(get_producer())
+            loop.run_until_complete(
+                producer.emit_content_generated(
+                    content_type="dialogue",
+                    content_id=content_id,
+                    content=content,
+                    text=text,
+                    metadata=metadata,
+                )
+            )
+        except Exception as exc:
+            logger.warning("content.generated emit failed (non-critical): %s", exc)
         finally:
             loop.close()
 

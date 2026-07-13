@@ -23,6 +23,16 @@ class MockRedisClient {
     return isNew;
   }
 
+  async zincrby(key: string, increment: number, member: string): Promise<number> {
+    if (!this.sortedSets.has(key)) {
+      this.sortedSets.set(key, new Map());
+    }
+    const set = this.sortedSets.get(key)!;
+    const newScore = (set.get(member) ?? 0) + increment;
+    set.set(member, newScore);
+    return newScore;
+  }
+
   async zrevrange(
     key: string,
     start: number,
@@ -136,6 +146,44 @@ describe("Leaderboard", () => {
       const entries = await leaderboard.getLeaderboard("gold", 0, 10);
       expect(entries).toHaveLength(1);
       expect(entries[0]!.score).toBe(999);
+    });
+  });
+
+  // --------------------------------------------------------------------------
+  // applyGoldDelta — single-sided trade settlement
+  // --------------------------------------------------------------------------
+
+  describe("applyGoldDelta", () => {
+    it("initializes gold from a delta when the NPC is unranked", async () => {
+      const total = await leaderboard.applyGoldDelta("npc-001", 50);
+      expect(total).toBe(50);
+
+      const entries = await leaderboard.getLeaderboard("gold", 0, 10);
+      expect(entries).toHaveLength(1);
+      expect(entries[0]!.score).toBe(50);
+    });
+
+    it("accumulates positive and negative deltas into a running total", async () => {
+      await leaderboard.updateGoldLeaderboard("npc-001", 100);
+      await leaderboard.applyGoldDelta("npc-001", 30); // buy side gained 30
+      const total = await leaderboard.applyGoldDelta("npc-001", -50); // later trade lost 50
+
+      expect(total).toBe(80);
+
+      const entries = await leaderboard.getLeaderboard("gold", 0, 10);
+      expect(entries[0]!.score).toBe(80);
+    });
+
+    it("applies each counterparty's delta independently", async () => {
+      // One trade settles as two single-sided messages: seller +40, buyer -40.
+      await leaderboard.updateGoldLeaderboard("npc-seller", 200);
+      await leaderboard.updateGoldLeaderboard("npc-buyer", 200);
+
+      await leaderboard.applyGoldDelta("npc-seller", 40);
+      await leaderboard.applyGoldDelta("npc-buyer", -40);
+
+      expect(await leaderboard.getRank("gold", "npc-seller")).toBe(1);
+      expect(await leaderboard.getRank("gold", "npc-buyer")).toBe(2);
     });
   });
 

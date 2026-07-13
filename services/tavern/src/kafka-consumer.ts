@@ -21,12 +21,12 @@ const logger = pino({ name: "kafka-consumer" });
 // ============================================================================
 
 export const KAFKA_TOPICS = [
-  "events.broadcast",
-  "economy.trade.settled",
-  "economy.price.update",
-  "ai.content.generated",
-  "npc.travel.depart",
-  "npc.travel.complete",
+  "qtown.events.broadcast",
+  "qtown.economy.trade.settled",
+  "qtown.economy.price.update",
+  "qtown.ai.content.generated",
+  "qtown.npc.travel.depart",
+  "qtown.npc.travel.complete",
 ] as const;
 
 type KafkaTopic = (typeof KAFKA_TOPICS)[number];
@@ -36,12 +36,12 @@ type KafkaTopic = (typeof KAFKA_TOPICS)[number];
 // ============================================================================
 
 const TOPIC_TO_REDIS_CHANNEL: Record<KafkaTopic, string | null> = {
-  "events.broadcast": "events",
-  "economy.trade.settled": "market",
-  "economy.price.update": "market",
-  "ai.content.generated": "content",
-  "npc.travel.depart": null, // dynamic: npc:{id}
-  "npc.travel.complete": null, // dynamic: npc:{id}
+  "qtown.events.broadcast": "events",
+  "qtown.economy.trade.settled": "market",
+  "qtown.economy.price.update": "market",
+  "qtown.ai.content.generated": "content",
+  "qtown.npc.travel.depart": null, // dynamic: npc:{id}
+  "qtown.npc.travel.complete": null, // dynamic: npc:{id}
 };
 
 const RECONNECT_BASE_MS = 2_000;
@@ -144,22 +144,22 @@ export class KafkaConsumerService {
 
     try {
       switch (topic as KafkaTopic) {
-        case "events.broadcast":
+        case "qtown.events.broadcast":
           await this.handleEventsBroadcast(event as EventBroadcast);
           break;
-        case "economy.trade.settled":
+        case "qtown.economy.trade.settled":
           await this.handleTradeSettled(event as TradeSettled);
           break;
-        case "economy.price.update":
+        case "qtown.economy.price.update":
           await this.handlePriceUpdate(event as PriceUpdate);
           break;
-        case "ai.content.generated":
+        case "qtown.ai.content.generated":
           await this.handleContentGenerated(event as ContentGenerated);
           break;
-        case "npc.travel.depart":
+        case "qtown.npc.travel.depart":
           await this.handleTravelDepart(event as NPCTravelDepart);
           break;
-        case "npc.travel.complete":
+        case "qtown.npc.travel.complete":
           await this.handleTravelComplete(event as NPCTravelComplete);
           break;
         default:
@@ -198,17 +198,13 @@ export class KafkaConsumerService {
     await this.redis.publish(channel, JSON.stringify(event));
     this.wsManager.broadcast(channel, event);
 
-    // Update gold leaderboard for both buyer and seller
-    await Promise.all([
-      this.leaderboard.updateGoldLeaderboard(
-        event.buyer_id,
-        event.buyer_gold_after
-      ),
-      this.leaderboard.updateGoldLeaderboard(
-        event.seller_id,
-        event.seller_gold_after
-      ),
-    ]);
+    // Single-sided settlement: two messages arrive per trade, one per
+    // counterparty. Each carries this NPC's gold_delta — apply it to the
+    // NPC's running gold-leaderboard total (mirrors town-core's `gold += delta`).
+    await this.leaderboard.applyGoldDelta(
+      String(event.npc_id),
+      event.gold_delta
+    );
   }
 
   private async handlePriceUpdate(event: PriceUpdate): Promise<void> {

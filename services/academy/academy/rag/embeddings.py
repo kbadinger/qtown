@@ -133,7 +133,7 @@ class BaseEmbedder:
 
 class EventEmbedder(BaseEmbedder):
     """
-    Embeds town events from the events.broadcast Kafka topic.
+    Embeds town events from the qtown.events.broadcast Kafka topic.
 
     Extracts a human-readable text summary from the event payload
     before embedding.

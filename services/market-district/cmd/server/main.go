@@ -14,6 +14,10 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+
+	marketgrpc "qtown/market-district/internal/grpc"
+	"qtown/market-district/internal/kafka"
+	pb "qtown/market-district/proto"
 )
 
 const (
@@ -31,8 +35,20 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
-	// TODO: register gRPC service implementations here
-	// pb.RegisterMarketServiceServer(grpcServer, &server.MarketServer{})
+
+	// --- Kafka producer (best-effort) ---
+	// NewProducer only builds a writer; it doesn't dial, so a missing/unreachable
+	// broker won't crash startup. Publish failures are logged and swallowed
+	// inside MarketServer — a settled-trade event is never allowed to fail a trade.
+	producer := kafka.NewProducer()
+	defer producer.Close()
+
+	marketSrv := marketgrpc.NewMarketServer(producer)
+
+	// NOTE: gRPC service registration is still blocked on proto codegen —
+	// proto/ is a placeholder with no Register* function. Once `buf generate`
+	// runs, register the fully-wired server with:
+	//   pb.RegisterMarketDistrictServer(grpcServer, marketSrv)
 
 	go func() {
 		log.Printf("[market-district] gRPC server listening on %s", grpcPort)
@@ -48,11 +64,23 @@ func main() {
 	mux.Handle("/debug/pprof/", http.DefaultServeMux)
 
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		resp, err := marketSrv.Health(r.Context(), &pb.HealthRequest{})
 		w.Header().Set("Content-Type", "application/json")
+		if err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			if encErr := json.NewEncoder(w).Encode(map[string]string{
+				"status":  "error",
+				"service": "market-district",
+			}); encErr != nil {
+				log.Printf("[market-district] health encode error: %v", encErr)
+			}
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		payload := map[string]string{
-			"status":  "ok",
-			"service": "market-district",
+		payload := map[string]interface{}{
+			"status":  resp.Status,
+			"service": resp.Service,
+			"details": resp.Details,
 		}
 		if err := json.NewEncoder(w).Encode(payload); err != nil {
 			log.Printf("[market-district] health encode error: %v", err)

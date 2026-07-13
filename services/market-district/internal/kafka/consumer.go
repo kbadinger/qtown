@@ -27,14 +27,16 @@ type NPCTravelMessage struct {
 }
 
 // TradeSettledMessage is emitted when a trade matches in the order book.
+// It is single-sided: one message per counterparty per trade. The buyer's
+// message carries a negative gold_delta (they pay), the seller's a positive
+// one (they receive). town-core consumes this shape.
 type TradeSettledMessage struct {
-	Tick      int64   `json:"tick"`
-	TradeID   string  `json:"trade_id"`
 	NPCID     int64   `json:"npc_id"`
-	GoldDelta int     `json:"gold_delta"`
+	GoldDelta float64 `json:"gold_delta"`
 	Resource  string  `json:"resource"`
 	Price     float64 `json:"price"`
 	Quantity  float64 `json:"quantity"`
+	TradeID   string  `json:"trade_id"`
 }
 
 type MessageHandler func(ctx context.Context, msg []byte) error
