@@ -65,6 +65,10 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: services/fortress
+      - name: Install librdkafka build deps
+        # rdkafka is pinned with the cmake-build feature, so librdkafka is
+        # compiled from source and needs these system headers on the runner.
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libssl-dev libsasl2-dev zlib1g-dev cmake
       - name: Check
         run: cd services/fortress && cargo check
       - name: Clippy
@@ -156,6 +160,10 @@ jobs:
         run: cd dashboard && npm install
       - name: Type check
         run: cd dashboard && npx nuxi typecheck
+      - name: Type check (server routes)
+        # server/ is its own tsconfig project (Nuxt canonical split) and is
+        # not covered by nuxi typecheck above.
+        run: cd dashboard && npx tsc --noEmit -p server/tsconfig.json
       - name: Lint (zero any types)
         run: |
           count=$(grep -rn ": any" dashboard/pages/ dashboard/components/ dashboard/composables/ 2>/dev/null | grep -v node_modules | grep -v .spec. | wc -l)
@@ -182,7 +190,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Trivy filesystem scan
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
           scan-ref: .
