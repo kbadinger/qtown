@@ -357,8 +357,11 @@ async def decide(state: NPCState) -> NPCState:
                 f"Reply with ONLY the action name from this list: "
                 f"{', '.join(o['action'] for o in state.options)}."
             )
-            response = await _get_router().route("planning", prompt)
-            llm_choice = response.strip().lower().split()[0]
+            result = await _get_router().route(
+                "planning",
+                {"prompt": prompt, "temperature": 0.3, "max_tokens": 20},
+            )
+            llm_choice = result.response.strip().lower().split()[0]
             # Validate the LLM returned a real action
             if llm_choice in {o["action"] for o in state.options}:
                 best = next(o for o in state.options if o["action"] == llm_choice)
@@ -411,8 +414,11 @@ async def narrate(state: NPCState) -> NPCState:
     )
 
     try:
-        response = await _get_router().route("narration", prompt)
-        state.narration = response.strip()
+        result = await _get_router().route(
+            "narration",
+            {"prompt": prompt, "temperature": 0.75, "max_tokens": 80},
+        )
+        state.narration = result.response.strip()
     except Exception as exc:
         logger.warning("narrate LLM call failed: %s", exc)
         state.narration = (
