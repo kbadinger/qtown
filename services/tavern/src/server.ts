@@ -1,6 +1,5 @@
 import Fastify from "fastify";
 import type { FastifyInstance } from "fastify";
-import { createServer } from "http";
 import pino from "pino";
 import { RedisClient } from "./redis.js";
 import { RedisPubSub } from "./redis-pubsub.js";
@@ -43,13 +42,15 @@ export async function buildServer(): Promise<{
   // --------------------------------------------------------------------------
   // Fastify + raw HTTP server
   // --------------------------------------------------------------------------
-  const fastify = Fastify({ loggerInstance: logger });
-  const httpServer = createServer(fastify.server);
+  // Pass logger options (not the pino instance) so the instance type keeps
+  // the default FastifyBaseLogger generic that buildServer's signature uses.
+  const fastify = Fastify({ logger: { name: "tavern-server" } });
 
   // --------------------------------------------------------------------------
-  // WebSocket manager (attaches to the HTTP server)
+  // WebSocket manager (attaches to Fastify's underlying HTTP server, so the
+  // 'ws' upgrade handling and Fastify routes share one listener)
   // --------------------------------------------------------------------------
-  const wsManager = new WebSocketManager(httpServer);
+  const wsManager = new WebSocketManager(fastify.server);
 
   // --------------------------------------------------------------------------
   // Services
@@ -149,14 +150,7 @@ export async function start(): Promise<void> {
     await buildServer();
 
   try {
-    await fastify.ready();
-
-    await new Promise<void>((resolve, reject) => {
-      fastify.server.listen({ port: PORT, host: "0.0.0.0" }, (err) => {
-        if (err) reject(err);
-        else resolve();
-      });
-    });
+    await fastify.listen({ port: PORT, host: "0.0.0.0" });
 
     logger.info({ port: PORT }, "Tavern HTTP server listening");
 

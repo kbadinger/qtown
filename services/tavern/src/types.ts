@@ -49,10 +49,8 @@ export interface KafkaEvent {
   [key: string]: unknown;
 }
 
-export interface TradeSettled {
-  event_id: string;
+export interface TradeSettled extends KafkaEvent {
   type: "economy.trade.settled";
-  timestamp: string;
   trade_id: string;
   buyer_id: string;
   seller_id: string;
@@ -63,20 +61,16 @@ export interface TradeSettled {
   seller_gold_after: number;
 }
 
-export interface PriceUpdate {
-  event_id: string;
+export interface PriceUpdate extends KafkaEvent {
   type: "economy.price.update";
-  timestamp: string;
   resource: string;
   price: number;
   volume: number;
   tick: number;
 }
 
-export interface ContentGenerated {
-  event_id: string;
+export interface ContentGenerated extends KafkaEvent {
   type: "ai.content.generated";
-  timestamp: string;
   content_type: "newspaper" | "dialogue" | "description";
   content_id: string;
   npc_id?: string;
@@ -84,10 +78,8 @@ export interface ContentGenerated {
   text: string;
 }
 
-export interface EventBroadcast {
-  event_id: string;
+export interface EventBroadcast extends KafkaEvent {
   type: "events.broadcast";
-  timestamp: string;
   event_type: string;
   description: string;
   tick: number;
@@ -96,10 +88,8 @@ export interface EventBroadcast {
   crime_count?: number;
 }
 
-export interface NPCTravelDepart {
-  event_id: string;
+export interface NPCTravelDepart extends KafkaEvent {
   type: "npc.travel.depart";
-  timestamp: string;
   npc_id: string;
   from_neighborhood: string;
   from_building: string;
@@ -107,10 +97,8 @@ export interface NPCTravelDepart {
   to_building: string;
 }
 
-export interface NPCTravelComplete {
-  event_id: string;
+export interface NPCTravelComplete extends KafkaEvent {
   type: "npc.travel.complete";
-  timestamp: string;
   npc_id: string;
   neighborhood: string;
   building: string;
