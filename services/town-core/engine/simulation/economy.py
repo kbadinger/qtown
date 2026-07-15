@@ -240,6 +240,85 @@ def process_work(db: Session) -> None:
     db.commit()
 
 
+# Producer NPCs auto-sell the good their role makes (role -> produced resource).
+# Mirrors the production rules in process_work above.
+PRODUCER_RESOURCE = {
+    "farmer": "Food",
+    "miner": "Ore",
+    "lumberjack": "Wood",
+    "fisherman": "Fish",
+    "baker": "Bread",
+    "blacksmith": "Tools",
+    "artist": "Art",
+}
+
+# Keep this much stock at the building; only the excess is offered to the market.
+SURPLUS_KEEP_STOCK = 20
+
+
+def auto_sell_surplus(db: Session, client=None, keep_stock: int = SURPLUS_KEEP_STOCK) -> int:
+    """Producer NPCs place SELL (ASK) orders for surplus at their work building.
+
+    W1-M2 origination: a real, tick-driven event. It reads post-production
+    resource levels and offers the excess to the market-district order book over
+    gRPC. Best-effort — if the market is unreachable the order is skipped and
+    local stock is untouched (goods are escrowed out of the building only on an
+    *accepted* order), so a market outage never changes the local economy or
+    breaks the tick. When the trade settles, the seller's gold is credited by the
+    existing ``handle_trade_settled`` Kafka consumer.
+
+    Returns the number of orders accepted (useful for tests / metrics).
+    """
+    if client is None:
+        from engine.clients.market_client import get_market_client
+        client = get_market_client()
+    if client is None:
+        return 0  # market origination not configured — fast no-op
+
+    placed = 0
+    npcs = (
+        db.query(NPC)
+        .options(joinedload(NPC.work_building))
+        .filter(
+            NPC.work_building_id.isnot(None),
+            NPC.role.in_(list(PRODUCER_RESOURCE.keys())),
+        )
+        .all()
+    )
+    for npc in npcs:
+        building = npc.work_building
+        if building is None:
+            continue
+        resource_name = PRODUCER_RESOURCE[npc.role]
+        res = (
+            db.query(Resource)
+            .filter(
+                Resource.name == resource_name,
+                Resource.building_id == building.id,
+            )
+            .first()
+        )
+        if res is None or res.quantity <= keep_stock:
+            continue
+
+        surplus = res.quantity - keep_stock
+        price = calculate_price(db, resource_name)
+        result = client.place_order(
+            npc_id=npc.id,
+            resource=resource_name,
+            side="ASK",
+            price=price,
+            quantity=surplus,
+        )
+        if result is not None and result[1]:  # (order_id, accepted)
+            res.quantity -= surplus  # goods escrowed to the exchange
+            placed += 1
+
+    if placed:
+        db.commit()
+    return placed
+
+
 def collect_taxes(db: Session) -> None:
     """Collect taxes from all NPCs and add to Treasury.
 

@@ -25,7 +25,7 @@ from engine.simulation.effects import (
 )
 from engine.simulation.travel import check_travel_timeouts
 from engine.simulation.economy import (
-    process_work, collect_taxes, track_inflation,
+    process_work, collect_taxes, track_inflation, auto_sell_surplus,
 )
 import json
 from sqlalchemy import func
@@ -123,6 +123,11 @@ def process_tick(db: Session) -> None:
 
     # 7. Process economy (wages, trades, tax collection)
     process_work(db)
+
+    # Producer NPCs offer their surplus to the market-district order book (gRPC).
+    # No-op unless MARKET_GRPC_ADDR is configured, so single-service runs and
+    # unit tests are unaffected.
+    auto_sell_surplus(db)
 
     # Collect taxes every 10 ticks
     if world_state.tick % 10 == 0:
