@@ -25,8 +25,13 @@ plugins:
     out: ../gen/python
 
   # ─── TypeScript ───
-  - remote: buf.build/community/timostamm-protobuf-ts:v2.11.1
-    out: ../gen/ts
+  # DISABLED: the community timostamm-protobuf-ts remote plugin does not pin
+  # reproducibly across environments (CI resolved a newer build than a pinned
+  # local run, breaking the drift gate), and no TS service consumes gen/ts yet
+  # (cartographer/tavern use hand-written types). Re-enable with a reproducible
+  # setup (vendored/local-pinned plugin) when a TS gRPC client is actually needed.
+  # - remote: buf.build/community/timostamm-protobuf-ts:v2.11.1
+  #   out: ../gen/ts
 
   # ─── Rust (prost) ───
   # Rust codegen handled by tonic-build in build.rs
