@@ -17,9 +17,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: bufbuild/buf-setup-action@v1
+        with:
+          version: 1.47.2
       - run: cd proto && buf lint
       - run: cd proto && buf breaking --against 'https://github.com/${{ github.repository }}.git#subdir=proto,branch=main'
         if: github.event_name == 'pull_request'
+      # Codegen drift: the committed gen/ (cross-service source of truth) must
+      # match a fresh `buf generate`. Fails if someone changed a .proto without
+      # running `make proto` and committing the result.
+      - name: Codegen drift check
+        run: |
+          cd proto && buf generate && cd ..
+          if ! git diff --quiet -- gen/; then
+            echo "::error::Committed gen/ is stale — run 'make proto' and commit the result."
+            git diff --stat -- gen/
+            exit 1
+          fi
 
   # ─── Town Core (Python) ───
   test-town-core:

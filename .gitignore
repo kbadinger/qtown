@@ -1,5 +1,6 @@
 # ─── Generated code ───
-gen/
+# proto codegen (gen/) IS committed as the cross-service source of truth and
+# drift-checked in CI (buf generate must produce no diff). Do not re-ignore it.
 
 # ─── Go ───
 services/market-district/bin/
