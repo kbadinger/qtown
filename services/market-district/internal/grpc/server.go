@@ -9,7 +9,7 @@ import (
 
 	"qtown/market-district/internal/kafka"
 	"qtown/market-district/internal/orderbook"
-	pb "qtown/market-district/proto"
+	pb "qtown/proto/qtown"
 )
 
 // tradeEmitter is the minimal contract MarketServer needs to publish settled

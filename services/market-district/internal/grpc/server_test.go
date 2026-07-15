@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"qtown/market-district/internal/kafka"
-	pb "qtown/market-district/proto"
+	pb "qtown/proto/qtown"
 )
 
 // fakeEmitter is an in-memory tradeEmitter that records every settled message,
