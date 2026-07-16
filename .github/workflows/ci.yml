@@ -173,6 +173,24 @@ jobs:
       - name: Test
         run: cd services/academy && pytest tests/ academy/tests/ -v --tb=short
 
+  # ─── Academy RAG retrieval gate (recall@k, deterministic — W1-A3) ───
+  # Blocking. Runs recall@k over the committed embedding fixture (evals/fixture.npz):
+  # pure numpy cosine, no Ollama, no DB — so it is deterministic in CI. Fails the run
+  # if mean recall@k drops below the threshold in evals/golden.json. Generation
+  # faithfulness is the separate LOCAL eval (docs/evals/academy-rag-eval.md); it needs
+  # live models and is committed dated, not gated here.
+  eval-academy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install numpy
+        run: pip install numpy
+      - name: recall@k gate (committed fixture, no model)
+        run: cd services/academy && python -m evals.recall --assert
+
   # ─── Cartographer (GraphQL/TypeScript) ───
   test-cartographer:
     runs-on: ubuntu-latest
