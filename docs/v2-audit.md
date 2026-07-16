@@ -204,6 +204,56 @@ wiring) is tracked as its own piece of work, not folded into M9.
 
 ---
 
+### Academy RAG flagship — 2026-07-16 (`fable/wave-0-floor`)
+
+Wave 1B Academy work — qtown's **RAG proof** — all CI-green. Supersedes the
+"academy" audit above (the RAG dirs are no longer just scaffolding; LangGraph
+graph work stays separate/deferred).
+
+- **Corpus → retrieval → grounded answer is real and wired (W1-A0/A1/A2):**
+  qtown's own docs (11 files) are chunked on h1/h2 boundaries, embedded with
+  `nomic-embed-text` (768-dim), and stored in `academy.embeddings` (pgvector). A
+  question embeds → cosine ANN → rerank (BM25 fallback) → top-`k=5` passages go in
+  as numbered sources → `qwen3.5:4b` answers ONLY from them with structured
+  (`format=json` + Pydantic) citations, or abstains (`grounded=false`) — never
+  fabricates. Exposed at `POST /rag/ask` + `GET /rag/status`; verified live
+  (status → `{available, chunks:143, sources:11}`; ask → grounded answer citing
+  `docs/REQUIREMENTS.md`). Two latent bugs were fixed to make retrieval actually
+  run: `academy.embeddings` was **missing from `init-db.sql`** (only a wrong-dim
+  `event_embeddings` existed), and `text()` SQL used `::vector`/`::jsonb` casts
+  that SQLAlchemy parsed as bind params (→ `CAST(... AS ...)` in `embeddings.py` +
+  `retriever.py`).
+- **Eval harness — recall@k gate + faithfulness report (W1-A3):** a hand-authored
+  14-question golden set. recall@k is a **blocking CI job (`eval-academy`)** over a
+  committed embedding fixture (`evals/fixture.npz`) — pure-numpy cosine, no
+  model/DB, deterministic: **recall@5 = 0.893 ≥ 0.75**. Generation faithfulness is
+  LLM-judged locally and committed dated (`docs/evals/academy-rag-eval.md`: 100%
+  grounded / judge 1.00 / 79% keyword) — measured, not gated, same pattern as the
+  market perf report.
+- **Proof panel + teaching (W1-A4/A5):** `AcademyProofPanel.vue` asks a question →
+  grounded, cited answer via dormant-safe Nitro BFFs (`/api/academy/ask`,
+  `/api/academy/rag-status`); eval tiles show the CI-gated recall@5 + the local
+  faithfulness snapshot with provenance. `AcademyTeaching.vue` explains
+  retrieve→ground→cite→abstain, each step tied to the real module. Landing
+  `AcademyProofCard` shows live corpus size + gated recall@5.
+- **Docs (W1-A6):** `services/academy/README.md` + `docs/adr/0002-academy-rag.md`.
+
+**Academy flagship DoD §3.1 is now 6/6 — Wired · Gated · Proven · Explained ·
+Documented · Honest — all green.**
+
+**Honest findings surfaced:** (1) *table-embedded facts retrieve poorly* — the
+golden `validation-citadel` question (answer lives in a markdown table in
+`CLAUDE.md`) is a recall miss, left **in** the golden set on purpose so the gate
+reports the weakness instead of hiding it (hence 0.893, not 1.0). (2) generation
+is temp-0.2, so the faithfulness report is a dated snapshot, not a fixed number.
+(3) the corpus / committed fixture / live pgvector must be kept in sync — the
+fixture is rebuilt whenever the corpus changes (adding this session's docs grew it
+from ~126 chunks; recall held at 0.893 throughout). Exact chunk counts are
+deliberately *not* hardcoded in the corpus docs — they'd drift with every doc edit;
+the live count comes from `/rag/status`.
+
+---
+
 ## v1 → v2 feature parity
 
 The router-level port-over is broad:

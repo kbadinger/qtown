@@ -62,7 +62,7 @@ KAFKA_ENABLED=false HTTP_PORT=8001 \
 
 | Capability | State |
 |---|---|
-| Docs corpus → chunk → embed → pgvector | ✅ real — 143 chunks / 11 docs (`academy/rag/corpus.py`) |
+| Docs corpus → chunk → embed → pgvector | ✅ real — 11 docs chunked + embedded (`academy/rag/corpus.py`); live count via `/rag/status` |
 | Vector retrieval (cosine ANN + rerank/BM25 fallback) | ✅ real (`academy/rag/retriever.py`) |
 | Grounded, cited answering (structured output, abstains) | ✅ real (`academy/rag/answer.py`); `POST /rag/ask` verified live |
 | Recall@k retrieval gate | ✅ **blocking CI job** `eval-academy` — recall@5 **0.893** ≥ 0.75 over a committed fixture, pure numpy, no model (`evals/recall.py`) |
