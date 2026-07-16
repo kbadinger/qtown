@@ -1,0 +1,4 @@
+[
+  {"npcId": 1, "resource": "gold", "side": "BID", "price": 100, "quantity": 1},
+  {"npcId": 2, "resource": "gold", "side": "ASK", "price": 100, "quantity": 1}
+]

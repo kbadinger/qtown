@@ -65,9 +65,12 @@ to the owning NPCs' gold (Kafka) and to the social/search layers.
   - Producer NPCs currently escrow surplus into resting asks with **no
     cancellation/expiry** yet, so unfilled orders park goods on the exchange
     (order-lifecycle management is tracked with W1-M4/M5).
-  - **No measured performance number is published** until the load test (W1-M7)
-    commits one — the README states throughput/p99 as "in flight," never a
-    guessed figure.
+  - **Performance is now measured** (W1-M7, `docs/perf/market-loadtest.md`): the
+    matching engine runs at ~2.2 µs/op and placement p99 is ~2 ms at ~42k rps, but
+    the matched-order tail (~25 ms p99) is dominated by the *synchronous* inline
+    Kafka emit (2 writes × the 10 ms producer batch-timeout). Moving that off the
+    hot path is folded into W1-M5. The wire numbers are a local reference run, not
+    yet a CI-enforced SLO; the engine micro-bench does run on every CI build.
 
 ## Alternatives considered
 
