@@ -158,6 +158,42 @@ half-flow fakes activity):**
 
 ---
 
+### Market flagship + proof panel — 2026-07-16 (`fable/wave-0-floor`)
+
+Wave 1A Market work since the Kafka-contract audit above, all CI-green:
+
+- **Flow 1 is now runtime-green (supersedes the 2026-07-13 "steps 1–2 still block"
+  note):** `PlaceOrder` is registered on the gRPC server (W1-M1), town-core
+  originates orders via producer-NPC auto-sell (W1-M2), and a **blocking
+  `e2e-market` CI job** drives real gRPC → match → real Kafka and asserts both
+  single-sided `trade.settled` events land (W1-M6). Idempotent consumption +
+  DLQ (W1-M4), client deadlines + circuit breaker (W1-M8), and a **measured** p99
+  (W1-M7, `docs/perf/market-loadtest.md`) are in.
+- **Market read-model + proof panel (W1-M9):** market-district serves a read-only
+  JSON view — `GET /api/orderbook` and `/api/trades` on its :6060 HTTP server —
+  backed by a real `GetTrades` gRPC handler + a bounded recent-trades ring
+  (`internal/grpc/server.go`). The dashboard's Nitro BFF (`/api/market/proof`)
+  reads it and a `ProofPanel` (live book + trades + the measured perf tile) plus a
+  landing `MarketProofCard` render it. Verified end-to-end: live-with-data,
+  live-but-idle (empty, honest), and **dormant** (source down → `live:false`,
+  `—`, no fabricated values). gRPC reflection was added for tooling.
+
+**Honest finding surfaced by this work — cartographer's gRPC federation is a
+stub.** `services/cartographer` has **no `protos/` directory**, so
+`tryLoadPackage` (`src/grpc-clients.ts`) always returns null → a generic channel
+client with no methods → **every** gRPC-backed GraphQL field (`npcs`,
+`worldState`, `orderBook`, `orders`, `newspaper`, `npcDecisionTrace`) falls back
+to its empty/dormant `catch`. The market resolver additionally targets the wrong
+port (`:50052` vs `:50051`), a non-existent method (`GetOrders` vs `GetTrades`),
+and a wrong field (`lastPrice` vs the proto's `mid_price`). So the dashboard's
+cartographer-backed views currently render dormant. The Market **proof panel
+deliberately bypasses cartographer** and reads market-district's read-model
+directly — real data now, without a from-scratch gateway rebuild. Rebuilding
+cartographer's gRPC federation (canonical protos, correct service/port/method
+wiring) is tracked as its own piece of work, not folded into M9.
+
+---
+
 ## v1 → v2 feature parity
 
 The router-level port-over is broad:

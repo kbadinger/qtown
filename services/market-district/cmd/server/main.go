@@ -10,6 +10,7 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -92,6 +93,33 @@ func main() {
 		}
 	})
 
+	// --- Read-model (JSON over HTTP) ---
+	// A lightweight, read-only view of the live book and recent trades for
+	// dashboards/observability. Services still use gRPC; this exists so a
+	// browser-facing BFF (the dashboard's Nitro layer) can render real Market
+	// data over plain JSON without a gRPC client. An unknown resource returns an
+	// empty book / empty trades (200), never a fabricated one.
+	mux.HandleFunc("/api/orderbook", func(w http.ResponseWriter, r *http.Request) {
+		resource := r.URL.Query().Get("resource")
+		snap, err := marketSrv.GetOrderBook(r.Context(), &pb.OrderBookRequest{Resource: resource, Depth: 20})
+		if err != nil {
+			writeJSONError(w, err)
+			return
+		}
+		writeJSON(w, orderBookView(resource, snap))
+	})
+
+	mux.HandleFunc("/api/trades", func(w http.ResponseWriter, r *http.Request) {
+		resource := r.URL.Query().Get("resource")
+		limit := parseLimit(r.URL.Query().Get("limit"), 50)
+		resp, err := marketSrv.GetTrades(r.Context(), &pb.GetTradesRequest{Resource: resource, Limit: int32(limit)})
+		if err != nil {
+			writeJSONError(w, err)
+			return
+		}
+		writeJSON(w, tradesView(resp))
+	})
+
 	httpServer := &http.Server{
 		Addr:         httpPort,
 		Handler:      mux,
@@ -157,4 +185,91 @@ func runKafkaConsumer() {
 	// }
 
 	fmt.Println("[market-district] kafka consumer: not yet connected (placeholder)")
+}
+
+// --- read-model view types ---
+// Deliberately small, stable DTOs mapped from the proto so the dashboard's JSON
+// contract doesn't couple to generated protobuf internals.
+
+type levelView struct {
+	Price    float64 `json:"price"`
+	Quantity float64 `json:"quantity"`
+}
+
+type bookView struct {
+	Resource string      `json:"resource"`
+	Bids     []levelView `json:"bids"`
+	Asks     []levelView `json:"asks"`
+	MidPrice float64     `json:"midPrice"`
+	Spread   float64     `json:"spread"`
+}
+
+type tradeView struct {
+	ID       string  `json:"id"`
+	Resource string  `json:"resource"`
+	Price    float64 `json:"price"`
+	Quantity float64 `json:"quantity"`
+	Ts       int64   `json:"ts"` // unix seconds
+}
+
+func orderBookView(resource string, snap *pb.OrderBookSnapshot) bookView {
+	v := bookView{Resource: resource, Bids: []levelView{}, Asks: []levelView{}, MidPrice: float64(snap.MidPrice)}
+	for _, b := range snap.Bids {
+		v.Bids = append(v.Bids, levelView{Price: float64(b.Price), Quantity: float64(b.Quantity)})
+	}
+	for _, a := range snap.Asks {
+		v.Asks = append(v.Asks, levelView{Price: float64(a.Price), Quantity: float64(a.Quantity)})
+	}
+	if len(snap.Bids) > 0 && len(snap.Asks) > 0 {
+		v.Spread = float64(snap.Asks[0].Price - snap.Bids[0].Price)
+	}
+	return v
+}
+
+func tradesView(resp *pb.GetTradesResponse) []tradeView {
+	out := make([]tradeView, 0, len(resp.Trades))
+	for _, t := range resp.Trades {
+		var ts int64
+		if t.Timestamp != nil {
+			ts = t.Timestamp.Seconds
+		}
+		out = append(out, tradeView{
+			ID:       t.Id,
+			Resource: t.Resource,
+			Price:    float64(t.Price),
+			Quantity: float64(t.Quantity),
+			Ts:       ts,
+		})
+	}
+	return out
+}
+
+func writeJSON(w http.ResponseWriter, v interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(v); err != nil {
+		log.Printf("[market-district] read-model encode error: %v", err)
+	}
+}
+
+func writeJSONError(w http.ResponseWriter, err error) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusServiceUnavailable)
+	if encErr := json.NewEncoder(w).Encode(map[string]string{"error": err.Error()}); encErr != nil {
+		log.Printf("[market-district] read-model error encode failed: %v", encErr)
+	}
+}
+
+func parseLimit(s string, def int) int {
+	if s == "" {
+		return def
+	}
+	n, err := strconv.Atoi(s)
+	if err != nil || n <= 0 {
+		return def
+	}
+	if n > 200 {
+		return 200
+	}
+	return n
 }

@@ -18,15 +18,21 @@ type tradeEmitter interface {
 	EmitTradeSettled(ctx context.Context, settled kafka.TradeSettledMessage) error
 }
 
+// maxRecentTrades bounds the in-memory trade-history ring the read-model serves
+// (GetTrades / the /api/trades HTTP view). It is a display buffer for the proof
+// panel, not a system of record — the durable trade log is the Kafka topic.
+const maxRecentTrades = 200
+
 // MarketServer implements the MarketDistrict gRPC service.
 type MarketServer struct {
 	pb.UnimplementedMarketDistrictServer
 
-	mu       sync.RWMutex
-	books    map[string]*orderbook.OrderBook // resource -> orderbook
-	traders  map[int64]*TraderState          // npc_id -> state
-	tradeSeq uint64
-	emitter  tradeEmitter // best-effort; may be nil when Kafka is unavailable
+	mu           sync.RWMutex
+	books        map[string]*orderbook.OrderBook // resource -> orderbook
+	traders      map[int64]*TraderState          // npc_id -> state
+	tradeSeq     uint64
+	recentTrades []orderbook.Trade // bounded ring (last maxRecentTrades), newest last
+	emitter      tradeEmitter      // best-effort; may be nil when Kafka is unavailable
 }
 
 // TraderState tracks an NPC trader visiting the Market District.
@@ -87,6 +93,7 @@ func (s *MarketServer) PlaceOrder(ctx context.Context, req *pb.PlaceOrderRequest
 	trades := book.Match()
 	if len(trades) > 0 {
 		log.Printf("[market-district] %d trades matched for %s", len(trades), req.Resource)
+		s.recordTrades(trades)
 		s.emitTradesSettled(ctx, trades)
 	}
 
@@ -134,6 +141,60 @@ func (s *MarketServer) emitTradesSettled(ctx context.Context, trades []orderbook
 				seller.NPCID, t.ID, err)
 		}
 	}
+}
+
+// recordTrades appends matched trades to the bounded recent-trades ring so the
+// read-model (GetTrades / /api/trades) can surface real, recent activity. It
+// keeps only the newest maxRecentTrades and copies on trim so the underlying
+// backing array can't grow without bound.
+func (s *MarketServer) recordTrades(trades []orderbook.Trade) {
+	if len(trades) == 0 {
+		return
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.recentTrades = append(s.recentTrades, trades...)
+	if len(s.recentTrades) > maxRecentTrades {
+		trimmed := make([]orderbook.Trade, maxRecentTrades)
+		copy(trimmed, s.recentTrades[len(s.recentTrades)-maxRecentTrades:])
+		s.recentTrades = trimmed
+	}
+}
+
+// GetTrades returns recent matched trades, newest first, optionally filtered by
+// resource. It reads the in-memory recent-trades ring (a display buffer, not a
+// durable log — see maxRecentTrades). since_tick is accepted for API
+// compatibility but not yet applied (trades aren't tick-stamped in-process).
+func (s *MarketServer) GetTrades(ctx context.Context, req *pb.GetTradesRequest) (*pb.GetTradesResponse, error) {
+	limit := int(req.Limit)
+	if limit <= 0 {
+		limit = 50
+	}
+
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	out := make([]*pb.Trade, 0, limit)
+	for i := len(s.recentTrades) - 1; i >= 0 && len(out) < limit; i-- {
+		t := s.recentTrades[i]
+		if req.Resource != "" && t.Resource != req.Resource {
+			continue
+		}
+		out = append(out, &pb.Trade{
+			Id:          t.ID,
+			BuyOrderId:  t.BuyOrderID,
+			SellOrderId: t.SellOrderID,
+			Resource:    t.Resource,
+			Price:       float32(t.Price),
+			Quantity:    float32(t.Quantity),
+			Timestamp: &pb.Timestamp{
+				Seconds: t.Timestamp.Unix(),
+				Nanos:   int32(t.Timestamp.Nanosecond()),
+			},
+		})
+	}
+
+	return &pb.GetTradesResponse{Trades: out}, nil
 }
 
 // GetOrderBook returns the current state of an order book.

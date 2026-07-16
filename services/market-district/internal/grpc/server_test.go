@@ -168,6 +168,68 @@ func TestPlaceOrder_NilEmitterDoesNotPanic(t *testing.T) {
 	}
 }
 
+// TestGetTrades_ReturnsRecentMatches drives crossing orders on two resources and
+// asserts the read-model returns real trades — newest first, resource-filtered,
+// and limit-respecting.
+func TestGetTrades_ReturnsRecentMatches(t *testing.T) {
+	srv := NewMarketServer(nil)
+	ctx := context.Background()
+
+	// Helper: one crossing pair on a resource → exactly one trade.
+	cross := func(resource string, price float32) {
+		t.Helper()
+		if _, err := srv.PlaceOrder(ctx, &pb.PlaceOrderRequest{
+			NpcId: 2, Resource: resource, Side: pb.OrderSide_ASK, Price: price, Quantity: 1,
+		}); err != nil {
+			t.Fatalf("place ask on %s: %v", resource, err)
+		}
+		if _, err := srv.PlaceOrder(ctx, &pb.PlaceOrderRequest{
+			NpcId: 1, Resource: resource, Side: pb.OrderSide_BID, Price: price, Quantity: 1,
+		}); err != nil {
+			t.Fatalf("place bid on %s: %v", resource, err)
+		}
+	}
+
+	cross("wood", 10) // trade 1
+	cross("iron", 20) // trade 2
+	cross("wood", 11) // trade 3 (newest)
+
+	// No filter: all three, newest first.
+	all, err := srv.GetTrades(ctx, &pb.GetTradesRequest{})
+	if err != nil {
+		t.Fatalf("GetTrades: %v", err)
+	}
+	if len(all.Trades) != 3 {
+		t.Fatalf("expected 3 trades, got %d", len(all.Trades))
+	}
+	if all.Trades[0].Resource != "wood" || all.Trades[0].Price != 11 {
+		t.Errorf("newest trade should be wood@11, got %s@%v", all.Trades[0].Resource, all.Trades[0].Price)
+	}
+
+	// Resource filter.
+	wood, err := srv.GetTrades(ctx, &pb.GetTradesRequest{Resource: "wood"})
+	if err != nil {
+		t.Fatalf("GetTrades(wood): %v", err)
+	}
+	if len(wood.Trades) != 2 {
+		t.Fatalf("expected 2 wood trades, got %d", len(wood.Trades))
+	}
+	for _, tr := range wood.Trades {
+		if tr.Resource != "wood" {
+			t.Errorf("resource filter leaked %s", tr.Resource)
+		}
+	}
+
+	// Limit.
+	limited, err := srv.GetTrades(ctx, &pb.GetTradesRequest{Limit: 1})
+	if err != nil {
+		t.Fatalf("GetTrades(limit=1): %v", err)
+	}
+	if len(limited.Trades) != 1 {
+		t.Fatalf("expected 1 trade with limit=1, got %d", len(limited.Trades))
+	}
+}
+
 // TestTradeSettledMessage_JSONContractShape locks the on-the-wire shape that
 // town-core consumes: exactly npc_id, gold_delta, resource, price, quantity,
 // trade_id — no extra fields.

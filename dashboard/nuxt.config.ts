@@ -20,6 +20,9 @@ export default defineNuxtConfig({
     townCoreUrl: process.env.TOWN_CORE_URL ?? 'http://localhost:8000',
     academyUrl: process.env.ACADEMY_URL ?? 'http://localhost:8001',
     cartographerUrl: process.env.CARTOGRAPHER_URL ?? 'http://localhost:4000',
+    // market-district's HTTP read-model (order book + recent trades as JSON);
+    // the /api/market/proof BFF route reads this. gRPC stays service-to-service.
+    marketHttpUrl: process.env.MARKET_HTTP_URL ?? 'http://localhost:6060',
     tavernWsUrl: process.env.TAVERN_WS_URL ?? 'ws://localhost:3001',
 
     // Public (exposed to client)
