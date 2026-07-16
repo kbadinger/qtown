@@ -58,6 +58,7 @@ KAFKA_BROKERS=localhost:9092 go test -tags e2e -run TestE2E ./internal/grpc/
 | End-to-end gate (gRPC → match → Kafka) | ✅ **blocking CI job** `e2e-market` (green) |
 | HTTP read-model (`/api/orderbook`, `/api/trades` on :6060) + `GetTrades` gRPC | ✅ real — a read-only JSON view of the live book + recent trades (bounded ring) for dashboards; services still use gRPC |
 | Dashboard proof panel (live data, dormant-safe) | ✅ real (W1-M9) — `ProofPanel`/`MarketProofCard` render real data or an honest `—`/dormant state; reads the read-model directly (cartographer's gRPC federation is a stub, see `docs/v2-audit.md`) |
+| In-app teaching layer ("how it works") | ✅ real (W1-M10) — `MarketTeaching.vue`: the matching engine, the typed gRPC contract, at-least-once + idempotency, and how to read the latency numbers — each tied to the real code / ADR / perf report |
 | Idempotent + DLQ consumption (downstream, town-core) | ✅ real |
 | gRPC deadlines + circuit breaker (client, town-core) | ✅ real |
 | Measured p99 / load report | ✅ measured (local ref, i9-12900K): placement p99 **2.16 ms** @ ~42k rps; full spine (match → 2× settlement emit) p99 **24.7 ms**; engine **2.2 µs/op** (CI bench). Not yet a CI-enforced SLO — see [`docs/perf/market-loadtest.md`](../../docs/perf/market-loadtest.md) |

@@ -145,6 +145,10 @@ const tradeItems = computed(() =>
     <!-- Proof panel: live data straight from market-district's read-model -->
     <ProofPanel resource="gold" />
 
+    <!-- Teaching layer (DoD "Explained"): how the matching engine, gRPC
+         contract, delivery semantics, and latency numbers actually work. -->
+    <MarketTeaching />
+
     <!-- The detailed analytics below are served by the GraphQL gateway
          (cartographer), whose service federation isn't wired yet — so they
          render dormant/empty until that lands. The proof panel above reads

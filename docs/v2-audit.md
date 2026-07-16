@@ -177,6 +177,16 @@ Wave 1A Market work since the Kafka-contract audit above, all CI-green:
   landing `MarketProofCard` render it. Verified end-to-end: live-with-data,
   live-but-idle (empty, honest), and **dormant** (source down → `live:false`,
   `—`, no fabricated values). gRPC reflection was added for tooling.
+- **In-app teaching layer (W1-M10):** `MarketTeaching.vue` (mounted under the
+  proof panel on `pages/market.vue`) explains the matching engine, the typed gRPC
+  contract + single-sided settlement, at-least-once + idempotency, and how to read
+  the two latency numbers — each block tied to the real code / ADR / perf report.
+  Copy is accurate to the implementation, not aspirational.
+
+**Market flagship DoD §3.1 is now 6/6 — Wired · Gated · Proven · Explained ·
+Documented · Honest — all green.** Remaining Market work is optional depth: W1-M5
+(async emit / durability, also the ~24 ms tail fix) and order-lifecycle
+(cancel/expiry) are tracked, not blocking.
 
 **Honest finding surfaced by this work — cartographer's gRPC federation is a
 stub.** `services/cartographer` has **no `protos/` directory**, so
