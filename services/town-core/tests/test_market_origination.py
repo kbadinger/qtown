@@ -132,3 +132,56 @@ class TestMarketClient:
             npc_id=1, resource="Ore", side="ASK", price=1.0, quantity=5
         )
         assert result is None
+
+    def test_circuit_opens_after_threshold_and_fails_fast(self):
+        import grpc
+        from engine.clients.market_client import MarketClient
+
+        clock = {"t": 0.0}
+        client = MarketClient(
+            "localhost:50051",
+            failure_threshold=3,
+            cooldown_s=30.0,
+            time_fn=lambda: clock["t"],
+        )
+        failing = MagicMock()
+        failing.PlaceOrder.side_effect = grpc.RpcError("down")
+        client._stub = failing
+
+        for _ in range(3):
+            assert _place(client) is None
+        assert failing.PlaceOrder.call_count == 3  # circuit now open
+
+        # While open, calls fail fast — no further gRPC attempts.
+        assert _place(client) is None
+        assert failing.PlaceOrder.call_count == 3
+
+        # After the cooldown elapses, calls are attempted again.
+        clock["t"] = 31.0
+        _place(client)
+        assert failing.PlaceOrder.call_count == 4
+
+    def test_success_resets_failure_count(self):
+        import grpc
+        from engine.clients.market_client import MarketClient
+
+        client = MarketClient("localhost:50051", failure_threshold=3, time_fn=lambda: 0.0)
+        stub = MagicMock()
+        ok = MagicMock(order_id="ORD", accepted=True)
+        # 2 fails, a success (resets), 2 more fails → never 3 in a row → stays closed.
+        stub.PlaceOrder.side_effect = [
+            grpc.RpcError("x"), grpc.RpcError("x"), ok,
+            grpc.RpcError("x"), grpc.RpcError("x"),
+        ]
+        client._stub = stub
+
+        results = [_place(client) for _ in range(5)]
+        assert results[2] == ("ORD", True)
+        assert client._circuit_open_until == 0.0  # never opened
+        assert stub.PlaceOrder.call_count == 5  # all attempted
+
+
+def _place(client):
+    return client.place_order(
+        npc_id=1, resource="Ore", side="ASK", price=1.0, quantity=1
+    )

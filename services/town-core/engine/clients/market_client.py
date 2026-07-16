@@ -14,6 +14,7 @@ from __future__ import annotations
 import logging
 import os
 import sys
+import time
 from pathlib import Path
 
 logger = logging.getLogger("town-core.market_client")
@@ -37,15 +38,37 @@ except Exception as exc:  # pragma: no cover - import guard for missing codegen/
 
 # A slow/down market must not stall the tick — bound every call.
 DEFAULT_TIMEOUT_S = 0.5
+# Circuit breaker: after this many consecutive failures, stop calling for a
+# cooldown so a down market costs one fast no-op per order instead of a full
+# deadline wait on every order, every tick.
+DEFAULT_FAILURE_THRESHOLD = 3
+DEFAULT_COOLDOWN_S = 30.0
 
 
 class MarketClient:
-    """Thin best-effort wrapper over the MarketDistrict gRPC stub."""
+    """Thin best-effort wrapper over the MarketDistrict gRPC stub.
 
-    def __init__(self, addr: str) -> None:
+    Resilience: every call has a deadline (returns None instead of hanging), and
+    a circuit breaker trips after repeated failures to fail fast during an outage.
+    """
+
+    def __init__(
+        self,
+        addr: str,
+        *,
+        failure_threshold: int = DEFAULT_FAILURE_THRESHOLD,
+        cooldown_s: float = DEFAULT_COOLDOWN_S,
+        time_fn=time.monotonic,
+    ) -> None:
         self._addr = addr
         self._channel = None
         self._stub = None
+        # Circuit-breaker state.
+        self._failure_threshold = failure_threshold
+        self._cooldown_s = cooldown_s
+        self._now = time_fn
+        self._consecutive_failures = 0
+        self._circuit_open_until = 0.0
 
     def _stub_or_none(self):
         if not _GRPC_AVAILABLE:
@@ -68,8 +91,13 @@ class MarketClient:
         """Place an order. ``side`` is ``"ASK"`` (sell) or ``"BID"`` (buy).
 
         Returns ``(order_id, accepted)`` on success, or ``None`` if the market is
-        unreachable / the call fails. Never raises — the tick must continue.
+        unreachable / the call fails / the circuit is open. Never raises — the
+        tick must continue.
         """
+        # Circuit open → fail fast without a gRPC call (no deadline wait).
+        if self._now() < self._circuit_open_until:
+            return None
+
         stub = self._stub_or_none()
         if stub is None:
             return None
@@ -85,12 +113,22 @@ class MarketClient:
         )
         try:
             resp = stub.PlaceOrder(req, timeout=timeout)
+            self._consecutive_failures = 0  # success resets the breaker
             return resp.order_id, resp.accepted
         except grpc.RpcError as exc:  # market down/slow — degrade, never crash
             code = exc.code() if hasattr(exc, "code") else "?"
-            logger.warning(
-                "PlaceOrder(%s %s x%s) failed: %s", side, resource, quantity, code
-            )
+            self._consecutive_failures += 1
+            if self._consecutive_failures >= self._failure_threshold:
+                self._circuit_open_until = self._now() + self._cooldown_s
+                logger.warning(
+                    "market circuit OPEN for %.0fs after %d consecutive failures "
+                    "(last: %s)",
+                    self._cooldown_s, self._consecutive_failures, code,
+                )
+            else:
+                logger.warning(
+                    "PlaceOrder(%s %s x%s) failed: %s", side, resource, quantity, code
+                )
             return None
 
 
