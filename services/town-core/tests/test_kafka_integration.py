@@ -193,7 +193,9 @@ async def test_handle_trade_settled():
     mock_npc.gold = 200
 
     mock_db = MagicMock()
-    mock_db.query.return_value.filter.return_value.first.return_value = mock_npc
+    # First query is the ProcessedTrade idempotency check (return None = not seen);
+    # second is the NPC lookup.
+    mock_db.query.return_value.filter.return_value.first.side_effect = [None, mock_npc]
 
     with patch("engine.kafka_consumer.SessionLocal", return_value=mock_db):
         from engine.kafka_consumer import handle_trade_settled
