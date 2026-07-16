@@ -45,6 +45,15 @@ class _Row:
     reason: str
 
 
+def _clip(text: str, limit: int = 200) -> str:
+    """Trim to a word boundary with an ellipsis — keeps committed notes readable."""
+    text = " ".join(text.split())
+    if len(text) <= limit:
+        return text
+    cut = text[:limit].rsplit(" ", 1)[0]
+    return f"{cut}…"
+
+
 _JUDGE_SYSTEM = (
     "You are a strict RAG evaluator. Judge ONLY whether the answer's claims are "
     "supported by the provided sources — no outside knowledge, no benefit of the "
@@ -74,7 +83,7 @@ async def _judge(
         return (
             float(data.get("score", 0.0)),
             bool(data.get("faithful", False)),
-            str(data.get("reason", ""))[:140],
+            _clip(str(data.get("reason", ""))),
         )
     except (json.JSONDecodeError, ValueError, TypeError):
         return 0.0, False, "unparseable judge output"

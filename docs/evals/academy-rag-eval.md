@@ -17,7 +17,7 @@ the same honesty pattern as the M7 perf report. Generation runs at temperature
 | Keyword correctness (conservative substring) | 79% |
 | Judge faithfulness — mean score | 1.00 |
 | Judge faithfulness — faithful rate | 100% |
-| Mean answer latency | 2037 ms |
+| Mean answer latency | 1852 ms |
 
 ## What each metric means (and its limits)
 
@@ -43,10 +43,10 @@ the same honesty pattern as the M7 perf report. Generation runs at temperature
 | dod-dimensions | yes | 2/2 | yes | 1.00 |  |
 | placement-p99 | yes | 2/2 | yes | 1.00 |  |
 | tail-cause | yes | 2/2 | yes | 1.00 |  |
-| validation-citadel | yes | 1/1 | yes | 1.00 |  |
+| validation-citadel | yes | 0/1 | yes | 1.00 |  |
 | v1-archived | yes | 1/1 | yes | 1.00 |  |
 | cartographer-status | yes | 1/1 | yes | 1.00 |  |
-| academy-teaches | yes | 0/1 | yes | 1.00 |  |
+| academy-teaches | yes | 1/1 | yes | 1.00 |  |
 | market-grpc-surface | yes | 0/1 | yes | 1.00 |  |
 | dormant-mode | yes | 1/1 | yes | 1.00 |  |
 
