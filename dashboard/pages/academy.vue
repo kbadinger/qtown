@@ -174,6 +174,12 @@ const recentGens = computed<GenerationRecord[]>(() =>
       </button>
     </div>
 
+    <!-- Flagship: grounded RAG proof + teaching (W1-A4/A5) -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <AcademyProofPanel />
+      <AcademyTeaching />
+    </div>
+
     <!-- Summary stats -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
       <div class="qtown-card">
