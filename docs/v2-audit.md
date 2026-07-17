@@ -254,6 +254,39 @@ the live count comes from `/rag/status`.
 
 ---
 
+### Academy dialogue wired into the town (Flow 2) — 2026-07-17 (`fable/wave-0-floor`)
+
+Flow 2 (NPC interaction → Academy generates → Tavern broadcasts → dashboard) now
+runs. Supersedes the 2026-07-13 note "Flow 2 steps 1 + 4 still MISSING":
+
+- **Step 1 (trigger) is done.** town-core's tick now calls Academy's
+  `GenerateDialogue` for a co-located NPC pair every 10 ticks
+  (`engine/simulation/dialogue.py` via a best-effort, env-gated, circuit-broken
+  `engine/clients/academy_client.py` mirroring the market client). Context is built
+  from town-core's OWN DB (pair name/role/personality/mood + weather + recent
+  events). The tick now runs via `asyncio.to_thread` so the LLM call can't stall
+  FastAPI. Verified end-to-end against the running services: a co-located pair
+  produced real, role-grounded dialogue, persisted to `dialogues`, and emitted on
+  `qtown.ai.content.generated` in the shape Tavern consumes.
+- **Honest-generation fix.** `GenerateDialogue` had been escalating to the cloud
+  fallback (the configured local model isn't always pulled) and returning a
+  `[cloud-stub]` string — fabricated dialogue. The dialogue model is now
+  env-overridable (`NPC_DIALOGUE_MODEL`, set to `qwen3.5:4b` in compose) and the
+  router passes `think=False` so reasoning models answer instead of burning the
+  token budget on hidden reasoning.
+- **Dashboard render** uses the read-model + poll pattern: `GET /api/dialogues`
+  (now with a limit + NPC names) → BFF `/api/town/dialogues` → `DialogueFeed.vue`
+  on the Academy page, dormant-safe.
+- **Deferred, on purpose:** Step 4 (RAG-enriched dialogue) is *not* wired — it
+  would need town-core to emit `qtown.events.broadcast` (currently never called) to
+  populate `academy.embeddings` with town events, *and* `GenerateDialogue` to call
+  the retriever. Left dormant rather than half-built; context today is town-core's
+  own DB. The dashboard's live WS path (Tavern broadcast → dashboard) also stays
+  dormant — the WS layer has a pre-existing channel/payload contract mismatch;
+  render goes through the read-model instead.
+
+---
+
 ## v1 → v2 feature parity
 
 The router-level port-over is broad:
