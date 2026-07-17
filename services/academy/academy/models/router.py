@@ -62,9 +62,12 @@ ROUTE_TABLE: dict[str, RouteConfig] = {
         max_tokens=128,
         temperature=0.8,
     ),
-    # Full NPC dialogue exchanges
+    # Full NPC dialogue exchanges. Model is env-overridable so a deployment can
+    # point it at a model its Ollama actually has — otherwise an unavailable model
+    # escalates to the cloud fallback, which returns a stub when no API key is set
+    # (that would be fabricated dialogue; see Flow 2 / W1-A7).
     "npc_dialogue": RouteConfig(
-        model_id="deepseek-r1:14b",
+        model_id=os.environ.get("NPC_DIALOGUE_MODEL", "deepseek-r1:14b"),
         tier=ModelTier.LOCAL_QUALITY,
         max_tokens=512,
         temperature=0.7,
@@ -387,9 +390,15 @@ class ModelRouter:
         Call Ollama and return the metadata dict (response + real token
         counts). Tests may mock this with a bare response string; ``route()``
         normalizes either shape.
+
+        ``think=False`` disables the chain-of-thought trace on reasoning models
+        (qwen3.5 / deepseek-r1): the router's callers parse the ``response``, not
+        the reasoning, and leaving thinking on burns the ``max_tokens`` budget on
+        hidden tokens — which can truncate or empty the actual answer.
         """
         return await self._ollama.generate_with_metadata(
-            model, prompt, system=system, temperature=temperature, max_tokens=max_tokens
+            model, prompt, system=system, temperature=temperature,
+            max_tokens=max_tokens, think=False,
         )
 
     async def _call_cloud(

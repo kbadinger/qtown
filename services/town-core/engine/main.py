@@ -417,7 +417,9 @@ def _start_tick_loop():
             await asyncio.sleep(30)
             db = SessionLocal()
             try:
-                process_tick(db)
+                # Run the (synchronous, now-LLM-touching) tick off the event loop
+                # so a slow dialogue gRPC call can't stall FastAPI request handling.
+                await asyncio.to_thread(process_tick, db)
                 ws = db.query(WorldState).first()
                 tick_num = ws.tick if ws else "?"
                 logger.info("[qtown] Tick %s processed", tick_num)

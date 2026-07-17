@@ -27,6 +27,7 @@ from engine.simulation.travel import check_travel_timeouts
 from engine.simulation.economy import (
     process_work, collect_taxes, track_inflation, auto_sell_surplus,
 )
+from engine.simulation.dialogue import trigger_ai_dialogue
 import json
 from sqlalchemy import func
 from engine.models import Event
@@ -136,6 +137,12 @@ def process_tick(db: Session) -> None:
     # Track inflation every 10 ticks
     if world_state.tick % 10 == 0:
         track_inflation(db)
+
+    # Every 10 ticks, ask Academy to write a conversation for a co-located NPC
+    # pair (Flow 2). Academy generates + emits qtown.ai.content.generated for
+    # Tavern to broadcast. No-op unless ACADEMY_GRPC_ADDR is configured.
+    if world_state.tick % 10 == 0:
+        trigger_ai_dialogue(db)
 
     # 8. Process population (births, deaths, aging)
     check_population_growth(db)
