@@ -180,6 +180,9 @@ const recentGens = computed<GenerationRecord[]>(() =>
       <AcademyTeaching />
     </div>
 
+    <!-- Flow 2: NPC dialogue Academy generated for the town (W1-A7) -->
+    <DialogueFeed />
+
     <!-- Summary stats -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
       <div class="qtown-card">
