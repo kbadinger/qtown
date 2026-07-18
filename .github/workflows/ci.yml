@@ -226,8 +226,10 @@ jobs:
           python-version: "3.11"
       - name: Install numpy
         run: pip install numpy
-      - name: recall@k gate (committed fixture, no model)
+      - name: docs recall@k gate (committed fixture, no model)
         run: cd services/academy && python -m evals.recall --assert
+      - name: town-event recall@k gate (dialogue grounding, committed fixture)
+        run: cd services/academy && python -m evals.events_recall --assert
 
   # ─── Cartographer (GraphQL/TypeScript) ───
   test-cartographer:
