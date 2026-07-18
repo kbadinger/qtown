@@ -24,6 +24,9 @@ export default defineNuxtConfig({
     // the /api/market/proof BFF route reads this. gRPC stays service-to-service.
     marketHttpUrl: process.env.MARKET_HTTP_URL ?? 'http://localhost:6060',
     tavernWsUrl: process.env.TAVERN_WS_URL ?? 'ws://localhost:3001',
+    // tavern's HTTP read-model (recent content + gateway metrics); the
+    // /api/tavern/content BFF reads this. Live delivery still rides the WS.
+    tavernHttpUrl: process.env.TAVERN_HTTP_URL ?? 'http://localhost:3001',
 
     // Public (exposed to client)
     public: {

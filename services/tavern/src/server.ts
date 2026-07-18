@@ -7,6 +7,7 @@ import { WebSocketManager } from "./websocket.js";
 import { KafkaConsumerService } from "./kafka-consumer.js";
 import { Leaderboard } from "./leaderboard.js";
 import { NPCPresenceTracker } from "./npc-presence.js";
+import { ContentBuffer } from "./content-buffer.js";
 import type { LeaderboardType } from "./types.js";
 
 // ============================================================================
@@ -30,6 +31,7 @@ export async function buildServer(): Promise<{
   redisPubSub: RedisPubSub;
   redis: RedisClient;
   redisPublisher: RedisClient;
+  contentBuffer: ContentBuffer;
 }> {
   // --------------------------------------------------------------------------
   // Redis clients
@@ -58,6 +60,7 @@ export async function buildServer(): Promise<{
   const leaderboard = new Leaderboard(redis);
   const presence = new NPCPresenceTracker(redis);
   const redisPubSub = new RedisPubSub(REDIS_URL);
+  const contentBuffer = new ContentBuffer(100);
 
   const kafkaConsumer = new KafkaConsumerService(
     {
@@ -65,7 +68,8 @@ export async function buildServer(): Promise<{
       brokers: KAFKA_BROKERS,
       retry: { retries: 5 },
     },
-    redis
+    redis,
+    contentBuffer
   );
 
   // --------------------------------------------------------------------------
@@ -119,6 +123,17 @@ export async function buildServer(): Promise<{
     return { count: all.length, presence: all };
   });
 
+  // Recent content read-model (dialogue/newspaper events that passed through the
+  // gateway) for the dashboard proof panel. Real observed events or an empty list
+  // — never fabricated.
+  fastify.get<{ Querystring: { limit?: string } }>(
+    "/content/recent",
+    async (req, _reply) => {
+      const limit = Math.min(Math.max(parseInt(req.query.limit ?? "20", 10), 1), 100);
+      return { available: true, items: contentBuffer.recent(limit) };
+    }
+  );
+
   // WebSocket upgrade — the WebSocketManager handles the actual upgrade via
   // the 'ws' library listening on the same HTTP server as Fastify.
   // Fastify's server is passed to WebSocketManager constructor above.
@@ -137,6 +152,7 @@ export async function buildServer(): Promise<{
     redisPubSub,
     redis,
     redisPublisher,
+    contentBuffer,
   };
 }
 

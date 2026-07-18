@@ -3,6 +3,7 @@ import pino from "pino";
 import type { RedisClient } from "./redis.js";
 import { Leaderboard } from "./leaderboard.js";
 import { NPCPresenceTracker } from "./npc-presence.js";
+import type { ContentBuffer } from "./content-buffer.js";
 import type {
   KafkaEvent,
   TradeSettled,
@@ -55,6 +56,7 @@ export class KafkaConsumerService {
   private readonly leaderboard: Leaderboard;
   private readonly presence: NPCPresenceTracker;
   private readonly redis: RedisClient;
+  private readonly contentBuffer: ContentBuffer;
   private running = false;
   private reconnectDelay = RECONNECT_BASE_MS;
 
@@ -62,12 +64,17 @@ export class KafkaConsumerService {
   // fan-out path (server.ts wires it to wsManager.broadcast). Broadcasting here
   // too would double-deliver every event to same-node clients, since the pub/sub
   // subscriber echoes this process's own publishes back.
-  constructor(kafkaConfig: KafkaConfig, redis: RedisClient) {
+  constructor(
+    kafkaConfig: KafkaConfig,
+    redis: RedisClient,
+    contentBuffer: ContentBuffer
+  ) {
     const kafka = new Kafka(kafkaConfig);
     this.consumer = kafka.consumer({ groupId: "tavern-consumer-group" });
     this.leaderboard = new Leaderboard(redis);
     this.presence = new NPCPresenceTracker(redis);
     this.redis = redis;
+    this.contentBuffer = contentBuffer;
   }
 
   // --------------------------------------------------------------------------
@@ -128,7 +135,15 @@ export class KafkaConsumerService {
   }: EachMessagePayload): Promise<void> {
     const raw = message.value?.toString();
     if (!raw) return;
+    await this.dispatch(topic, raw);
+  }
 
+  /**
+   * Parse + route a single record to its handler. Public so the content /
+   * fan-out path can be tested without a live Kafka broker (feed a synthetic
+   * record and assert the Redis publish + content buffer).
+   */
+  async dispatch(topic: string, raw: string): Promise<void> {
     let event: KafkaEvent;
     try {
       event = JSON.parse(raw) as KafkaEvent;
@@ -208,6 +223,16 @@ export class KafkaConsumerService {
   private async handleContentGenerated(event: ContentGenerated): Promise<void> {
     const channel = "content";
     await this.redis.publish(channel, JSON.stringify(event));
+
+    // Keep the last N content events for the read-model / proof panel.
+    this.contentBuffer.add({
+      content_type: event.content_type,
+      content_id: event.content_id,
+      text: event.text,
+      content: event.content,
+      metadata: event.metadata,
+      received_at: new Date().toISOString(),
+    });
   }
 
   private async handleTravelDepart(event: NPCTravelDepart): Promise<void> {
