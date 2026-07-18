@@ -22,6 +22,9 @@ services:
       # co-located NPC conversations over gRPC. Best-effort — a down Academy is a
       # fast no-op (circuit breaker), never a broken tick.
       ACADEMY_GRPC_ADDR: academy:50053
+      # Publish each tick's narrative events to qtown.events.broadcast so academy
+      # embeds them → dialogue is grounded in real town history. Best-effort.
+      EVENTS_BROADCAST: "1"
     depends_on:
       postgres:
         condition: service_healthy

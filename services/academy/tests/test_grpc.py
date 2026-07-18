@@ -29,6 +29,9 @@ def servicer() -> AcademyServicer:
         instance = AcademyServicer.__new__(AcademyServicer)
         instance._router = MockRouter.return_value
         instance._retriever = MockRetriever.return_value
+        # GenerateDialogue now retrieves town history; default it to empty so these
+        # unit tests stay about generation, not retrieval.
+        instance._retriever.search = AsyncMock(return_value=[])
         instance._router.ROUTES = {
             "npc_dialogue": MagicMock(model_id="deepseek-r1:14b", cost_per_1k_tokens=0.0),
             "newspaper": MagicMock(model_id="qwen3.5:27b", cost_per_1k_tokens=0.0),
@@ -168,12 +171,14 @@ class TestGenerateDialogue:
         ]
         # text is the flattened dialogue string (required by Tavern)
         assert kwargs["text"] == "NPC 1: Good morning!\nNPC 2: Hello there."
-        # metadata mirrors the request plus the routed model
+        # metadata mirrors the request plus the routed model + the grounding
+        # attribution (empty here — the retriever is mocked to no town history).
         assert kwargs["metadata"] == {
             "npc_a": 1,
             "npc_b": 2,
             "tone": "friendly",
             "model_used": "deepseek-r1:14b",
+            "grounded_events": [],
         }
 
     def test_dialogue_emit_failure_does_not_break_rpc(

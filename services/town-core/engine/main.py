@@ -423,6 +423,13 @@ def _start_tick_loop():
                 ws = db.query(WorldState).first()
                 tick_num = ws.tick if ws else "?"
                 logger.info("[qtown] Tick %s processed", tick_num)
+
+                # Publish this tick's narrative events to Kafka so academy can
+                # embed them (→ grounded dialogue). On the main loop (producer
+                # lives here), best-effort, no-op unless EVENTS_BROADCAST is set.
+                if ws is not None:
+                    from engine.event_outbox import drain_events
+                    await drain_events(db, ws.tick)
             except Exception as e:
                 logger.error("[qtown] Tick error: %s", e, exc_info=True)
             finally:

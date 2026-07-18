@@ -27,7 +27,7 @@ import grpc
 
 from academy.qtown import academy_pb2, academy_pb2_grpc, common_pb2
 from academy.models.router import ModelRouter
-from academy.rag.retriever import TownHistoryRetriever
+from academy.rag.retriever import Document, TownHistoryRetriever
 
 logger = logging.getLogger("academy.grpc_server")
 
@@ -103,14 +103,15 @@ class AcademyServicer(academy_pb2_grpc.AcademyServicer):
             "Return exactly 4 lines, alternating between NPC A and NPC B. "
             "Format each line as: NPC_ID|EMOTION|TEXT"
         )
-        user_prompt = (
-            f"Write a {tone} conversation between NPC #{npc_a} and NPC #{npc_b}.\n"
-            f"Context: {ctx}\n"
-            "Format: NPC_ID|EMOTION|TEXT (one line per speaker, 4 lines total)"
-        )
 
         loop = asyncio.new_event_loop()
         try:
+            # Ground the dialogue in real town history (doc_type='event' rows that
+            # town-core emitted + academy embedded). Best-effort: empty → ungrounded.
+            history = loop.run_until_complete(
+                self._retrieve_town_history(ctx, npc_a, npc_b)
+            )
+            user_prompt = self._build_dialogue_prompt(npc_a, npc_b, tone, ctx, history)
             raw_response, model_used = loop.run_until_complete(
                 self._generate_dialogue_async(user_prompt, system_prompt, tone)
             )
@@ -133,11 +134,19 @@ class AcademyServicer(academy_pb2_grpc.AcademyServicer):
             {"npc_a": npc_a, "npc_b": npc_b, "tone": tone},
         )
 
-        # Emit to qtown.ai.content.generated so Tavern can broadcast (best-effort)
+        # Emit to qtown.ai.content.generated so Tavern can broadcast (best-effort).
+        # `grounded_events` is the "why this NPC said this" — the exact town events
+        # injected into the prompt (empty when nothing was retrieved).
         self._emit_content_generated_sync(
             dialogue_id,
             lines,
-            {"npc_a": npc_a, "npc_b": npc_b, "tone": tone, "model_used": model_used},
+            {
+                "npc_a": npc_a,
+                "npc_b": npc_b,
+                "tone": tone,
+                "model_used": model_used,
+                "grounded_events": self._history_refs(history),
+            },
         )
 
         return academy_pb2.DialogueResponse(
@@ -145,6 +154,55 @@ class AcademyServicer(academy_pb2_grpc.AcademyServicer):
             model_used=model_used,
             latency_ms=latency_ms,
         )
+
+    # ------------------------------------------------------------------
+    # Dialogue grounding helpers (retrieve town events → inject → attribute)
+    # ------------------------------------------------------------------
+
+    async def _retrieve_town_history(
+        self, ctx: str, npc_a: int, npc_b: int
+    ) -> list[Document]:
+        """Top-k semantically relevant town events for this pair (best-effort)."""
+        try:
+            query = f"{ctx} NPC #{npc_a} NPC #{npc_b}"
+            return await self._retriever.search(query, k=4, doc_types=["event"])
+        except Exception as exc:  # noqa: BLE001 — grounding must never fail dialogue
+            logger.warning("town-history retrieval failed (non-fatal): %s", exc)
+            return []
+
+    @staticmethod
+    def _build_dialogue_prompt(
+        npc_a: int, npc_b: int, tone: str, ctx: str, history: list[Document]
+    ) -> str:
+        history_block = ""
+        if history:
+            joined = "\n".join(f"- {d.content}" for d in history)
+            history_block = (
+                "Recent town history — ground the conversation in these real events:\n"
+                f"{joined}\n"
+            )
+        return (
+            f"Write a {tone} conversation between NPC #{npc_a} and NPC #{npc_b}.\n"
+            f"Context: {ctx}\n"
+            f"{history_block}"
+            "Format: NPC_ID|EMOTION|TEXT (one line per speaker, 4 lines total)"
+        )
+
+    @staticmethod
+    def _history_refs(history: list[Document]) -> list[dict[str, Any]]:
+        refs: list[dict[str, Any]] = []
+        for d in history:
+            meta = d.metadata or {}
+            refs.append(
+                {
+                    "event_id": meta.get("event_id"),
+                    "tick": meta.get("tick"),
+                    "event_type": meta.get("event_type"),
+                    "snippet": (d.content or "")[:160],
+                    "score": round(float(d.final_score or d.similarity), 4),
+                }
+            )
+        return refs
 
     async def _generate_dialogue_async(
         self, prompt: str, system: str, tone: str
