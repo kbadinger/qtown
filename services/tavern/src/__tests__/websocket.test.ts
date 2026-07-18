@@ -98,9 +98,12 @@ describe("WebSocketManager (real server + clients)", () => {
     manager.broadcast("content", event);
 
     const msg = await c.next();
-    // Outbound wire contract (locked): { channel, data, timestamp }.
+    // Outbound wire contract: { channel, type, payload, timestamp } — matches the
+    // dashboard's WsMessage. No own `type` on the event → `type` falls back to the
+    // channel; the event rides in `payload`.
     expect(msg.channel).toBe("content");
-    expect(msg.data).toEqual(event);
+    expect(msg.type).toBe("content");
+    expect(msg.payload).toEqual(event);
     expect(typeof msg.timestamp).toBe("string");
     c.ws.close();
   });
@@ -142,7 +145,7 @@ describe("WebSocketManager (real server + clients)", () => {
     manager.broadcast("npc:npc-001", { npc_id: "npc-001", status: "traveling" });
     const msg = await c.next();
     expect(msg.channel).toBe("npc:npc-001");
-    expect((msg.data as { npc_id: string }).npc_id).toBe("npc-001");
+    expect((msg.payload as { npc_id: string }).npc_id).toBe("npc-001");
     c.ws.close();
   });
 

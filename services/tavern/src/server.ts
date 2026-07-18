@@ -65,8 +65,7 @@ export async function buildServer(): Promise<{
       brokers: KAFKA_BROKERS,
       retry: { retries: 5 },
     },
-    redis,
-    wsManager
+    redis
   );
 
   // --------------------------------------------------------------------------

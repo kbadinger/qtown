@@ -2,21 +2,22 @@
 // WebSocket protocol types
 // ============================================================================
 
-export interface SubscribeMessage {
-  action: "subscribe";
+// Inbound subscribe/unsubscribe command. The verb may arrive as `action` (the
+// tavern-native field) or `type` (what the dashboard's useWebSocket sends) — both
+// are accepted so a single client contract works across the stack.
+export interface WebSocketClientMessage {
+  action?: "subscribe" | "unsubscribe";
+  type?: "subscribe" | "unsubscribe";
   channel: string;
 }
 
-export interface UnsubscribeMessage {
-  action: "unsubscribe";
-  channel: string;
-}
-
-export type WebSocketClientMessage = SubscribeMessage | UnsubscribeMessage;
-
+// Outbound broadcast envelope. `payload` carries the event; `type` is the event's
+// own `type` when present, else the channel. This matches the dashboard's
+// WsMessage ({ channel, type, payload }) so subscribers read `message.payload`.
 export interface BroadcastMessage {
   channel: string;
-  data: unknown;
+  type: unknown;
+  payload: unknown;
   timestamp: string;
 }
 

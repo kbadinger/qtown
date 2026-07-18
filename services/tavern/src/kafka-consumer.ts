@@ -3,7 +3,6 @@ import pino from "pino";
 import type { RedisClient } from "./redis.js";
 import { Leaderboard } from "./leaderboard.js";
 import { NPCPresenceTracker } from "./npc-presence.js";
-import type { WebSocketManager } from "./websocket.js";
 import type {
   KafkaEvent,
   TradeSettled,
@@ -55,21 +54,19 @@ export class KafkaConsumerService {
   private consumer: Consumer;
   private readonly leaderboard: Leaderboard;
   private readonly presence: NPCPresenceTracker;
-  private readonly wsManager: WebSocketManager;
   private readonly redis: RedisClient;
   private running = false;
   private reconnectDelay = RECONNECT_BASE_MS;
 
-  constructor(
-    kafkaConfig: KafkaConfig,
-    redis: RedisClient,
-    wsManager: WebSocketManager
-  ) {
+  // The consumer publishes to Redis ONLY; RedisPubSub is the single WebSocket
+  // fan-out path (server.ts wires it to wsManager.broadcast). Broadcasting here
+  // too would double-deliver every event to same-node clients, since the pub/sub
+  // subscriber echoes this process's own publishes back.
+  constructor(kafkaConfig: KafkaConfig, redis: RedisClient) {
     const kafka = new Kafka(kafkaConfig);
     this.consumer = kafka.consumer({ groupId: "tavern-consumer-group" });
     this.leaderboard = new Leaderboard(redis);
     this.presence = new NPCPresenceTracker(redis);
-    this.wsManager = wsManager;
     this.redis = redis;
   }
 
@@ -177,11 +174,8 @@ export class KafkaConsumerService {
   private async handleEventsBroadcast(event: EventBroadcast): Promise<void> {
     const channel = "events";
 
-    // Publish to Redis (for other services subscribed to pub/sub)
+    // Publish to Redis — RedisPubSub fans this out to WebSocket subscribers.
     await this.redis.publish(channel, JSON.stringify(event));
-
-    // Direct WebSocket broadcast
-    this.wsManager.broadcast(channel, event);
 
     // Crime leaderboard update
     if (event.crime && event.npc_id && event.crime_count !== undefined) {
@@ -196,7 +190,6 @@ export class KafkaConsumerService {
     const channel = "market";
 
     await this.redis.publish(channel, JSON.stringify(event));
-    this.wsManager.broadcast(channel, event);
 
     // Single-sided settlement: two messages arrive per trade, one per
     // counterparty. Each carries this NPC's gold_delta — apply it to the
@@ -210,13 +203,11 @@ export class KafkaConsumerService {
   private async handlePriceUpdate(event: PriceUpdate): Promise<void> {
     const channel = "market";
     await this.redis.publish(channel, JSON.stringify(event));
-    this.wsManager.broadcast(channel, event);
   }
 
   private async handleContentGenerated(event: ContentGenerated): Promise<void> {
     const channel = "content";
     await this.redis.publish(channel, JSON.stringify(event));
-    this.wsManager.broadcast(channel, event);
   }
 
   private async handleTravelDepart(event: NPCTravelDepart): Promise<void> {
@@ -232,7 +223,6 @@ export class KafkaConsumerService {
     );
 
     await this.redis.publish(channel, JSON.stringify(event));
-    this.wsManager.broadcast(channel, event);
   }
 
   private async handleTravelComplete(event: NPCTravelComplete): Promise<void> {
@@ -247,7 +237,6 @@ export class KafkaConsumerService {
     );
 
     await this.redis.publish(channel, JSON.stringify(event));
-    this.wsManager.broadcast(channel, event);
   }
 
   // --------------------------------------------------------------------------
