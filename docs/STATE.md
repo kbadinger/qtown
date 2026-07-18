@@ -43,11 +43,11 @@ These are the cross-service flows the whole architecture exists to prove. None r
 | Service | Stack | Status | What's real / what's missing |
 |---|---|---|---|
 | **town-core** | Python · FastAPI | 🟡 | Tick loop (30s) + NPC/need model real. **No gRPC server**; originates no market order. |
-| **market-district** | Go · gRPC | 🟡 | Order-book matching real. **gRPC handler not registered**; emits no trade event yet. |
+| **market-district** | Go · gRPC | 🟢 | Order book + `PlaceOrder` gRPC + single-sided `trade.settled` all real; `e2e-market` gate green; measured p99 + proof panel (W1-M*). |
 | **fortress** | Rust · WASM + gRPC | 🟡 | WASM sandbox + Kafka consumer real. **gRPC codegen pending**; not wired as an authz gate. |
-| **academy** | Python · LangGraph + Ollama | 🟡 | Ollama client real. **Facade paths never call the model**; LangGraph + Kafka producer not built. |
+| **academy** | Python · LangGraph + Ollama | 🟢 | Grounded RAG over the qtown-docs corpus; `recall@k` gate (`eval-academy`) + faithfulness report + proof panel; dialogue `GenerateDialogue` wired to town-core (W1-A*). LangGraph decision graph still deferred. |
 | **library** | Python · Elasticsearch | ⚫ | Search / index pipeline **unverified**. |
-| **tavern** | TypeScript · WS + Redis | 🟡 | WebSocket broadcast layer real; depends on upstream events that don't flow yet. |
+| **tavern** | TypeScript · WS + Redis | 🟢 | Real-time gateway: Kafka → Redis pub/sub (single fan-out path) → WebSocket channels; `test-tavern` + live `e2e-tavern` gates; read-model proof panel (W1-T). Grounding cross-linked to Academy, not re-implemented. |
 | **cartographer** | TypeScript · Apollo GraphQL | 🟡 | Resolvers exist; fan-out targets are mostly not wired. |
 | **asset-pipeline** | Python · ComfyUI | 🟡 | Pipeline runs on the GPU box; 143 sprites still to generate. |
 | **dashboard** | Nuxt 3 / Vue | 🟡 | UI exists; points at `localhost` defaults; proof panels render `—` without a backend. |
@@ -63,9 +63,9 @@ services. Status is the honest per-area DoD roll-up.
 | # | Area | Backing | Status |
 |---|---|---|---|
 | 1 | Town Square / Overhead Map | cartographer + dashboard | 🟡 |
-| 2 | Tavern | tavern + academy | ⚫ |
-| 3 | Market | market-district | 🟡 (Wave 1A target) |
-| 4 | Academy | academy + library | 🟡 (Wave 1B target) |
+| 2 | Tavern | tavern + academy | 🟢 (gateway: e2e-tavern) |
+| 3 | Market | market-district | 🟢 (Wave 1A) |
+| 4 | Academy | academy + library | 🟢 (Wave 1B) |
 | 5 | Clinic | (ML — not started) | ⚫ |
 | 6 | Workshop / Maker Space | Ralph loop | ⚫ |
 | 7 | Warehouse | (Kafka topology) | ⚫ |

@@ -100,9 +100,10 @@ const explainers: Explainer[] = [
     </div>
 
     <p class="mt-4 text-xs text-qtown-text-dim">
-      The WebSocket contract + the Kafka→content path are behind a green CI gate
-      (<span class="font-mono">test-tavern</span>); live multi-client delivery needs
-      Redis + Kafka — see the service README and docs/adr/0003-tavern-realtime-gateway.md.
+      Behind green CI gates: the WebSocket contract + content flow
+      (<span class="font-mono">test-tavern</span>) and a live Kafka + Redis → WebSocket
+      end-to-end (<span class="font-mono">e2e-tavern</span>) — see the service README and
+      docs/adr/0003-tavern-realtime-gateway.md.
     </p>
   </div>
 </template>

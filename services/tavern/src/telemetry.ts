@@ -1,6 +1,13 @@
 /**
  * OpenTelemetry + Prometheus instrumentation for the Tavern WebSocket gateway.
  *
+ * ⚠️ DORMANT — DEFINED BUT NOT WIRED. Nothing calls `initTelemetry()` and the
+ * span/metric helpers are not used by the running service (index.ts/server.ts do
+ * not import this module). It is scaffolding for a future observability pass; do
+ * NOT claim tavern has tracing until it is actually initialised and covered by a
+ * gate. Kept (not deleted) as the intended shape, and labelled honestly here and
+ * in the README status table (REQUIREMENTS §2 principle 3: real, not scaffolded).
+ *
  * @example
  * ```ts
  * import { initTelemetry, traceWebSocketBroadcast, traceRedisOp } from './telemetry';

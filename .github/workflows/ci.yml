@@ -156,6 +156,44 @@ jobs:
       - name: Test
         run: cd services/tavern && npm test
 
+  # ─── Tavern Content E2E (real Kafka + Redis → WebSocket + read-model) ───
+  # Proves the real-time gateway end-to-end: a qtown.ai.content.generated event on
+  # Kafka → consumer → Redis pub/sub → a real WebSocket subscriber, and the
+  # /content/recent read-model. Blocking. Deps from the same compose used locally.
+  e2e-tavern:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Start Kafka + Redis
+        run: |
+          docker compose -f docker-compose.deps.yml up -d kafka redis
+          echo "waiting for kafka to become healthy..."
+          for i in $(seq 1 24); do
+            st=$(docker inspect -f '{{.State.Health.Status}}' qtown-kafka 2>/dev/null || echo missing)
+            echo "  [$((i*5))s] health=$st"
+            [ "$st" = "healthy" ] && break
+            sleep 5
+          done
+          [ "$(docker inspect -f '{{.State.Health.Status}}' qtown-kafka)" = "healthy" ] \
+            || { echo "kafka never became healthy"; docker logs qtown-kafka | tail -60; exit 1; }
+      - name: Install
+        run: cd services/tavern && npm install
+      - name: E2E — Kafka content → Redis → WebSocket + read-model
+        env:
+          TAVERN_E2E: "1"
+          KAFKA_BROKERS: localhost:9092
+          REDIS_URL: redis://localhost:6379
+        run: cd services/tavern && npx vitest run src/__tests__/content-flow.e2e.test.ts
+      - name: Logs on failure
+        if: failure()
+        run: docker logs qtown-kafka | tail -80
+      - name: Teardown
+        if: always()
+        run: docker compose -f docker-compose.deps.yml down -v
+
   # ─── Academy (Python) ───
   test-academy:
     runs-on: ubuntu-latest
