@@ -170,6 +170,7 @@ class EventEmbedder(BaseEmbedder):
         content = " — ".join(content_parts)
 
         metadata = {
+            "event_id": doc_id,
             "event_type": event_type,
             "tick": tick,
             "npc_id": npc_id,

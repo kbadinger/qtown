@@ -51,6 +51,16 @@ def test_grounded_answer_maps_citations() -> None:
     assert res.citations[0].source == "docs/adr/0001.md"
 
 
+def test_answerer_scopes_retrieval_to_docs_corpus() -> None:
+    # The embeddings table is shared with town-event rows (doc_type='event'); the
+    # docs answerer must scope to doc_type='doc' so events can't pollute its top-k.
+    docs = [_doc(0, "docs/REQUIREMENTS.md", "the three principles")]
+    a = _answerer(docs, '{"answer": "ok [1]", "citations": [1]}')
+    asyncio.run(a.answer("what are the principles?"))
+    a._retriever.search.assert_awaited_once()
+    assert a._retriever.search.await_args.kwargs.get("doc_types") == ["doc"]
+
+
 def test_no_docs_is_not_grounded_and_does_not_fabricate() -> None:
     a = _answerer([], "")
     res = asyncio.run(a.answer("something not in the corpus"))

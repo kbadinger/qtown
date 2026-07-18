@@ -112,7 +112,7 @@ async def main() -> None:
         # Judge against the FULL passages the generator saw — not the truncated
         # citation snippets — else the judge penalises support past the preview.
         # Retrieval is deterministic (fixed corpus embeddings), so these match.
-        docs = await retriever.search(it["question"], k=RETRIEVE_K)
+        docs = await retriever.search(it["question"], k=RETRIEVE_K, doc_types=["doc"])
         src_text = (
             "\n\n".join(
                 f"[{i}] ({d.metadata.get('source', d.doc_id)}) {d.content}"

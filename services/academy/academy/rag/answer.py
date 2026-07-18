@@ -133,7 +133,10 @@ class GroundedAnswerer:
         self, question: str, *, k: int = RETRIEVE_K, model: str | None = None
     ) -> GroundedAnswer:
         model = model or RAG_ANSWER_MODEL
-        docs = await self._retriever.search(question, k=k)
+        # Scope to the docs corpus. The embeddings table is shared with town-event
+        # rows (doc_type='event', used to ground NPC dialogue) — an unscoped search
+        # would let events displace real doc chunks from top-k.
+        docs = await self._retriever.search(question, k=k, doc_types=["doc"])
 
         if not docs:
             return GroundedAnswer(

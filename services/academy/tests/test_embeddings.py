@@ -82,6 +82,25 @@ class TestEventEmbedder:
         ollama.embed.assert_awaited_once()
 
     @pytest.mark.asyncio
+    async def test_process_event_metadata_includes_event_id(self):
+        # 'why this NPC said this' / SearchHistory cite the event by id, so the
+        # embedder must persist event_id in metadata (doc_id alone isn't in it).
+        ollama = _mock_ollama()
+        embedder = _make_embedder(EventEmbedder, ollama, _mock_engine())
+        captured: dict[str, object] = {}
+
+        async def fake_store(doc_id: str, content: str, metadata: dict) -> str:
+            captured["doc_id"] = doc_id
+            captured["metadata"] = metadata
+            return doc_id
+
+        embedder.embed_and_store = fake_store  # type: ignore[assignment]
+        await embedder.process_event({"id": "evt-77", "event_type": "flood", "tick": 5})
+
+        assert captured["doc_id"] == "evt-77"
+        assert captured["metadata"]["event_id"] == "evt-77"  # type: ignore[index]
+
+    @pytest.mark.asyncio
     async def test_process_event_missing_id_returns_none(self):
         ollama = _mock_ollama()
         embedder = _make_embedder(EventEmbedder, ollama, _mock_engine())
