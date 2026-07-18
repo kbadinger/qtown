@@ -287,6 +287,35 @@ runs. Supersedes the 2026-07-13 note "Flow 2 steps 1 + 4 still MISSING":
 
 ---
 
+### Dialogue grounding — town events → RAG → dialogue (2026-07-18, `fable/wave-0-floor`)
+
+Closes the "Step 4 RAG-enriched dialogue" deferral above: NPC dialogue now
+references real town events. All CI-green.
+
+- **Emit (town-core):** `emit_event_broadcast` was orphaned *and* its payload
+  lacked the `id` academy's embedder keys on — so every event would have been
+  silently dropped. Fixed the contract, then wired a **post-commit outbox drain**
+  (`engine/event_outbox.py`): rather than emit at ~150 `Event(...)` sites, it drains
+  each tick's rows once from `_tick_worker` on the main loop (where the Kafka
+  producer singleton lives), env-gated (`EVENTS_BROADCAST`), best-effort, and
+  filtered to narrative events (report/summary blobs excluded).
+- **Embed (academy):** the consumer already embedded `qtown.events.broadcast` →
+  `academy.embeddings` (`doc_type='event'`, idempotent upsert on `doc_id`); now it
+  also persists `event_id` in metadata.
+- **Retrieve + inject (academy):** `GenerateDialogue` retrieves the top-k events
+  (`doc_types=["event"]`) for the pair and injects a "Recent town history" block;
+  the injected events ride the `content.generated` event as `grounded_events`
+  ("why this NPC said this"). Best-effort — empty retrieval → ungrounded.
+- **Pollution guard:** the shared embeddings table meant the docs answerer +
+  faithfulness eval had to be scoped to `doc_types=["doc"]` (done first, before any
+  event landed). The CI docs-recall gate is fixture-based and was never at risk.
+- **Proven:** a **separate** deterministic town-event recall gate
+  (`evals/events_recall.py`, in `eval-academy`) — recall@3 = 1.00 over synthetic
+  events, kept apart from the docs fixture. Live demo (NPCs discussing a fire,
+  theft, and festival) in `docs/evals/dialogue-grounding-demo.md`.
+
+---
+
 ## v1 → v2 feature parity
 
 The router-level port-over is broad:

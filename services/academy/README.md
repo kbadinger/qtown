@@ -66,6 +66,7 @@ KAFKA_ENABLED=false HTTP_PORT=8001 \
 | Vector retrieval (cosine ANN + rerank/BM25 fallback) | ✅ real (`academy/rag/retriever.py`) |
 | Grounded, cited answering (structured output, abstains) | ✅ real (`academy/rag/answer.py`); `POST /rag/ask` verified live |
 | Recall@k retrieval gate | ✅ **blocking CI job** `eval-academy` — recall@5 **0.893** ≥ 0.75 over a committed fixture, pure numpy, no model (`evals/recall.py`) |
+| Dialogue grounding (NPCs reference real town events) | ✅ real — `GenerateDialogue` retrieves `doc_type='event'` rows (town-core emits them via `qtown.events.broadcast`) and injects them; `grounded_events` attribution rides the content event. Gated by a **separate** town-event recall@k (`eval-academy`, `evals/events_recall.py`); local demo in [`docs/evals/dialogue-grounding-demo.md`](../../docs/evals/dialogue-grounding-demo.md) |
 | Unit tests (RAG answer mapping / abstain paths) | ✅ real, mocked (`tests/test_rag_answer.py`) in `test-academy` |
 | Generation faithfulness | ✅ measured locally (LLM-judged, 100% grounded / judge 1.00 / 79% keyword) — a committed dated snapshot, **not** a gate ([`docs/evals/academy-rag-eval.md`](../../docs/evals/academy-rag-eval.md)) |
 | Dashboard proof panel (ask + citations, dormant-safe) | ✅ real (W1-A4) — `AcademyProofPanel.vue` renders a live grounded answer or an honest dormant `—` |
