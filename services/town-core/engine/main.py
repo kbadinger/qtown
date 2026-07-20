@@ -13,9 +13,7 @@ from sqlalchemy.orm import Session
 
 load_dotenv()
 
-from starlette.datastructures import URL
 from starlette.middleware.trustedhost import TrustedHostMiddleware as _TrustedHostMiddleware
-from starlette.responses import PlainTextResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 from fastapi import Depends, FastAPI, Request
@@ -28,7 +26,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
 from engine.auth import hash_key
-from engine.db import Base, SessionLocal, engine, get_db, init_db
+from engine.db import SessionLocal, get_db, init_db
 from engine.models import AdminUser, Building, NPC, Tile, Treasury, WorldState
 
 # ---------------------------------------------------------------------------
@@ -317,8 +315,8 @@ def _assign_sprite_ids(db):
 def _cleanup_excess_npcs(db):
     """One-time cleanup: remove NPCs spawned by runaway population growth."""
     from engine.models import (
-        NPC, WorldState, Transaction, Relationship, Event, Loan,
-        Election, Policy, Crime, Newspaper, VisitorLog, TownAnthem, Dialogue,
+        NPC, WorldState, Transaction, Relationship, Loan,
+        Crime, VisitorLog, Dialogue,
     )
 
     npc_count = db.query(NPC).count()
@@ -419,10 +417,19 @@ def _start_tick_loop():
             await asyncio.sleep(30)
             db = SessionLocal()
             try:
-                process_tick(db)
+                # Run the (synchronous, now-LLM-touching) tick off the event loop
+                # so a slow dialogue gRPC call can't stall FastAPI request handling.
+                await asyncio.to_thread(process_tick, db)
                 ws = db.query(WorldState).first()
                 tick_num = ws.tick if ws else "?"
                 logger.info("[qtown] Tick %s processed", tick_num)
+
+                # Publish this tick's narrative events to Kafka so academy can
+                # embed them (→ grounded dialogue). On the main loop (producer
+                # lives here), best-effort, no-op unless EVENTS_BROADCAST is set.
+                if ws is not None:
+                    from engine.event_outbox import drain_events
+                    await drain_events(db, ws.tick)
             except Exception as e:
                 logger.error("[qtown] Tick error: %s", e, exc_info=True)
             finally:
@@ -453,8 +460,20 @@ def _seed_admin():
         db.close()
 
 
+_routers_registered = False
+
+
 def _auto_discover_routers():
-    """Scan engine/routers/ for .py files with a `router` attribute and include them."""
+    """Scan engine/routers/ for .py files with a `router` attribute and include them.
+
+    Idempotent: routers are registered at most once per process. The startup
+    event can fire repeatedly (each TestClient context re-runs it); without this
+    guard every startup re-includes all routers, nesting FastAPI's merged
+    lifespan until the call stack overflows with a RecursionError.
+    """
+    global _routers_registered
+    if _routers_registered:
+        return
     routers_dir = Path("engine/routers")
     if not routers_dir.is_dir():
         return
@@ -471,6 +490,8 @@ def _auto_discover_routers():
                 print(f"[qtown] Auto-registered router: {module_name}")
         except Exception as e:
             print(f"[qtown] Failed to load router {module_name}: {e}")
+
+    _routers_registered = True
 
 
 # ---------------------------------------------------------------------------
@@ -492,8 +513,7 @@ def index(request: Request):
             stories_done = sum(1 for s in prd.get("stories", []) if s.get("status") == "done")
         except Exception:
             pass
-    return templates.TemplateResponse("index.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "index.html", {
         "stories_done": stories_done,
         "stories_total": stories_total,
     })
@@ -506,7 +526,7 @@ def index(request: Request):
 
 @app.get("/dashboard", response_class=HTMLResponse)
 def dashboard(request: Request):
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+    return templates.TemplateResponse(request, "dashboard.html")
 
 
 @app.get("/api/dashboard-data")
@@ -555,7 +575,7 @@ def dashboard_data():
         try:
             lines = progress_path.read_text(encoding="utf-8").strip().split("\n")
             # Take last 5 non-empty lines
-            learnings = [l for l in lines if l.strip()][-5:]
+            learnings = [line for line in lines if line.strip()][-5:]
         except OSError:
             pass
 
@@ -565,7 +585,7 @@ def dashboard_data():
     if alerts_path.exists():
         try:
             lines = alerts_path.read_text(encoding="utf-8").strip().split("\n")
-            alerts = [l for l in lines if l.strip()][-10:]
+            alerts = [line for line in lines if line.strip()][-10:]
         except OSError:
             pass
 
@@ -635,17 +655,17 @@ def world_state(db: Session = Depends(get_db)):
 
 @app.get("/about", response_class=HTMLResponse)
 def about_page(request: Request):
-    return templates.TemplateResponse("about.html", {"request": request})
+    return templates.TemplateResponse(request, "about.html")
 
 
 @app.get("/features", response_class=HTMLResponse)
 def features_page(request: Request):
-    return templates.TemplateResponse("features.html", {"request": request})
+    return templates.TemplateResponse(request, "features.html")
 
 
 @app.get("/stories", response_class=HTMLResponse)
 def stories_page(request: Request):
-    return templates.TemplateResponse("stories.html", {"request": request})
+    return templates.TemplateResponse(request, "stories.html")
 
 
 @app.get("/api/stories-data")
@@ -702,7 +722,7 @@ def stories_data():
 
 @app.get("/timeline", response_class=HTMLResponse)
 def timeline(request: Request):
-    return templates.TemplateResponse("timeline.html", {"request": request})
+    return templates.TemplateResponse(request, "timeline.html")
 
 
 @app.get("/api/timeline-data")

@@ -38,20 +38,20 @@ DEFAULT_ZONE = "town_core"
 
 def get_neighborhood(x: int, y: int) -> str:
     """Return the neighborhood name for grid coordinates.
-    
+
     Checks town_hall first (it overlaps with town_core center).
     Falls back to town_core if no match.
     """
     # Town Hall is a sub-zone of Town Core — check it first
     if NEIGHBORHOOD_ZONES["town_hall"].contains(x, y):
         return "town_hall"
-    
+
     for name, bounds in NEIGHBORHOOD_ZONES.items():
         if name == "town_hall":
             continue
         if bounds.contains(x, y):
             return name
-    
+
     return DEFAULT_ZONE
 
 
@@ -68,12 +68,12 @@ def get_zone_center(neighborhood: str) -> tuple[int, int]:
 
 def is_zone_boundary_crossing(old_x: int, old_y: int, new_x: int, new_y: int) -> tuple[str, str] | None:
     """Check if moving from (old_x, old_y) to (new_x, new_y) crosses a zone boundary.
-    
+
     Returns (from_zone, to_zone) if crossing detected, None otherwise.
     """
     old_zone = get_neighborhood(old_x, old_y)
     new_zone = get_neighborhood(new_x, new_y)
-    
+
     if old_zone != new_zone:
         return (old_zone, new_zone)
     return None

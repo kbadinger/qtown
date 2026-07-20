@@ -9,7 +9,7 @@ router = APIRouter(prefix="/api/newspaper", tags=["newspaper"])
 def get_latest_newspaper(db: Session = Depends(get_db)):
     """Get the latest newspaper entry."""
     from engine.models import Newspaper
-    
+
     latest = db.query(Newspaper).order_by(Newspaper.tick.desc()).first()
     if latest:
         return {

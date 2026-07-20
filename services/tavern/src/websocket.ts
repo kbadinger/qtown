@@ -126,7 +126,9 @@ export class WebSocketManager {
       return;
     }
 
-    if (msg.action !== "subscribe" && msg.action !== "unsubscribe") {
+    // Accept the verb as `action` (tavern-native) or `type` (dashboard sends this).
+    const verb = msg.action ?? msg.type;
+    if (verb !== "subscribe" && verb !== "unsubscribe") {
       this.send(ws, { type: "error", message: "Unknown action" });
       return;
     }
@@ -142,7 +144,7 @@ export class WebSocketManager {
     const state = this.clients.get(ws);
     if (!state) return;
 
-    if (msg.action === "subscribe") {
+    if (verb === "subscribe") {
       state.subscriptions.add(msg.channel);
       this.send(ws, { type: "subscribed", channel: msg.channel });
       logger.debug({ channel: msg.channel }, "Client subscribed");
@@ -163,9 +165,16 @@ export class WebSocketManager {
    * explicitly subscribe).
    */
   broadcast(channel: string, data: unknown): void {
-    const payload = JSON.stringify({
+    // Envelope matches the dashboard's WsMessage: { channel, type, payload }.
+    // `type` is the event's own `type` when present, else the channel name.
+    const type =
+      data && typeof data === "object" && "type" in data
+        ? (data as { type?: unknown }).type
+        : channel;
+    const frame = JSON.stringify({
       channel,
-      data,
+      type,
+      payload: data,
       timestamp: new Date().toISOString(),
     });
 
@@ -175,7 +184,7 @@ export class WebSocketManager {
       if (ws.readyState !== WebSocket.OPEN) continue;
       if (!state.subscriptions.has(channel)) continue;
 
-      ws.send(payload, (err) => {
+      ws.send(frame, (err) => {
         if (err) logger.warn({ err }, "Failed to send WebSocket message");
       });
       sent++;

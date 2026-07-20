@@ -21,7 +21,7 @@ func TestFullTradeLifecycle(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		ob.PlaceOrder(orderbook.Order{
 			ID:       fmt.Sprintf("seller-%d", i),
-			NPCID:    fmt.Sprintf("farmer-%d", i),
+			NPCID:    int64(i),
 			Resource: "wheat",
 			Side:     orderbook.ASK,
 			Price:    10.0 + float64(i)*0.5,
@@ -33,7 +33,7 @@ func TestFullTradeLifecycle(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		ob.PlaceOrder(orderbook.Order{
 			ID:       fmt.Sprintf("buyer-%d", i),
-			NPCID:    fmt.Sprintf("baker-%d", i),
+			NPCID:    int64(100 + i),
 			Resource: "wheat",
 			Side:     orderbook.BID,
 			Price:    15.0 - float64(i)*0.5,
@@ -102,7 +102,7 @@ func TestConcurrentTradeSettlement(t *testing.T) {
 
 				ob.PlaceOrder(orderbook.Order{
 					ID:       fmt.Sprintf("t%d-o%d", traderID, i),
-					NPCID:    fmt.Sprintf("npc-%d", traderID),
+					NPCID:    int64(traderID),
 					Resource: "iron",
 					Side:     side,
 					Price:    price,

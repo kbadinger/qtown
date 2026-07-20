@@ -23,15 +23,11 @@
     "target": "ES2022",
     "useDefineForClassFields": true
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.vue",
-    ".nuxt/nuxt.d.ts"
-  ],
   "exclude": [
-    "node_modules",
+    "dist",
+    ".data",
     ".output",
-    ".nuxt"
+    "node_modules",
+    "server"
   ]
 }

@@ -1,0 +1,91 @@
+{
+  "_about": "Golden eval set for the Academy RAG (W1-A3). Each item is a question about qtown answerable from the committed docs corpus. `expected_sources` are the doc source paths that SHOULD be retrieved (recall@k gate). `answer_contains` are substrings a faithful answer should include (local faithfulness eval). Authored by hand from the corpus; keep in sync with corpus.py's CORPUS_GLOBS.",
+  "k": 5,
+  "recall_threshold": 0.75,
+  "items": [
+    {
+      "id": "settlement-guarantee",
+      "question": "What delivery guarantee does market trade settlement provide, and how are duplicate settlements handled?",
+      "expected_sources": ["docs/adr/0001-market-order-book-and-settlement.md"],
+      "answer_contains": ["at-least-once", "idempotent"]
+    },
+    {
+      "id": "settlement-key",
+      "question": "What compound key do consumers use to dedupe settlement events?",
+      "expected_sources": ["docs/adr/0001-market-order-book-and-settlement.md"],
+      "answer_contains": ["trade_id", "npc_id"]
+    },
+    {
+      "id": "single-sided",
+      "question": "How many trade.settled events does a single match emit, and why is it single-sided?",
+      "expected_sources": ["docs/adr/0001-market-order-book-and-settlement.md"],
+      "answer_contains": ["two", "counterparty"]
+    },
+    {
+      "id": "matching-engine",
+      "question": "How is the market order book matching implemented and what priority does it use?",
+      "expected_sources": ["docs/adr/0001-market-order-book-and-settlement.md"],
+      "answer_contains": ["in-memory"]
+    },
+    {
+      "id": "three-principles",
+      "question": "What are the three inviolable principles?",
+      "expected_sources": ["docs/REQUIREMENTS.md"],
+      "answer_contains": ["fabricated", "gate"]
+    },
+    {
+      "id": "dod-dimensions",
+      "question": "What are the dimensions of the per-area definition of done?",
+      "expected_sources": ["docs/REQUIREMENTS.md"],
+      "answer_contains": ["Gated", "Proven"]
+    },
+    {
+      "id": "placement-p99",
+      "question": "What is the measured placement p99 latency for the market, and at what throughput?",
+      "expected_sources": ["docs/perf/market-loadtest.md"],
+      "answer_contains": ["2.16", "ms"]
+    },
+    {
+      "id": "tail-cause",
+      "question": "Why does the matched-order tail latency spike — what dominates it?",
+      "expected_sources": ["docs/perf/market-loadtest.md"],
+      "answer_contains": ["Kafka", "synchronous"]
+    },
+    {
+      "id": "validation-citadel",
+      "question": "Which backend service backs the Validation Citadel area?",
+      "expected_sources": ["CLAUDE.md"],
+      "answer_contains": ["fortress"]
+    },
+    {
+      "id": "v1-archived",
+      "question": "Should new features be built in the v1 monolith?",
+      "expected_sources": ["CLAUDE.md"],
+      "answer_contains": ["archived"]
+    },
+    {
+      "id": "cartographer-status",
+      "question": "What is the current status of cartographer's gRPC federation to backend services?",
+      "expected_sources": ["docs/v2-audit.md"],
+      "answer_contains": ["stub"]
+    },
+    {
+      "id": "academy-teaches",
+      "question": "What is the Academy area meant to teach?",
+      "expected_sources": ["docs/plans/AREA-TECH-TEACHING-PLAN.md"],
+      "answer_contains": ["RAG"]
+    },
+    {
+      "id": "market-grpc-surface",
+      "question": "What does the market-district service expose over gRPC?",
+      "expected_sources": ["services/market-district/README.md"],
+      "answer_contains": ["PlaceOrder"]
+    },
+    {
+      "id": "dormant-mode",
+      "question": "What does it mean for an area to ship in dormant mode?",
+      "expected_sources": ["docs/REQUIREMENTS.md", "CLAUDE.md"],
+      "answer_contains": ["labeled"]
+    }
+  ]
+}

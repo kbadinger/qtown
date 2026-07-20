@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	pb "qtown/market-district/proto"
+	pb "qtown/proto/qtown"
 )
 
 // NPCArrive handles an NPC arriving at the Market District.

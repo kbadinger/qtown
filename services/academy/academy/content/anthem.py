@@ -273,9 +273,8 @@ class AnthemGenerator:
                     "max_tokens": 400,
                 },
             )
-            raw = result.response
             model_used = result.model_used
-            fields = self._parse_response(raw)
+            fields = self._parse_response(result.response)
         except Exception as exc:
             logger.error("Anthem generation failed: %s", exc)
             fields = self._fallback_anthem(town_mood, population, notable_events)

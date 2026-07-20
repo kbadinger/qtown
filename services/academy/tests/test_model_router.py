@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock
 
 import pytest
 
-from academy.model_router import ModelRouter, ModelTier, RoutingStats
+from academy.model_router import ModelRouter, ModelTier
 
 
 # ---------------------------------------------------------------------------

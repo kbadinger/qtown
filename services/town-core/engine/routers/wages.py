@@ -28,16 +28,16 @@ def update_base_wage(
 ) -> WageUpdateResponse:
     """Update the base wage for all NPCs."""
     world_state = db.query(WorldState).first()
-    
+
     if not world_state:
         world_state = WorldState()
         db.add(world_state)
         db.commit()
         db.refresh(world_state)
-    
+
     world_state.base_wage = request.base_wage
     db.commit()
-    
+
     return WageUpdateResponse(
         base_wage=world_state.base_wage,
         message=f"Base wage updated to {world_state.base_wage}",

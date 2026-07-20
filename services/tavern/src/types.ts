@@ -2,21 +2,22 @@
 // WebSocket protocol types
 // ============================================================================
 
-export interface SubscribeMessage {
-  action: "subscribe";
+// Inbound subscribe/unsubscribe command. The verb may arrive as `action` (the
+// tavern-native field) or `type` (what the dashboard's useWebSocket sends) — both
+// are accepted so a single client contract works across the stack.
+export interface WebSocketClientMessage {
+  action?: "subscribe" | "unsubscribe";
+  type?: "subscribe" | "unsubscribe";
   channel: string;
 }
 
-export interface UnsubscribeMessage {
-  action: "unsubscribe";
-  channel: string;
-}
-
-export type WebSocketClientMessage = SubscribeMessage | UnsubscribeMessage;
-
+// Outbound broadcast envelope. `payload` carries the event; `type` is the event's
+// own `type` when present, else the channel. This matches the dashboard's
+// WsMessage ({ channel, type, payload }) so subscribers read `message.payload`.
 export interface BroadcastMessage {
   channel: string;
-  data: unknown;
+  type: unknown;
+  payload: unknown;
   timestamp: string;
 }
 
@@ -49,45 +50,43 @@ export interface KafkaEvent {
   [key: string]: unknown;
 }
 
-export interface TradeSettled {
-  event_id: string;
+// Single-sided settlement: market-district emits ONE message per counterparty
+// (town-core reads the same shape). `gold_delta` is the change to apply to the
+// NPC's running gold total — not an absolute balance.
+export interface TradeSettled extends KafkaEvent {
   type: "economy.trade.settled";
-  timestamp: string;
-  trade_id: string;
-  buyer_id: string;
-  seller_id: string;
+  npc_id: number;
+  gold_delta: number;
   resource: string;
-  quantity: number;
   price: number;
-  buyer_gold_after: number;
-  seller_gold_after: number;
+  quantity: number;
+  trade_id: string;
 }
 
-export interface PriceUpdate {
-  event_id: string;
+export interface PriceUpdate extends KafkaEvent {
   type: "economy.price.update";
-  timestamp: string;
   resource: string;
   price: number;
   volume: number;
   tick: number;
 }
 
-export interface ContentGenerated {
-  event_id: string;
+// academy emits { content_type, content_id, content, metadata, timestamp }.
+// `text` is a convenience rendering some producers include; treat it as
+// optional so the handler consumes messages without it.
+export interface ContentGenerated extends KafkaEvent {
   type: "ai.content.generated";
-  timestamp: string;
   content_type: "newspaper" | "dialogue" | "description";
   content_id: string;
   npc_id?: string;
   day?: number;
-  text: string;
+  content?: unknown;
+  text?: string;
+  metadata?: Record<string, unknown>;
 }
 
-export interface EventBroadcast {
-  event_id: string;
+export interface EventBroadcast extends KafkaEvent {
   type: "events.broadcast";
-  timestamp: string;
   event_type: string;
   description: string;
   tick: number;
@@ -96,21 +95,20 @@ export interface EventBroadcast {
   crime_count?: number;
 }
 
-export interface NPCTravelDepart {
-  event_id: string;
-  type: "npc.travel.depart";
-  timestamp: string;
-  npc_id: string;
-  from_neighborhood: string;
-  from_building: string;
-  to_neighborhood: string;
-  to_building: string;
+// town-core emits the canonical `qtown.npc.travel` (spec: Wanderers' Path,
+// origin → destination) with { tick, npc_id, from, to, npc_state }. `from`/`to`
+// are neighborhood names; there is no building granularity in the travel payload.
+export interface NPCTravelDepart extends KafkaEvent {
+  type: "npc.travel";
+  npc_id: number;
+  from: string;
+  to: string;
+  tick?: number;
+  npc_state?: Record<string, unknown>;
 }
 
-export interface NPCTravelComplete {
-  event_id: string;
+export interface NPCTravelComplete extends KafkaEvent {
   type: "npc.travel.complete";
-  timestamp: string;
   npc_id: string;
   neighborhood: string;
   building: string;

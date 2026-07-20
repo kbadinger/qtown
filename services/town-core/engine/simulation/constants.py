@@ -1,4 +1,3 @@
-from sqlalchemy.orm import Session
 # Drought to famine cascade threshold
 DROUGHT_FAMINE_THRESHOLD = 5
 """Simulation constants."""

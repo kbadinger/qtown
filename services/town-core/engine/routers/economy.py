@@ -29,14 +29,14 @@ def update_tax_rate(
     """Update the world tax rate (admin only)."""
     if request.tax_rate < 0 or request.tax_rate > 1:
         raise HTTPException(status_code=400, detail="Tax rate must be between 0 and 1")
-    
+
     world_state = db.query(WorldState).first()
     if not world_state:
         raise HTTPException(status_code=500, detail="World state not initialized")
-    
+
     world_state.tax_rate = request.tax_rate
     db.commit()
-    
+
     return TaxRateResponse(
         tax_rate=world_state.tax_rate,
         message=f"Tax rate updated to {world_state.tax_rate * 100:.1f}%"

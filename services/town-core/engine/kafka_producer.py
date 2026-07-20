@@ -1,5 +1,4 @@
 """Async Kafka producer for Town Core event emission."""
-import asyncio
 import json
 import logging
 import os
@@ -60,12 +59,20 @@ async def emit_event(topic: str, key: str, value: dict[str, Any]) -> None:
 
 async def emit_event_broadcast(tick: int, event_type: str, description: str,
                                 npc_id: int | None = None, severity: str = "info",
-                                metadata: dict | None = None) -> None:
-    """Emit an event to the broadcast topic."""
+                                metadata: dict | None = None,
+                                event_id: int | None = None) -> None:
+    """Emit an event to the broadcast topic.
+
+    ``event_id`` (the Event row's PK) is sent as ``id`` — academy's embedder keys
+    its idempotent upsert (``doc_id``) on it and DROPS events that carry neither
+    ``id`` nor ``event_id``, so this must be set for the event to be embedded.
+    """
     await emit_event(
         TOPIC_EVENTS_BROADCAST,
-        key=str(tick),
+        key=str(event_id if event_id is not None else tick),
         value={
+            "id": event_id,
+            "event_id": event_id,
             "tick": tick,
             "event_type": event_type,
             "description": description,

@@ -1,5 +1,6 @@
 # ─── Generated code ───
-gen/
+# proto codegen (gen/) IS committed as the cross-service source of truth and
+# drift-checked in CI (buf generate must produce no diff). Do not re-ignore it.
 
 # ─── Go ───
 services/market-district/bin/
@@ -21,11 +22,16 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 
-# ─── IDE ───
+# ─── IDE / local agent tooling ───
 .vscode/
 .idea/
 *.swp
 *.swo
+
+# Claude Code / MCP local machine configuration. These can contain broad
+# permissions, absolute local paths, and API keys; keep them out of git.
+.claude/settings.local.json
+.mcp.json
 
 # ─── OS ───
 .DS_Store
@@ -47,3 +53,6 @@ Thumbs.db
 *.p8
 *.pem
 *.key
+
+# local test artifacts
+services/town-core/test_town.db

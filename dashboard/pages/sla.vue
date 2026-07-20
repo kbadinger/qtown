@@ -12,6 +12,7 @@ import {
   Legend,
   Filler,
 } from 'chart.js'
+import type { ChartOptions, TooltipItem } from 'chart.js'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, Filler)
 
@@ -194,7 +195,7 @@ const serviceChartData = computed(() => {
   }
 })
 
-const serviceChartOptions = {
+const serviceChartOptions: ChartOptions<'bar'> = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -208,7 +209,7 @@ const serviceChartOptions = {
       titleColor: '#94a3b8',
       bodyColor: '#e2e8f0',
       callbacks: {
-        label: (ctx: { dataset: { label: string }; raw: number }) => `${ctx.dataset.label}: ${ctx.raw.toFixed(2)}ms`,
+        label: (ctx: TooltipItem<'bar'>) => `${ctx.dataset.label}: ${Number(ctx.raw).toFixed(2)}ms`,
       },
     },
   },
@@ -222,7 +223,7 @@ const serviceChartOptions = {
       ticks: {
         color: '#475569',
         font: { family: 'monospace', size: 10 },
-        callback: (v: number) => `${v}ms`,
+        callback: (v: string | number) => `${v}ms`,
       },
       beginAtZero: true,
     },
@@ -324,7 +325,7 @@ function formatTs(ts: number): string {
                   <td class="px-4 py-2.5 font-mono sticky left-0 bg-qtown-card">
                     <span class="text-qtown-text-secondary">{{ svc }}</span>
                     <span class="text-qtown-text-dim mx-1">›</span>
-                    <span class="text-qtown-text-dim">{{ metricName.replace(/_ms$/, '') }}</span>
+                    <span class="text-qtown-text-dim">{{ String(metricName).replace(/_ms$/, '') }}</span>
                   </td>
                   <!-- Fill cells for the owning service, blank for others -->
                   <template v-for="colSvc in serviceList" :key="colSvc">

@@ -11,6 +11,7 @@ from academy.models.router import (
     ROUTE_TABLE,
     ModelTier,
     RouteConfig,
+    RouteResult,
     RoutingStats,
     ModelRouter,
 )
@@ -19,6 +20,7 @@ __all__ = [
     "ROUTE_TABLE",
     "ModelTier",
     "RouteConfig",
+    "RouteResult",
     "RoutingStats",
     "ModelRouter",
 ]

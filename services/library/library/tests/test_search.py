@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
-from httpx import AsyncClient
 
 
 # ---------------------------------------------------------------------------
@@ -105,8 +105,14 @@ def mock_consumer() -> MagicMock:
 
 
 @pytest.fixture()
-def client(mock_es_client: MagicMock, mock_consumer: MagicMock) -> TestClient:
-    """Create a synchronous TestClient with mocked ES and Kafka consumer."""
+def client(mock_es_client: MagicMock, mock_consumer: MagicMock) -> Iterator[TestClient]:
+    """Create a synchronous TestClient with mocked ES and Kafka consumer.
+
+    The ``patch`` context must stay open for the duration of each test, so this
+    fixture ``yield``s the client rather than returning it — a ``return`` here
+    would tear down the mocks before the request runs, letting handlers hit the
+    real (unconnected) Elasticsearch singleton and 500.
+    """
     import asyncio
 
     async def _fake_consume() -> None:
@@ -121,7 +127,7 @@ def client(mock_es_client: MagicMock, mock_consumer: MagicMock) -> TestClient:
     ):
         from library.main import app
 
-        return TestClient(app, raise_server_exceptions=True)
+        yield TestClient(app, raise_server_exceptions=True)
 
 
 # ---------------------------------------------------------------------------

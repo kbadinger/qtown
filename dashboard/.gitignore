@@ -1,0 +1,6 @@
+# Nuxt generated
+.nuxt
+.output
+.data
+node_modules
+dist

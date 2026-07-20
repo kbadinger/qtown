@@ -32,9 +32,9 @@ KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
 CONSUMER_GROUP_ID = os.getenv("KAFKA_CONSUMER_GROUP", "library-indexer")
 
 TOPICS = [
-    "events.broadcast",
-    "ai.content.generated",
-    "economy.trade.settled",
+    "qtown.events.broadcast",
+    "qtown.ai.content.generated",
+    "qtown.economy.trade.settled",
 ]
 
 MAX_BUFFER_SIZE = 100
@@ -151,10 +151,10 @@ class LibraryConsumer:
     # ------------------------------------------------------------------
 
     async def _route(self, topic: str, payload: dict[str, Any]) -> None:
-        if topic == "events.broadcast":
+        if topic == "qtown.events.broadcast":
             self._buffers["qtown-events"].add(payload)
 
-        elif topic == "ai.content.generated":
+        elif topic == "qtown.ai.content.generated":
             content_type = payload.get("content_type", "")
             if content_type == "newspaper":
                 self._buffers["qtown-newspapers"].add(payload)
@@ -163,7 +163,7 @@ class LibraryConsumer:
             else:
                 logger.debug("Unrecognised content_type %r — skipping", content_type)
 
-        elif topic == "economy.trade.settled":
+        elif topic == "qtown.economy.trade.settled":
             self._buffers["qtown-transactions"].add(payload)
 
         else:

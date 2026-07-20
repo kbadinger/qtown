@@ -18,10 +18,19 @@ services:
       DATABASE_URL: postgresql://qtown:qtown_dev@postgres:5432/qtown
       KAFKA_BROKERS: kafka:9092
       REDIS_URL: redis://redis:6379
+      # Enables the Flow 2 dialogue trigger: town-core asks Academy to write
+      # co-located NPC conversations over gRPC. Best-effort — a down Academy is a
+      # fast no-op (circuit breaker), never a broken tick.
+      ACADEMY_GRPC_ADDR: academy:50053
+      # Publish each tick's narrative events to qtown.events.broadcast so academy
+      # embeds them → dialogue is grounded in real town history. Best-effort.
+      EVENTS_BROADCAST: "1"
     depends_on:
       postgres:
         condition: service_healthy
       kafka:
+        condition: service_healthy
+      academy:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-sf", "http://localhost:8000/health"]
@@ -82,6 +91,9 @@ services:
       DATABASE_URL: postgresql://qtown:qtown_dev@postgres:5432/qtown
       KAFKA_BROKERS: kafka:9092
       OLLAMA_HOST: ${OLLAMA_HOST:-http://host.docker.internal:11434}
+      # Route NPC dialogue to a locally-available model so it never escalates to
+      # the (unconfigured) cloud stub — real generation, not fabricated text.
+      NPC_DIALOGUE_MODEL: ${NPC_DIALOGUE_MODEL:-qwen3.5:4b}
     depends_on:
       postgres:
         condition: service_healthy

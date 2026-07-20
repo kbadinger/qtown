@@ -9,14 +9,12 @@ test_tick_interval            — verify should_consolidate respects 50-tick int
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from academy.agents.memory import (
     MemoryConsolidator,
     ConsolidatedMemory,
-    ConsolidationResult,
-    CONSOLIDATION_INTERVAL,
     MIN_EVENTS_PER_CATEGORY,
     CONSOLIDATED_IMPORTANCE,
 )
@@ -338,9 +336,7 @@ class TestTickInterval:
         _mock_embed(consolidator)
 
         events = trade_events(12)
-        asyncio.get_event_loop().run_until_complete(
-            consolidator.consolidate("npc1", events, tick=250)
-        )
+        asyncio.run(consolidator.consolidate("npc1", events, tick=250))
 
         assert consolidator._last_consolidation.get("npc1") == 250
 

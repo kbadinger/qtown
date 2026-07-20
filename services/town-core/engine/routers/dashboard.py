@@ -16,7 +16,7 @@ def _load_prd_json():
     # Fallback to current dir if not found relative to engine
     if not os.path.exists(prd_path):
         prd_path = "prd.json"
-    
+
     try:
         with open(prd_path, "r") as f:
             return json.load(f)
@@ -28,14 +28,14 @@ def get_dashboard_data(db: Session = Depends(get_db)):
     """Return dashboard statistics including stories completed."""
     prd_data = _load_prd_json()
     stories = prd_data.get("stories", [])
-    
+
     completed_count = sum(1 for s in stories if s.get("status") == "completed")
     total_count = len(stories)
-    
+
     # Fallback to 200 if prd.json is missing or empty, as per story description
     if total_count == 0:
         total_count = 200
-        
+
     return {
         "stories": {
             "done": completed_count,
@@ -48,17 +48,17 @@ def index(request: Request, db: Session = Depends(get_db)):
     """Serve the main index page."""
     prd_data = _load_prd_json()
     stories = prd_data.get("stories", [])
-    
+
     completed_count = sum(1 for s in stories if s.get("status") == "completed")
     total_count = len(stories)
-    
+
     if total_count == 0:
         total_count = 200
 
     return templates.TemplateResponse(
+        request,
         "index.html",
         {
-            "request": request,
             "stories_done": completed_count,
             "stories_total": total_count
         }

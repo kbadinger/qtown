@@ -21,7 +21,7 @@ const (
 // Order represents a single resting order in the book.
 type Order struct {
 	ID        string
-	NPCID     string
+	NPCID     int64
 	Resource  string
 	Side      Side
 	Price     float64
@@ -34,6 +34,8 @@ type Trade struct {
 	ID          string
 	BuyOrderID  string
 	SellOrderID string
+	BuyerNPCID  int64
+	SellerNPCID int64
 	Resource    string
 	Price       float64
 	Quantity    float64
@@ -108,6 +110,8 @@ func (ob *OrderBook) Match() []Trade {
 			ID:          fmt.Sprintf("trade-%d", ob.tradeSeq),
 			BuyOrderID:  best.ID,
 			SellOrderID: offer.ID,
+			BuyerNPCID:  best.NPCID,
+			SellerNPCID: offer.NPCID,
 			Resource:    ob.Resource,
 			Price:       execPrice,
 			Quantity:    fillQty,

@@ -14,7 +14,6 @@ CLOUD_FALLBACK for that request and records it against routing stats.
 
 from __future__ import annotations
 
-import asyncio
 import logging
 import os
 import time
@@ -63,9 +62,12 @@ ROUTE_TABLE: dict[str, RouteConfig] = {
         max_tokens=128,
         temperature=0.8,
     ),
-    # Full NPC dialogue exchanges
+    # Full NPC dialogue exchanges. Model is env-overridable so a deployment can
+    # point it at a model its Ollama actually has — otherwise an unavailable model
+    # escalates to the cloud fallback, which returns a stub when no API key is set
+    # (that would be fabricated dialogue; see Flow 2 / W1-A7).
     "npc_dialogue": RouteConfig(
-        model_id="deepseek-r1:14b",
+        model_id=os.environ.get("NPC_DIALOGUE_MODEL", "deepseek-r1:14b"),
         tier=ModelTier.LOCAL_QUALITY,
         max_tokens=512,
         temperature=0.7,
@@ -114,6 +116,66 @@ ROUTE_TABLE: dict[str, RouteConfig] = {
         temperature=0.7,
     ),
 }
+
+# ---------------------------------------------------------------------------
+# Route result
+# ---------------------------------------------------------------------------
+
+
+class RouteResult(str):
+    """
+    The result of a routed inference call: the generated text plus routing
+    metadata (which model ran, real token counts).
+
+    Subclasses ``str`` so legacy callers that treat the result as the raw
+    response text keep working; new callers should read ``.response`` and
+    ``.model_used`` explicitly.
+    """
+
+    task_type: str
+    model_used: str
+    prompt_tokens: int
+    completion_tokens: int
+
+    def __new__(
+        cls,
+        *,
+        task_type: str,
+        model_used: str,
+        response: str,
+        prompt_tokens: int = 0,
+        completion_tokens: int = 0,
+    ) -> "RouteResult":
+        obj = super().__new__(cls, response)
+        obj.task_type = task_type
+        obj.model_used = model_used
+        obj.prompt_tokens = prompt_tokens
+        obj.completion_tokens = completion_tokens
+        return obj
+
+    @property
+    def response(self) -> str:
+        return str(self)
+
+
+def _normalize_call_result(
+    raw: dict[str, Any] | str, fallback_model: str
+) -> tuple[str, str, int, int]:
+    """
+    Return ``(text, model_used, prompt_tokens, completion_tokens)`` from a
+    model-call result. The call helpers return a metadata dict; unit tests
+    mock them with bare strings, in which case token counts are 0
+    ("not measured"), never invented.
+    """
+    if isinstance(raw, dict):
+        return (
+            raw.get("response", ""),
+            raw.get("model", fallback_model),
+            int(raw.get("prompt_tokens", 0)),
+            int(raw.get("completion_tokens", 0)),
+        )
+    return raw, fallback_model, 0, 0
+
 
 # ---------------------------------------------------------------------------
 # Stats tracking
@@ -171,7 +233,8 @@ class ModelRouter:
     Usage::
 
         router = ModelRouter()
-        response = await router.route("npc_dialogue", "Tell me about the harvest.")
+        result = await router.route("npc_dialogue", "Tell me about the harvest.")
+        print(result.response, result.model_used)
     """
 
     def __init__(self) -> None:
@@ -220,45 +283,68 @@ class ModelRouter:
     async def route(
         self,
         task_type: str,
-        prompt: str,
+        request: str | dict[str, Any],
         *,
         system: str | None = None,
-        context: dict[str, Any] | None = None,
-    ) -> str:
+    ) -> RouteResult:
         """
         Route a prompt to the appropriate model.
 
-        Falls back to cloud if the local model fails.
-        Returns the generated text string.
+        ``request`` is either the prompt string, or a dict with ``prompt``
+        plus optional per-call overrides (``system``, ``temperature``,
+        ``max_tokens``). Falls back to cloud if the local model fails.
+        Returns a :class:`RouteResult` carrying the generated text and real
+        token counts.
         """
         cfg = ROUTE_TABLE.get(task_type, ROUTE_TABLE["npc_chatter"])
+        if isinstance(request, dict):
+            prompt = request.get("prompt", "")
+            system = request.get("system", system)
+            temperature = float(request.get("temperature", cfg.temperature))
+            max_tokens = int(request.get("max_tokens", cfg.max_tokens))
+        else:
+            prompt = request
+            temperature = cfg.temperature
+            max_tokens = cfg.max_tokens
+
         t0 = time.monotonic()
-        tokens_in = tokens_out = 0
 
         try:
             if cfg.tier == ModelTier.CLOUD_FALLBACK:
-                result = await self._call_cloud(
-                    cfg.model_id, prompt, system=system, max_tokens=cfg.max_tokens,
-                    temperature=cfg.temperature,
+                raw = await self._call_cloud(
+                    cfg.model_id, prompt, system=system, max_tokens=max_tokens,
+                    temperature=temperature,
+                )
+                text, model_used, tokens_in, tokens_out = _normalize_call_result(
+                    raw, cfg.model_id
                 )
                 latency_ms = (time.monotonic() - t0) * 1000.0
                 self.stats.record(
                     cfg.model_id, cfg.tier, latency_ms, tokens_in, tokens_out,
                     cfg.cost_per_1k_tokens,
                 )
-                return result
+                return RouteResult(
+                    task_type=task_type, model_used=model_used, response=text,
+                    prompt_tokens=tokens_in, completion_tokens=tokens_out,
+                )
 
             # Local path — attempt Ollama, escalate on failure
             try:
-                response = await self._call_ollama(
+                raw = await self._call_ollama(
                     cfg.model_id, prompt, system=system,
-                    max_tokens=cfg.max_tokens, temperature=cfg.temperature,
+                    max_tokens=max_tokens, temperature=temperature,
+                )
+                text, model_used, tokens_in, tokens_out = _normalize_call_result(
+                    raw, cfg.model_id
                 )
                 latency_ms = (time.monotonic() - t0) * 1000.0
                 self.stats.record(
-                    cfg.model_id, cfg.tier, latency_ms, 0, 0, 0.0
+                    cfg.model_id, cfg.tier, latency_ms, tokens_in, tokens_out, 0.0
                 )
-                return response
+                return RouteResult(
+                    task_type=task_type, model_used=model_used, response=text,
+                    prompt_tokens=tokens_in, completion_tokens=tokens_out,
+                )
 
             except Exception as local_exc:
                 logger.warning(
@@ -266,16 +352,22 @@ class ModelRouter:
                     cfg.model_id, task_type, local_exc,
                 )
                 cloud_cfg = ROUTE_TABLE["complex_gen"]
-                result = await self._call_cloud(
+                raw = await self._call_cloud(
                     cloud_cfg.model_id, prompt, system=system,
                     max_tokens=cloud_cfg.max_tokens, temperature=cloud_cfg.temperature,
+                )
+                text, model_used, tokens_in, tokens_out = _normalize_call_result(
+                    raw, cloud_cfg.model_id
                 )
                 latency_ms = (time.monotonic() - t0) * 1000.0
                 self.stats.record(
                     cloud_cfg.model_id, ModelTier.CLOUD_FALLBACK, latency_ms,
-                    0, 0, cloud_cfg.cost_per_1k_tokens,
+                    tokens_in, tokens_out, cloud_cfg.cost_per_1k_tokens,
                 )
-                return result
+                return RouteResult(
+                    task_type=task_type, model_used=model_used, response=text,
+                    prompt_tokens=tokens_in, completion_tokens=tokens_out,
+                )
 
         except Exception as exc:
             logger.error("ModelRouter.route failed for task '%s': %s", task_type, exc)
@@ -293,24 +385,20 @@ class ModelRouter:
         system: str | None = None,
         max_tokens: int = 512,
         temperature: float = 0.7,
-    ) -> str:
-        """Call Ollama and return the response string."""
-        return await self._ollama.generate(
-            model, prompt, system=system, temperature=temperature, max_tokens=max_tokens
-        )
+    ) -> dict[str, Any] | str:
+        """
+        Call Ollama and return the metadata dict (response + real token
+        counts). Tests may mock this with a bare response string; ``route()``
+        normalizes either shape.
 
-    async def _call_ollama_with_meta(
-        self,
-        model: str,
-        prompt: str,
-        *,
-        system: str | None = None,
-        max_tokens: int = 512,
-        temperature: float = 0.7,
-    ) -> dict[str, Any]:
-        """Call Ollama and return response + token metadata."""
+        ``think=False`` disables the chain-of-thought trace on reasoning models
+        (qwen3.5 / deepseek-r1): the router's callers parse the ``response``, not
+        the reasoning, and leaving thinking on burns the ``max_tokens`` budget on
+        hidden tokens — which can truncate or empty the actual answer.
+        """
         return await self._ollama.generate_with_metadata(
-            model, prompt, system=system, temperature=temperature, max_tokens=max_tokens
+            model, prompt, system=system, temperature=temperature,
+            max_tokens=max_tokens, think=False,
         )
 
     async def _call_cloud(
@@ -321,9 +409,11 @@ class ModelRouter:
         system: str | None = None,
         max_tokens: int = 2048,
         temperature: float = 0.7,
-    ) -> str:
+    ) -> dict[str, Any] | str:
         """
-        Call a cloud LLM (OpenAI-compatible API).
+        Call a cloud LLM (OpenAI-compatible API) and return a metadata dict
+        (response + usage token counts). Tests may mock this with a bare
+        response string; ``route()`` normalizes either shape.
 
         Requires OPENAI_API_KEY in environment. Falls back to a stub
         response if the key is absent (for offline testing).
@@ -331,7 +421,12 @@ class ModelRouter:
         api_key = os.environ.get("OPENAI_API_KEY", "")
         if not api_key:
             logger.warning("OPENAI_API_KEY not set; returning stub cloud response")
-            return f"[cloud-stub] Response to: {prompt[:60]}..."
+            return {
+                "response": f"[cloud-stub] Response to: {prompt[:60]}...",
+                "model": model,
+                "prompt_tokens": 0,
+                "completion_tokens": 0,
+            }
 
         import httpx  # already a dep
 
@@ -356,4 +451,10 @@ class ModelRouter:
             )
             resp.raise_for_status()
             data = resp.json()
-            return data["choices"][0]["message"]["content"]
+            usage = data.get("usage") or {}
+            return {
+                "response": data["choices"][0]["message"]["content"],
+                "model": data.get("model", model),
+                "prompt_tokens": int(usage.get("prompt_tokens", 0)),
+                "completion_tokens": int(usage.get("completion_tokens", 0)),
+            }

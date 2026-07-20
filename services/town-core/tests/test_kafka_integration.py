@@ -32,12 +32,18 @@ async def test_emit_event_broadcast():
             description="Something happened",
             npc_id=7,
             severity="info",
+            event_id=42,
         )
 
         mock_producer.send_and_wait.assert_called_once()
         call_args = mock_producer.send_and_wait.call_args
-        assert call_args.kwargs["topic"] == "qtown.events.broadcast" or \
-               call_args[0][0] == "qtown.events.broadcast"
+        assert call_args.kwargs.get("topic") == "qtown.events.broadcast" or \
+               call_args.args[0] == "qtown.events.broadcast"
+        # academy's embedder keys its upsert on `id`; without it every event is
+        # dropped. Assert the row PK rides along.
+        value = call_args.kwargs.get("value")
+        assert value["id"] == 42
+        assert value["event_id"] == 42
 
 
 @pytest.mark.asyncio
@@ -193,7 +199,9 @@ async def test_handle_trade_settled():
     mock_npc.gold = 200
 
     mock_db = MagicMock()
-    mock_db.query.return_value.filter.return_value.first.return_value = mock_npc
+    # First query is the ProcessedTrade idempotency check (return None = not seen);
+    # second is the NPC lookup.
+    mock_db.query.return_value.filter.return_value.first.side_effect = [None, mock_npc]
 
     with patch("engine.kafka_consumer.SessionLocal", return_value=mock_db):
         from engine.kafka_consumer import handle_trade_settled

@@ -143,7 +143,7 @@ async def model_routing_metrics() -> JSONResponse:
             "by_model": [...]
         }
     """
-    from academy.cost_tracker import get_metrics, get_db_metrics_today
+    from academy.cost_tracker import get_db_metrics_today
     from academy.models.router import ModelRouter
 
     # In-memory fast path
@@ -223,6 +223,63 @@ async def generate_newspaper(body: dict[str, Any]) -> JSONResponse:
     response = await router.route("newspaper", prompt, system=system)
     cfg = router.ROUTES["newspaper"]
     return JSONResponse({"raw": response, "tick": tick, "model_used": cfg.model_id})
+
+
+@app.post("/rag/ask", tags=["rag"])
+async def rag_ask(body: dict[str, Any]) -> JSONResponse:
+    """
+    Grounded RAG: answer a question from the qtown-docs corpus, with citations.
+
+    Body: { "question": str, "k"?: int }. Returns the grounded answer (answer +
+    citations + model + latency). Empty question → 400. On a backend failure the
+    answer is never fabricated — 503 with a reason.
+    """
+    from academy.rag.answer import get_answerer
+
+    question = str(body.get("question", "")).strip()
+    if not question:
+        return JSONResponse({"error": "question is required"}, status_code=400)
+
+    k = int(body.get("k", 5))
+    try:
+        result = await get_answerer().answer(question, k=k)
+        return JSONResponse(result.to_dict())
+    except Exception as exc:  # noqa: BLE001 — surface as a 503, never a fake answer
+        logger.error("rag_ask failed: %s", exc)
+        return JSONResponse(
+            {"error": "rag backend unavailable", "detail": str(exc)}, status_code=503
+        )
+
+
+@app.get("/rag/status", tags=["rag"])
+async def rag_status() -> JSONResponse:
+    """
+    Corpus size + backend availability for the proof panel. Dormant-safe: if the
+    vector store is unreachable, returns available=false (200), never an error
+    that would read as fabricated data.
+    """
+    from sqlalchemy import text as sa_text
+
+    from academy.rag.retriever import _get_engine
+
+    try:
+        engine = await _get_engine()
+        async with engine.connect() as conn:
+            row = (
+                await conn.execute(
+                    sa_text(
+                        "SELECT count(*) AS n, "
+                        "count(DISTINCT (metadata->>'source')) AS sources "
+                        "FROM academy.embeddings WHERE doc_type = 'doc'"
+                    )
+                )
+            ).first()
+        chunks = int(row.n) if row else 0
+        sources = int(row.sources) if row else 0
+        return JSONResponse({"available": chunks > 0, "chunks": chunks, "sources": sources})
+    except Exception as exc:  # noqa: BLE001 — dormant, not fabricated
+        logger.warning("rag_status: vector store unavailable: %s", exc)
+        return JSONResponse({"available": False, "chunks": 0, "sources": 0})
 
 
 # ---------------------------------------------------------------------------

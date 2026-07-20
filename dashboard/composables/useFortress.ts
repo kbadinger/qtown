@@ -121,9 +121,15 @@ export function useFortress() {
 
   // ── Internal fetch helper ─────────────────────────────────────────────────
 
+  interface ApiFetchOpts {
+    method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+    body?: string
+    headers?: Record<string, string>
+  }
+
   async function apiFetch<T>(
     path: string,
-    opts: RequestInit = {},
+    opts: ApiFetchOpts = {},
   ): Promise<T | null> {
     isLoading.value = true
     lastError.value = null
@@ -131,13 +137,14 @@ export function useFortress() {
     try {
       const url = `${fortressBase}${path}`
       const res = await $fetch<T>(url, {
-        ...opts,
+        method: opts.method,
+        body: opts.body,
         headers: {
           'Content-Type': 'application/json',
-          ...(opts.headers as Record<string, string> | undefined),
+          ...opts.headers,
         },
       })
-      return res
+      return res as T
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : `Fortress request to ${path} failed`
       lastError.value = msg
