@@ -13,3 +13,7 @@ Pillow
 Jinja2
 aiofiles
 aiokafka>=0.10.0
+# gRPC client to market-district (W1-M2 order origination). protobuf pin matches
+# the buf-generated gen/python (protoc 7.35.1).
+grpcio>=1.82.0
+protobuf>=7.35.1

@@ -116,6 +116,204 @@ State change → fortress consumes → WASM validates → emit result → downst
 
 **Verdict**: 4/5 hops work; the loop never closes because no consumer acts on the validation outcome.
 
+### Kafka contract update — 2026-07-13 (`fable/wave-0-floor`)
+
+A full producer→consumer audit was run against the canonical 12-topic registry
+(`docs/v2-spec.md` §topics, `infra/kafka-init.sh`). Changes landed this session
+(all unit-tested green per service; **runtime end-to-end still gated** by the
+missing triggers / gRPC registration below — these are *contract* fixes, not
+live flows):
+
+- **Topic prefix aligned** — academy/library/tavern/market consumer+producer
+  topics now all carry the `qtown.` prefix (several were bare `events.broadcast`
+  etc., so producer and consumer never met).
+- **Flow 1 step 4 (emit trade.settled)** is no longer a STUB: market-district
+  emits `qtown.economy.trade.settled` **single-sided per counterparty**
+  `{npc_id, gold_delta, resource, price, quantity, trade_id}` (two msgs/match,
+  buyer `gold_delta<0` / seller `>0`) from `internal/grpc/server.go` via
+  `internal/kafka/producer.go`. town-core, tavern, and library consume this
+  exact shape (Flow 1 steps 5–6 now contract-clean). **Steps 1–2 still block
+  the runtime path**: no caller invokes `PlaceOrder`, and the gRPC server is
+  still unregistered (proto codegen is `buf`-blocked → toolchain box).
+- **Flow 2 step 5 (academy Kafka emit)** is no longer MISSING: academy emits
+  `qtown.ai.content.generated` (now carrying `text` for dialogue) from the
+  `GenerateDialogue` gRPC path; tavern + library consume it, contract-clean.
+  **Steps 1 + 4 still MISSING**: nothing triggers `GenerateDialogue`, and there
+  is still no Library RAG gRPC client.
+- **tavern travel topic fixed**: tavern consumed a phantom
+  `qtown.npc.travel.depart` (no producer, off-registry) reading fields town-core
+  never sends. Repointed to canonical `qtown.npc.travel` with `{from, to}`.
+
+**Still-open orphans (tracked, not scaffolded — deliberately left dormant so no
+half-flow fakes activity):**
+
+| Topic | State | Fix owner |
+|---|---|---|
+| `qtown.economy.price.update` | tavern consumes; market has prices only over gRPC `PriceFeed`. Spec = periodic broadcast → needs a price-broadcaster feature, not a rename. | market-district |
+| `qtown.ai.request` / `qtown.ai.response` | academy consumes request / emits response; town-core has a helper but **never calls it** and has no response consumer. | town-core tick-loop |
+| `qtown.npc.decision.request` / `.result` | academy consumes request / emits result; **off-registry** (not in the 12-topic spec) and town-core produces neither nor consumes the result. | spec decision + town-core |
+| `qtown.validation.request` / `.result` | fortress consumes request / emits result (self-consistent) but town-core never calls `emit_validation_request` and nothing consumes the result. Whole flow gated on fortress reconciliation (`cargo` → toolchain box). | town-core + fortress |
+| `assets.generate` / `assets.generated` | asset-pipeline both ends **un-prefixed**, absent from `kafka-init.sh`, no cross-service peer. | asset-pipeline + infra |
+| `qtown.tournament.started/.tick/.ended` | market emits; scheduler never instantiated in `main.go`; no consumer. | market + a consumer |
+
+---
+
+### Market flagship + proof panel — 2026-07-16 (`fable/wave-0-floor`)
+
+Wave 1A Market work since the Kafka-contract audit above, all CI-green:
+
+- **Flow 1 is now runtime-green (supersedes the 2026-07-13 "steps 1–2 still block"
+  note):** `PlaceOrder` is registered on the gRPC server (W1-M1), town-core
+  originates orders via producer-NPC auto-sell (W1-M2), and a **blocking
+  `e2e-market` CI job** drives real gRPC → match → real Kafka and asserts both
+  single-sided `trade.settled` events land (W1-M6). Idempotent consumption +
+  DLQ (W1-M4), client deadlines + circuit breaker (W1-M8), and a **measured** p99
+  (W1-M7, `docs/perf/market-loadtest.md`) are in.
+- **Market read-model + proof panel (W1-M9):** market-district serves a read-only
+  JSON view — `GET /api/orderbook` and `/api/trades` on its :6060 HTTP server —
+  backed by a real `GetTrades` gRPC handler + a bounded recent-trades ring
+  (`internal/grpc/server.go`). The dashboard's Nitro BFF (`/api/market/proof`)
+  reads it and a `ProofPanel` (live book + trades + the measured perf tile) plus a
+  landing `MarketProofCard` render it. Verified end-to-end: live-with-data,
+  live-but-idle (empty, honest), and **dormant** (source down → `live:false`,
+  `—`, no fabricated values). gRPC reflection was added for tooling.
+- **In-app teaching layer (W1-M10):** `MarketTeaching.vue` (mounted under the
+  proof panel on `pages/market.vue`) explains the matching engine, the typed gRPC
+  contract + single-sided settlement, at-least-once + idempotency, and how to read
+  the two latency numbers — each block tied to the real code / ADR / perf report.
+  Copy is accurate to the implementation, not aspirational.
+
+**Market flagship DoD §3.1 is now 6/6 — Wired · Gated · Proven · Explained ·
+Documented · Honest — all green.** Remaining Market work is optional depth: W1-M5
+(async emit / durability, also the ~24 ms tail fix) and order-lifecycle
+(cancel/expiry) are tracked, not blocking.
+
+**Honest finding surfaced by this work — cartographer's gRPC federation is a
+stub.** `services/cartographer` has **no `protos/` directory**, so
+`tryLoadPackage` (`src/grpc-clients.ts`) always returns null → a generic channel
+client with no methods → **every** gRPC-backed GraphQL field (`npcs`,
+`worldState`, `orderBook`, `orders`, `newspaper`, `npcDecisionTrace`) falls back
+to its empty/dormant `catch`. The market resolver additionally targets the wrong
+port (`:50052` vs `:50051`), a non-existent method (`GetOrders` vs `GetTrades`),
+and a wrong field (`lastPrice` vs the proto's `mid_price`). So the dashboard's
+cartographer-backed views currently render dormant. The Market **proof panel
+deliberately bypasses cartographer** and reads market-district's read-model
+directly — real data now, without a from-scratch gateway rebuild. Rebuilding
+cartographer's gRPC federation (canonical protos, correct service/port/method
+wiring) is tracked as its own piece of work, not folded into M9.
+
+---
+
+### Academy RAG flagship — 2026-07-16 (`fable/wave-0-floor`)
+
+Wave 1B Academy work — qtown's **RAG proof** — all CI-green. Supersedes the
+"academy" audit above (the RAG dirs are no longer just scaffolding; LangGraph
+graph work stays separate/deferred).
+
+- **Corpus → retrieval → grounded answer is real and wired (W1-A0/A1/A2):**
+  qtown's own docs (11 files) are chunked on h1/h2 boundaries, embedded with
+  `nomic-embed-text` (768-dim), and stored in `academy.embeddings` (pgvector). A
+  question embeds → cosine ANN → rerank (BM25 fallback) → top-`k=5` passages go in
+  as numbered sources → `qwen3.5:4b` answers ONLY from them with structured
+  (`format=json` + Pydantic) citations, or abstains (`grounded=false`) — never
+  fabricates. Exposed at `POST /rag/ask` + `GET /rag/status`; verified live
+  (status → `{available, chunks:143, sources:11}`; ask → grounded answer citing
+  `docs/REQUIREMENTS.md`). Two latent bugs were fixed to make retrieval actually
+  run: `academy.embeddings` was **missing from `init-db.sql`** (only a wrong-dim
+  `event_embeddings` existed), and `text()` SQL used `::vector`/`::jsonb` casts
+  that SQLAlchemy parsed as bind params (→ `CAST(... AS ...)` in `embeddings.py` +
+  `retriever.py`).
+- **Eval harness — recall@k gate + faithfulness report (W1-A3):** a hand-authored
+  14-question golden set. recall@k is a **blocking CI job (`eval-academy`)** over a
+  committed embedding fixture (`evals/fixture.npz`) — pure-numpy cosine, no
+  model/DB, deterministic: **recall@5 = 0.893 ≥ 0.75**. Generation faithfulness is
+  LLM-judged locally and committed dated (`docs/evals/academy-rag-eval.md`: 100%
+  grounded / judge 1.00 / 79% keyword) — measured, not gated, same pattern as the
+  market perf report.
+- **Proof panel + teaching (W1-A4/A5):** `AcademyProofPanel.vue` asks a question →
+  grounded, cited answer via dormant-safe Nitro BFFs (`/api/academy/ask`,
+  `/api/academy/rag-status`); eval tiles show the CI-gated recall@5 + the local
+  faithfulness snapshot with provenance. `AcademyTeaching.vue` explains
+  retrieve→ground→cite→abstain, each step tied to the real module. Landing
+  `AcademyProofCard` shows live corpus size + gated recall@5.
+- **Docs (W1-A6):** `services/academy/README.md` + `docs/adr/0002-academy-rag.md`.
+
+**Academy flagship DoD §3.1 is now 6/6 — Wired · Gated · Proven · Explained ·
+Documented · Honest — all green.**
+
+**Honest findings surfaced:** (1) *table-embedded facts retrieve poorly* — the
+golden `validation-citadel` question (answer lives in a markdown table in
+`CLAUDE.md`) is a recall miss, left **in** the golden set on purpose so the gate
+reports the weakness instead of hiding it (hence 0.893, not 1.0). (2) generation
+is temp-0.2, so the faithfulness report is a dated snapshot, not a fixed number.
+(3) the corpus / committed fixture / live pgvector must be kept in sync — the
+fixture is rebuilt whenever the corpus changes (adding this session's docs grew it
+from ~126 chunks; recall held at 0.893 throughout). Exact chunk counts are
+deliberately *not* hardcoded in the corpus docs — they'd drift with every doc edit;
+the live count comes from `/rag/status`.
+
+---
+
+### Academy dialogue wired into the town (Flow 2) — 2026-07-17 (`fable/wave-0-floor`)
+
+Flow 2 (NPC interaction → Academy generates → Tavern broadcasts → dashboard) now
+runs. Supersedes the 2026-07-13 note "Flow 2 steps 1 + 4 still MISSING":
+
+- **Step 1 (trigger) is done.** town-core's tick now calls Academy's
+  `GenerateDialogue` for a co-located NPC pair every 10 ticks
+  (`engine/simulation/dialogue.py` via a best-effort, env-gated, circuit-broken
+  `engine/clients/academy_client.py` mirroring the market client). Context is built
+  from town-core's OWN DB (pair name/role/personality/mood + weather + recent
+  events). The tick now runs via `asyncio.to_thread` so the LLM call can't stall
+  FastAPI. Verified end-to-end against the running services: a co-located pair
+  produced real, role-grounded dialogue, persisted to `dialogues`, and emitted on
+  `qtown.ai.content.generated` in the shape Tavern consumes.
+- **Honest-generation fix.** `GenerateDialogue` had been escalating to the cloud
+  fallback (the configured local model isn't always pulled) and returning a
+  `[cloud-stub]` string — fabricated dialogue. The dialogue model is now
+  env-overridable (`NPC_DIALOGUE_MODEL`, set to `qwen3.5:4b` in compose) and the
+  router passes `think=False` so reasoning models answer instead of burning the
+  token budget on hidden reasoning.
+- **Dashboard render** uses the read-model + poll pattern: `GET /api/dialogues`
+  (now with a limit + NPC names) → BFF `/api/town/dialogues` → `DialogueFeed.vue`
+  on the Academy page, dormant-safe.
+- **Deferred, on purpose:** Step 4 (RAG-enriched dialogue) is *not* wired — it
+  would need town-core to emit `qtown.events.broadcast` (currently never called) to
+  populate `academy.embeddings` with town events, *and* `GenerateDialogue` to call
+  the retriever. Left dormant rather than half-built; context today is town-core's
+  own DB. The dashboard's live WS path (Tavern broadcast → dashboard) also stays
+  dormant — the WS layer has a pre-existing channel/payload contract mismatch;
+  render goes through the read-model instead.
+
+---
+
+### Dialogue grounding — town events → RAG → dialogue (2026-07-18, `fable/wave-0-floor`)
+
+Closes the "Step 4 RAG-enriched dialogue" deferral above: NPC dialogue now
+references real town events. All CI-green.
+
+- **Emit (town-core):** `emit_event_broadcast` was orphaned *and* its payload
+  lacked the `id` academy's embedder keys on — so every event would have been
+  silently dropped. Fixed the contract, then wired a **post-commit outbox drain**
+  (`engine/event_outbox.py`): rather than emit at ~150 `Event(...)` sites, it drains
+  each tick's rows once from `_tick_worker` on the main loop (where the Kafka
+  producer singleton lives), env-gated (`EVENTS_BROADCAST`), best-effort, and
+  filtered to narrative events (report/summary blobs excluded).
+- **Embed (academy):** the consumer already embedded `qtown.events.broadcast` →
+  `academy.embeddings` (`doc_type='event'`, idempotent upsert on `doc_id`); now it
+  also persists `event_id` in metadata.
+- **Retrieve + inject (academy):** `GenerateDialogue` retrieves the top-k events
+  (`doc_types=["event"]`) for the pair and injects a "Recent town history" block;
+  the injected events ride the `content.generated` event as `grounded_events`
+  ("why this NPC said this"). Best-effort — empty retrieval → ungrounded.
+- **Pollution guard:** the shared embeddings table meant the docs answerer +
+  faithfulness eval had to be scoped to `doc_types=["doc"]` (done first, before any
+  event landed). The CI docs-recall gate is fixture-based and was never at risk.
+- **Proven:** a **separate** deterministic town-event recall gate
+  (`evals/events_recall.py`, in `eval-academy`) — recall@3 = 1.00 over synthetic
+  events, kept apart from the docs fixture. Live demo (NPCs discussing a fire,
+  theft, and festival) in `docs/evals/dialogue-grounding-demo.md`.
+
 ---
 
 ## v1 → v2 feature parity

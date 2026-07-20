@@ -68,15 +68,17 @@ export default defineEventHandler(async (event) => {
 
     return response
   } catch (err) {
-    // Academy unavailable — return a plausible stub so the UI still works in dev
-    console.warn('[visitor/submit] Academy upstream unavailable, returning stub:', err)
+    // Academy unavailable — surface an honest error instead of a fabricated quest.
+    // A fake "success" (invented questId / assigned NPC) would violate the project's
+    // honesty rule (docs/plans/03-PROOF-OF-WORK.md §4 rule 1: "No fabricated values,
+    // ever"). The UI renders this as a submit failure, not a phantom quest.
+    const message = err instanceof Error ? err.message : 'Academy upstream unavailable'
+    console.warn('[visitor/submit] Academy upstream unavailable:', message)
 
-    const stubResponse: QuestResponse = {
-      questId: `q-${Date.now().toString(36)}`,
-      assignedNpc: 'Aldric the Wanderer',
-      requestId: `vr-${Date.now().toString(36)}`,
-    }
-
-    return stubResponse
+    throw createError({
+      statusCode: 502,
+      statusMessage: 'Bad Gateway',
+      message: `Failed to create quest — Academy service unavailable: ${message}`,
+    })
   }
 })

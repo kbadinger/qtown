@@ -66,6 +66,30 @@ NEGATIVE_PROMPT = (
     "back view, generic sci-fi"
 )
 
+# Overhead building assets must read as ONE isolated structure on a clean
+# background, from a consistent high top-down 3/4 angle (the town-map layer).
+# These extra negatives fight the two drifts seen in the first test batch:
+# eye-level framing (tavern) and surrounding scenery / cityscape (academy).
+NEGATIVE_OVERHEAD_BUILDING = (
+    NEGATIVE_PROMPT
+    + ", multiple buildings, surrounding buildings, city street, cityscape, "
+    "town in background, village in background, landscape scenery, horizon line, "
+    "eye-level view, ground-level view, front elevation, straight-on view, side view, "
+    "people, person, characters, crowd, busy cluttered background, foreground foliage"
+)
+
+# Character assets (NPC idles + activity poses) must be ONE front-facing,
+# full-body character isolated on a clean flat background so they composite
+# onto the map / room backgrounds. Fights the drifts seen in the test batch:
+# full scenery behind the figure, cropped framing, and turned-away poses.
+NEGATIVE_CHARACTER = (
+    NEGATIVE_PROMPT
+    + ", scenery background, room interior behind, building in background, landscape, "
+    "environment, full scene, busy background, cropped, close-up, portrait crop, cut off, "
+    "out of frame, multiple people, crowd, group, side view, turned away, looking away, "
+    "facing away, profile view"
+)
+
 
 # ---------------------------------------------------------------------------
 # Models
@@ -81,6 +105,7 @@ class GenJob:
     width: int
     height: int
     seed: int = 0
+    negative: str = NEGATIVE_PROMPT
 
 
 def seed_for(stem: str) -> int:
@@ -98,9 +123,12 @@ def seed_for(stem: str) -> int:
 def prompt_overhead_building(building: dict) -> str:
     desc = building.get("description", "")
     return (
-        f"top-down 3/4 view of a {building['id']} in a hopeful solarpunk town, "
-        f"{desc}, integrated greenery, solar panels on roof, "
-        f"holographic signage, no characters, empty exterior scene, clean illustration, "
+        f"a single isolated {building['id']} building, solarpunk architecture, {desc}, "
+        f"high-angle top-down three-quarter view, 45 degree elevated bird's-eye camera, "
+        f"one building only, centered single structure, full building inside the frame, "
+        f"isolated game asset on a plain flat pale background, soft drop shadow beneath, "
+        f"integrated greenery, solar panels on roof, holographic signage, "
+        f"no other buildings, no surrounding town, no people, clean crisp illustration, "
         f"{STYLE_SUFFIX_POSITIVE}"
     )
 
@@ -108,9 +136,11 @@ def prompt_overhead_building(building: dict) -> str:
 def prompt_overhead_npc(npc: dict, pose: str = "idle") -> str:
     desc = npc.get("description", "")
     return (
-        f"front-facing portrait of a {npc['id']} in solarpunk village, "
-        f"{desc}, friendly expression, full body visible, "
-        f"plain background, {pose} pose, no other characters, "
+        f"a single {npc['id']} character, solarpunk villager, {desc}, "
+        f"front-facing, facing the camera, full body from head to feet, standing {pose} pose, "
+        f"friendly expression, character reference, centered single character, "
+        f"isolated on a plain flat pale background, no scenery, no background details, "
+        f"one character only, no other people, clean crisp character illustration, "
         f"{STYLE_SUFFIX_POSITIVE}"
     )
 
@@ -126,11 +156,16 @@ def prompt_interior_background(building: dict, room: dict) -> str:
 
 
 def prompt_npc_activity(npc: dict, room: dict, activity: str) -> str:
+    # room is intentionally not described: activity sprites are isolated so they
+    # can be composited onto ANY interior background. Front-facing per the
+    # Pokémon-style 2.5D grammar (characters always face camera).
     return (
-        f"side-view of a {npc['id']} {activity} in a solarpunk {room['id']}, "
+        f"a single {npc['id']} character {activity}, solarpunk villager, "
         f"{npc.get('description', '')}, "
-        f"full body visible, transparent background, "
-        f"warm interior lighting, copper and cyan tech accents, "
+        f"front-facing, facing the camera, full body from head to feet, {activity} action pose, "
+        f"centered single character, isolated on a plain flat pale background, "
+        f"no scenery, no room background, one character only, no other people, "
+        f"warm soft lighting, copper and cyan tech accents, clean crisp character illustration, "
         f"{STYLE_SUFFIX_POSITIVE}"
     )
 
@@ -322,10 +357,10 @@ async def download_image(client: httpx.AsyncClient, image: dict) -> bytes:
 # Job planning
 # ---------------------------------------------------------------------------
 
-def _job(asset_class, subdir, stem, prompt, w, h) -> GenJob:
+def _job(asset_class, subdir, stem, prompt, w, h, negative: str = NEGATIVE_PROMPT) -> GenJob:
     return GenJob(
         asset_class=asset_class, output_subdir=subdir, filename_stem=stem,
-        prompt=prompt, width=w, height=h, seed=seed_for(stem),
+        prompt=prompt, width=w, height=h, seed=seed_for(stem), negative=negative,
     )
 
 
@@ -349,7 +384,8 @@ def plan_jobs(taxonomy: dict, dims: dict, only: str | None) -> list[GenJob]:
         w, h = dims["overhead_building"]
         for b in taxonomy.get("buildings", []):
             jobs.append(_job("overhead_building", "overhead/buildings",
-                             b["id"], prompt_overhead_building(b), w, h))
+                             b["id"], prompt_overhead_building(b), w, h,
+                             NEGATIVE_OVERHEAD_BUILDING))
 
     # Class C — interior room backgrounds (35; park is overhead_only)
     if not only or only == "interiors":
@@ -369,7 +405,8 @@ def plan_jobs(taxonomy: dict, dims: dict, only: str | None) -> list[GenJob]:
             for pose in npc.get("activity_poses", []):
                 jobs.append(_job("overhead_npc", "overhead/npcs",
                                  f"{npc['id']}__{pose}",
-                                 prompt_overhead_npc(npc, pose), w, h))
+                                 prompt_overhead_npc(npc, pose), w, h,
+                                 NEGATIVE_CHARACTER))
 
     # Class D — interior activity poses from the curated interior_cast matrix,
     # deduped by (role, activity) so a sprite is generated once and reused.
@@ -398,7 +435,8 @@ def plan_jobs(taxonomy: dict, dims: dict, only: str | None) -> list[GenJob]:
                         seen.add(key)
                         jobs.append(_job("npc_activity", "interior/activities",
                                          f"{role}__{activity}",
-                                         prompt_npc_activity(npc, room, activity), w, h))
+                                         prompt_npc_activity(npc, room, activity), w, h,
+                                         NEGATIVE_CHARACTER))
 
     return jobs
 
@@ -494,7 +532,7 @@ async def run(args: argparse.Namespace) -> int:
 
                 workflow = build_workflow(
                     prompt=job.prompt,
-                    negative=NEGATIVE_PROMPT,
+                    negative=job.negative,
                     width=job.width,
                     height=job.height,
                     model_cfg=model_cfg,

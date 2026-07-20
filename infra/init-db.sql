@@ -26,6 +26,22 @@ CREATE INDEX IF NOT EXISTS idx_event_embeddings_vector
     ON academy.event_embeddings USING ivfflat (embedding vector_cosine_ops)
     WITH (lists = 100);
 
+-- Academy RAG vector store — the table the retriever/embedder actually use
+-- (academy/rag/{retriever,embeddings}.py). 768-dim nomic-embed-text; keyed by a
+-- string doc_id with a doc_type discriminator ('doc' | 'event' | 'dialogue' |
+-- 'newspaper') and JSONB metadata. The older event_embeddings table above is
+-- superseded and unused by the current code. Exact search (no ANN index) is used
+-- while the corpus is small — perfect recall; add HNSW/ivfflat once it grows.
+CREATE TABLE IF NOT EXISTS academy.embeddings (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    doc_type    TEXT NOT NULL,
+    doc_id      TEXT NOT NULL UNIQUE,
+    content     TEXT NOT NULL,
+    embedding   vector(768) NOT NULL,
+    metadata    JSONB DEFAULT '{}',
+    created_at  TIMESTAMPTZ DEFAULT now()
+);
+
 -- Market District: order and trade history
 CREATE TABLE IF NOT EXISTS market.orders (
     id          VARCHAR(64) PRIMARY KEY,

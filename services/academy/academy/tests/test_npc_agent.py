@@ -13,6 +13,7 @@ Coverage:
 
 from __future__ import annotations
 
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -20,13 +21,11 @@ import pytest
 from academy.agents.npc import (
     NPCState,
     assess_needs,
-    decide,
     error_handler,
     evaluate_options,
     narrate,
     run_npc_cycle,
 )
-from academy.agents.personality import PersonalityProfile, personality_weight
 from academy.models.router import ModelRouter, RouteResult
 
 
@@ -37,7 +36,7 @@ from academy.models.router import ModelRouter, RouteResult
 
 def make_state(**kwargs) -> NPCState:
     """Create an NPCState with sensible defaults, overridden by kwargs."""
-    defaults = dict(
+    defaults: dict[str, Any] = dict(
         npc_id="npc-test-01",
         npc_name="Mira",
         personality={

@@ -14,7 +14,7 @@ from __future__ import annotations
 import logging
 import time
 from dataclasses import dataclass, field
-from typing import Any, Literal
+from typing import Any
 
 from langgraph.graph import END, StateGraph
 
@@ -596,5 +596,9 @@ async def run_npc_cycle(
         current_tick=current_tick,
         neighborhood=neighborhood,
     )
-    result: NPCState = await npc_graph.ainvoke(initial_state)  # type: ignore[assignment]
+    result = await npc_graph.ainvoke(initial_state)
+    # LangGraph returns the final state as a plain dict of channels, not the
+    # dataclass it was seeded with — coerce back so callers get NPCState.
+    if isinstance(result, dict):
+        return NPCState(**result)
     return result

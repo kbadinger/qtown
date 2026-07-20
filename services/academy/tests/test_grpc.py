@@ -29,6 +29,9 @@ def servicer() -> AcademyServicer:
         instance = AcademyServicer.__new__(AcademyServicer)
         instance._router = MockRouter.return_value
         instance._retriever = MockRetriever.return_value
+        # GenerateDialogue now retrieves town history; default it to empty so these
+        # unit tests stay about generation, not retrieval.
+        instance._retriever.search = AsyncMock(return_value=[])
         instance._router.ROUTES = {
             "npc_dialogue": MagicMock(model_id="deepseek-r1:14b", cost_per_1k_tokens=0.0),
             "newspaper": MagicMock(model_id="qwen3.5:27b", cost_per_1k_tokens=0.0),
@@ -95,7 +98,7 @@ class TestGenerateDialogue:
         servicer._embed_dialogue_sync = MagicMock()
 
         request = academy_pb2.DialogueRequest(npc_id_a=10, npc_id_b=20)
-        response = servicer.GenerateDialogue(request, grpc_context)
+        servicer.GenerateDialogue(request, grpc_context)
 
         assert servicer._record_cost_sync.called
 
@@ -128,6 +131,72 @@ class TestGenerateDialogue:
         request = academy_pb2.DialogueRequest(npc_id_a=3, npc_id_b=4)
         response = servicer.GenerateDialogue(request, grpc_context)
         # Should not raise; must return at least one line
+        assert len(response.lines) >= 1
+
+    def test_dialogue_emits_content_generated(
+        self, servicer: AcademyServicer, grpc_context: MagicMock
+    ):
+        """GenerateDialogue must publish the dialogue on qtown.ai.content.generated."""
+        servicer._router.route = AsyncMock(
+            return_value="1|happy|Good morning!\n2|neutral|Hello there."
+        )
+        servicer._record_cost_sync = MagicMock()
+        servicer._embed_dialogue_sync = MagicMock()
+
+        mock_producer = MagicMock()
+        mock_producer.emit_content_generated = AsyncMock()
+
+        with patch(
+            "academy.kafka_producer.get_producer",
+            AsyncMock(return_value=mock_producer),
+        ):
+            request = academy_pb2.DialogueRequest(
+                npc_id_a=1, npc_id_b=2, tone="friendly"
+            )
+            response = servicer.GenerateDialogue(request, grpc_context)
+
+        # RPC still returns normally
+        assert isinstance(response, academy_pb2.DialogueResponse)
+        assert len(response.lines) == 2
+
+        # Producer was invoked exactly once with the canonical payload
+        mock_producer.emit_content_generated.assert_called_once()
+        kwargs = mock_producer.emit_content_generated.call_args.kwargs
+        assert kwargs["content_type"] == "dialogue"
+        assert kwargs["content_id"].startswith("dialogue-1-2-")
+        # content carries the structured lines
+        assert kwargs["content"] == [
+            {"npc_id": 1, "text": "Good morning!", "emotion": "happy"},
+            {"npc_id": 2, "text": "Hello there.", "emotion": "neutral"},
+        ]
+        # text is the flattened dialogue string (required by Tavern)
+        assert kwargs["text"] == "NPC 1: Good morning!\nNPC 2: Hello there."
+        # metadata mirrors the request plus the routed model + the grounding
+        # attribution (empty here — the retriever is mocked to no town history).
+        assert kwargs["metadata"] == {
+            "npc_a": 1,
+            "npc_b": 2,
+            "tone": "friendly",
+            "model_used": "deepseek-r1:14b",
+            "grounded_events": [],
+        }
+
+    def test_dialogue_emit_failure_does_not_break_rpc(
+        self, servicer: AcademyServicer, grpc_context: MagicMock
+    ):
+        """A Kafka failure during emit must never fail the RPC (best-effort)."""
+        servicer._router.route = AsyncMock(return_value="1|neutral|Hi.\n2|neutral|Hey.")
+        servicer._record_cost_sync = MagicMock()
+        servicer._embed_dialogue_sync = MagicMock()
+
+        with patch(
+            "academy.kafka_producer.get_producer",
+            AsyncMock(side_effect=RuntimeError("kafka down")),
+        ):
+            request = academy_pb2.DialogueRequest(npc_id_a=1, npc_id_b=2)
+            response = servicer.GenerateDialogue(request, grpc_context)
+
+        assert isinstance(response, academy_pb2.DialogueResponse)
         assert len(response.lines) >= 1
 
 

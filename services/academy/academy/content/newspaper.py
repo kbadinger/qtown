@@ -185,7 +185,15 @@ class NewspaperGenerator:
                     matched = True
                     break
             if not matched and current_key is not None:
-                buffer.append(stripped)
+                if current_key == "headline" and stripped:
+                    # A headline is one line — unlabeled prose after it is
+                    # body copy, not headline continuation.
+                    if buffer:
+                        sections["headline"] = " ".join(buffer).strip()
+                    buffer = [stripped]
+                    current_key = "body"
+                else:
+                    buffer.append(stripped)
 
         # Flush last section
         if current_key and buffer:

@@ -2,10 +2,10 @@
 Kafka producer for the Academy service.
 
 Topics emitted:
-  ai.response            — response to ai.request messages (request-reply)
-  ai.content.generated   — generated content (dialogues, newspapers, quest text)
-                           consumed by Tavern, Library, etc.
-  npc.decision.result    — NPC agent decision results → town-core
+  qtown.ai.response            — response to qtown.ai.request messages (request-reply)
+  qtown.ai.content.generated   — generated content (dialogues, newspapers, quest text)
+                                 consumed by Tavern, Library, etc.
+  qtown.npc.decision.result    — NPC agent decision results → town-core
 
 Uses aiokafka (consistent with town-core).
 """
@@ -26,10 +26,10 @@ logger = logging.getLogger("academy.kafka_producer")
 
 KAFKA_BOOTSTRAP = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
 
-# Topic names
-TOPIC_AI_RESPONSE = "ai.response"
-TOPIC_CONTENT_GENERATED = "ai.content.generated"
-TOPIC_NPC_DECISION_RESULT = "npc.decision.result"
+# Topic names — must match the topics created by infra/kafka-init.sh (qtown.* prefix).
+TOPIC_AI_RESPONSE = "qtown.ai.response"
+TOPIC_CONTENT_GENERATED = "qtown.ai.content.generated"
+TOPIC_NPC_DECISION_RESULT = "qtown.npc.decision.result"
 
 
 # ---------------------------------------------------------------------------
@@ -112,7 +112,7 @@ class AcademyProducer:
         tokens_out: int = 0,
     ) -> None:
         """
-        Publish a response to an ai.request on the ai.response topic.
+        Publish a response to a qtown.ai.request on the qtown.ai.response topic.
 
         The ``request_id`` is used as the Kafka message key so consumers
         can correlate request and response.
@@ -135,18 +135,23 @@ class AcademyProducer:
         content_type: str,  # "dialogue" | "newspaper" | "quest"
         content_id: str,
         content: Any,
+        text: str = "",
         metadata: dict[str, Any] | None = None,
     ) -> None:
         """
-        Publish newly generated content to ai.content.generated.
+        Publish newly generated content to qtown.ai.content.generated.
 
         Downstream consumers (Tavern, Library) subscribe to this topic.
-        ``content`` should be a JSON-serialisable object.
+        ``content`` should be a JSON-serialisable object (e.g. structured
+        dialogue lines). ``text`` is the same content flattened to a plain
+        string — Tavern's ``ContentGenerated`` type requires this field to
+        broadcast the message.
         """
         payload: dict[str, Any] = {
             "content_type": content_type,
             "content_id": content_id,
             "content": content,
+            "text": text,
             "metadata": metadata or {},
             "timestamp": time.time(),
         }
@@ -163,7 +168,7 @@ class AcademyProducer:
         trace: list[dict[str, Any]] | None = None,
     ) -> None:
         """
-        Publish an NPC agent decision result to npc.decision.result.
+        Publish an NPC agent decision result to qtown.npc.decision.result.
 
         town-core subscribes to this topic to update NPC state.
         """

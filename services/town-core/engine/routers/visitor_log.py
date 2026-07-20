@@ -9,7 +9,7 @@ router = APIRouter(prefix="/api/visitor-log", tags=["visitor-log"])
 def get_visitor_logs(db: Session = Depends(get_db)):
     """Get all visitor logs."""
     from engine.models import VisitorLog
-    
+
     logs = db.query(VisitorLog).all()
     return [
         {

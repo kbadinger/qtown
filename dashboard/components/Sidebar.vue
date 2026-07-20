@@ -39,6 +39,12 @@ const navItems = [
     description: 'Order book & trades',
   },
   {
+    label: 'Tavern',
+    href: '/tavern',
+    icon: 'tavern',
+    description: 'Real-time social gateway',
+  },
+  {
     label: 'Newspaper',
     href: '/newspaper',
     icon: 'newspaper',
@@ -169,6 +175,10 @@ const isActive = (href: string) => route.path === href || (href !== '/' && route
           <!-- Visitor icon -->
           <svg v-else-if="item.icon === 'visitor'" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
             <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+          </svg>
+          <!-- Tavern icon (speech bubble) -->
+          <svg v-else-if="item.icon === 'tavern'" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+            <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm4 0h2v2h-2V8z" clip-rule="evenodd" />
           </svg>
         </span>
 

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/segmentio/kafka-go"
@@ -51,7 +52,7 @@ func (p *Producer) Emit(ctx context.Context, topic string, key string, value int
 }
 
 func (p *Producer) EmitTradeSettled(ctx context.Context, settled TradeSettledMessage) error {
-	return p.Emit(ctx, TopicTradeSettled, string(rune(settled.NPCID)), settled)
+	return p.Emit(ctx, TopicTradeSettled, strconv.FormatInt(settled.NPCID, 10), settled)
 }
 
 func (p *Producer) EmitTravelComplete(ctx context.Context, npcID int64, status string, goldDelta int, neighborhood string) error {

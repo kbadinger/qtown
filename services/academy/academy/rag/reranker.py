@@ -14,7 +14,6 @@ candidate; results are normalised to [0, 1].
 from __future__ import annotations
 
 import logging
-import math
 import re
 from collections import Counter
 from typing import Any

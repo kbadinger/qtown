@@ -4,9 +4,38 @@ modules:
     name: buf.build/qtown/proto
 lint:
   use:
-    - DEFAULT
+    - STANDARD
   except:
     - PACKAGE_VERSION_SUFFIX
+  # The rules below are all violated by the existing v2 contracts, and fixing
+  # them means renaming services/messages/enum values — a breaking change to
+  # every generated client. Deferred to W1-M0 (proto codegen rewire), where
+  # the contracts get regenerated everywhere in one motion. Do not add NEW
+  # violations: these exceptions are scoped to the files listed.
+  ignore_only:
+    SERVICE_SUFFIX:
+      - qtown/academy.proto
+      - qtown/fortress.proto
+      - qtown/market.proto
+      - qtown/town_core.proto
+    RPC_REQUEST_STANDARD_NAME:
+      - qtown/academy.proto
+      - qtown/fortress.proto
+      - qtown/market.proto
+      - qtown/town_core.proto
+    RPC_RESPONSE_STANDARD_NAME:
+      - qtown/academy.proto
+      - qtown/fortress.proto
+      - qtown/market.proto
+      - qtown/town_core.proto
+    RPC_REQUEST_RESPONSE_UNIQUE:
+      - qtown/academy.proto
+      - qtown/fortress.proto
+      - qtown/market.proto
+      - qtown/town_core.proto
+    ENUM_VALUE_PREFIX:
+      - qtown/common.proto
+      - qtown/market.proto
 breaking:
   use:
     - FILE

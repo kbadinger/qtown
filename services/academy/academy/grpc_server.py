@@ -20,7 +20,6 @@ import asyncio
 import logging
 import os
 import time
-import uuid
 from concurrent import futures
 from typing import Any
 
@@ -28,7 +27,7 @@ import grpc
 
 from academy.qtown import academy_pb2, academy_pb2_grpc, common_pb2
 from academy.models.router import ModelRouter
-from academy.rag.retriever import TownHistoryRetriever
+from academy.rag.retriever import Document, TownHistoryRetriever
 
 logger = logging.getLogger("academy.grpc_server")
 
@@ -104,14 +103,15 @@ class AcademyServicer(academy_pb2_grpc.AcademyServicer):
             "Return exactly 4 lines, alternating between NPC A and NPC B. "
             "Format each line as: NPC_ID|EMOTION|TEXT"
         )
-        user_prompt = (
-            f"Write a {tone} conversation between NPC #{npc_a} and NPC #{npc_b}.\n"
-            f"Context: {ctx}\n"
-            "Format: NPC_ID|EMOTION|TEXT (one line per speaker, 4 lines total)"
-        )
 
         loop = asyncio.new_event_loop()
         try:
+            # Ground the dialogue in real town history (doc_type='event' rows that
+            # town-core emitted + academy embedded). Best-effort: empty → ungrounded.
+            history = loop.run_until_complete(
+                self._retrieve_town_history(ctx, npc_a, npc_b)
+            )
+            user_prompt = self._build_dialogue_prompt(npc_a, npc_b, tone, ctx, history)
             raw_response, model_used = loop.run_until_complete(
                 self._generate_dialogue_async(user_prompt, system_prompt, tone)
             )
@@ -125,11 +125,28 @@ class AcademyServicer(academy_pb2_grpc.AcademyServicer):
         # Record cost asynchronously (best-effort)
         self._record_cost_sync("npc_dialogue", model_used, 0, 0, latency_ms)
 
+        dialogue_id = f"dialogue-{npc_a}-{npc_b}-{int(time.time())}"
+
         # Embed dialogue for RAG
         self._embed_dialogue_sync(
-            f"dialogue-{npc_a}-{npc_b}-{int(time.time())}",
+            dialogue_id,
             lines,
             {"npc_a": npc_a, "npc_b": npc_b, "tone": tone},
+        )
+
+        # Emit to qtown.ai.content.generated so Tavern can broadcast (best-effort).
+        # `grounded_events` is the "why this NPC said this" — the exact town events
+        # injected into the prompt (empty when nothing was retrieved).
+        self._emit_content_generated_sync(
+            dialogue_id,
+            lines,
+            {
+                "npc_a": npc_a,
+                "npc_b": npc_b,
+                "tone": tone,
+                "model_used": model_used,
+                "grounded_events": self._history_refs(history),
+            },
         )
 
         return academy_pb2.DialogueResponse(
@@ -137,6 +154,55 @@ class AcademyServicer(academy_pb2_grpc.AcademyServicer):
             model_used=model_used,
             latency_ms=latency_ms,
         )
+
+    # ------------------------------------------------------------------
+    # Dialogue grounding helpers (retrieve town events → inject → attribute)
+    # ------------------------------------------------------------------
+
+    async def _retrieve_town_history(
+        self, ctx: str, npc_a: int, npc_b: int
+    ) -> list[Document]:
+        """Top-k semantically relevant town events for this pair (best-effort)."""
+        try:
+            query = f"{ctx} NPC #{npc_a} NPC #{npc_b}"
+            return await self._retriever.search(query, k=4, doc_types=["event"])
+        except Exception as exc:  # noqa: BLE001 — grounding must never fail dialogue
+            logger.warning("town-history retrieval failed (non-fatal): %s", exc)
+            return []
+
+    @staticmethod
+    def _build_dialogue_prompt(
+        npc_a: int, npc_b: int, tone: str, ctx: str, history: list[Document]
+    ) -> str:
+        history_block = ""
+        if history:
+            joined = "\n".join(f"- {d.content}" for d in history)
+            history_block = (
+                "Recent town history — ground the conversation in these real events:\n"
+                f"{joined}\n"
+            )
+        return (
+            f"Write a {tone} conversation between NPC #{npc_a} and NPC #{npc_b}.\n"
+            f"Context: {ctx}\n"
+            f"{history_block}"
+            "Format: NPC_ID|EMOTION|TEXT (one line per speaker, 4 lines total)"
+        )
+
+    @staticmethod
+    def _history_refs(history: list[Document]) -> list[dict[str, Any]]:
+        refs: list[dict[str, Any]] = []
+        for d in history:
+            meta = d.metadata or {}
+            refs.append(
+                {
+                    "event_id": meta.get("event_id"),
+                    "tick": meta.get("tick"),
+                    "event_type": meta.get("event_type"),
+                    "snippet": (d.content or "")[:160],
+                    "score": round(float(d.final_score or d.similarity), 4),
+                }
+            )
+        return refs
 
     async def _generate_dialogue_async(
         self, prompt: str, system: str, tone: str
@@ -358,19 +424,33 @@ class AcademyServicer(academy_pb2_grpc.AcademyServicer):
         t0 = time.monotonic()
         npc_state = request.npc_state
         tick = request.current_tick
-        ctx_events = list(request.context)
 
-        event_data = {
-            "tick": tick,
-            "context": ctx_events,
-            "npc_name": npc_state.name,
-            "occupation": npc_state.occupation,
-        }
+        # Derive personality dict from the proto traits map (map<string,string>).
+        _PERSONALITY_DIMS = (
+            "risk_tolerance", "sociability", "ambition", "creativity", "aggression",
+        )
+        personality: dict[str, float] = {}
+        for dim in _PERSONALITY_DIMS:
+            raw = npc_state.traits.get(dim)
+            if raw is not None:
+                try:
+                    personality[dim] = float(raw)
+                except (TypeError, ValueError):
+                    continue
 
         loop = asyncio.new_event_loop()
         try:
             from academy.agents.npc import run_npc_cycle
-            result = loop.run_until_complete(run_npc_cycle(str(npc_state.id), event_data))
+            result = loop.run_until_complete(
+                run_npc_cycle(
+                    npc_id=str(npc_state.id),
+                    npc_name=npc_state.name,
+                    personality=personality,
+                    hunger=npc_state.hunger,
+                    happiness=npc_state.happiness,
+                    current_tick=tick,
+                )
+            )
         except Exception as exc:
             logger.error("NPCDecide agent error: %s", exc)
             context.set_code(grpc.StatusCode.INTERNAL)
@@ -398,7 +478,6 @@ class AcademyServicer(academy_pb2_grpc.AcademyServicer):
     ) -> academy_pb2.ModelStatsResponse:
         """Return aggregate model routing statistics."""
         stats = self._router.get_routing_stats()
-        total = max(stats["total_requests"], 1)
 
         by_model = [
             academy_pb2.ModelUsage(
@@ -494,6 +573,45 @@ class AcademyServicer(academy_pb2_grpc.AcademyServicer):
             loop.run_until_complete(embedder.process_dialogue(dialogue_id, lines_dicts, metadata))
         except Exception as exc:
             logger.debug("Dialogue embedding failed (non-critical): %s", exc)
+        finally:
+            loop.close()
+
+    def _emit_content_generated_sync(
+        self,
+        content_id: str,
+        lines: list[academy_pb2.DialogueLine],
+        metadata: dict[str, Any],
+    ) -> None:
+        """
+        Best-effort publish of generated dialogue to qtown.ai.content.generated.
+
+        Runs the async producer in a fresh event loop (this RPC executes on a
+        gRPC threadpool). Never raises — a Kafka failure must not fail the RPC.
+        """
+        from academy.kafka_producer import get_producer
+
+        # Structured lines for downstream consumers plus a flattened string
+        # (Tavern's ContentGenerated type requires a `text` field).
+        content = [
+            {"npc_id": ln.npc_id, "text": ln.text, "emotion": ln.emotion}
+            for ln in lines
+        ]
+        text = "\n".join(f"NPC {ln.npc_id}: {ln.text}" for ln in lines)
+
+        loop = asyncio.new_event_loop()
+        try:
+            producer = loop.run_until_complete(get_producer())
+            loop.run_until_complete(
+                producer.emit_content_generated(
+                    content_type="dialogue",
+                    content_id=content_id,
+                    content=content,
+                    text=text,
+                    metadata=metadata,
+                )
+            )
+        except Exception as exc:
+            logger.warning("content.generated emit failed (non-critical): %s", exc)
         finally:
             loop.close()
 

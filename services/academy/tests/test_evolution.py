@@ -9,14 +9,13 @@ test_goal_generation     — verify goals align with personality
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 import json
 import pytest
 
 from academy.agents.personality import PersonalityProfile
 from academy.agents.evolution import (
     PersonalityEvolver,
-    LongTermGoal,
     EvolutionResult,
     MAX_DELTA_PER_TICK,
     TRAIT_NAMES,

@@ -14,6 +14,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application
 COPY . .
 
+# Run as a non-root user (Trivy DS-0002). App writes sqlite + snapshots/ under /app.
+RUN useradd --create-home --uid 10001 appuser && chown -R appuser /app
+USER appuser
+
 EXPOSE 8000
 
 CMD ["uvicorn", "engine.main:app", "--host", "0.0.0.0", "--port", "8000"]

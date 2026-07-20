@@ -210,13 +210,13 @@ class Event(Base):
 
 class Relationship(Base):
     __tablename__ = "relationships"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=False, index=True)
     target_npc_id = Column(Integer, ForeignKey("npcs.id"), nullable=False, index=True)
     relationship_type = Column(String(20), nullable=False)  # e.g., "friend", "rival", "family"
     strength = Column(Integer, default=0)  # 0 to 100
-    
+
     # Unique constraint to prevent duplicate relationships between the same pair
     __table_args__ = (
         UniqueConstraint('npc_id', 'target_npc_id', name='unique_relationship_pair'),
@@ -385,3 +385,25 @@ class Dialogue(Base):
 
     speaker = relationship("NPC", foreign_keys=[speaker_npc_id])
     listener = relationship("NPC", foreign_keys=[listener_npc_id])
+
+
+class ProcessedTrade(Base):
+    """Idempotency ledger for ``economy.trade.settled`` consumption.
+
+    A settled trade emits one message per counterparty sharing the same
+    ``trade_id`` (buyer + seller), so uniqueness is keyed on
+    ``(trade_id, npc_id)``. A row's existence means this counterparty's gold
+    delta was already applied; a replayed message is skipped, keeping
+    consumption idempotent (replay → gold unchanged).
+    """
+    __tablename__ = "processed_trades"
+
+    id = Column(Integer, primary_key=True, index=True)
+    trade_id = Column(String(128), nullable=False, index=True)
+    npc_id = Column(Integer, nullable=False, index=True)
+    gold_delta = Column(Integer, nullable=False, default=0)
+    created_at = Column(DateTime, default=_utcnow)
+
+    __table_args__ = (
+        UniqueConstraint("trade_id", "npc_id", name="uq_processed_trade_npc"),
+    )

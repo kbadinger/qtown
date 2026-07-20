@@ -128,19 +128,26 @@ export function useApi() {
   const lastError = ref<string | null>(null)
 
   // Generic typed fetch helper
-  async function apiFetch<T>(url: string, opts?: RequestInit): Promise<T | null> {
+  interface ApiFetchOpts {
+    method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+    body?: string
+    headers?: Record<string, string>
+  }
+
+  async function apiFetch<T>(url: string, opts?: ApiFetchOpts): Promise<T | null> {
     isLoading.value = true
     lastError.value = null
 
     try {
       const response = await $fetch<T>(url, {
-        ...opts,
+        method: opts?.method,
+        body: opts?.body,
         headers: {
           'Content-Type': 'application/json',
-          ...(opts?.headers as Record<string, string> | undefined),
+          ...opts?.headers,
         },
       })
-      return response
+      return response as T
     } catch (err) {
       const message = err instanceof Error ? err.message : `Request to ${url} failed`
       lastError.value = message

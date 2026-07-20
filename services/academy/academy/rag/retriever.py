@@ -24,7 +24,8 @@ logger = logging.getLogger("academy.rag.retriever")
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "nomic-embed-text")
 OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
 DATABASE_URL = os.environ.get(
-    "DATABASE_URL", "postgresql+asyncpg://qtown:qtown@localhost:5432/qtown"
+    # default matches the dev compose (docker-compose.deps.yml: POSTGRES_PASSWORD=qtown_dev)
+    "DATABASE_URL", "postgresql+asyncpg://qtown:qtown_dev@localhost:5432/qtown"
 )
 
 VECTOR_TOP_K = 20   # candidates from pgvector before reranking
@@ -199,16 +200,18 @@ class TownHistoryRetriever:
             for i, dt in enumerate(doc_types):
                 params[f"dt{i}"] = dt
 
+        # CAST(:query_vec AS vector) — not :query_vec::vector — so SQLAlchemy
+        # text() doesn't misparse "::vector" as a bind parameter (syntax error).
         sql = f"""
             SELECT
                 doc_id,
                 doc_type,
                 content,
                 metadata,
-                1 - (embedding <=> :query_vec::vector)  AS similarity
+                1 - (embedding <=> CAST(:query_vec AS vector))  AS similarity
             FROM academy.embeddings
             {type_filter}
-            ORDER BY embedding <=> :query_vec::vector
+            ORDER BY embedding <=> CAST(:query_vec AS vector)
             LIMIT :top_k
         """
 

@@ -111,7 +111,10 @@ async function main(): Promise<void> {
           const start = Date.now();
           logger.debug({ operationName: request.operationName }, "GraphQL request started");
           return {
-            async didResolveDocument({ document, request: req }) {
+            // didResolveOperation is the real Apollo Server 4 hook that has
+            // the parsed document; the previous name (didResolveDocument)
+            // does not exist, so complexity analysis silently never ran.
+            async didResolveOperation({ document, request: req }) {
               const result = analyzeComplexity(document, req.variables ?? {});
               if (result.errors.length > 0) {
                 logger.warn(

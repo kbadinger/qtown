@@ -2,9 +2,9 @@
 Kafka consumer for the Academy service.
 
 Subscribes to:
-  ai.request            — inbound AI generation requests
-  events.broadcast      — town-wide events (embedded into pgvector for RAG)
-  npc.decision.request  — NPC agent decision requests from town-core
+  qtown.ai.request            — inbound AI generation requests
+  qtown.events.broadcast      — town-wide events (embedded into pgvector for RAG)
+  qtown.npc.decision.request  — NPC agent decision requests from town-core
 
 Uses aiokafka (consistent with town-core).
 
@@ -36,10 +36,11 @@ logger = logging.getLogger("academy.kafka_consumer")
 KAFKA_BOOTSTRAP = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
 CONSUMER_GROUP = os.environ.get("KAFKA_CONSUMER_GROUP", "academy-service")
 
+# Topic names must match the topics created by infra/kafka-init.sh (qtown.* prefix).
 SUBSCRIBED_TOPICS = [
-    "ai.request",
-    "events.broadcast",
-    "npc.decision.request",
+    "qtown.ai.request",
+    "qtown.events.broadcast",
+    "qtown.npc.decision.request",
 ]
 
 
@@ -55,7 +56,7 @@ async def _handle_ai_request(payload: dict[str, Any]) -> None:
     Expected payload keys:
       request_id, task_type, prompt, system (optional), context (optional)
 
-    Publishes the result to ai.response.
+    Publishes the result to qtown.ai.response.
     """
     from academy.models.router import ModelRouter
     from academy.kafka_producer import get_producer
@@ -67,7 +68,7 @@ async def _handle_ai_request(payload: dict[str, Any]) -> None:
     system = payload.get("system")
 
     if not prompt:
-        logger.warning("ai.request missing prompt (request_id=%s)", request_id)
+        logger.warning("qtown.ai.request missing prompt (request_id=%s)", request_id)
         return
 
     router = ModelRouter()
@@ -81,12 +82,14 @@ async def _handle_ai_request(payload: dict[str, Any]) -> None:
         logger.error("AI request %s failed: %s", request_id, exc)
         return
 
-    stats = router.get_routing_stats()
+    # route() returns RouteResult; getattr keeps this path safe if a mock
+    # hands back a bare string.
+    model_used = getattr(response, "model_used", cfg.model_id)
     await record_request(
         task_type=task_type,
-        model=cfg.model_id,
-        tokens_in=0,
-        tokens_out=0,
+        model=model_used,
+        tokens_in=getattr(response, "prompt_tokens", 0),
+        tokens_out=getattr(response, "completion_tokens", 0),
         latency_ms=latency_ms,
     )
 
@@ -95,10 +98,10 @@ async def _handle_ai_request(payload: dict[str, Any]) -> None:
         request_id=request_id,
         task_type=task_type,
         content=response,
-        model_used=cfg.model_id,
+        model_used=model_used,
         latency_ms=latency_ms,
     )
-    logger.info("Handled ai.request %s → %.0fms", request_id, latency_ms)
+    logger.info("Handled qtown.ai.request %s → %.0fms", request_id, latency_ms)
 
 
 async def _handle_event_broadcast(payload: dict[str, Any]) -> None:
@@ -121,11 +124,32 @@ async def _handle_npc_decision_request(payload: dict[str, Any]) -> None:
     from academy.kafka_producer import get_producer
 
     npc_id = payload.get("npc_id", 0)
-    event_data = payload.get("event", {})
+    # NPC state may arrive nested under "npc_state" or "event", or flat on the payload.
+    npc_state: dict[str, Any] = (
+        payload.get("npc_state") or payload.get("event") or payload
+    )
+
+    npc_name = npc_state.get("name") or payload.get("npc_name") or "Unknown"
+
+    personality: dict[str, float] = {}
+    raw_traits = npc_state.get("personality") or npc_state.get("traits") or {}
+    for dim in ("risk_tolerance", "sociability", "ambition", "creativity", "aggression"):
+        if dim in raw_traits:
+            try:
+                personality[dim] = float(raw_traits[dim])
+            except (TypeError, ValueError):
+                continue
 
     t0 = time.monotonic()
     try:
-        result = await run_npc_cycle(str(npc_id), event_data)
+        result = await run_npc_cycle(
+            npc_id=str(npc_id),
+            npc_name=npc_name,
+            personality=personality,
+            hunger=float(npc_state.get("hunger", 0.0)),
+            happiness=float(npc_state.get("happiness", 0.5)),
+            current_tick=int(payload.get("tick", npc_state.get("tick", 0))),
+        )
         latency_ms = (time.monotonic() - t0) * 1000.0
     except Exception as exc:
         logger.error("NPC agent failed for npc_id=%s: %s", npc_id, exc)
@@ -143,9 +167,9 @@ async def _handle_npc_decision_request(payload: dict[str, Any]) -> None:
 
 
 _HANDLERS = {
-    "ai.request": _handle_ai_request,
-    "events.broadcast": _handle_event_broadcast,
-    "npc.decision.request": _handle_npc_decision_request,
+    "qtown.ai.request": _handle_ai_request,
+    "qtown.events.broadcast": _handle_event_broadcast,
+    "qtown.npc.decision.request": _handle_npc_decision_request,
 }
 
 

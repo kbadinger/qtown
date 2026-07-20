@@ -23,8 +23,6 @@ from __future__ import annotations
 
 import json
 import logging
-import os
-from dataclasses import dataclass, field
 from typing import Any
 
 logger = logging.getLogger("academy.rag.embeddings")
@@ -100,9 +98,12 @@ class BaseEmbedder:
     ) -> str:
         from sqlalchemy import text as sa_text
 
+        # NOTE: use CAST(... AS ...), not the ::vector / ::jsonb shorthand — the
+        # latter's "::" collides with SQLAlchemy text() named-parameter parsing
+        # (it reads ":vector" as a bind param) and raises a syntax error.
         sql = """
             INSERT INTO academy.embeddings (doc_type, doc_id, content, embedding, metadata)
-            VALUES (:doc_type, :doc_id, :content, :embedding::vector, :metadata::jsonb)
+            VALUES (:doc_type, :doc_id, :content, CAST(:embedding AS vector), CAST(:metadata AS jsonb))
             ON CONFLICT (doc_id) DO UPDATE
               SET content    = EXCLUDED.content,
                   embedding  = EXCLUDED.embedding,
@@ -135,7 +136,7 @@ class BaseEmbedder:
 
 class EventEmbedder(BaseEmbedder):
     """
-    Embeds town events from the events.broadcast Kafka topic.
+    Embeds town events from the qtown.events.broadcast Kafka topic.
 
     Extracts a human-readable text summary from the event payload
     before embedding.
@@ -169,6 +170,7 @@ class EventEmbedder(BaseEmbedder):
         content = " — ".join(content_parts)
 
         metadata = {
+            "event_id": doc_id,
             "event_type": event_type,
             "tick": tick,
             "npc_id": npc_id,

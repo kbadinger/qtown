@@ -37,6 +37,22 @@ dev = [
 asyncio_mode = "auto"
 testpaths = ["tests"]
 
+[tool.ruff]
+# Generated protobuf code must never be lint-fixed: the "unused"
+# common_pb2 import is a side-effect import that registers common.proto
+# in the descriptor pool.
+extend-exclude = ["academy/qtown"]
+
+[tool.mypy]
+# Generated protobuf modules (academy/qtown/*_pb2*.py) build their messages
+# dynamically, so mypy sees no attributes on them. Treat them as untyped
+# until proto codegen is wired with mypy-protobuf stubs (Wave 1, W1-M0).
+exclude = 'academy/qtown/'
+
+[[tool.mypy.overrides]]
+module = "academy.qtown.*"
+follow_imports = "skip"
+
 [build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"

@@ -267,9 +267,15 @@ class OllamaClient:
         system: str | None = None,
         temperature: float = 0.7,
         max_tokens: int = 512,
+        format: str | dict[str, Any] | None = None,
+        think: bool | None = None,
     ) -> dict[str, Any]:
         """
         Generate text and return a dict with response + token counts + latency.
+
+        ``format`` may be "json" or a JSON-schema dict to constrain the output
+        (Ollama structured outputs). ``think=False`` disables the reasoning trace
+        on thinking models (qwen3.5 / deepseek-r1) for a faster, direct answer.
 
         Returns::
 
@@ -292,6 +298,10 @@ class OllamaClient:
         }
         if system:
             payload["system"] = system
+        if format is not None:
+            payload["format"] = format
+        if think is not None:
+            payload["think"] = think
 
         timeout = _timeout_for(model)
         t0 = time.monotonic()

@@ -108,6 +108,12 @@ export class RedisClient {
     return this.client.zadd(key, score, member);
   }
 
+  /** Increment a member's score by `increment`, returning the new score. */
+  async zincrby(key: string, increment: number, member: string): Promise<number> {
+    const newScore = await this.client.zincrby(key, increment, member);
+    return parseFloat(newScore);
+  }
+
   async zrange(
     key: string,
     start: number,

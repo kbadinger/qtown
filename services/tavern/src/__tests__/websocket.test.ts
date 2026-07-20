@@ -1,226 +1,160 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { createServer, type Server } from "http";
+import type { AddressInfo } from "net";
 import { WebSocket } from "ws";
-import { EventEmitter } from "events";
+import { WebSocketManager } from "../websocket.js";
 
-// ============================================================================
-// Mock WebSocketServer
-// ============================================================================
+// Real coverage of the WebSocket layer: a real HTTP server + real `ws` clients
+// driven through the actual WebSocketManager (subscribe handshake, channel
+// gating, broadcast fan-out, metrics). This LOCKS the outbound wire contract so a
+// later contract change is a visible, test-guarded diff.
 
-// We test the WebSocketManager by injecting mock WebSocket instances, since
-// spinning up a real HTTP server in unit tests is fragile.
+type Json = Record<string, unknown>;
 
-class MockWebSocket extends EventEmitter {
-  readyState: number = WebSocket.OPEN;
-  sentMessages: string[] = [];
-
-  send(data: string, cb?: (err?: Error) => void): void {
-    if (this.readyState === WebSocket.OPEN) {
-      this.sentMessages.push(data);
-    }
-    cb?.();
-  }
-
-  ping(): void {
-    // no-op in tests
-  }
-
-  terminate(): void {
-    this.readyState = WebSocket.CLOSED;
-  }
+interface TestClient {
+  ws: WebSocket;
+  // Next message from the server (queued from connect time, so the welcome is
+  // never lost to a listener-attach race).
+  next(timeoutMs?: number): Promise<Json>;
+  subscribe(channel: string): Promise<Json>;
 }
 
-// ============================================================================
-// Unit tests for subscription/broadcast logic
-// ============================================================================
+function makeClient(port: number): Promise<TestClient> {
+  return new Promise((resolve, reject) => {
+    const ws = new WebSocket(`ws://127.0.0.1:${port}/ws`);
+    const queue: Json[] = [];
+    let waiter: ((m: Json) => void) | null = null;
 
-describe("WebSocket subscription protocol", () => {
-  it("parses subscribe message correctly", () => {
-    const msg = JSON.parse('{"action":"subscribe","channel":"events"}') as {
-      action: string;
-      channel: string;
-    };
-    expect(msg.action).toBe("subscribe");
-    expect(msg.channel).toBe("events");
-  });
-
-  it("parses unsubscribe message correctly", () => {
-    const msg = JSON.parse(
-      '{"action":"unsubscribe","channel":"market"}'
-    ) as { action: string; channel: string };
-    expect(msg.action).toBe("unsubscribe");
-    expect(msg.channel).toBe("market");
-  });
-
-  it("validates allowed channel names", () => {
-    const ALLOWED_CHANNELS = new Set(["events", "market", "content", "leaderboard"]);
-    const isAllowed = (ch: string): boolean => {
-      if (ALLOWED_CHANNELS.has(ch)) return true;
-      return /^npc:[a-zA-Z0-9_-]+$/.test(ch);
-    };
-
-    expect(isAllowed("events")).toBe(true);
-    expect(isAllowed("market")).toBe(true);
-    expect(isAllowed("content")).toBe(true);
-    expect(isAllowed("leaderboard")).toBe(true);
-    expect(isAllowed("npc:npc-001")).toBe(true);
-    expect(isAllowed("npc:abc123")).toBe(true);
-    expect(isAllowed("unknown")).toBe(false);
-    expect(isAllowed("npc:")).toBe(false);
-    expect(isAllowed("admin")).toBe(false);
-  });
-});
-
-describe("broadcast logic", () => {
-  it("sends to subscribed clients only", () => {
-    const subscribedWs = new MockWebSocket();
-    const unsubscribedWs = new MockWebSocket();
-
-    // Simulate subscription maps
-    const clients = new Map<MockWebSocket, Set<string>>();
-    clients.set(subscribedWs, new Set(["events"]));
-    clients.set(unsubscribedWs, new Set(["market"]));
-
-    // Simulate broadcast
-    const channel = "events";
-    const payload = JSON.stringify({
-      channel,
-      data: { type: "test" },
-      timestamp: new Date().toISOString(),
+    ws.on("message", (raw: unknown) => {
+      const m = JSON.parse(String(raw)) as Json;
+      if (waiter) {
+        const w = waiter;
+        waiter = null;
+        w(m);
+      } else {
+        queue.push(m);
+      }
     });
 
-    for (const [ws, subs] of clients) {
-      if (ws.readyState !== WebSocket.OPEN) continue;
-      if (!subs.has(channel)) continue;
-      ws.send(payload);
-    }
+    const client: TestClient = {
+      ws,
+      next(timeoutMs = 2000): Promise<Json> {
+        const queued = queue.shift();
+        if (queued) return Promise.resolve(queued);
+        return new Promise<Json>((res, rej) => {
+          const t = setTimeout(() => {
+            waiter = null;
+            rej(new Error("timeout waiting for message"));
+          }, timeoutMs);
+          waiter = (m) => {
+            clearTimeout(t);
+            res(m);
+          };
+        });
+      },
+      subscribe(channel: string): Promise<Json> {
+        ws.send(JSON.stringify({ action: "subscribe", channel }));
+        return client.next();
+      },
+    };
 
-    expect(subscribedWs.sentMessages).toHaveLength(1);
-    expect(unsubscribedWs.sentMessages).toHaveLength(0);
+    ws.once("open", () => resolve(client));
+    ws.once("error", reject);
+  });
+}
+
+describe("WebSocketManager (real server + clients)", () => {
+  let server: Server;
+  let manager: WebSocketManager;
+  let port: number;
+
+  beforeEach(async () => {
+    server = createServer();
+    manager = new WebSocketManager(server);
+    await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+    port = (server.address() as AddressInfo).port;
   });
 
-  it("skips closed connections during broadcast", () => {
-    const closedWs = new MockWebSocket();
-    closedWs.readyState = WebSocket.CLOSED;
-
-    const clients = new Map<MockWebSocket, Set<string>>();
-    clients.set(closedWs, new Set(["events"]));
-
-    const payload = JSON.stringify({ channel: "events", data: {} });
-
-    for (const [ws, subs] of clients) {
-      if (ws.readyState !== WebSocket.OPEN) continue;
-      if (!subs.has("events")) continue;
-      ws.send(payload);
-    }
-
-    expect(closedWs.sentMessages).toHaveLength(0);
+  afterEach(async () => {
+    await manager.shutdown();
+    await new Promise<void>((resolve) => server.close(() => resolve()));
   });
 
-  it("broadcasts to npc-specific channel", () => {
-    const ws = new MockWebSocket();
-    const clients = new Map<MockWebSocket, Set<string>>();
-    clients.set(ws, new Set(["npc:npc-001"]));
+  it("sends a welcome listing the allowed channels on connect", async () => {
+    const c = await makeClient(port);
+    const welcome = await c.next();
+    expect(welcome.type).toBe("welcome");
+    expect(welcome.channels).toContain("content");
+    c.ws.close();
+  });
 
-    const channel = "npc:npc-001";
-    const payload = JSON.stringify({
-      channel,
-      data: { npc_id: "npc-001", status: "traveling" },
-      timestamp: new Date().toISOString(),
-    });
+  it("acks a subscribe and delivers a broadcast on that channel", async () => {
+    const c = await makeClient(port);
+    await c.next(); // welcome
+    const ack = await c.subscribe("content");
+    expect(ack).toEqual({ type: "subscribed", channel: "content" });
 
-    for (const [wsClient, subs] of clients) {
-      if (wsClient.readyState !== WebSocket.OPEN) continue;
-      if (!subs.has(channel)) continue;
-      wsClient.send(payload);
-    }
+    const event = { content_type: "dialogue", content_id: "d-1", text: "hi" };
+    manager.broadcast("content", event);
 
-    expect(ws.sentMessages).toHaveLength(1);
-    const msg = JSON.parse(ws.sentMessages[0]!) as { channel: string; data: { npc_id: string } };
+    const msg = await c.next();
+    // Outbound wire contract: { channel, type, payload, timestamp } — matches the
+    // dashboard's WsMessage. No own `type` on the event → `type` falls back to the
+    // channel; the event rides in `payload`.
+    expect(msg.channel).toBe("content");
+    expect(msg.type).toBe("content");
+    expect(msg.payload).toEqual(event);
+    expect(typeof msg.timestamp).toBe("string");
+    c.ws.close();
+  });
+
+  it("does not deliver to a client not subscribed to the channel", async () => {
+    const c = await makeClient(port);
+    await c.next(); // welcome
+    await c.subscribe("market");
+
+    manager.broadcast("content", { content_type: "dialogue" });
+    await expect(c.next(400)).rejects.toThrow(/timeout/);
+    c.ws.close();
+  });
+
+  it("rejects an unknown action", async () => {
+    const c = await makeClient(port);
+    await c.next(); // welcome
+    c.ws.send(JSON.stringify({ action: "frobnicate", channel: "content" }));
+    const err = await c.next();
+    expect(err.type).toBe("error");
+    c.ws.close();
+  });
+
+  it("rejects a disallowed channel", async () => {
+    const c = await makeClient(port);
+    await c.next(); // welcome
+    c.ws.send(JSON.stringify({ action: "subscribe", channel: "admin" }));
+    const err = await c.next();
+    expect(err.type).toBe("error");
+    expect(String(err.message)).toMatch(/channel/i);
+    c.ws.close();
+  });
+
+  it("allows npc:{id} channels and delivers to them", async () => {
+    const c = await makeClient(port);
+    await c.next(); // welcome
+    await c.subscribe("npc:npc-001");
+
+    manager.broadcast("npc:npc-001", { npc_id: "npc-001", status: "traveling" });
+    const msg = await c.next();
     expect(msg.channel).toBe("npc:npc-001");
-    expect(msg.data.npc_id).toBe("npc-001");
-  });
-});
-
-describe("heartbeat logic", () => {
-  it("marks isAlive false on ping and true on pong", () => {
-    const clients = new Map<MockWebSocket, { isAlive: boolean }>();
-    const ws = new MockWebSocket();
-    clients.set(ws, { isAlive: true });
-
-    // Simulate heartbeat tick
-    for (const [wsClient, state] of clients) {
-      if (!state.isAlive) {
-        wsClient.terminate();
-        clients.delete(wsClient);
-        continue;
-      }
-      state.isAlive = false;
-      wsClient.ping();
-    }
-
-    // Client should now be marked not-alive
-    const state = clients.get(ws);
-    expect(state?.isAlive).toBe(false);
-
-    // Simulate pong response
-    ws.emit("pong");
-    // In real code, pong handler sets isAlive = true
-    if (clients.has(ws)) {
-      clients.get(ws)!.isAlive = true;
-    }
-
-    expect(clients.get(ws)?.isAlive).toBe(true);
+    expect((msg.payload as { npc_id: string }).npc_id).toBe("npc-001");
+    c.ws.close();
   });
 
-  it("terminates unresponsive client on second tick", () => {
-    const clients = new Map<MockWebSocket, { isAlive: boolean }>();
-    const ws = new MockWebSocket();
-    clients.set(ws, { isAlive: false }); // already marked not-alive (no pong received)
-
-    // Second heartbeat tick — should terminate
-    for (const [wsClient, state] of clients) {
-      if (!state.isAlive) {
-        wsClient.terminate();
-        clients.delete(wsClient);
-      }
-    }
-
-    expect(ws.readyState).toBe(WebSocket.CLOSED);
-    expect(clients.size).toBe(0);
-  });
-});
-
-describe("connection metrics", () => {
-  it("tracks message counts correctly", () => {
-    let messageCount = 0;
-    let messagesPerSecond = 0;
-
-    // Simulate incoming messages
-    for (let i = 0; i < 5; i++) {
-      messageCount++;
-    }
-
-    // Rollup
-    messagesPerSecond = messageCount;
-    messageCount = 0;
-
-    expect(messagesPerSecond).toBe(5);
-    expect(messageCount).toBe(0);
-  });
-
-  it("reports correct active channels from subscriptions", () => {
-    const clients = new Map<string, Set<string>>();
-    clients.set("client1", new Set(["events", "market"]));
-    clients.set("client2", new Set(["events", "npc:npc-001"]));
-
-    const channels = new Set<string>();
-    for (const [, subs] of clients) {
-      for (const ch of subs) channels.add(ch);
-    }
-
-    expect(channels.size).toBe(3);
-    expect(channels.has("events")).toBe(true);
-    expect(channels.has("market")).toBe(true);
-    expect(channels.has("npc:npc-001")).toBe(true);
+  it("reports connection count and active channels", async () => {
+    const c = await makeClient(port);
+    await c.next(); // welcome
+    await c.subscribe("events");
+    expect(manager.getConnectionCount()).toBe(1);
+    expect(manager.getMetrics().activeChannels).toContain("events");
+    c.ws.close();
   });
 });

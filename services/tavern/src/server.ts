@@ -1,6 +1,5 @@
 import Fastify from "fastify";
 import type { FastifyInstance } from "fastify";
-import { createServer } from "http";
 import pino from "pino";
 import { RedisClient } from "./redis.js";
 import { RedisPubSub } from "./redis-pubsub.js";
@@ -8,6 +7,7 @@ import { WebSocketManager } from "./websocket.js";
 import { KafkaConsumerService } from "./kafka-consumer.js";
 import { Leaderboard } from "./leaderboard.js";
 import { NPCPresenceTracker } from "./npc-presence.js";
+import { ContentBuffer } from "./content-buffer.js";
 import type { LeaderboardType } from "./types.js";
 
 // ============================================================================
@@ -31,6 +31,7 @@ export async function buildServer(): Promise<{
   redisPubSub: RedisPubSub;
   redis: RedisClient;
   redisPublisher: RedisClient;
+  contentBuffer: ContentBuffer;
 }> {
   // --------------------------------------------------------------------------
   // Redis clients
@@ -43,13 +44,15 @@ export async function buildServer(): Promise<{
   // --------------------------------------------------------------------------
   // Fastify + raw HTTP server
   // --------------------------------------------------------------------------
-  const fastify = Fastify({ loggerInstance: logger });
-  const httpServer = createServer(fastify.server);
+  // Pass logger options (not the pino instance) so the instance type keeps
+  // the default FastifyBaseLogger generic that buildServer's signature uses.
+  const fastify = Fastify({ logger: { name: "tavern-server" } });
 
   // --------------------------------------------------------------------------
-  // WebSocket manager (attaches to the HTTP server)
+  // WebSocket manager (attaches to Fastify's underlying HTTP server, so the
+  // 'ws' upgrade handling and Fastify routes share one listener)
   // --------------------------------------------------------------------------
-  const wsManager = new WebSocketManager(httpServer);
+  const wsManager = new WebSocketManager(fastify.server);
 
   // --------------------------------------------------------------------------
   // Services
@@ -57,6 +60,7 @@ export async function buildServer(): Promise<{
   const leaderboard = new Leaderboard(redis);
   const presence = new NPCPresenceTracker(redis);
   const redisPubSub = new RedisPubSub(REDIS_URL);
+  const contentBuffer = new ContentBuffer(100);
 
   const kafkaConsumer = new KafkaConsumerService(
     {
@@ -65,7 +69,7 @@ export async function buildServer(): Promise<{
       retry: { retries: 5 },
     },
     redis,
-    wsManager
+    contentBuffer
   );
 
   // --------------------------------------------------------------------------
@@ -119,6 +123,17 @@ export async function buildServer(): Promise<{
     return { count: all.length, presence: all };
   });
 
+  // Recent content read-model (dialogue/newspaper events that passed through the
+  // gateway) for the dashboard proof panel. Real observed events or an empty list
+  // — never fabricated.
+  fastify.get<{ Querystring: { limit?: string } }>(
+    "/content/recent",
+    async (req, _reply) => {
+      const limit = Math.min(Math.max(parseInt(req.query.limit ?? "20", 10), 1), 100);
+      return { available: true, items: contentBuffer.recent(limit) };
+    }
+  );
+
   // WebSocket upgrade — the WebSocketManager handles the actual upgrade via
   // the 'ws' library listening on the same HTTP server as Fastify.
   // Fastify's server is passed to WebSocketManager constructor above.
@@ -137,6 +152,7 @@ export async function buildServer(): Promise<{
     redisPubSub,
     redis,
     redisPublisher,
+    contentBuffer,
   };
 }
 
@@ -149,14 +165,7 @@ export async function start(): Promise<void> {
     await buildServer();
 
   try {
-    await fastify.ready();
-
-    await new Promise<void>((resolve, reject) => {
-      fastify.server.listen({ port: PORT, host: "0.0.0.0" }, (err) => {
-        if (err) reject(err);
-        else resolve();
-      });
-    });
+    await fastify.listen({ port: PORT, host: "0.0.0.0" });
 
     logger.info({ port: PORT }, "Tavern HTTP server listening");
 

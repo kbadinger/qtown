@@ -9,7 +9,7 @@ import (
 
 func TestPlaceOrder_BidSide(t *testing.T) {
 	ob := NewOrderBook("wood")
-	ob.PlaceOrder(Order{ID: "1", NPCID: "npc1", Resource: "wood", Side: BID, Price: 10.0, Quantity: 5.0})
+	ob.PlaceOrder(Order{ID: "1", NPCID: 1, Resource: "wood", Side: BID, Price: 10.0, Quantity: 5.0})
 	snap := ob.GetSnapshot()
 	if len(snap.Bids) != 1 {
 		t.Fatalf("expected 1 bid, got %d", len(snap.Bids))
@@ -21,7 +21,7 @@ func TestPlaceOrder_BidSide(t *testing.T) {
 
 func TestPlaceOrder_AskSide(t *testing.T) {
 	ob := NewOrderBook("wood")
-	ob.PlaceOrder(Order{ID: "1", NPCID: "npc1", Resource: "wood", Side: ASK, Price: 12.0, Quantity: 3.0})
+	ob.PlaceOrder(Order{ID: "1", NPCID: 1, Resource: "wood", Side: ASK, Price: 12.0, Quantity: 3.0})
 	snap := ob.GetSnapshot()
 	if len(snap.Asks) != 1 {
 		t.Fatalf("expected 1 ask, got %d", len(snap.Asks))
@@ -30,8 +30,8 @@ func TestPlaceOrder_AskSide(t *testing.T) {
 
 func TestMatch_FullFill(t *testing.T) {
 	ob := NewOrderBook("iron")
-	ob.PlaceOrder(Order{ID: "b1", NPCID: "buyer", Resource: "iron", Side: BID, Price: 15.0, Quantity: 10.0})
-	ob.PlaceOrder(Order{ID: "a1", NPCID: "seller", Resource: "iron", Side: ASK, Price: 14.0, Quantity: 10.0})
+	ob.PlaceOrder(Order{ID: "b1", NPCID: 1, Resource: "iron", Side: BID, Price: 15.0, Quantity: 10.0})
+	ob.PlaceOrder(Order{ID: "a1", NPCID: 2, Resource: "iron", Side: ASK, Price: 14.0, Quantity: 10.0})
 	trades := ob.Match()
 	if len(trades) != 1 {
 		t.Fatalf("expected 1 trade, got %d", len(trades))
@@ -46,8 +46,8 @@ func TestMatch_FullFill(t *testing.T) {
 
 func TestMatch_PartialFill(t *testing.T) {
 	ob := NewOrderBook("food")
-	ob.PlaceOrder(Order{ID: "b1", NPCID: "buyer", Resource: "food", Side: BID, Price: 20.0, Quantity: 100.0})
-	ob.PlaceOrder(Order{ID: "a1", NPCID: "seller", Resource: "food", Side: ASK, Price: 18.0, Quantity: 30.0})
+	ob.PlaceOrder(Order{ID: "b1", NPCID: 1, Resource: "food", Side: BID, Price: 20.0, Quantity: 100.0})
+	ob.PlaceOrder(Order{ID: "a1", NPCID: 2, Resource: "food", Side: ASK, Price: 18.0, Quantity: 30.0})
 	trades := ob.Match()
 	if len(trades) != 1 {
 		t.Fatalf("expected 1 trade, got %d", len(trades))
@@ -63,8 +63,8 @@ func TestMatch_PartialFill(t *testing.T) {
 
 func TestMatch_NoMatch(t *testing.T) {
 	ob := NewOrderBook("gold")
-	ob.PlaceOrder(Order{ID: "b1", NPCID: "buyer", Resource: "gold", Side: BID, Price: 10.0, Quantity: 5.0})
-	ob.PlaceOrder(Order{ID: "a1", NPCID: "seller", Resource: "gold", Side: ASK, Price: 15.0, Quantity: 5.0})
+	ob.PlaceOrder(Order{ID: "b1", NPCID: 1, Resource: "gold", Side: BID, Price: 10.0, Quantity: 5.0})
+	ob.PlaceOrder(Order{ID: "a1", NPCID: 2, Resource: "gold", Side: ASK, Price: 15.0, Quantity: 5.0})
 	trades := ob.Match()
 	if len(trades) != 0 {
 		t.Fatalf("expected 0 trades, got %d", len(trades))
@@ -73,9 +73,9 @@ func TestMatch_NoMatch(t *testing.T) {
 
 func TestSnapshot_Isolation(t *testing.T) {
 	ob := NewOrderBook("stone")
-	ob.PlaceOrder(Order{ID: "1", NPCID: "npc1", Resource: "stone", Side: BID, Price: 10.0, Quantity: 5.0})
+	ob.PlaceOrder(Order{ID: "1", NPCID: 1, Resource: "stone", Side: BID, Price: 10.0, Quantity: 5.0})
 	snap := ob.GetSnapshot()
-	ob.PlaceOrder(Order{ID: "2", NPCID: "npc2", Resource: "stone", Side: BID, Price: 12.0, Quantity: 3.0})
+	ob.PlaceOrder(Order{ID: "2", NPCID: 2, Resource: "stone", Side: BID, Price: 12.0, Quantity: 3.0})
 	if len(snap.Bids) != 1 {
 		t.Fatalf("snapshot should be isolated, got %d bids", len(snap.Bids))
 	}
@@ -98,7 +98,7 @@ func TestConcurrentOrders(t *testing.T) {
 				}
 				ob.PlaceOrder(Order{
 					ID:       fmt.Sprintf("g%d-o%d", gid, i),
-					NPCID:    fmt.Sprintf("npc-%d", gid),
+					NPCID:    int64(gid),
 					Resource: "wheat",
 					Side:     side,
 					Price:    100.0 + float64(i%20) - 10.0,
@@ -124,7 +124,7 @@ func BenchmarkOrderBook(b *testing.B) {
 			defer wg.Done()
 			ob.PlaceOrder(Order{
 				ID:       fmt.Sprintf("bid-%d", i),
-				NPCID:    "bench-buyer",
+				NPCID:    1,
 				Resource: "bench-resource",
 				Side:     BID,
 				Price:    100.0 + float64(i%10),
@@ -135,7 +135,7 @@ func BenchmarkOrderBook(b *testing.B) {
 			defer wg.Done()
 			ob.PlaceOrder(Order{
 				ID:       fmt.Sprintf("ask-%d", i),
-				NPCID:    "bench-seller",
+				NPCID:    2,
 				Resource: "bench-resource",
 				Side:     ASK,
 				Price:    100.0 + float64(i%10),
@@ -166,7 +166,7 @@ func BenchmarkConcurrentOrders(b *testing.B) {
 					}
 					ob.PlaceOrder(Order{
 						ID:       fmt.Sprintf("t%d-o%d", tid, i),
-						NPCID:    fmt.Sprintf("npc-%d", tid),
+						NPCID:    int64(tid),
 						Resource: "stress",
 						Side:     side,
 						Price:    50.0 + float64(i%30),

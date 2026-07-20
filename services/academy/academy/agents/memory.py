@@ -8,10 +8,9 @@ summarisation and Kafka for trigger/result events.
 
 from __future__ import annotations
 
-import json
 import logging
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 logger = logging.getLogger("academy.agents.memory")

@@ -1,0 +1,31 @@
+{
+  "_about": "Golden eval for TOWN-EVENT retrieval (grounding slice 4) — the doc_type='event' rows that ground NPC dialogue. Kept SEPARATE from the docs golden set (golden.json) so neither corpus pollutes the other. `events` is a synthetic but representative set of town events; each query should retrieve its expected event(s) by semantic similarity (queries are phrased differently from the event text on purpose). Scored offline over evals/events_fixture.npz by evals/events_recall.py — same deterministic, no-model pattern as recall.py.",
+  "k": 3,
+  "recall_threshold": 0.75,
+  "events": [
+    {"doc_id": "e1", "content": "[Tick 100] fire — A fire broke out in the market district, destroying two merchant stalls."},
+    {"doc_id": "e2", "content": "[Tick 101] festival — The harvest festival began in the town square with music, dancing, and feasting."},
+    {"doc_id": "e3", "content": "[Tick 102] theft — A thief stole a sack of grain from the warehouse overnight."},
+    {"doc_id": "e4", "content": "[Tick 103] election — Mayor Aldric won the town election by a narrow margin over the miller."},
+    {"doc_id": "e5", "content": "[Tick 104] plague — A sickness spread through the eastern quarter and the clinic filled with the ill."},
+    {"doc_id": "e6", "content": "[Tick 105] flood — Heavy rain flooded the river bank and washed out the southern bridge."},
+    {"doc_id": "e7", "content": "[Tick 106] marriage — The blacksmith and the baker were wed in the chapel at midday."},
+    {"doc_id": "e8", "content": "[Tick 107] bandit_raid — Bandits raided a farmstead on the north road and drove off the livestock."},
+    {"doc_id": "e9", "content": "[Tick 108] market_crash — The price of iron collapsed after a glut, ruining two ore traders."},
+    {"doc_id": "e10", "content": "[Tick 109] tavern_brawl — A drunken brawl broke out in the tavern and a table was smashed."},
+    {"doc_id": "e11", "content": "[Tick 110] birth — A healthy child was born to the weaver's family before dawn."},
+    {"doc_id": "e12", "content": "[Tick 111] drought — Weeks without rain left the wheat fields cracked and the crops failing."}
+  ],
+  "queries": [
+    {"id": "q-fire", "question": "Did something burn down near the merchants?", "expected": ["e1"]},
+    {"id": "q-festival", "question": "Was there a celebration with music in the town square?", "expected": ["e2"]},
+    {"id": "q-theft", "question": "Did anyone steal food from the storehouse?", "expected": ["e3"]},
+    {"id": "q-election", "question": "Who became the new mayor of the town?", "expected": ["e4"]},
+    {"id": "q-plague", "question": "Is there illness spreading among the townsfolk?", "expected": ["e5"]},
+    {"id": "q-flood", "question": "What damaged the bridge by the river?", "expected": ["e6"]},
+    {"id": "q-marriage", "question": "Who got married at the chapel?", "expected": ["e7"]},
+    {"id": "q-bandit", "question": "Were there raiders stealing animals on the farms?", "expected": ["e8"]},
+    {"id": "q-market", "question": "What happened to the price of ore?", "expected": ["e9"]},
+    {"id": "q-drought", "question": "Why are the wheat crops failing?", "expected": ["e12"]}
+  ]
+}

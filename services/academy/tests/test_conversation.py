@@ -17,8 +17,6 @@ from academy.agents.personality import PersonalityProfile
 from academy.agents.conversation import (
     ConversationEngine,
     NPCProfile,
-    ConversationTurn,
-    Conversation,
     MOOD_VOCAB,
 )
 

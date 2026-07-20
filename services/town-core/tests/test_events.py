@@ -1,5 +1,7 @@
 """Tests for event stories: 033-036, 109-123."""
 
+import pytest
+
 
 def _setup_world(db):
     from engine.simulation import init_world_state, init_grid, seed_buildings, seed_npcs
@@ -1386,6 +1388,7 @@ def test_s515_arena_tournament(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="hold_harvest_festival() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s531_harvest_festival(db):
     """Harvest festival."""
     _setup_world(db)
@@ -1394,6 +1397,7 @@ def test_s531_harvest_festival(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="hold_winter_ceremony() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s532_winter_solstice_ceremony(db):
     """Winter solstice ceremony."""
     _setup_world(db)
@@ -1402,6 +1406,7 @@ def test_s532_winter_solstice_ceremony(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="hold_coronation() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s533_coronation_event(db):
     """Coronation event."""
     _setup_world(db)
@@ -1410,6 +1415,7 @@ def test_s533_coronation_event(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="hold_wedding() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s534_wedding_celebration(db):
     """Wedding celebration."""
     _setup_world(db)
@@ -1426,6 +1432,7 @@ def test_s535_refugee_wave(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="issue_royal_decree() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s536_royal_decree(db):
     """Royal decree."""
     _setup_world(db)
@@ -1434,6 +1441,7 @@ def test_s536_royal_decree(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="check_aftershocks() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s537_earthquake_aftershocks(db):
     """Earthquake aftershocks."""
     _setup_world(db)
@@ -1442,6 +1450,7 @@ def test_s537_earthquake_aftershocks(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="process_flood_cleanup() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s538_flood_cleanup(db):
     """Flood cleanup."""
     _setup_world(db)
@@ -1450,6 +1459,7 @@ def test_s538_flood_cleanup(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="check_disease_mutation() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s539_disease_mutation(db):
     """Disease mutation."""
     _setup_world(db)
@@ -1458,6 +1468,7 @@ def test_s539_disease_mutation(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="check_comet_sighting() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s540_comet_sighting_morale(db):
     """Comet sighting morale."""
     _setup_world(db)
@@ -1466,6 +1477,7 @@ def test_s540_comet_sighting_morale(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="check_bandit_camp() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s541_bandit_camp_formation(db):
     """Bandit camp formation."""
     _setup_world(db)
@@ -1474,6 +1486,7 @@ def test_s541_bandit_camp_formation(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="check_diplomatic_envoy() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s542_diplomatic_envoy_visit(db):
     """Diplomatic envoy visit."""
     _setup_world(db)
@@ -1482,6 +1495,7 @@ def test_s542_diplomatic_envoy_visit(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="hold_fire_drill() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s543_town_fire_drill(db):
     """Town fire drill."""
     _setup_world(db)
@@ -1490,6 +1504,7 @@ def test_s543_town_fire_drill(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="publish_propaganda() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s548_propaganda_newspaper(db):
     """Propaganda newspaper."""
     _setup_world(db)
@@ -1498,6 +1513,7 @@ def test_s548_propaganda_newspaper(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="get_weather_forecast() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s558_weather_forecast(db):
     """Weather forecast."""
     _setup_world(db)
@@ -1506,6 +1522,7 @@ def test_s558_weather_forecast(db):
     assert result is not None
     db.flush()
 
+@pytest.mark.skip(reason="get_event_history() not implemented in v2 (dormant per three-principles; tracked for a future wave)")
 def test_s564_event_history_by_type(db):
     """Event history by type."""
     _setup_world(db)

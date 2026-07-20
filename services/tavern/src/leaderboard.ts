@@ -30,6 +30,17 @@ export class Leaderboard {
     logger.debug({ npcId, gold }, "Updated gold leaderboard");
   }
 
+  /**
+   * Applies a signed delta to an NPC's gold score, returning the new total.
+   * Used for single-sided trade settlements, which carry only the change in
+   * gold (not an absolute balance).
+   */
+  async applyGoldDelta(npcId: string, delta: number): Promise<number> {
+    const newGold = await this.redis.zincrby(LEADERBOARD_KEYS.gold, delta, npcId);
+    logger.debug({ npcId, delta, newGold }, "Applied gold delta");
+    return newGold;
+  }
+
   async updateHappinessLeaderboard(npcId: string, happiness: number): Promise<void> {
     await this.redis.zadd(LEADERBOARD_KEYS.happiness, happiness, npcId);
     logger.debug({ npcId, happiness }, "Updated happiness leaderboard");
