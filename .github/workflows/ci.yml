@@ -352,7 +352,15 @@ jobs:
     runs-on: ubuntu-latest
     # fortress omitted (see docker-build / test-fortress): tracked toolchain-box fix.
     needs: [test-town-core, test-market, test-tavern, test-academy, test-cartographer, test-library, test-dashboard]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    # Deferred alongside docker-build (above): the per-service Dockerfiles aren't
+    # validated end-to-end yet and no v2 service is hosted (docs/v2-audit.md), so
+    # publishing images to GHCR is premature — and this step's build context was
+    # also wrong for the dashboard (it lives at `dashboard/`, not
+    # `services/dashboard/`). The public site deploys the dashboard from source on
+    # Vercel, which does NOT use these images. Re-enable in the deploy wave by
+    # restoring the main-push condition AND fixing the per-service paths to match
+    # docker-build's matrix.
+    if: false  # was: github.ref == 'refs/heads/main' && github.event_name == 'push'
     permissions:
       packages: write
     strategy:
