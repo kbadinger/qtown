@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Qtown — Autonomous AI-Driven Town Simulation</title>
-  <meta name="description" content="A polyglot microservices simulation where NPCs live, work, trade, and make decisions across 9 components (8 services + dashboard), 12 languages, and 420 files. 88% written by an AI developer. v2 in development — scaffolded, not yet delivered.">
+  <meta name="description" content="A polyglot microservices simulation where NPCs live, work, trade, and make decisions across 9 components (8 services + dashboard) and 12 languages. 88% written by an AI developer. v2 shipping: Market, Academy, and Tavern proven end-to-end behind green CI gates.">
   <meta property="og:title" content="Qtown — Autonomous AI-Driven Town Simulation">
-  <meta property="og:description" content="v2 polyglot microservices architecture in development. v1 (Python monolith, 510 stories, 88% AI-written) still live at v1.qtown.ai.">
+  <meta property="og:description" content="v2 polyglot microservices: three areas (Market, Academy, Tavern) delivered end-to-end behind green CI gates, plus grounded AI dialogue. v1 (Python monolith, 510 stories) archived at v1.qtown.ai.">
   <meta property="og:type" content="website">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -61,9 +61,9 @@
     <!-- Hero -->
     <section class="hero">
       <div class="hero-inner">
-        <div class="hero-badge">v2 in development · v1 live at v1.qtown.ai · <a href="https://github.com/kbadinger/qtown/blob/main/docs/v2-audit.md" target="_blank" rel="noopener noreferrer">current status →</a></div>
+        <div class="hero-badge">v2 shipping · 3 areas proven behind green gates · v1 archived at v1.qtown.ai · <a href="https://github.com/kbadinger/qtown/blob/main/docs/v2-audit.md" target="_blank" rel="noopener noreferrer">current status →</a></div>
         <h1>An autonomous town<br>where NPCs run<br>the economy.</h1>
-        <p class="hero-sub">v1 shipped: a Python monolith with 510 stories, 1,451 commits, 88% written by Ralph (an AI developer). v2 is being built right now — a polyglot microservices rewrite across 9 components (8 services + dashboard) and 12 languages. It's scaffolded, not yet delivered: per-service tests pass, but cross-service wiring is still in flight (Wave 1) and the end-to-end flows aren't green yet. Each neighborhood is meant to prove a different technology — the claims below ship as facts only once their gate is green. See the <a href="https://github.com/kbadinger/qtown/blob/main/docs/v2-audit.md" target="_blank" rel="noopener noreferrer">current status</a>.</p>
+        <p class="hero-sub">v1 shipped: a Python monolith with 510 stories, 1,451 commits, 88% written by Ralph (an AI developer). v2 is a polyglot microservices rewrite across 9 components (8 services + dashboard) and 12 languages — and it's now delivering. Three areas are proven end-to-end behind green CI gates: the <strong>Market</strong> (Go order book, measured 2.16 ms placement p99, real gRPC→Kafka settlement), the <strong>Academy</strong> (grounded RAG over the town's own docs with a recall@k gate), and the <strong>Tavern</strong> (real-time Kafka→Redis→WebSocket gateway with a live end-to-end gate). Two cross-service flows work: NPCs hold AI-generated conversations grounded in real town events. The remaining neighborhoods are honestly still in flight — each ships as fact only once its gate is green. See the <a href="https://github.com/kbadinger/qtown/blob/main/docs/v2-audit.md" target="_blank" rel="noopener noreferrer">current status</a>.</p>
         <div class="hero-actions">
           <a href="https://v1.qtown.ai" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Visit v1 (live)</a>
           <a href="https://github.com/kbadinger/qtown" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">View on GitHub</a>
@@ -95,7 +95,7 @@
         <div class="section-header">
           <span class="section-tag">Live from v1</span>
           <h2>v1 is still running.</h2>
-          <p class="section-desc">Live data below is from <a href="https://v1.qtown.ai" target="_blank" rel="noopener noreferrer">v1.qtown.ai</a> — the v1 monolith preserved as a working archive. Every 30 seconds the v1 tick loop fires; NPCs make decisions, trade, gossip, and age. v2 will replace this once it's done.</p>
+          <p class="section-desc">Live data below is from <a href="https://v1.qtown.ai" target="_blank" rel="noopener noreferrer">v1.qtown.ai</a> — the v1 monolith preserved as a working archive. Every 30 seconds the v1 tick loop fires; NPCs make decisions, trade, gossip, and age. v2's areas are proven in CI; this live view swaps to v2 once its services are hosted.</p>
         </div>
 
         <div class="live-dashboard">
@@ -238,58 +238,85 @@
 
         <div class="hood-grid">
           <div class="hood-card">
-            <div class="hood-lang">Python</div>
+            <div class="hood-head">
+              <span class="hood-lang">Python</span>
+              <span class="hood-status hood-status--green">Real · gated</span>
+            </div>
             <h3>Town Core</h3>
-            <p>Simulation engine. 30-second tick loop. 50+ NPCs making autonomous decisions based on needs, goals, and social relationships.</p>
+            <p>Simulation engine. 30-second tick loop, 50+ NPCs deciding on needs, goals, and relationships. Now also originates market orders over gRPC, triggers NPC dialogue, and emits town events for the AI layer to ground on.</p>
             <span class="hood-tech">FastAPI · SQLAlchemy · Postgres</span>
           </div>
           <div class="hood-card">
-            <div class="hood-lang">Go</div>
+            <div class="hood-head">
+              <span class="hood-lang">Go</span>
+              <span class="hood-status hood-status--green">Proven · 6/6</span>
+            </div>
             <h3>Market District</h3>
-            <p>Concurrent order book with real-time trade settlement. Goroutines handle parallel bid/ask matching. Designed for sub-5ms p99; in-process bench committed, load validation lands in Wave 1.</p>
-            <span class="hood-tech">gRPC · goroutines · channel-based</span>
+            <p>Concurrent order book with real-time settlement. A real gRPC PlaceOrder → in-memory match → single-sided <code>trade.settled</code> on Kafka, proven by a live end-to-end CI gate. Measured 2.16 ms placement p99 at ~42k rps.</p>
+            <span class="hood-tech">gRPC · order book · Kafka settlement</span>
           </div>
           <div class="hood-card">
-            <div class="hood-lang">Rust</div>
+            <div class="hood-head">
+              <span class="hood-lang">Rust</span>
+              <span class="hood-status hood-status--flight">In flight</span>
+            </div>
             <h3>Fortress</h3>
-            <p>Event validation in safe Rust — the validation hot path has zero unsafe blocks, with unsafe confined to a small audited set at the WASM sandbox boundary. Every Kafka event passes through type-level guards before it can modify game state.</p>
-            <span class="hood-tech">Actix · serde · zero-copy deserialization</span>
+            <p>Event validation in safe Rust with a WASM sandbox boundary — every Kafka event meant to pass type-level guards before it can modify state. The validation subsystem is being reconciled and doesn't compile yet, so it ships dormant, not green.</p>
+            <span class="hood-tech">Rust · WASM · serde</span>
           </div>
           <div class="hood-card">
-            <div class="hood-lang">Python</div>
+            <div class="hood-head">
+              <span class="hood-lang">Python</span>
+              <span class="hood-status hood-status--green">Proven · 6/6</span>
+            </div>
             <h3>Academy</h3>
-            <p>Local AI agents via Ollama. NPCs learn skills, take courses, and generate knowledge. RAG pipeline over the town's history.</p>
-            <span class="hood-tech">Ollama · pgvector · LangChain</span>
+            <p>Grounded RAG over the town's own docs via local Ollama + pgvector. Answers cite their sources — never a fabricated fact — and a deterministic recall@k gate guards retrieval quality in CI. NPC dialogue is grounded in real town events, not generic roleplay.</p>
+            <span class="hood-tech">Ollama · pgvector · recall@k gate</span>
           </div>
           <div class="hood-card">
-            <div class="hood-lang">TypeScript</div>
+            <div class="hood-head">
+              <span class="hood-lang">TypeScript</span>
+              <span class="hood-status hood-status--green">Proven · 6/6</span>
+            </div>
             <h3>Tavern</h3>
-            <p>Social hub. Real-time WebSocket connections for NPC gossip propagation. Rumors spread across the social graph with decay.</p>
-            <span class="hood-tech">Fastify · WebSocket · social graph</span>
+            <p>Real-time gateway: consumes town events off Kafka, fans them out over Redis pub/sub (single path, multi-instance), and pushes them to browser WebSocket channels — proven by a live Kafka + Redis end-to-end gate. Memory + a social graph are the next layer.</p>
+            <span class="hood-tech">Fastify · WebSocket · Redis pub/sub</span>
           </div>
           <div class="hood-card">
-            <div class="hood-lang">Python</div>
+            <div class="hood-head">
+              <span class="hood-lang">Python</span>
+              <span class="hood-status hood-status--flight">In flight</span>
+            </div>
             <h3>Library</h3>
-            <p>Vector-based knowledge retrieval. Town lore indexed with pgvector embeddings. NPCs query their own history.</p>
-            <span class="hood-tech">pgvector · embeddings · semantic search</span>
+            <p>Vector-based knowledge retrieval over town lore. The search + index pipeline is still being verified and has no gRPC surface yet — in flight, not gated.</p>
+            <span class="hood-tech">Elasticsearch · embeddings · search</span>
           </div>
           <div class="hood-card">
-            <div class="hood-lang">TypeScript</div>
+            <div class="hood-head">
+              <span class="hood-lang">TypeScript</span>
+              <span class="hood-status hood-status--flight">In flight</span>
+            </div>
             <h3>Cartographer</h3>
-            <p>GraphQL gateway. Single entry point for the dashboard — one query fans out to up to five services via schema stitching.</p>
-            <span class="hood-tech">Apollo Server · schema stitching</span>
+            <p>GraphQL gateway meant to fan one dashboard query out to the backing services. The gRPC federation is currently a stub, so the dashboard reads each service's own read-model directly for now — gateway wiring in flight.</p>
+            <span class="hood-tech">Apollo Server · gRPC federation</span>
           </div>
           <div class="hood-card">
-            <div class="hood-lang">Python</div>
+            <div class="hood-head">
+              <span class="hood-lang">Python</span>
+              <span class="hood-status hood-status--flight">In flight</span>
+            </div>
             <h3>Asset Pipeline</h3>
-            <p>Background job processing with Celery. Sprite generation, map rendering, NPC portrait creation — all async.</p>
-            <span class="hood-tech">Celery · Redis · image processing</span>
+            <p>Generative sprite/asset pipeline on ComfyUI. Batch generation runs on the GPU box; cross-service wiring (topics, triggers) is in flight, not gated.</p>
+            <span class="hood-tech">ComfyUI · Kafka · rembg</span>
           </div>
           <div class="hood-card">
-            <div class="hood-lang">Vue/Nuxt</div>
+            <div class="hood-head">
+              <span class="hood-lang">Vue/Nuxt</span>
+              <span class="hood-status hood-status--green">Real · gated</span>
+            </div>
             <h3>Dashboard</h3>
-            <p>Real-time visualization. PixiJS isometric renderer, Chart.js analytics, live NPC tracking. The window into the town.</p>
-            <span class="hood-tech">Nuxt 3 · PixiJS · Chart.js</span>
+            <p>The window into the town — PixiJS isometric renderer, Chart.js analytics. Per-area proof panels render real, dormant-safe data (or an honest '—' when a service is down), each with an in-app "how it works" teaching layer.</p>
+            <span class="hood-tech">Nuxt 3 · PixiJS · proof panels</span>
           </div>
         </div>
       </div>
@@ -378,7 +405,7 @@
     <section class="section section-cta">
       <div class="container">
         <h2>The code is open.</h2>
-        <p>420 files. 12 languages. 27 Kafka topics. Every commit has a story ID. v1 is live; v2 is on the way.</p>
+        <p>9 components. 12 languages. Kafka + gRPC between them. Every claim ships as fact only once its CI gate is green — three areas are there now, the rest in flight. v1 is archived; v2 is shipping.</p>
         <div class="cta-actions">
           <a href="https://v1.qtown.ai" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">Visit v1 (live)</a>
           <a href="https://github.com/kbadinger/qtown" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-lg">View on GitHub</a>
