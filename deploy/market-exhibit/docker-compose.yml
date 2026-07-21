@@ -1,0 +1,67 @@
+# qtown — Market exhibit (live, cheap, zero shared infra).
+#
+# Runs the Market service + a synthetic NPC-trader driver + a Cloudflare Tunnel,
+# so a public hostname (e.g. https://market.qtown.ai) serves the REAL read-model
+# (/api/orderbook, /api/trades, /health) with NO inbound ports opened on the box.
+#
+# Build context is the REPO ROOT (../..) because market-district's go.mod pins
+# `replace qtown/proto => ../../gen/go` — the image needs gen/go in its context.
+#
+#   Wake:  docker compose -f deploy/market-exhibit/docker-compose.yml up -d --build
+#   Sleep: docker compose -f deploy/market-exhibit/docker-compose.yml down
+#
+# When this stack is down, the dashboard/landing render Market as dormant ("—"),
+# never a fabricated number. That honest failure mode is the whole point: the
+# lab is credible when off (recorded proof + green gate) and live when on.
+
+name: qtown-market-exhibit
+
+services:
+  # ─── Market District (Go) — the real matching engine + JSON read-model ───
+  market:
+    build:
+      context: ../..
+      dockerfile: services/market-district/Dockerfile
+    image: qtown-market:exhibit
+    restart: unless-stopped
+    environment:
+      # Do NOT expose Go heap/goroutine profiles through the public tunnel.
+      ENABLE_PPROF: "0"
+    # No host ports published — only cloudflared reaches :6060 over the internal
+    # compose network, so the box exposes nothing on its public interface.
+    expose:
+      - "6060"
+      - "50051"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:6060/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # ─── Synthetic NPC traders — REAL PlaceOrder RPCs into the real engine ───
+  market-driver:
+    build:
+      context: ../..
+      dockerfile: services/market-district/Dockerfile
+    image: qtown-market:exhibit
+    entrypoint: ["/market-driver"]
+    environment:
+      MARKET_GRPC_ADDR: market:50051
+      DRIVER_RESOURCES: ${DRIVER_RESOURCES:-gold,wood,grain,stone}
+      # We don't care about speed — a gentle order rate keeps the box near-idle.
+      DRIVER_INTERVAL_MS: ${DRIVER_INTERVAL_MS:-800}
+    depends_on:
+      market:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ─── Cloudflare Tunnel — public HTTPS, no open inbound ports ───
+  # In the Cloudflare Zero Trust dashboard, map the public hostname
+  # (e.g. market.qtown.ai) to the service URL http://market:6060.
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
+    depends_on:
+      market:
+        condition: service_healthy
