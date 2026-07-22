@@ -66,8 +66,12 @@ func main() {
 	// --- HTTP server (health + pprof) ---
 	mux := http.NewServeMux()
 
-	// pprof endpoints are registered on DefaultServeMux by the net/http/pprof import
-	mux.Handle("/debug/pprof/", http.DefaultServeMux)
+	// pprof endpoints are registered on DefaultServeMux by the net/http/pprof
+	// import. Gated by ENABLE_PPROF (default on) so a public/tunneled deploy can
+	// turn OFF the heap/goroutine profiles it would otherwise expose on :6060.
+	if os.Getenv("ENABLE_PPROF") != "0" {
+		mux.Handle("/debug/pprof/", http.DefaultServeMux)
+	}
 
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		resp, err := marketSrv.Health(r.Context(), &pb.HealthRequest{})
