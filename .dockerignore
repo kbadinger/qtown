@@ -1,0 +1,33 @@
+# Repo-root Docker build context hygiene.
+#
+# Some services share the buf-generated Go module via a relative replace
+# (e.g. services/market-district/go.mod: replace qtown/proto => ../../gen/go),
+# so their images MUST build with the repo root as context. This file keeps that
+# context small by dropping everything a build never needs.
+.git
+.github
+v1
+engine
+
+# Node / Nuxt
+**/node_modules
+**/.nuxt
+**/.output
+dashboard/.data
+
+# Python
+**/__pycache__
+**/*.pyc
+**/.venv
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+
+# Rust / build artifacts
+**/target
+**/dist
+**/*.log
+
+# Local env / secrets — never bake into an image
+**/.env
+**/.env.*
