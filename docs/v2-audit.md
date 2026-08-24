@@ -316,6 +316,34 @@ references real town events. All CI-green.
 
 ---
 
+### Deploy kit, history rewrite, CI drift — 2026-08-23 (`docs/reconcile-state`)
+
+Status entries since the Wave 1 merge (`main`, PR #1, 2026-07-20 — 3 areas green:
+market / academy / tavern, each behind its blocking gate):
+
+- **Deploy kit merged (PR #4, 2026-07-22) — but NOTHING is publicly hosted yet.**
+  `deploy/market-exhibit/` (compose + `wake.sh`/`sleep.sh` + runbook; the market
+  Dockerfile validated locally — repo-root build context, Go 1.25, 45 MB image)
+  and `deploy/dashboard/` (Vercel runbook, git-connected, dormant-safe,
+  `MARKET_HTTP_URL`; build validated). Target model: market-district on a
+  free/cheap box (Oracle Always Free first, Hetzner CX22 fallback) behind a
+  Cloudflare Tunnel at `market.qtown.ai`; dashboard on Vercel at
+  `dashboard.qtown.ai`; ~$0–4/mo; wake/sleep = *asleep is honest, not broken*.
+  Go-live is pending the owner's manual steps (box, tunnel, Vercel project, DNS)
+  — until those happen, no v2 service is live anywhere.
+- **2026-08-07 force-push on `main` (history rewrite).** Upstream `main` was
+  rewritten: commit signatures stripped, tree content identical (verified by
+  diff — e.g. the PR #4 merge `b639e7a` became `4820e05`; `git diff` between
+  lineages is empty). Local clones were reconciled onto the rewritten lineage.
+  Recorded so the hash discontinuity in older notes/logs isn't mistaken for
+  lost or altered work.
+- **CI drift red on re-run.** The 2026-08-07 re-run of main CI failed on drift
+  accumulated since the green 2026-07-22 run (`test-academy`, `test-library`,
+  `test-fortress`, `trivy`) — no code change on `main` caused it. Being fixed in
+  the sibling branch `fix/ci-drift-aug`.
+
+---
+
 ## v1 → v2 feature parity
 
 The router-level port-over is broad:

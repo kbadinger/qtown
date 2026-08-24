@@ -8,8 +8,19 @@ note: This is the HOW/WHEN. docs/REQUIREMENTS.md is the WHAT/bar. Phases = requi
 
 # Qtown v2 — The Fable Plan (execution)
 
-> **Status:** Draft 2, 2026-07-11 — reconciled to `docs/REQUIREMENTS.md`.
+> **Status:** Draft 3, 2026-08-23 — updated after Wave 1 delivery. This stays the roadmap
+> (HOW/WHEN); **`docs/STATE.md` remains the status authority** — where they disagree, STATE.md is
+> the truth and this file is the aim.
+> **Delivered (merged to `main` 2026-07-20, PR #1):** GATE 0 and GATE 1 are green. Wave 1 shipped
+> **Market** (1A) and **Academy** (1B) to 6/6 DoD — plus two things this plan never had stories
+> for: the **Tavern flagship (W1-T)** (real-time Kafka→Redis→WebSocket gateway, blocking
+> `e2e-tavern` gate, pulled forward from Wave 3) and **Flow 2 + dialogue grounding** (tick-triggered
+> `GenerateDialogue`, RAG-grounded on town events, separate events-recall gate). 3 of 16 areas
+> green; nothing publicly hosted yet (see DEP-1).
 > **Locked decisions:** full 15-area vision · AI-architect/AI-engineer primary · "now, but right."
+> **Decided 2026-08-23:** after go-live, Wave 2 (capstone) runs **with parallel breadth lanes** —
+> cartographer gRPC-federation rebuild and Tower/Observatory (OTel) proceed alongside it, not after
+> it. Capstone CRM order confirmed: **Salesforce free Developer org first, Odoo second**.
 > **Shape:** phases ARE the requirement waves (§8). Every story is gated by the three inviolable
 > principles (REQUIREMENTS §2) and isn't "done" until its per-area DoD gate (§3.1) is green.
 > **Executor:** Ralph codes / Kevin steers / Kevin voice-passes docs. Builds run on the toolchain
@@ -48,9 +59,16 @@ Rule: a wave doesn't open until the prior gate is green (Wave 0 excepted — it'
 | **W0-6** | Secret + supply-chain gates | §5-security | `gitleaks --log-opts=--all` clean; `gitleaks` + `trivy` are **blocking** CI jobs. |
 | **W0-7** | Truthful agent orientation | §3.2.4 | Rewrite `AGENTS.md` for v2 (kill the v1-monolith description); add root `CLAUDE.md` "start here" with the area→service→code→docs map (v1 archived, v2 = `services/`). |
 
-## WAVE 1 — Two flagship areas GREEN  *(the interim interview-ready milestone)*
+## WAVE 1 — Two flagship areas GREEN  *(the interim interview-ready milestone — **DELIVERED 2026-07-20**)*
 
 Each area must hit all six of DoD §3.1 (wired · gated · proven · explained · documented · honest).
+
+**Outcome (see `docs/STATE.md` / `docs/v2-audit.md` for the evidence):** Market and Academy both
+hit 6/6. Wave 1 also delivered beyond this plan: **W1-T, the Tavern flagship** (Wave 3's Tavern
+pulled forward — WS/Redis/Kafka gateway behind a live `e2e-tavern` gate) and **Flow 2 + dialogue
+grounding** (town events → embeddings → retrieved into `GenerateDialogue`, gated by a separate
+events-recall eval). GATE 1 is green. W1-M5 (async emit / durability) and order lifecycle remain
+tracked, optional depth.
 
 ### 1A — Market (the distributed-systems proof)
 
@@ -82,6 +100,10 @@ Each area must hit all six of DoD §3.1 (wired · gated · proven · explained �
 | **W1-A7** | Route tool-use tasks to best-fit model | §4.1 | *Evidence-based, optional:* pick the model for structured/tool-use tasks by a measured score on the golden set (Hermes a candidate — see memory `hermes-agent-vs-ralph`). Only lands with a number behind it. |
 
 ## WAVE 2 — The capstone: agents act on real Salesforce/Odoo, safely  *(the AI-architect headline)*
+
+*Decided 2026-08-23: opens after the market-exhibit go-live (DEP-1), and runs **with parallel
+breadth lanes** — the cartographer gRPC-federation rebuild and Tower/Observatory (OTel) proceed
+alongside the capstone. CRM order: Salesforce free Developer org (#1), Odoo (#2).*
 
 | ID | Title | Req | Done-when |
 |---|---|---|---|
@@ -118,7 +140,7 @@ Each area taken to green via the DoD §3.1 unit. **Order (interviewer-weighted, 
 | **DOC-4** | postmortem + `SECURITY.md` + threat model (incl. prompt-injection) | §3.2.4, §5 |
 | **DOC-5** | `docs/DEMO.md` + 90s GIF + 60s recruiter narrative | §3.3 |
 | **DOC-6** | Architecture-of-record (`docs/architecture.md`, honest Mermaid) + **Planning Office** meta-area (AREA plan §16); de-falsify in-app `architecture.vue` — **drafted 2026-07-12; goes green when it renders live STATE.md status + a real trace + a drift gate** | §3.2.4, §2 |
-| **DEP-1** | Deploy the live subset (Wave 1 first, grows per wave) — host TBD (§10) | §3.2.5 |
+| **DEP-1** | Deploy the live subset — **deploy kit merged (PR #4, 2026-07-22), go-live pending**. Model: market-district on a free/cheap box (Oracle Always Free first, Hetzner CX22 fallback) behind a Cloudflare Tunnel at `market.qtown.ai` + dashboard on Vercel at `dashboard.qtown.ai` (`MARKET_HTTP_URL`); ~$0–4/mo; wake/sleep = asleep is honest, not broken. Runbooks: `deploy/market-exhibit/`, `deploy/dashboard/`. **Nothing is live yet** — box/tunnel/Vercel project/DNS are manual owner steps. | §3.2.5 |
 
 ## Traceability & gates
 
@@ -126,8 +148,11 @@ Every story cites its requirement §; no story is "done" until its DoD §3.1 gat
 claim ships before its gate (§2.2); no proof panel shows a number it didn't measure (§2.1).
 `docs/STATE.md` is the running ledger of which requirements are met.
 
-## Open items (defaulted; confirm — REQUIREMENTS §10)
+## Open items (updated 2026-08-23 — REQUIREMENTS §10)
 
-- Capstone: **Salesforce-first** (brand) then Odoo (portability) — assumed; confirm.
-- Deploy host: **TBD** (Railway / fly.io / local box exposed) — decide at DEP-1.
-- Wave-3 order: **AI/systems areas first** (Tavern/Workshop/Tower) — assumed; confirm interviewer weighting.
+- Capstone: **Salesforce-first** (free Developer org) then Odoo — **confirmed 2026-08-23**.
+- Deploy host: **decided at DEP-1** — the market-exhibit model (cheap box + Cloudflare Tunnel +
+  Vercel dashboard); see DEP-1 above. Go-live itself still pending.
+- Wave-3 order: Tavern already delivered in Wave 1 (W1-T); cartographer federation and
+  Tower/Observatory run as **parallel lanes alongside Wave 2** (decided 2026-08-23). Remaining
+  breadth order: confirm interviewer weighting.
