@@ -331,15 +331,20 @@ jobs:
     # reconciled on the toolchain box (see test-fortress). Tracked.
     needs: [test-town-core, test-market, test-tavern, test-academy, test-cartographer, test-library, test-dashboard]
     # Deferred: image builds belong to the deploy wave. No v2 service is hosted
-    # yet (docs/v2-audit.md) and the per-service Dockerfiles aren't validated
-    # end-to-end (e.g. market's builder pins golang:1.22 vs go.mod's 1.25). Keep
-    # the definition; re-enable by restoring the pull_request condition.
+    # from these images yet (docs/v2-audit.md) and most per-service Dockerfiles
+    # aren't validated end-to-end. market-district's IS validated (8754c5f:
+    # golang:1.25 builder, repo-root build context, image built + run + tested)
+    # — its matrix entry below carries `context: .` so it builds correctly when
+    # re-enabled. Keep the definition; re-enable by restoring the pull_request
+    # condition.
     if: false  # was: github.event_name == 'pull_request'
     strategy:
       matrix:
         service:
           - { name: town-core, path: services/town-core }
-          - { name: market-district, path: services/market-district }
+          # market's go.mod pins `replace qtown/proto => ../../gen/go`, so its
+          # Dockerfile requires the REPO ROOT as build context (context: .).
+          - { name: market-district, path: services/market-district, context: . }
           - { name: tavern, path: services/tavern }
           - { name: academy, path: services/academy }
           - { name: cartographer, path: services/cartographer }
@@ -349,7 +354,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build ${{ matrix.service.name }}
-        run: docker build -t qtown/${{ matrix.service.name }}:ci ${{ matrix.service.path }}
+        # -f <path>/Dockerfile with context defaulting to <path> is identical to
+        # the old `docker build <path>` for every service without an explicit
+        # `context` override.
+        run: docker build -t qtown/${{ matrix.service.name }}:ci -f ${{ matrix.service.path }}/Dockerfile ${{ matrix.service.context || matrix.service.path }}
 
   # ─── Docker Push (main only) ───
   docker-push:
