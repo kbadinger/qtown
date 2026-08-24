@@ -12,7 +12,12 @@
 //! the output into a static buffer in the `.data` section.
 
 /// Default Rust source code presented to users in the policy editor.
-pub const DEFAULT_POLICY_TEMPLATE: &str = r#"// ─── Qtown Policy Module ─────────────────────────────────────────────────────
+///
+/// NOTE: this literal must use `r##"…"##` (two hashes): the template itself
+/// contains `r#"…"#` raw strings, whose closing `"#` would otherwise
+/// terminate the outer literal mid-file and turn the rest of this module
+/// into garbage Rust (the "unexpected closing delimiter" CI failure).
+pub const DEFAULT_POLICY_TEMPLATE: &str = r##"// ─── Qtown Policy Module ─────────────────────────────────────────────────────
 //
 // This module is compiled to WebAssembly and executed by the Fortress sandbox
 // for every town event that matches the policy's registration.
@@ -121,7 +126,7 @@ fn extract_f64(json: &str, key: &str) -> Option<f64> {
         .unwrap_or(slice.len());
     slice[..end].parse().ok()
 }
-"#;
+"##;
 
 /// A minimal allow-everything policy for testing.
 pub const ALLOW_ALL_TEMPLATE: &str = r#"static mut OUT_BUF: [u8; 256] = [0u8; 256];
