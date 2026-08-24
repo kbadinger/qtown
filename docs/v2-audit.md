@@ -338,9 +338,9 @@ market / academy / tavern, each behind its blocking gate):
   Recorded so the hash discontinuity in older notes/logs isn't mistaken for
   lost or altered work.
 - **CI drift red on re-run.** The 2026-08-07 re-run of main CI failed on drift
-  accumulated since the green 2026-07-22 run (academy/library lint, trivy
-  findings) — no code change on `main` caused it. Being fixed in the sibling
-  branch `fix/ci-drift-aug`.
+  accumulated since the green 2026-07-22 run (`test-academy`, `test-library`,
+  `test-fortress`, `trivy`) — no code change on `main` caused it. Being fixed in
+  the sibling branch `fix/ci-drift-aug`.
 
 ---
 
