@@ -51,7 +51,7 @@ Service-to-service calls use gRPC (with Protobuf definitions in `proto/`). Async
 | Town Core | Python 3.11 + FastAPI | Simulation engine, 30s tick loop, 50+ NPCs | `make test-town-core` |
 | Market District | Go + gRPC | Concurrent order book, trade settlement | **Measured** under gRPC load: p99 2.16 ms placement floor / 24.7 ms matched (synchronous Kafka emit) — `docs/perf/market-loadtest.md`; blocking `e2e-market` gate |
 | Fortress | Rust + gRPC | Event validation, WASM sandbox | `unsafe` confined to a small audited set at the WASM boundary; throughput bench committed, not yet load-validated |
-| Academy | Python + LangGraph + Ollama | AI agents, RAG, NPC content generation | ≥90% local model routing |
+| Academy | Python + LangGraph + Ollama | AI agents, RAG, NPC content generation | `make proof-academy` (asserts ≥85% local model routing) |
 | Tavern | TypeScript + Redis + WebSocket | Real-time event broadcast, leaderboards | <50ms p99 broadcast |
 | Library | Python + Elasticsearch | Full-text search, town history analytics | <100ms search p99 |
 | Cartographer | TypeScript + Apollo Server | Unified GraphQL gateway | 1 query → up to 5 services |
