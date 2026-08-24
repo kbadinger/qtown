@@ -8,7 +8,7 @@
 
 Qtown is an autonomous town simulation where NPCs live, work, trade, and make decisions without human direction. v1 was a Python monolith with a single simulation loop — 1,451 commits, 88% written by Ralph, an AI developer. v2 is a complete rewrite: a polyglot microservices architecture where each neighborhood runs on the technology best suited to it. The Market District runs a concurrent order book in Go. The Fortress validates events in Rust, with `unsafe` confined to a small audited set at the WASM sandbox boundary. The Academy runs AI agents locally via Ollama. The whole thing is wired together over Kafka with a GraphQL gateway in front. 420 files, ~101K lines of code, 27 Kafka topics, and 9 components (8 services + dashboard). Ralph still writes most of it.
 
-> **Status:** v2 is scaffolded, not delivered. Per-service tests pass and dashboard pages render, but cross-service wiring is still in flight (Wave 1), and none of the three flagship end-to-end flows pass yet. See **[current status → docs/v2-audit.md](docs/v2-audit.md)** for the honest, audited picture. (A dedicated `docs/STATE.md` is forthcoming.) Per `docs/REQUIREMENTS.md` §2.2, no performance or correctness claim ships as a stated fact before its gate is green.
+> **Status:** Wave 1 is delivered (merged to `main` 2026-07-20). **3 of 16 areas are green** per the six-point DoD (`docs/REQUIREMENTS.md` §3.1) — **Market** (`e2e-market` gate), **Academy** (`eval-academy` gates), **Tavern** (`e2e-tavern` gate) — each behind a blocking CI job. Flagship flows 1 (market trade) and 2 (NPC dialogue + RAG grounding) run end-to-end in CI; flow 3 (validation) is still open — nothing consumes the validation result yet. **[docs/STATE.md](docs/STATE.md)** is the authoritative status board; `docs/v2-audit.md` is the audit trail behind it. Nothing is publicly hosted yet — a deploy kit exists under `deploy/`, go-live pending. Per `docs/REQUIREMENTS.md` §2.2, no performance or correctness claim ships as a stated fact before its gate is green.
 
 ---
 
@@ -49,7 +49,7 @@ Service-to-service calls use gRPC (with Protobuf definitions in `proto/`). Async
 | Neighborhood | Technology | What It Does | Proof |
 |---|---|---|---|
 | Town Core | Python 3.11 + FastAPI | Simulation engine, 30s tick loop, 50+ NPCs | `make test-town-core` |
-| Market District | Go + gRPC | Concurrent order book, trade settlement | Designed for sub-5ms p99; in-process `go test -bench` committed, load validation lands in Wave 1 |
+| Market District | Go + gRPC | Concurrent order book, trade settlement | **Measured** under gRPC load: p99 2.16 ms placement floor / 24.7 ms matched (synchronous Kafka emit) — `docs/perf/market-loadtest.md`; blocking `e2e-market` gate |
 | Fortress | Rust + gRPC | Event validation, WASM sandbox | `unsafe` confined to a small audited set at the WASM boundary; throughput bench committed, not yet load-validated |
 | Academy | Python + LangGraph + Ollama | AI agents, RAG, NPC content generation | ≥90% local model routing |
 | Tavern | TypeScript + Redis + WebSocket | Real-time event broadcast, leaderboards | <50ms p99 broadcast |
@@ -218,7 +218,7 @@ qtown/
 | `make bench-market` | Order book benchmark (30s, 5 runs) |
 | `make bench-fortress` | Validation engine benchmark |
 | `make proof` | Run all proof tests |
-| `make proof-market` | In-process bench for sub-5ms p99 (load test lands in Wave 1) |
+| `make proof-market` | In-process engine bench; the measured gRPC load test is committed at `docs/perf/market-loadtest.md` (W1-M7) |
 | `make proof-fortress` | Throughput bench + audit of `unsafe` at the WASM boundary |
 | `make proof-academy` | Verify ≥85% local model routing |
 
@@ -371,21 +371,26 @@ make tf-apply
 
 ### CI/CD
 
-GitHub Actions (`.github/workflows/ci.yml`) — 9 parallel jobs:
+GitHub Actions (`.github/workflows/ci.yml`) — 14 active jobs (+ 2 deferred):
 
 | Job | What It Runs |
 |---|---|
 | `proto-lint` | buf lint + breaking change detection |
 | `test-town-core` | ruff lint + pytest |
 | `test-market` | go build + go vet + go test -race + benchmark |
+| `e2e-market` | **blocking gate** — compose-based e2e: real gRPC `PlaceOrder` → match → `trade.settled` on real Kafka |
 | `test-fortress` | cargo check + clippy -D warnings + cargo test + zero-unsafe grep |
 | `test-tavern` | tsc --noEmit + eslint + npm test |
+| `e2e-tavern` | **blocking gate** — live Kafka + Redis → WebSocket broadcast e2e |
 | `test-academy` | ruff + mypy + pytest |
+| `eval-academy` | **blocking gate** — deterministic RAG recall@k over committed fixtures (docs + events) |
 | `test-cartographer` | tsc --noEmit + npm test |
 | `test-library` | ruff + pytest |
 | `test-dashboard` | nuxi typecheck + zero-`any`-types check + npm test |
-| `docker-build` | Build all 9 component images (PRs only) |
-| `docker-push` | Push to GHCR (main branch merges only) |
+| `gitleaks` | **blocking** secret scan |
+| `trivy` | **blocking** vulnerability scan |
+| `docker-build` | **Deferred (`if: false`)** — per-service images not yet validated end-to-end; re-enabled in the deploy wave |
+| `docker-push` | **Deferred (`if: false`)** — GHCR publish waits on `docker-build` validation; re-enabled in the deploy wave |
 
 ### Observability
 
@@ -465,4 +470,4 @@ MIT — see [LICENSE](LICENSE).
 
 ---
 
-*Qtown v2 — 9 components (8 services + dashboard), 12 languages, 27 Kafka topics, 420 files, ~101K lines. Scaffolded, not yet delivered — see [docs/v2-audit.md](docs/v2-audit.md). Ralph wrote most of it.*
+*Qtown v2 — 9 components (8 services + dashboard), 12 languages, 27 Kafka topics, 420 files, ~101K lines. 3 of 16 areas green behind blocking CI gates; the rest in flight — see [docs/STATE.md](docs/STATE.md). Ralph wrote most of it.*
