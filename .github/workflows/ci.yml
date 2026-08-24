@@ -46,7 +46,7 @@ jobs:
         run: |
           cd services/town-core
           pip install -r requirements.txt
-          pip install pytest pytest-asyncio ruff
+          pip install pytest pytest-asyncio ruff==0.16.3
       - name: Lint
         run: cd services/town-core && ruff check engine/ --select E,F,W
       - name: Test
@@ -203,7 +203,11 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install
-        run: cd services/academy && pip install -e ".[dev]" && pip install mypy ruff
+        # ruff is pinned: 0.16.0 widened ruff's default rule selection, so an
+        # unpinned install turned pure environment drift into red lint gates
+        # (Aug 2026). Bump deliberately, together with the services' pyproject
+        # `[tool.ruff.lint] select`.
+        run: cd services/academy && pip install -e ".[dev]" && pip install mypy ruff==0.16.3
       - name: Lint
         run: cd services/academy && ruff check .
       - name: Type check
@@ -255,7 +259,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install
-        run: cd services/library && pip install -e ".[dev]" || pip install -r requirements.txt 2>/dev/null && pip install pytest ruff
+        run: cd services/library && pip install -e ".[dev]" || pip install -r requirements.txt 2>/dev/null && pip install pytest ruff==0.16.3
       - name: Lint
         run: cd services/library && ruff check .
       - name: Test

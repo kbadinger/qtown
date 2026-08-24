@@ -27,5 +27,14 @@ dev = [
 asyncio_mode = "auto"
 testpaths = ["library/tests"]
 
+[tool.ruff.lint]
+# Explicit selection = this gate's contract (ruff's pre-0.16 default set).
+# ruff 0.16.0 widened the *default* `select`, which turned an unpinned linter
+# install into 14 new findings with zero code changes (Aug 2026 CI drift).
+# With the selection explicit (and ruff pinned in ci.yml), a ruff upgrade can
+# never silently move this gate; adopting wider rule families is a deliberate
+# follow-up change, not a side effect of a tool release.
+select = ["E4", "E7", "E9", "F"]
+
 [tool.hatch.build.targets.wheel]
 packages = ["library"]
